@@ -428,6 +428,26 @@ class _ChoiceCard extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (choice.art != null) EmojiArt(choice.art!, size: compact ? 44 : 64),
+        if (choice.objects case final g?)
+          // Grupă de obiecte (ex. „Comparăm”): rânduri de câte 5, ca pe o numărătoare.
+          SizedBox(
+            width: width - 28,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 3,
+              runSpacing: 3,
+              children: [
+                for (var i = 0; i < g.count; i++)
+                  EmojiArt(
+                    g.emoji,
+                    size: ((width - 28) / 5.6).clamp(
+                      14.0,
+                      compact ? 26.0 : 36.0,
+                    ),
+                  ),
+              ],
+            ),
+          ),
         if (hasColor)
           Container(
             width: width - 56,
@@ -438,7 +458,8 @@ class _ChoiceCard extends ConsumerWidget {
             ),
           ),
         if (choice.label != null) ...[
-          if (choice.art != null) const SizedBox(height: 6),
+          if (choice.art != null || choice.objects != null)
+            const SizedBox(height: 6),
           Text(
             choice.label!,
             textAlign: TextAlign.center,
