@@ -1,0 +1,215 @@
+// Modelul de date Licurici (README §11). Minimizarea datelor (README §13.3):
+// copilul NU are nume real, dată completă de naștere, fotografie, școală sau diagnostic.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PARENT
+  THERAPIST
+  ADMIN
+}
+
+enum GradeCode {
+  GRADINITA
+  CLASA1
+  CLASA2
+  CLASA3
+  CLASA4
+}
+
+/// Scopurile de prelucrare pentru care părintele dă consimțământ separat (README §13.4).
+enum ConsentPurpose {
+  SYNC
+  WEEKLY_REPORT
+  THERAPIST_SHARING
+  PUSH_NOTIFICATIONS
+}
+
+/// Doar adulții au conturi (ADR-12).
+model User {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  email        String    @unique
+  passwordHash String?
+  role         Role      @default(PARENT)
+  locale       String    @default("ro")
+  verifiedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  /// Soft delete: acces blocat imediat, purge definitiv în ≤ 30 zile (job `gdpr.erase`).
+  deletedAt    DateTime?
+
+  children   Child[]
+  consents   Consent[]
+  devices    Device[]
+  careLinks  CareLink[] @relation("therapist")
+  auditLogs  AuditLog[]
+
+  @@map("users")
+}
+
+model Child {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  parentId  String    @db.Uuid
+  /// Poreclă aleasă de părinte — nu numele real.
+  nickname  String    @db.VarChar(40)
+  avatar    String    @db.VarChar(16)
+  /// Doar anul (nu data completă) — pentru adaptarea conținutului.
+  birthYear Int?      @db.SmallInt
+  grade     GradeCode @default(CLASA1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  parent    User               @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  settings  ChildSettings?
+  sessions  GameSession[]
+  stats     ChildSkillStats[]
+  adventure AdventureProgress?
+  careLinks CareLink[]
+
+  @@index([parentId])
+  @@map("children")
+}
+
+model Consent {
+  id            String         @id @default(uuid(7)) @db.Uuid
+  userId        String         @db.Uuid
+  purpose       ConsentPurpose
+  policyVersion String         @db.VarChar(16)
+  granted       Boolean
+  at            DateTime       @default(now())
+  /// Hash al IP-ului (dovadă fără a stoca IP-ul în clar).
+  ipHash        String?        @db.VarChar(64)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose, at])
+  @@map("consents")
+}
+
+model Device {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @db.Uuid
+  platform  String    @db.VarChar(16)
+  pushToken String?
+  lastSeen  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("devices")
+}
+
+/// Profilul senzorial — sincronizat last-write-wins pe `updatedAt` (ADR-11).
+model ChildSettings {
+  childId      String   @id @db.Uuid
+  calmMode     Boolean  @default(false)
+  reduceMotion Boolean  @default(false)
+  musicVol     Float    @default(0.5)
+  sfxVol       Float    @default(0.5)
+  voiceVol     Float    @default(0.5)
+  extra        Json     @default("{}")
+  updatedAt    DateTime
+
+  child Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@map("child_settings")
+}
+
+model GameSession {
+  /// UUIDv7 generat pe client → sincronizare idempotentă.
+  id          String   @id @db.Uuid
+  childId     String   @db.Uuid
+  gameId      String   @db.VarChar(40)
+  tier        Int      @db.SmallInt
+  startedAt   DateTime
+  durationSec Int
+  stars       Int      @db.SmallInt
+
+  child  Child       @relation(fields: [childId], references: [id], onDelete: Cascade)
+  events GameEvent[]
+
+  @@index([childId, startedAt])
+  @@map("game_sessions")
+}
+
+/// Evenimente imuabile (append-only). `payload` = ce s-a întrebat, ce a ales, încercări,
+/// timp de răspuns — FĂRĂ text liber. Retenție 24 luni (README §13.3).
+model GameEvent {
+  id        String   @id @db.Uuid
+  sessionId String   @db.Uuid
+  type      String   @db.VarChar(32)
+  skill     String?  @db.VarChar(40)
+  correct   Boolean?
+  firstTry  Boolean?
+  payload   Json     @default("{}")
+  at        DateTime
+
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([at])
+  @@map("game_events")
+}
+
+/// Read model (CQRS-lite): calculat de worker din `game_events`.
+model ChildSkillStats {
+  childId    String   @db.Uuid
+  skill      String   @db.VarChar(40)
+  attempts   Int
+  firstTry   Int
+  accuracy   Float
+  lastPlayed DateTime
+
+  child Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@id([childId, skill])
+  @@map("child_skill_stats")
+}
+
+model AdventureProgress {
+  childId   String   @id @db.Uuid
+  level     Int      @default(1)
+  stars     Json     @default("{}")
+  updatedAt DateTime
+
+  child Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@map("adventure_progress")
+}
+
+/// Partajare cu terapeutul — doar cu acord explicit, cu scop și expirare.
+model CareLink {
+  childId     String    @db.Uuid
+  therapistId String    @db.Uuid
+  scope       String    @default("stats:read") @db.VarChar(32)
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+
+  child     Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+  therapist User  @relation("therapist", fields: [therapistId], references: [id], onDelete: Cascade)
+
+  @@id([childId, therapistId])
+  @@map("care_links")
+}
+
+model AuditLog {
+  id       String   @id @default(uuid(7)) @db.Uuid
+  actorId  String   @db.Uuid
+  action   String   @db.VarChar(48)
+  targetId String?  @db.Uuid
+  at       DateTime @default(now())
+
+  actor User @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([actorId, at])
+  @@map("audit_logs")
+}
