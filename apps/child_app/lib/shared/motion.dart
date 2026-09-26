@@ -28,7 +28,8 @@ class MotionPolicy {
   /// Mișcări (săritură, clătinare, glisare) — doar la `full`; `gentle` rămâne la estompări.
   bool get movement => level == MotionLevel.full;
 
-  Duration d(int ms) => level == MotionLevel.off ? Duration.zero : Duration(milliseconds: ms);
+  Duration d(int ms) =>
+      level == MotionLevel.off ? Duration.zero : Duration(milliseconds: ms);
 
   static MotionPolicy of(BuildContext context, WidgetRef ref) {
     if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {

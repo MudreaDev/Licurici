@@ -1,12 +1,12 @@
 {
-    "name": "licurici",
-    "short_name": "licurici",
+    "name": "Licurici",
+    "short_name": "Licurici",
     "start_url": ".",
-    "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "display": "fullscreen",
+    "background_color": "#EEF5F4",
+    "theme_color": "#5B9BB5",
+    "description": "Jocuri educative pentru copii (grădiniță + clasele 1-4)",
+    "orientation": "landscape",
     "prefer_related_applications": false,
     "icons": [
         {

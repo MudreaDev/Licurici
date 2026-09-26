@@ -12,6 +12,20 @@ import 'choice_game_screen.dart' show wobble;
 /// Desenează stimulii unei runde. Fiecare tip are animația lui semnătură (README §15.1):
 /// obiectele sar pe rând la intrare, emoji-ul mare „respiră”, pata de culoare se extinde,
 /// ecuația se scrie litera cu litera.
+/// Factorul de scară al stimulilor, calculat din spațiul disponibil: pe tabletă ilustrațiile
+/// cresc (până la 1,5×), pe telefon scad. Stimulii îl citesc cu [VisualScale.of].
+class VisualScale extends InheritedWidget {
+  const VisualScale({super.key, required this.scale, required super.child});
+
+  final double scale;
+
+  static double of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<VisualScale>()?.scale ?? 1;
+
+  @override
+  bool updateShouldNotify(VisualScale old) => old.scale != scale;
+}
+
 class PromptVisuals extends StatelessWidget {
   const PromptVisuals({super.key, required this.visuals, required this.solved});
 
@@ -20,20 +34,20 @@ class PromptVisuals extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          for (final v in visuals)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: switch (v) {
-                EmojiVisual() => _BigEmoji(v.emoji, solved: solved),
-                ObjectsVisual() => _Objects(v, solved: solved),
-                ColorVisual() => _ColorBlob(Color(v.argb)),
-                TextVisual() => _BigText(v),
-                SceneVisual() => _Scene(v.text),
-              },
-            ),
-        ],
-      );
+    children: [
+      for (final v in visuals)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: switch (v) {
+            EmojiVisual() => _BigEmoji(v.emoji, solved: solved),
+            ObjectsVisual() => _Objects(v, solved: solved),
+            ColorVisual() => _ColorBlob(Color(v.argb)),
+            TextVisual() => _BigText(v),
+            SceneVisual() => _Scene(v.text),
+          },
+        ),
+    ],
+  );
 }
 
 class _BigEmoji extends ConsumerWidget {
@@ -45,11 +59,16 @@ class _BigEmoji extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
-    Widget w = EmojiArt(emoji, size: 150);
+    Widget w = EmojiArt(emoji, size: 150 * VisualScale.of(context));
     if (motion.ambient) {
       w = w
           .animate(onPlay: (c) => c.repeat(reverse: true))
-          .scaleXY(begin: 1, end: 1.05, duration: 1600.ms, curve: Curves.easeInOut);
+          .scaleXY(
+            begin: 1,
+            end: 1.05,
+            duration: 1600.ms,
+            curve: Curves.easeInOut,
+          );
     }
     return Juice(enabled: motion.movement, hopTick: solved ? 1 : 0, child: w);
   }
@@ -71,15 +90,26 @@ class _Objects extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
     final total = visual.total;
-    final size = total <= 6 ? 72.0 : (total <= 12 ? 56.0 : 44.0);
+    final size =
+        (total <= 6 ? 72.0 : (total <= 12 ? 56.0 : 44.0)) *
+        VisualScale.of(context);
     var k = 0;
 
     Widget item(String emoji) {
       final i = k++;
-      final w = Transform.rotate(angle: motion.movement ? wobble(i) : 0, child: EmojiArt(emoji, size: size))
-          .animate(delay: motion.d(90 * i))
-          .fadeIn(duration: motion.d(200))
-          .scaleXY(begin: motion.movement ? 0.3 : 1, end: 1, duration: motion.d(380), curve: Curves.easeOutBack);
+      final w =
+          Transform.rotate(
+                angle: motion.movement ? wobble(i) : 0,
+                child: EmojiArt(emoji, size: size),
+              )
+              .animate(delay: motion.d(90 * i))
+              .fadeIn(duration: motion.d(200))
+              .scaleXY(
+                begin: motion.movement ? 0.3 : 1,
+                end: 1,
+                duration: motion.d(380),
+                curve: Curves.easeOutBack,
+              );
       return Juice(
         enabled: motion.movement,
         hopTick: solved ? 1 : 0,
@@ -89,21 +119,21 @@ class _Objects extends ConsumerWidget {
     }
 
     Widget group(ObjectGroup g) => Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Tokens.surface2,
-            borderRadius: BorderRadius.circular(Tokens.radius),
-          ),
-          child: SizedBox(
-            width: (size + _gap) * (g.count < _perRow ? g.count : _perRow),
-            child: Wrap(
-              spacing: _gap,
-              runSpacing: _gap,
-              alignment: WrapAlignment.center,
-              children: [for (var j = 0; j < g.count; j++) item(g.emoji)],
-            ),
-          ),
-        );
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Tokens.surface2,
+        borderRadius: BorderRadius.circular(Tokens.radius),
+      ),
+      child: SizedBox(
+        width: (size + _gap) * (g.count < _perRow ? g.count : _perRow),
+        child: Wrap(
+          spacing: _gap,
+          runSpacing: _gap,
+          alignment: WrapAlignment.center,
+          children: [for (var j = 0; j < g.count; j++) item(g.emoji)],
+        ),
+      ),
+    );
 
     return Wrap(
       alignment: WrapAlignment.center,
@@ -113,8 +143,12 @@ class _Objects extends ConsumerWidget {
       children: [
         for (final (gi, g) in visual.groups.indexed) ...[
           if (gi > 0 && visual.operator != null)
-            Text(visual.operator!,
-                style: Theme.of(context).textTheme.displaySmall!.copyWith(color: Tokens.primary)),
+            Text(
+              visual.operator!,
+              style: Theme.of(
+                context,
+              ).textTheme.displaySmall!.copyWith(color: Tokens.primary),
+            ),
           group(g),
         ],
       ],
@@ -131,15 +165,21 @@ class _ColorBlob extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
-    Widget w = Container(
-      width: 180,
-      height: 180,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(90),
-        boxShadow: Tokens.shadowLg,
-      ),
-    ).animate().scaleXY(begin: motion.movement ? 0.2 : 1, end: 1, duration: motion.d(500), curve: Curves.easeOutBack);
+    Widget w =
+        Container(
+          width: 180 * VisualScale.of(context),
+          height: 180 * VisualScale.of(context),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(90 * VisualScale.of(context)),
+            boxShadow: Tokens.shadowLg,
+          ),
+        ).animate().scaleXY(
+          begin: motion.movement ? 0.2 : 1,
+          end: 1,
+          duration: motion.d(500),
+          curve: Curves.easeOutBack,
+        );
     if (motion.ambient) {
       w = w
           .animate(onPlay: (c) => c.repeat(reverse: true), delay: 600.ms)
@@ -165,9 +205,9 @@ class _BigText extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
     final style = Theme.of(context).textTheme.displaySmall!.copyWith(
-          fontSize: visual.isEquation ? 56 : 52,
-          color: visual.isEquation ? Tokens.ink : Tokens.primaryDark,
-        );
+      fontSize: (visual.isEquation ? 56 : 52) * VisualScale.of(context),
+      color: visual.isEquation ? Tokens.ink : Tokens.primaryDark,
+    );
     if (!motion.movement) return Text(visual.text, style: style);
     // Ecuația „se scrie singură”, caracter cu caracter.
     final chars = visual.text.characters.toList();
@@ -178,7 +218,12 @@ class _BigText extends ConsumerWidget {
           Text(ch, style: style)
               .animate(delay: (200 + 45 * i).ms)
               .fadeIn(duration: 160.ms)
-              .moveY(begin: 10, end: 0, duration: 220.ms, curve: Curves.easeOut),
+              .moveY(
+                begin: 10,
+                end: 0,
+                duration: 220.ms,
+                curve: Curves.easeOut,
+              ),
       ],
     );
   }
@@ -191,20 +236,27 @@ class _Scene extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        constraints: const BoxConstraints(maxWidth: 640),
-        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
-        decoration: BoxDecoration(
-          color: Tokens.surface,
-          borderRadius: BorderRadius.circular(Tokens.radius),
-          boxShadow: Tokens.shadow,
+    constraints: const BoxConstraints(maxWidth: 640),
+    padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
+    decoration: BoxDecoration(
+      color: Tokens.surface,
+      borderRadius: BorderRadius.circular(Tokens.radius),
+      boxShadow: Tokens.shadow,
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        EmojiArt('🧒', size: 64 * VisualScale.of(context)),
+        const SizedBox(width: 16),
+        Flexible(
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              fontSize: 24 * VisualScale.of(context),
+            ),
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const EmojiArt('🧒', size: 64),
-            const SizedBox(width: 16),
-            Flexible(child: Text(text, style: Theme.of(context).textTheme.titleLarge)),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 }

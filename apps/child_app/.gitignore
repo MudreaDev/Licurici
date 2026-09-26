@@ -46,3 +46,6 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# capturi de inspecție (test/layout_test.dart cu SHOTS=true) — diferă între platforme
+test/shots/

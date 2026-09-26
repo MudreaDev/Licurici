@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 /// Explozie scurtă de steluțe (stratul 4 din §15.1). ≤ 12 particule, ~900 ms, fără clipiri.
 /// Se redeclanșează când se schimbă [trigger]; nu desenează nimic dacă [enabled] e fals.
 class StarBurst extends StatefulWidget {
-  const StarBurst({super.key, required this.trigger, this.enabled = true, this.count = 10});
+  const StarBurst({
+    super.key,
+    required this.trigger,
+    this.enabled = true,
+    this.count = 10,
+  });
 
   final int trigger;
   final bool enabled;
@@ -15,9 +20,12 @@ class StarBurst extends StatefulWidget {
   State<StarBurst> createState() => _StarBurstState();
 }
 
-class _StarBurstState extends State<StarBurst> with SingleTickerProviderStateMixin {
-  late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+class _StarBurstState extends State<StarBurst>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
   List<_Particle> _particles = const [];
 
   @override
@@ -27,14 +35,23 @@ class _StarBurstState extends State<StarBurst> with SingleTickerProviderStateMix
       final rnd = math.Random();
       _particles = List.generate(widget.count, (i) {
         final angle = (i / widget.count) * 2 * math.pi + rnd.nextDouble() * 0.5;
-        return _Particle(angle, 90 + rnd.nextDouble() * 70, 10 + rnd.nextDouble() * 10,
-            _palette[i % _palette.length]);
+        return _Particle(
+          angle,
+          90 + rnd.nextDouble() * 70,
+          10 + rnd.nextDouble() * 10,
+          _palette[i % _palette.length],
+        );
       });
       _c.forward(from: 0);
     }
   }
 
-  static const _palette = [Color(0xFFF2CF6B), Color(0xFF7FC0A3), Color(0xFFA9A3D1), Color(0xFFF0B9A0)];
+  static const _palette = [
+    Color(0xFFF2CF6B),
+    Color(0xFF7FC0A3),
+    Color(0xFFA9A3D1),
+    Color(0xFFF0B9A0),
+  ];
 
   @override
   void dispose() {
@@ -44,17 +61,21 @@ class _StarBurstState extends State<StarBurst> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) => IgnorePointer(
-        child: RepaintBoundary(
-          child: AnimatedBuilder(
-            animation: _c,
-            builder: (context, _) => _c.isAnimating
-                ? CustomPaint(
-                    size: Size.infinite,
-                    painter: _BurstPainter(_particles, Curves.easeOutCubic.transform(_c.value)))
-                : const SizedBox.expand(),
-          ),
-        ),
-      );
+    child: RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) => _c.isAnimating
+            ? CustomPaint(
+                size: Size.infinite,
+                painter: _BurstPainter(
+                  _particles,
+                  Curves.easeOutCubic.transform(_c.value),
+                ),
+              )
+            : const SizedBox.expand(),
+      ),
+    ),
+  );
 }
 
 class _Particle {
@@ -76,11 +97,16 @@ class _BurstPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final fade = (1 - t).clamp(0.0, 1.0);
     for (final p in particles) {
-      final pos = center + Offset(math.cos(p.angle), math.sin(p.angle)) * p.distance * t;
+      final pos =
+          center +
+          Offset(math.cos(p.angle), math.sin(p.angle)) * p.distance * t;
       canvas.save();
       canvas.translate(pos.dx, pos.dy);
       canvas.rotate(t * math.pi);
-      canvas.drawPath(_star(p.size * (0.6 + 0.4 * fade)), Paint()..color = p.color.withValues(alpha: fade));
+      canvas.drawPath(
+        _star(p.size * (0.6 + 0.4 * fade)),
+        Paint()..color = p.color.withValues(alpha: fade),
+      );
       canvas.restore();
     }
   }

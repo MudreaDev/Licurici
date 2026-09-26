@@ -14,7 +14,12 @@ enum MascotMood { idle, happy, encourage }
 /// săritură și strălucire la `happy`; înclinare blândă la `encourage`.
 /// Schimbă [reaction] (ex. un contor) ca să redeclanșezi aceeași stare.
 class Mascot extends ConsumerStatefulWidget {
-  const Mascot({super.key, this.size = 120, this.mood = MascotMood.idle, this.reaction = 0});
+  const Mascot({
+    super.key,
+    this.size = 120,
+    this.mood = MascotMood.idle,
+    this.reaction = 0,
+  });
 
   final double size;
   final MascotMood mood;
@@ -25,10 +30,14 @@ class Mascot extends ConsumerStatefulWidget {
 }
 
 class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
-  late final AnimationController _idle =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 2400));
-  late final AnimationController _react =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 750));
+  late final AnimationController _idle = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2400),
+  );
+  late final AnimationController _react = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 750),
+  );
 
   @override
   void didUpdateWidget(Mascot old) {
@@ -63,11 +72,16 @@ class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
             animation: Listenable.merge([_idle, _react]),
             builder: (context, _) {
               final t = _idle.value * 2 * math.pi;
-              final r = motion.movement ? Curves.easeOut.transform(_react.value) : 0.0;
+              final r = motion.movement
+                  ? Curves.easeOut.transform(_react.value)
+                  : 0.0;
               final bump = math.sin(r * math.pi); // 0 → 1 → 0
               final happy = widget.mood == MascotMood.happy;
-              final dy = math.sin(t) * 4 - (happy ? bump * widget.size * 0.18 : 0);
-              final tilt = widget.mood == MascotMood.encourage ? math.sin(r * math.pi * 2) * 0.12 : 0.0;
+              final dy =
+                  math.sin(t) * 4 - (happy ? bump * widget.size * 0.18 : 0);
+              final tilt = widget.mood == MascotMood.encourage
+                  ? math.sin(r * math.pi * 2) * 0.12
+                  : 0.0;
               return Transform.translate(
                 offset: Offset(0, dy),
                 child: Transform.rotate(
@@ -75,7 +89,8 @@ class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
                   child: CustomPaint(
                     painter: _FireflyPainter(
                       wing: math.sin(t * 3) * 0.12,
-                      glow: 0.75 + math.sin(t) * 0.15 + (happy ? bump * 0.5 : 0),
+                      glow:
+                          0.75 + math.sin(t) * 0.15 + (happy ? bump * 0.5 : 0),
                       smile: happy ? 1 + bump : 1,
                     ),
                   ),
@@ -90,7 +105,11 @@ class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
 }
 
 class _FireflyPainter extends CustomPainter {
-  _FireflyPainter({required this.wing, required this.glow, required this.smile});
+  _FireflyPainter({
+    required this.wing,
+    required this.glow,
+    required this.smile,
+  });
 
   final double wing;
   final double glow;
@@ -110,10 +129,13 @@ class _FireflyPainter extends CustomPainter {
       const Offset(50, 70),
       glowR,
       Paint()
-        ..shader = const RadialGradient(
-          colors: [Color(0xFFFFF6C2), Color(0xFFF6DF84), Color(0x00F6DF84)],
-          stops: [0, 0.45, 1],
-        ).createShader(Rect.fromCircle(center: const Offset(50, 70), radius: glowR)),
+        ..shader =
+            const RadialGradient(
+              colors: [Color(0xFFFFF6C2), Color(0xFFF6DF84), Color(0x00F6DF84)],
+              stops: [0, 0.45, 1],
+            ).createShader(
+              Rect.fromCircle(center: const Offset(50, 70), radius: glowR),
+            ),
     );
 
     // aripioare (bat ușor)
@@ -122,7 +144,10 @@ class _FireflyPainter extends CustomPainter {
       canvas.save();
       canvas.translate(cx, 46);
       canvas.rotate(base + (cx < 50 ? -wing : wing));
-      canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: 36, height: 24), wingPaint);
+      canvas.drawOval(
+        Rect.fromCenter(center: Offset.zero, width: 36, height: 24),
+        wingPaint,
+      );
       canvas.restore();
     }
 
@@ -132,8 +157,18 @@ class _FireflyPainter extends CustomPainter {
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-    canvas.drawPath(Path()..moveTo(44, 30)..quadraticBezierTo(40, 20, 34, 17), stroke);
-    canvas.drawPath(Path()..moveTo(56, 30)..quadraticBezierTo(60, 20, 66, 17), stroke);
+    canvas.drawPath(
+      Path()
+        ..moveTo(44, 30)
+        ..quadraticBezierTo(40, 20, 34, 17),
+      stroke,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(56, 30)
+        ..quadraticBezierTo(60, 20, 66, 17),
+      stroke,
+    );
     canvas.drawCircle(const Offset(33, 16), 3.4, Paint()..color = _body);
     canvas.drawCircle(const Offset(67, 16), 3.4, Paint()..color = _body);
 
@@ -148,8 +183,10 @@ class _FireflyPainter extends CustomPainter {
           colors: [Color(0xFF8FB389), _body],
         ).createShader(bodyRect),
     );
-    canvas.drawOval(Rect.fromCenter(center: const Offset(50, 38), width: 30, height: 26),
-        Paint()..color = _head);
+    canvas.drawOval(
+      Rect.fromCenter(center: const Offset(50, 38), width: 30, height: 26),
+      Paint()..color = _head,
+    );
 
     // ochi
     for (final x in [44.0, 56.0]) {
@@ -170,11 +207,18 @@ class _FireflyPainter extends CustomPainter {
     );
 
     // coada strălucitoare
-    canvas.drawCircle(const Offset(50, 70), 9,
-        Paint()
-          ..color = const Color(0xFFFFF3AD)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.4));
-    canvas.drawCircle(const Offset(50, 70), 6, Paint()..color = const Color(0xFFFFFBE0));
+    canvas.drawCircle(
+      const Offset(50, 70),
+      9,
+      Paint()
+        ..color = const Color(0xFFFFF3AD)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.4),
+    );
+    canvas.drawCircle(
+      const Offset(50, 70),
+      6,
+      Paint()..color = const Color(0xFFFFFBE0),
+    );
   }
 
   @override

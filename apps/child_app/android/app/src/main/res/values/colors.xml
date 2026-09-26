@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tokens.bg: fundalul calm al aplicației, și în splash (fără ecran alb la pornire). -->
+    <color name="licurici_bg">#EEF5F4</color>
+</resources>

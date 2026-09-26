@@ -5,7 +5,12 @@ import 'motion.dart';
 
 /// Stratul 1 din §15.1: orice țintă se „apasă” vizibil la atingere (scale 0.94, 120 ms).
 class Pressable extends ConsumerStatefulWidget {
-  const Pressable({super.key, required this.child, this.onTap, this.semanticLabel});
+  const Pressable({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.semanticLabel,
+  });
 
   final Widget child;
   final VoidCallback? onTap;

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 
+import '../../app/layout.dart';
 import '../../app/theme.dart';
 import '../../shared/emoji_art.dart';
 import '../../shared/mascot.dart';
@@ -19,7 +20,73 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final motion = MotionPolicy.of(context, ref);
+    final layout = AppLayout.of(context);
     final groups = gamesForGrade(settings.grade);
+
+    Widget section(int i, Subject subject, List<GameSpec> games) =>
+        _SubjectSection(
+              subject: subject,
+              games: games,
+              horizontal: layout.twoPane,
+            )
+            .animate(key: ValueKey('${settings.grade}-$subject'))
+            .fadeIn(duration: motion.d(350), delay: motion.d(80 * i))
+            .slideX(
+              begin: layout.twoPane && motion.movement ? 0.06 : 0,
+              end: 0,
+              curve: Curves.easeOut,
+            )
+            .slideY(
+              begin: !layout.twoPane && motion.movement ? 0.08 : 0,
+              end: 0,
+              curve: Curves.easeOut,
+            );
+
+    // LANDSCAPE (telefon și tabletă): clasele sus, jocurile într-un rând care se derulează
+    // orizontal, grupate pe materii — totul încape pe ecran fără derulare verticală.
+    if (layout.twoPane) {
+      return Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              const TopBar(),
+              Padding(
+                padding: EdgeInsets.fromLTRB(16, layout.compact ? 0 : 8, 16, 0),
+                child: Row(
+                  children: [
+                    Mascot(size: layout.compact ? 52 : 80),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _GradePicker(
+                        selected: settings.grade,
+                        scrollable: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    layout.compact ? 6 : 16,
+                    16,
+                    layout.compact ? 8 : 20,
+                  ),
+                  children: [
+                    for (final (i, e) in groups.entries.indexed) ...[
+                      if (i > 0) SizedBox(width: layout.compact ? 20 : 32),
+                      section(i, e.key, e.value),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -34,11 +101,8 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(height: 20),
                   _GradePicker(selected: settings.grade),
                   const SizedBox(height: 12),
-                  for (final (i, entry) in groups.entries.indexed)
-                    _SubjectSection(subject: entry.key, games: entry.value)
-                        .animate(key: ValueKey('${settings.grade}-${entry.key}'))
-                        .fadeIn(duration: motion.d(350), delay: motion.d(80 * i))
-                        .slideY(begin: motion.movement ? 0.08 : 0, end: 0, curve: Curves.easeOut),
+                  for (final (i, e) in groups.entries.indexed)
+                    section(i, e.key, e.value),
                 ],
               ),
             ),
@@ -53,95 +117,160 @@ class _Greeting extends StatelessWidget {
   const _Greeting();
 
   @override
-  Widget build(BuildContext context) => Row(
-        children: [
-          const Mascot(size: 104),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
-              decoration: BoxDecoration(
-                color: Tokens.surface,
-                borderRadius: BorderRadius.circular(Tokens.radius),
-                boxShadow: Tokens.shadow,
-              ),
-              child: Text('Bună! Hai să ne jucăm și să învățăm!',
-                  style: Theme.of(context).textTheme.titleLarge),
-            ),
-          ),
-        ],
-      );
-}
-
-class _GradePicker extends ConsumerWidget {
-  const _GradePicker({required this.selected});
-
-  final Grade selected;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final motion = MotionPolicy.of(context, ref);
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
+  Widget build(BuildContext context) {
+    final compact = AppLayout.of(context).compact;
+    return Row(
       children: [
-        for (final g in Grade.values)
-          Pressable(
-            semanticLabel: g.label,
-            onTap: () => ref.read(settingsProvider.notifier).setGrade(g),
-            child: AnimatedContainer(
-              duration: motion.d(220),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: BoxDecoration(
-                color: g == selected ? Tokens.primary : Tokens.surface,
-                borderRadius: BorderRadius.circular(40),
-                boxShadow: g == selected ? Tokens.shadow : null,
-                border: Border.all(color: g == selected ? Tokens.primary : Tokens.line, width: 2),
-              ),
-              child: Text(
-                g.label,
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: g == selected ? Colors.white : Tokens.ink,
-                    ),
-              ),
+        Mascot(size: compact ? 64 : 104),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 22,
+              vertical: compact ? 10 : 16,
+            ),
+            decoration: BoxDecoration(
+              color: Tokens.surface,
+              borderRadius: BorderRadius.circular(Tokens.radius),
+              boxShadow: Tokens.shadow,
+            ),
+            child: Text(
+              'Bună! Hai să ne jucăm și să învățăm!',
+              style: compact
+                  ? Theme.of(context).textTheme.titleMedium
+                  : Theme.of(context).textTheme.titleLarge,
             ),
           ),
+        ),
       ],
     );
   }
 }
 
+class _GradePicker extends ConsumerWidget {
+  const _GradePicker({required this.selected, this.scrollable = false});
+
+  final Grade selected;
+
+  /// Un singur rând derulabil orizontal (landscape), în loc de rânduri care se rup.
+  final bool scrollable;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final motion = MotionPolicy.of(context, ref);
+    final compact = AppLayout.of(context).compact;
+    final chips = [
+      for (final g in Grade.values)
+        Pressable(
+          semanticLabel: g.label,
+          onTap: () => ref.read(settingsProvider.notifier).setGrade(g),
+          child: AnimatedContainer(
+            duration: motion.d(220),
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 16 : 20,
+              vertical: compact ? 8 : 12,
+            ),
+            decoration: BoxDecoration(
+              color: g == selected ? Tokens.primary : Tokens.surface,
+              borderRadius: BorderRadius.circular(40),
+              boxShadow: g == selected ? Tokens.shadow : null,
+              border: Border.all(
+                color: g == selected ? Tokens.primary : Tokens.line,
+                width: 2,
+              ),
+            ),
+            child: Text(
+              g.label,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                color: g == selected ? Colors.white : Tokens.ink,
+              ),
+            ),
+          ),
+        ),
+    ];
+    if (!scrollable) return Wrap(spacing: 10, runSpacing: 10, children: chips);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (final (i, chip) in chips.indexed) ...[
+            if (i > 0) const SizedBox(width: 8),
+            chip,
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _SubjectSection extends StatelessWidget {
-  const _SubjectSection({required this.subject, required this.games});
+  const _SubjectSection({
+    required this.subject,
+    required this.games,
+    this.horizontal = false,
+  });
 
   final Subject subject;
   final List<GameSpec> games;
 
+  /// Landscape: titlul deasupra, cardurile pe un rând (lista părinte derulează orizontal).
+  final bool horizontal;
+
   @override
   Widget build(BuildContext context) {
     final color = Color(subject.color);
+    final compact = AppLayout.of(context).compact;
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: EdgeInsets.only(top: horizontal ? 0 : 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Container(
-              width: 12,
-              height: 28,
-              decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(6)),
-            ),
-            const SizedBox(width: 10),
-            Text(subject.label, style: Theme.of(context).textTheme.headlineMedium),
-          ]),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 16,
-            runSpacing: 16,
+          Row(
             children: [
-              for (final (i, g) in games.indexed) GameTile(game: g, color: color, index: i),
+              Container(
+                width: 12,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                subject.label,
+                style: compact
+                    ? Theme.of(context).textTheme.titleLarge
+                    : Theme.of(context).textTheme.headlineMedium,
+              ),
             ],
           ),
+          SizedBox(height: compact ? 6 : 12),
+          if (horizontal)
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final (i, g) in games.indexed) ...[
+                    if (i > 0) const SizedBox(width: 14),
+                    // Pe telefoanele mici cardul se micșorează proporțional ca să încapă pe înălțime.
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.topCenter,
+                      child: GameTile(game: g, color: color, index: i),
+                    ),
+                  ],
+                ],
+              ),
+            )
+          else
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                for (final (i, g) in games.indexed)
+                  GameTile(game: g, color: color, index: i),
+              ],
+            ),
         ],
       ),
     );
@@ -150,7 +279,12 @@ class _SubjectSection extends StatelessWidget {
 
 /// Card mare de joc: ilustrația „respiră” ușor (stratul 2, doar la motion `full`).
 class GameTile extends ConsumerWidget {
-  const GameTile({super.key, required this.game, required this.color, this.index = 0});
+  const GameTile({
+    super.key,
+    required this.game,
+    required this.color,
+    this.index = 0,
+  });
 
   final GameSpec game;
   final Color color;
@@ -159,18 +293,27 @@ class GameTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
-    Widget art = EmojiArt(game.emoji, size: 72);
+    final compact = AppLayout.of(context).compact;
+    Widget art = EmojiArt(game.emoji, size: compact ? 52 : 72);
     if (motion.ambient) {
       art = art
-          .animate(onPlay: (c) => c.repeat(reverse: true), delay: (index * 300).ms)
-          .scaleXY(begin: 1, end: 1.06, duration: 1800.ms, curve: Curves.easeInOut);
+          .animate(
+            onPlay: (c) => c.repeat(reverse: true),
+            delay: (index * 300).ms,
+          )
+          .scaleXY(
+            begin: 1,
+            end: 1.06,
+            duration: 1800.ms,
+            curve: Curves.easeInOut,
+          );
     }
     return Pressable(
       semanticLabel: game.name,
       onTap: () => context.go('/joc/${game.id}'),
       child: Container(
-        width: 190,
-        padding: const EdgeInsets.all(18),
+        width: compact ? 150 : 190,
+        padding: EdgeInsets.all(compact ? 12 : 18),
         decoration: BoxDecoration(
           color: Tokens.surface,
           borderRadius: BorderRadius.circular(Tokens.radius),
@@ -180,17 +323,27 @@ class GameTile extends ConsumerWidget {
         child: Column(
           children: [
             Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.18), shape: BoxShape.circle),
+              width: compact ? 76 : 110,
+              height: compact ? 76 : 110,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.18),
+                shape: BoxShape.circle,
+              ),
               alignment: Alignment.center,
               child: art,
             ),
-            const SizedBox(height: 12),
-            Text(game.name, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
+            SizedBox(height: compact ? 6 : 12),
+            Text(
+              game.name,
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 4),
-            Text(game.description,
-                style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
+            Text(
+              game.description,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),

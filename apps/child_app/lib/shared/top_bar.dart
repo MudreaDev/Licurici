@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../app/layout.dart';
 import '../app/theme.dart';
 import '../features/settings/settings.dart';
 import 'emoji_art.dart';
@@ -19,8 +20,9 @@ class TopBar extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
     final atHome = GoRouterState.of(context).uri.path == '/';
+    final compact = AppLayout.of(context).compact;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: EdgeInsets.fromLTRB(16, compact ? 6 : 12, 16, 4),
       child: Row(
         children: [
           BarButton(
@@ -32,7 +34,9 @@ class TopBar extends ConsumerWidget {
           Expanded(
             child: Text(
               title ?? 'Licurici',
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: compact
+                  ? Theme.of(context).textTheme.titleLarge
+                  : Theme.of(context).textTheme.headlineMedium,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -57,7 +61,13 @@ class TopBar extends ConsumerWidget {
 }
 
 class BarButton extends StatelessWidget {
-  const BarButton({super.key, required this.emoji, required this.label, this.onTap, this.active = false});
+  const BarButton({
+    super.key,
+    required this.emoji,
+    required this.label,
+    this.onTap,
+    this.active = false,
+  });
 
   final String emoji;
   final String label;
@@ -65,26 +75,32 @@ class BarButton extends StatelessWidget {
   final bool active;
 
   @override
-  Widget build(BuildContext context) => Tooltip(
-        message: label,
-        child: Pressable(
-          semanticLabel: label,
-          onTap: onTap,
-          child: Opacity(
-            opacity: onTap == null ? 0.45 : 1,
-            child: Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: active ? Tokens.goodSoft : Tokens.surface,
-                borderRadius: BorderRadius.circular(Tokens.radiusS),
-                boxShadow: Tokens.shadow,
-                border: Border.all(color: active ? Tokens.good : Colors.transparent, width: 2),
+  Widget build(BuildContext context) {
+    final side = AppLayout.of(context).barButton;
+    return Tooltip(
+      message: label,
+      child: Pressable(
+        semanticLabel: label,
+        onTap: onTap,
+        child: Opacity(
+          opacity: onTap == null ? 0.45 : 1,
+          child: Container(
+            width: side,
+            height: side,
+            decoration: BoxDecoration(
+              color: active ? Tokens.goodSoft : Tokens.surface,
+              borderRadius: BorderRadius.circular(Tokens.radiusS),
+              boxShadow: Tokens.shadow,
+              border: Border.all(
+                color: active ? Tokens.good : Colors.transparent,
+                width: 2,
               ),
-              alignment: Alignment.center,
-              child: EmojiArt(emoji, size: 38),
             ),
+            alignment: Alignment.center,
+            child: EmojiArt(emoji, size: side * 0.6),
           ),
         ),
-      );
+      ),
+    );
+  }
 }

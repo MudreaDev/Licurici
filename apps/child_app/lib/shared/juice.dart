@@ -36,10 +36,22 @@ class Juice extends StatefulWidget {
 }
 
 class _JuiceState extends State<Juice> with TickerProviderStateMixin {
-  late final _pop = AnimationController(vsync: this, duration: const Duration(milliseconds: 550));
-  late final _hop = AnimationController(vsync: this, duration: const Duration(milliseconds: 450));
-  late final _shake = AnimationController(vsync: this, duration: const Duration(milliseconds: 420));
-  late final _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400));
+  late final _pop = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 550),
+  );
+  late final _hop = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 450),
+  );
+  late final _shake = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 420),
+  );
+  late final _pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  );
   Timer? _hopTimer;
 
   @override
@@ -60,7 +72,9 @@ class _JuiceState extends State<Juice> with TickerProviderStateMixin {
         if (mounted) _hop.forward(from: 0);
       });
     }
-    if (widget.pulse != old.pulse || widget.enabled != old.enabled) _syncPulse();
+    if (widget.pulse != old.pulse || widget.enabled != old.enabled) {
+      _syncPulse();
+    }
   }
 
   void _syncPulse() {
@@ -85,19 +99,20 @@ class _JuiceState extends State<Juice> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-        animation: Listenable.merge([_pop, _hop, _shake, _pulse]),
-        child: widget.child,
-        builder: (context, child) {
-          final scale = 1 +
-              0.12 * math.sin(math.pi * Curves.easeOut.transform(_pop.value)) +
-              0.035 * (1 - math.cos(2 * math.pi * _pulse.value));
-          final dy = -14 * math.sin(math.pi * _hop.value);
-          final s = _shake.value;
-          final dx = s == 0 ? 0.0 : math.sin(s * math.pi * 6) * 4 * (1 - s);
-          return Transform.translate(
-            offset: Offset(dx, dy),
-            child: Transform.scale(scale: scale, child: child),
-          );
-        },
+    animation: Listenable.merge([_pop, _hop, _shake, _pulse]),
+    child: widget.child,
+    builder: (context, child) {
+      final scale =
+          1 +
+          0.12 * math.sin(math.pi * Curves.easeOut.transform(_pop.value)) +
+          0.035 * (1 - math.cos(2 * math.pi * _pulse.value));
+      final dy = -14 * math.sin(math.pi * _hop.value);
+      final s = _shake.value;
+      final dx = s == 0 ? 0.0 : math.sin(s * math.pi * 6) * 4 * (1 - s);
+      return Transform.translate(
+        offset: Offset(dx, dy),
+        child: Transform.scale(scale: scale, child: child),
       );
+    },
+  );
 }

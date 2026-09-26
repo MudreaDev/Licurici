@@ -6,7 +6,9 @@ import 'package:game_content/game_content.dart';
 
 import '../features/settings/settings.dart';
 
-final voiceManifestProvider = FutureProvider<VoiceManifest>((ref) => VoiceManifest.load());
+final voiceManifestProvider = FutureProvider<VoiceManifest>(
+  (ref) => VoiceManifest.load(),
+);
 
 /// Ce poate rosti aplicația. Interfață separată ca testele să poată folosi o voce „mută”.
 abstract interface class Speaker {

@@ -48,7 +48,8 @@ abstract final class CalmTokens {
 
 const _fontFamily = 'packages/${content.contentPackage}/${content.fontFamily}';
 
-TextStyle _round(double size, FontWeight weight, [Color color = Tokens.ink]) => TextStyle(
+TextStyle _round(double size, FontWeight weight, [Color color = Tokens.ink]) =>
+    TextStyle(
       fontFamily: _fontFamily,
       fontSize: size,
       color: color,

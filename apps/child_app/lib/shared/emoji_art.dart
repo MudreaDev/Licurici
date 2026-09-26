@@ -12,13 +12,13 @@ class EmojiArt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SvgPicture.asset(
-        openMojiAsset(emoji),
-        package: contentPackage,
-        width: size,
-        height: size,
-        semanticsLabel: semanticLabel,
-        excludeFromSemantics: semanticLabel == null,
-        errorBuilder: (context, error, stack) =>
-            Text(emoji, style: TextStyle(fontSize: size * 0.8)),
-      );
+    openMojiAsset(emoji),
+    package: contentPackage,
+    width: size,
+    height: size,
+    semanticsLabel: semanticLabel,
+    excludeFromSemantics: semanticLabel == null,
+    errorBuilder: (context, error, stack) =>
+        Text(emoji, style: TextStyle(fontSize: size * 0.8)),
+  );
 }

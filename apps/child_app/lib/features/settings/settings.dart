@@ -18,13 +18,17 @@ class AppSettings {
   final bool calm;
   final bool voice;
 
-  AppSettings copyWith({Grade? grade, FreePlayLevel? level, bool? calm, bool? voice}) =>
-      AppSettings(
-        grade: grade ?? this.grade,
-        level: level ?? this.level,
-        calm: calm ?? this.calm,
-        voice: voice ?? this.voice,
-      );
+  AppSettings copyWith({
+    Grade? grade,
+    FreePlayLevel? level,
+    bool? calm,
+    bool? voice,
+  }) => AppSettings(
+    grade: grade ?? this.grade,
+    level: level ?? this.level,
+    calm: calm ?? this.calm,
+    voice: voice ?? this.voice,
+  );
 }
 
 class SettingsNotifier extends Notifier<AppSettings> {
@@ -37,4 +41,6 @@ class SettingsNotifier extends Notifier<AppSettings> {
   void toggleVoice() => state = state.copyWith(voice: !state.voice);
 }
 
-final settingsProvider = NotifierProvider<SettingsNotifier, AppSettings>(SettingsNotifier.new);
+final settingsProvider = NotifierProvider<SettingsNotifier, AppSettings>(
+  SettingsNotifier.new,
+);
