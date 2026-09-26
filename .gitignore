@@ -1,0 +1,16 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+Thumbs.db
+src/audio-ro/_tmp.aiff
+
+# unelte / config locale
+.claude/
+.workflows/
+.github/
+.vscode/
+.idea/
+
+# proiect separat (repo propriu: MudreaDev/paper-aquarium)
+paper-aquarium/
