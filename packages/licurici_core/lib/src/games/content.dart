@@ -27,6 +27,64 @@ const colors = [
   NamedColor('negru', 0xFF3B3B3B),
 ];
 
+class Word {
+  const Word(this.word, this.emoji);
+  final String word;
+  final String emoji;
+}
+
+/// Literă + cuvânt-exemplu (unele litere au mai multe cuvinte).
+class LetterWord {
+  const LetterWord(this.letter, this.word, this.emoji);
+  final String letter;
+  final String word;
+  final String emoji;
+}
+
+const alphabet = [
+  LetterWord('A', 'albină', '🐝'), LetterWord('B', 'balon', '🎈'),
+  LetterWord('C', 'casă', '🏠'), LetterWord('D', 'delfin', '🐬'),
+  LetterWord('E', 'elefant', '🐘'), LetterWord('F', 'floare', '🌸'),
+  LetterWord('G', 'girafă', '🦒'), LetterWord('I', 'inimă', '❤️'),
+  LetterWord('J', 'jucărie', '🧸'), LetterWord('L', 'lună', '🌙'),
+  LetterWord('M', 'măr', '🍎'), LetterWord('N', 'nor', '☁️'),
+  LetterWord('O', 'ou', '🥚'), LetterWord('P', 'pește', '🐟'),
+  LetterWord('R', 'rață', '🦆'), LetterWord('S', 'soare', '☀️'),
+  LetterWord('T', 'tobă', '🥁'), LetterWord('U', 'urs', '🐻'),
+  LetterWord('V', 'vulpe', '🦊'), LetterWord('Z', 'zebră', '🦓'),
+  LetterWord('Ș', 'șarpe', '🐍'), LetterWord('B', 'banană', '🍌'),
+  LetterWord('C', 'cireașă', '🍒'), LetterWord('P', 'pisică', '🐱'),
+];
+
+const shapes = [
+  Word('cerc', '🔵'),
+  Word('pătrat', '🟦'),
+  Word('triunghi', '🔺'),
+  Word('stea', '⭐'),
+  Word('inimă', '❤️'),
+  Word('romb', '🔷'),
+];
+
+class Opposite {
+  const Opposite(this.a, this.b);
+  final Word a;
+  final Word b;
+}
+
+const opposites = [
+  Opposite(Word('mare', '🐘'), Word('mic', '🐭')),
+  Opposite(Word('sus', '⬆️'), Word('jos', '⬇️')),
+  Opposite(Word('cald', '☀️'), Word('rece', '❄️')),
+  Opposite(Word('zi', '🌞'), Word('noapte', '🌙')),
+  Opposite(Word('vesel', '😄'), Word('trist', '😢')),
+  Opposite(Word('rapid', '🐇'), Word('încet', '🐢')),
+  Opposite(Word('deschis', '🔓'), Word('închis', '🔒')),
+  Opposite(Word('curat', '🧼'), Word('murdar', '🧦')),
+  Opposite(Word('lung', '🦒'), Word('scurt', '🐛')),
+  Opposite(Word('greu', '🪨'), Word('ușor', '🪶')),
+  Opposite(Word('uscat', '🏜️'), Word('ud', '💧')),
+];
+
 class Emotion {
   const Emotion(this.key, this.emoji, this.label, this.contexts, {this.similar = const []});
   final String key;

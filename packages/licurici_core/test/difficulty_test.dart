@@ -60,7 +60,11 @@ void main() {
 
   group('Grade', () {
     test('parseCodes', () {
-      expect(Grade.parseCodes('G12'), {Grade.gradinita, Grade.clasa1, Grade.clasa2});
+      expect(Grade.parseCodes('G12'), {
+        Grade.gradinita,
+        Grade.clasa1,
+        Grade.clasa2,
+      });
       expect(() => Grade.parseCodes('9'), throwsArgumentError);
     });
   });

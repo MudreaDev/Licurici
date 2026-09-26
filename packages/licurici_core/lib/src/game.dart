@@ -75,14 +75,17 @@ class SceneVisual extends Visual {
 
 // ---------------------------------------------------------------- răspunsuri
 
-/// O variantă de răspuns: text și/sau ilustrație și/sau culoare.
+/// O variantă de răspuns: text și/sau ilustrație și/sau culoare și/sau un grup de obiecte.
 class Choice {
-  const Choice({this.label, this.art, this.color, this.correct = false, this.speak})
-      : assert(label != null || art != null || color != null, 'variantă goală');
+  const Choice({this.label, this.art, this.color, this.objects, this.correct = false, this.speak})
+      : assert(label != null || art != null || color != null || objects != null, 'variantă goală');
 
   final String? label;
   final String? art;
   final int? color;
+
+  /// Un grup de obiecte numărabile (ex. „Comparăm”: varianta ESTE grupa de mere).
+  final ObjectGroup? objects;
   final bool correct;
 
   /// Ce se rostește la atingere (implicit [label]).
@@ -140,8 +143,10 @@ class Lesson {
   /// înainte de prima rundă (fără imagini care apar „cu întârziere” în timpul animațiilor).
   Set<String> get art => {
         for (final r in rounds) ...[
-          for (final c in r.choices)
+          for (final c in r.choices) ...[
             if (c.art != null) c.art!,
+            if (c.objects != null) c.objects!.emoji,
+          ],
           for (final v in r.visuals)
             ...switch (v) {
               EmojiVisual(:final emoji) => [emoji],
@@ -173,6 +178,37 @@ abstract class GameSpec {
 
   /// Lecția gata de jucat: generată + scalată după dificultate.
   Lesson build(GameContext ctx) => scaleLesson(generate(ctx), this, ctx);
+}
+
+/// Baza jocurilor „alege răspunsul”: metadatele vin prin constructor (fără repetiție în
+/// fiecare joc). Clasele: codul compact `G1234` (G = grădiniță).
+abstract class ChoiceGame extends GameSpec {
+  const ChoiceGame({
+    required this.id,
+    required this.name,
+    required this.emoji,
+    required this.description,
+    required this.subject,
+    required this.gradeCodes,
+  });
+
+  @override
+  final String id;
+  @override
+  final String name;
+  @override
+  final String emoji;
+  @override
+  final String description;
+  @override
+  final Subject subject;
+  final String gradeCodes;
+
+  @override
+  Set<Grade> get grades => Grade.parseCodes(gradeCodes);
+
+  @override
+  Mechanic get mechanic => Mechanic.choice;
 }
 
 /// Aplică scalarea universală a motorului (port din `engine.js`):

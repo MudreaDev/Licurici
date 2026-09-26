@@ -27,29 +27,43 @@ class _FakeGame extends GameSpec {
 
   @override
   Lesson generate(GameContext ctx) => Lesson(
-        title: 'Test',
-        rounds: [
-          for (var i = 0; i < 10; i++)
-            ChoiceRound(prompt: 'Runda $i', choices: [
-              const Choice(label: 'corect', correct: true),
-              for (var j = 0; j < 4; j++) Choice(label: 'greșit $j'),
-            ]),
-        ],
-      );
+    title: 'Test',
+    rounds: [
+      for (var i = 0; i < 10; i++)
+        ChoiceRound(
+          prompt: 'Runda $i',
+          choices: [
+            const Choice(label: 'corect', correct: true),
+            for (var j = 0; j < 4; j++) Choice(label: 'greșit $j'),
+          ],
+        ),
+    ],
+  );
 }
 
 void main() {
-  GameContext ctx(int tier) =>
-      GameContext(difficulty: Difficulty(tier), grade: Grade.clasa1, random: Random(42));
+  GameContext ctx(int tier) => GameContext(
+    difficulty: Difficulty(tier),
+    grade: Grade.clasa1,
+    random: Random(42),
+  );
 
   test('taie rundele și variantele după tier, păstrând corectul', () {
     for (var tier = 1; tier <= 8; tier++) {
       final c = ctx(tier);
       const game = _FakeGame();
       final lesson = scaleLesson(game.generate(c), game, c);
-      expect(lesson.rounds.length, c.difficulty.roundCount, reason: 'tier $tier');
+      expect(
+        lesson.rounds.length,
+        c.difficulty.roundCount,
+        reason: 'tier $tier',
+      );
       for (final r in lesson.rounds) {
-        expect(r.choices.length, c.difficulty.optionCount, reason: 'tier $tier');
+        expect(
+          r.choices.length,
+          c.difficulty.optionCount,
+          reason: 'tier $tier',
+        );
         expect(r.choices.where((ch) => ch.correct).length, 1);
       }
     }
@@ -63,19 +77,28 @@ void main() {
 
   test('fixedChoices nu este tăiat', () {
     final c = ctx(1);
-    final round = ChoiceRound(prompt: 'p', fixedChoices: true, choices: [
-      const Choice(label: 'a', correct: true),
-      const Choice(label: 'b'),
-      const Choice(label: 'c'),
-    ]);
-    final lesson = scaleLesson(Lesson(title: 't', rounds: [round]), const _FakeGame(), c);
+    final round = ChoiceRound(
+      prompt: 'p',
+      fixedChoices: true,
+      choices: [
+        const Choice(label: 'a', correct: true),
+        const Choice(label: 'b'),
+        const Choice(label: 'c'),
+      ],
+    );
+    final lesson = scaleLesson(
+      Lesson(title: 't', rounds: [round]),
+      const _FakeGame(),
+      c,
+    );
     expect(lesson.rounds.single.choices.length, 3);
   });
 
   group('AdaptiveRule', () {
     const rule = AdaptiveRule();
-    List<bool> results(int correct, int total) =>
-        [for (var i = 0; i < total; i++) i < correct];
+    List<bool> results(int correct, int total) => [
+      for (var i = 0; i < total; i++) i < correct,
+    ];
 
     test('fereastră incompletă → păstrează', () {
       expect(rule.decide(results(0, 19)), AdaptiveDecision.keep);
