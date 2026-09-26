@@ -67,6 +67,20 @@ void main() {
     }
   });
 
+  test('Lesson.art adună ilustrațiile din variante și stimuli', () {
+    final lesson = Lesson(title: 't', rounds: [
+      ChoiceRound(prompt: 'p', visuals: const [
+        EmojiVisual('😊'),
+        ObjectsVisual([ObjectGroup('🍎', 2), ObjectGroup('🍎', 1)]),
+        TextVisual('1 + 2'),
+      ], choices: const [
+        Choice(label: 'a', art: '🐶', correct: true),
+        Choice(label: 'b'),
+      ]),
+    ]);
+    expect(lesson.art, {'😊', '🍎', '🐶'});
+  });
+
   test('gamesForGrade grupează pe materii', () {
     final g = gamesForGrade(Grade.gradinita);
     expect(g.keys, containsAll([Subject.matematica, Subject.forme, Subject.emotii]));

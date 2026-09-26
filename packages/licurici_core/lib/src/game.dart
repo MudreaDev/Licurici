@@ -135,6 +135,21 @@ class Lesson {
   final String title;
   final String? instruction;
   final List<ChoiceRound> rounds;
+
+  /// Toate ilustrațiile (emoji → OpenMoji) folosite în lecție, ca UI-ul să le pre-încarce
+  /// înainte de prima rundă (fără imagini care apar „cu întârziere” în timpul animațiilor).
+  Set<String> get art => {
+        for (final r in rounds) ...[
+          for (final c in r.choices)
+            if (c.art != null) c.art!,
+          for (final v in r.visuals)
+            ...switch (v) {
+              EmojiVisual(:final emoji) => [emoji],
+              ObjectsVisual(:final groups) => groups.map((g) => g.emoji),
+              _ => const <String>[],
+            },
+        ],
+      };
 }
 
 // ---------------------------------------------------------------- jocuri
