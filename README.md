@@ -2,7 +2,7 @@
 
 > **Licurici** = aplicație **Flutter** pentru copii (grădiniță + clasele 1–4, curriculum Moldova/România),
 > prietenoasă cu autismul, cu **~58 de jocuri educative**, care funcționează **offline** și se
-> sincronizează cu un **backend dockerizat** (NestJS + PostgreSQL + Redis + BullMQ + MinIO),
+> sincronizează cu un **backend dockerizat** (NestJS + PostgreSQL + Redis + BullMQ + stocare S3),
 > plus un **panou web pentru părinți / terapeuți**. Conform **GDPR** și **Legii RM nr. 195/2024**
 > privind protecția datelor cu caracter personal.
 
@@ -46,13 +46,15 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 | Zonă | Stare | Note |
 |------|-------|------|
 | Prototip desktop (Electron, JS) | ✅ funcțional | 44 jocuri, motor de dificultate, Aventură, voce RO. **Referință** pentru portare (vezi §3). |
-| Monorepo țintă (`apps/`, `backend/`, `infra/`, `docs/`) | ⬜ de creat | Pasul 0 din roadmap: mută prototipul în `legacy/electron/`. |
-| Aplicația copil — Flutter | ⬜ | Android + iOS + Windows + macOS (+ web demo). |
+| Monorepo (`apps/`, `packages/`, `backend/`, `infra/`, `docs/`, `legacy/`) | ✅ | Workspace Dart (pub workspaces) la rădăcină. |
+| `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS (teste de paritate), regulă adaptivă, modelul jocurilor, 4 generatoare. 45 teste. |
+| `packages/game_content` | 🟨 | 329 SVG OpenMoji, 433 clipuri voce RO + `voice.json`, font Nunito. Conținutul jocurilor e încă în Dart (`content.dart`) → de mutat în JSON. |
+| Aplicația copil — Flutter | 🟨 | Ecran principal (clase, materii), mecanica `choice` cu animații (§15.1), mascota animată, voce, modul calm. 4 jocuri: numărăm, adunăm, culori, emoții. 2 teste de widget. Setările sunt în memorie (Drift urmează). |
 | Panou părinte/terapeut — Flutter Web | ⬜ | |
-| Backend NestJS (API + worker) | ⬜ | |
-| Docker Compose (dev + prod) | ⬜ | postgres, redis, minio, api, worker, dashboard, traefik, mailpit. |
-| GDPR (consimțământ, export, ștergere, documente) | ⬜ | §13. |
-| Documente ADR / cercetare pentru teză | ⬜ | `docs/adr/`, `docs/research/` — §7, §23. |
+| Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrare inițială, `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. 6 teste. Fără auth/sync încă. |
+| Docker Compose (dev) | 🟨 | postgres, redis, storage (RustFS), migrate, api, worker, mailpit. **Netestat încă**: Docker nu e instalat pe mașina de dezvoltare. Prod (Traefik, TLS) — de făcut. |
+| GDPR (consimțământ, export, ștergere, documente) | ⬜ | §13. Schema are deja tabelele `consents`, soft delete, audit. |
+| Documente ADR / cercetare pentru teză | 🟨 | 22 ADR-uri în `docs/adr/`. `docs/research/` — de început. |
 
 **Termen:** 70% din aplicație gata la finalul semestrului 1 (**decembrie 2026**). Teza propriu-zisă — semestrul 2.
 
@@ -148,7 +150,7 @@ flowchart LR
     WK["Worker NestJS\n(BullMQ)"]
     PG[(PostgreSQL)]
     RD[(Redis\ncache · cozi · pub/sub\nrate-limit · sesiuni)]
-    S3[(MinIO\nS3: content packs,\nexporturi GDPR)]
+    S3[(Stocare S3\nRustFS dev / S3 UE prod\ncontent packs, exporturi)]
   end
 
   subgraph Ext["Servicii externe"]
@@ -185,8 +187,8 @@ flowchart LR
    (`child_skill_stats`) și invalidează cache-ul Redis.
 4. **Live** — terapeutul/părintele deschide „Sesiune live” în dashboard; progresul apare prin WebSocket (Redis pub/sub
    permite mai multe instanțe API).
-5. **GDPR** — „Descarcă datele” → job `gdpr.export` → ZIP în MinIO + link temporar pe e-mail; „Șterge contul” → job `gdpr.erase`.
-6. **Conținut** — pachete de conținut versionate (`content-pack-ro-v3.zip`) servite din MinIO; aplicația are un pachet de bază inclus.
+5. **GDPR** — „Descarcă datele” → job `gdpr.export` → ZIP în stocarea S3 + link temporar pe e-mail; „Șterge contul” → job `gdpr.erase`.
+6. **Conținut** — pachete de conținut versionate (`content-pack-ro-v3.zip`) servite din stocarea S3; aplicația are un pachet de bază inclus.
 
 ---
 
@@ -215,15 +217,17 @@ Licurici/
 │  ├─ licurici_ui/            design system: tokeni, componente, iconițe, animații
 │  ├─ licurici_api_client/    client generat din OpenAPI (openapi-generator / dart)
 │  └─ game_content/           conținut: JSON (RO/EN), audio mp3, SVG OpenMoji, scene
-├─ backend/
-│  ├─ api/                    NestJS — module: auth, users, children, consent, sync,
-│  │                          stats, content, live, gdpr, health
-│  ├─ worker/                 NestJS standalone — procesoare BullMQ
-│  └─ prisma/                 schema + migrări (sau typeorm/drizzle — vezi ADR-07)
+├─ backend/                  NestJS — un proiect, două procese (ADR-05)
+│  ├─ src/main.ts             API (REST + WebSocket)
+│  ├─ src/worker.ts           worker (procesoare BullMQ)
+│  ├─ src/<modul>/            health, stats, queues, prisma, redis, config
+│  │                          (urmează: auth, children, consent, sync, content, live, gdpr)
+│  ├─ prisma/                 schema + migrări SQL
+│  └─ Dockerfile              multi-stage: runtime (api/worker) + migrate
 ├─ infra/
 │  ├─ docker-compose.yml      dev
 │  ├─ docker-compose.prod.yml prod (traefik, TLS, fără porturi DB expuse)
-│  ├─ traefik/  postgres/  redis/  minio/
+│  ├─ .env.example           parolele de dezvoltare (copiat în infra/.env, ignorat de git)
 │  └─ backup/                 scripturi pg_dump + rotație
 ├─ tools/
 │  ├─ gen-voice/              generare audio (Azure Speech) din listele de replici
@@ -237,7 +241,7 @@ Licurici/
 └─ legacy/electron/           prototipul actual (referință, nu se mai dezvoltă)
 ```
 
-Unealtă monorepo Dart: **Melos** (sau *pub workspaces*, nativ din Dart 3.6). Backend: **pnpm workspaces**.
+Monorepo Dart: **pub workspaces** (nativ din Dart 3.6, un singur `pubspec.lock` la rădăcină). Backend: npm. `licurici_ui` și `licurici_api_client` încă nu există: design system-ul trăiește deocamdată în `apps/child_app/lib/app` și `lib/shared`, iar extragerea în pachet se face când apare dashboard-ul (al doilea consumator).
 
 ---
 
@@ -252,18 +256,18 @@ Unealtă monorepo Dart: **Melos** (sau *pub workspaces*, nativ din Dart 3.6). Ba
 | Stocare locală | **Drift** (SQLite) + `flutter_secure_storage` pt. token-uri | | 04 |
 | Rețea | **dio** + client generat din OpenAPI | | 10 |
 | Modele | **freezed** + `json_serializable` | | — |
-| Audio | **just_audio** (voce), `flutter_soloud` (efecte, latență mică) | | 16 |
+| Audio | **audioplayers** (voce; suport Windows fără pachete extra), `flutter_soloud` (efecte, latență mică — ulterior) | | 16 |
 | Ilustrații | **flutter_svg** (OpenMoji), `CustomPainter` pentru scene | | 19 |
 | Mascota + personaje animate | **Rive** (state machines) | | 21 |
 | Animații UI / efecte | **flutter_animate** + animații implicite Flutter | | 21 |
 | Sincronizare în fundal | **workmanager** + `connectivity_plus` | | 11 |
 | Backend | **NestJS** (TypeScript) pe **Node.js 24 LTS** | 11.x | 06 |
-| ORM | **Prisma** | | 07 |
+| ORM | **Prisma 7** (`@prisma/adapter-pg`) | 7.10 | 07 |
 | Bază de date | **PostgreSQL** | 17/18 | 07 |
 | Cache / broker | **Redis** (sau Valkey — vezi ADR-08) | 8.x | 08, 09 |
 | Cozi de job-uri | **BullMQ** | 5.x | 09 |
 | Timp real | **Socket.IO** + `@socket.io/redis-adapter` | | 10 |
-| Stocare obiecte | **MinIO** (S3-compatibil) | | 15 |
+| Stocare obiecte | **S3-compatibil**: RustFS (dev, Docker), S3 administrat în UE (prod) | | 15 |
 | Reverse proxy | **Traefik** (TLS Let’s Encrypt automat) | 3.x | 17 |
 | Observabilitate | **pino** (loguri JSON) + **Sentry** + `/health`, opțional Prometheus + Grafana | | 18 |
 | Containere | **Docker** + **Docker Compose** | | 14 |
@@ -284,149 +288,35 @@ Status: Propus | Acceptat | Înlocuit de ADR-0YY      Data: AAAA-LL-ZZ
 ## Alternative      — ce altceva era posibil
 ## De ce nu         — pentru fiecare alternativă, motivul concret
 ## Când am alege altfel — condițiile în care alternativa devine alegerea corectă
-## Consecințe       — ce câștigăm, ce plătim (trade-off-uri), riscuri
+## Consecințe       — (opțional) ce câștigăm, ce plătim, riscuri
 ```
 
-Mai jos, rezumatul fiecărei decizii (baza pentru fișierele ADR și pentru susținere).
+Fiecare decizie are fișierul ei în [`docs/adr/`](docs/adr/). Rezumat:
 
-### ADR-01 — Flutter pentru aplicația copilului
-- **Decizie:** Flutter.
-- **De ce:** un singur cod pentru Android, iOS, Windows, macOS (și web demo); randare proprie (Skia/Impeller) → **aspect identic pe toate platformele** (esențial pentru predictibilitate la copiii cu TSA); animații la 60/120 fps; hot reload → iterație rapidă pe UI; ecosistem bun pentru jocuri 2D (Flame, Rive). Cerință a proiectului.
-- **Alternative:** React Native; Kotlin Multiplatform (Compose MP); Unity; nativ (Swift + Kotlin); păstrarea Electron.
-- **De ce nu:** RN — UI prin componente native → diferențe vizuale între platforme, animații complexe mai costisitoare; KMP/Compose MP — iOS/desktop încă mai puțin maturi, ecosistem de joc mic; Unity — excelent pentru jocuri 3D, dar greu pentru UI de tip aplicație (formulare, setări, accesibilitate), build-uri mari, licențiere; nativ — de 2× codul; Electron — doar desktop, ~170 MB, fără mobil (unde sunt copiii).
-- **Când am alege altfel:** Unity dacă jocurile devin 3D/fizică complexă; nativ dacă avem nevoie de API-uri de platformă profunde (ex. Screen Time, AAC de sistem); RN dacă echipa e deja web/React.
-
-### ADR-02 — Widget-uri Flutter ca bază, Flame doar unde e nevoie
-- **Decizie:** majoritatea jocurilor (alege, trage-și-plasează, memorie, secvențe) = widget-uri Flutter; **Flame** doar pentru jocurile cu buclă de joc (labirint, prinde obiecte, trasare cu particule).
-- **De ce:** jocurile educative sunt în mare parte „UI cu reguli”; widget-urile dau accesibilitate (Semantics), layout responsiv și teste de widget gratis. Flame adaugă game loop, coliziuni, sprite-uri — util doar unde e nevoie.
-- **Alternative:** totul în Flame; totul în widget-uri; Rive state machines pentru jocuri.
-- **De ce nu:** totul în Flame → pierdem accesibilitatea și testarea de widget; totul în widget-uri → labirintul/fizica devin cod stângaci.
-- **Când altfel:** dacă >50% din jocuri devin arcade → Flame peste tot.
-
-### ADR-03 — Riverpod + go_router
-- **Decizie:** Riverpod pentru stare și injecție de dependențe; go_router pentru navigare declarativă (deep links în dashboard web).
-- **De ce:** compile-safe, testabil fără `BuildContext`, override ușor în teste (fake repository), stare asincronă (`AsyncValue`) pentru încărcări.
-- **Alternative:** BLoC; Provider; GetX; setState + InheritedWidget.
-- **De ce nu:** BLoC — mult boilerplate pentru ~58 de jocuri mici; Provider — predecesorul Riverpod, limitări (dependență de context); GetX — „magie” globală, greu de testat și argumentat; setState — nu scalează.
-- **Când altfel:** BLoC în echipe mari care vor fluxuri eveniment→stare foarte stricte și auditabile.
-
-### ADR-04 — Offline-first cu Drift (SQLite) local
-- **Decizie:** SQLite prin Drift; datele copilului trăiesc **întâi pe dispozitiv**.
-- **De ce:** copiii folosesc tablete fără internet (mașină, grădiniță); confidențialitate implicită (fără cont = nimic nu pleacă de pe dispozitiv); Drift = SQL tipizat, migrații, stream-uri reactive, funcționează pe toate platformele (web prin WASM).
-- **Alternative:** Hive/Isar (NoSQL); shared_preferences; ObjectBox; Firebase Firestore offline.
-- **De ce nu:** Hive/Isar — mentenanță incertă, interogări limitate pentru statistici; shared_preferences — doar chei simple; ObjectBox — licență/sincronizare comercială; Firestore — date la Google (transfer SUA, GDPR pentru copii), vendor lock-in.
-- **Când altfel:** Firestore/Supabase pentru un MVP rapid fără cerințe stricte de confidențialitate.
-
-### ADR-05 — Monolit modular + worker (nu microservicii)
-- **Decizie:** un singur serviciu API NestJS împărțit în **module cu granițe clare** (auth, children, sync, stats, gdpr, content, live) + un **worker** separat pentru job-uri.
-- **De ce:** o echipă de 1 persoană, domeniu mic; o singură bază de date tranzacțională; deploy simplu; modulele comunică prin interfețe/evenimente interne → pot fi extrase ulterior. Worker-ul separat izolează munca grea (rapoarte, exporturi, e-mail) de latența API-ului și scalează independent (`docker compose up --scale worker=3`).
-- **Alternative:** microservicii (auth-service, stats-service…) cu API gateway; serverless (Lambda/Cloud Functions); BaaS (Firebase/Supabase).
-- **De ce nu:** microservicii — complexitate operațională (N deploy-uri, tracing distribuit, consistență eventuală, date duplicate) fără beneficiu la această scară; serverless — cold starts, WebSocket dificil, vendor lock-in, greu de rulat local în Docker; BaaS — control redus asupra datelor copiilor, locația datelor.
-- **Când altfel:** microservicii când echipe diferite dețin domenii diferite sau o componentă are profil de încărcare radical diferit (ex. un serviciu de recunoaștere vocală cu GPU).
-
-### ADR-06 — NestJS (TypeScript) pentru backend
-- **Decizie:** NestJS pe Node.js 24 LTS.
-- **De ce:** arhitectură modulară din fabrică (module, DI, guards, interceptors, pipes) — se potrivește cu ADR-05; suport oficial pentru BullMQ, WebSocket (Socket.IO), OpenAPI (`@nestjs/swagger`), Redis, microservicii (dacă vreodată); TypeScript = tipuri stricte; I/O asincron potrivit pentru sync/WebSocket.
-- **Alternative:** ASP.NET Core (C#); Spring Boot (Java/Kotlin); Go (Gin/Fiber); FastAPI/Django (Python); Dart pe server (Serverpod, Dart Frog).
-- **De ce nu:** ASP.NET/Spring — excelente, dar mai verbose pentru un proiect mic și ecosistem de cozi mai greu (ar cere RabbitMQ); Go — performanță mare dar framework-uri minimaliste (DI, validare, OpenAPI de făcut manual); Python — tipare mai slabe, concurență mai puțin naturală pentru WebSocket; Dart server — un singur limbaj (plus mare), dar ecosistem mic, comunitate mică, mai greu de argumentat pentru producție.
-- **Când altfel:** Serverpod dacă vrem să partajăm modelele Dart 1:1 cu Flutter; Go dacă latența/costul pe request devin critice; .NET/Spring în medii enterprise existente.
-
-### ADR-07 — PostgreSQL (+ Prisma)
-- **Decizie:** PostgreSQL; ORM Prisma cu migrări versionate.
-- **De ce:** date relaționale clare (părinte → copii → sesiuni → evenimente); tranzacții ACID (consimțământ + creare profil); **JSONB** pentru payload-ul variabil al evenimentelor de joc; indexuri parțiale, partiționare pe timp pentru `game_events`; `pgcrypto` pentru criptare la nivel de coloană.
-- **Alternative:** MongoDB; MySQL/MariaDB; SQLite pe server; ORM-uri: TypeORM, Drizzle, MikroORM.
-- **De ce nu:** MongoDB — relațiile și rapoartele agregate devin greoaie, tranzacțiile multi-document sunt adăugate târziu; MySQL — JSON mai slab, fără indexuri parțiale; SQLite server — un singur scriitor. TypeORM — bug-uri istorice, tipare slabe; Drizzle — foarte bun, dar mai tânăr (alternativă validă).
-- **Când altfel:** Mongo pentru conținut foarte eterogen fără relații; TimescaleDB (extensie Postgres) dacă evenimentele cresc la sute de milioane.
-
-### ADR-08 — Redis: roluri multiple, licență
-- **Decizie:** Redis 8 (sau **Valkey**, fork BSD compatibil) pentru: cache, sesiuni/refresh tokens, rate limiting, cozi (BullMQ), pub/sub (WebSocket), lock-uri, idempotență. Detalii în §10.
-- **De ce:** în memorie → latență sub-milisecundă; structuri de date bogate (hash, sorted set, streams); o singură piesă de infrastructură acoperă 6 nevoi → mai puține componente de operat.
-- **Alternative:** Memcached; cache în proces (LRU); Postgres pentru tot (LISTEN/NOTIFY, `SKIP LOCKED` pentru cozi); KeyDB/Dragonfly.
-- **De ce nu:** Memcached — doar cheie-valoare, fără persistență, fără pub/sub/streams; cache în proces — nu se partajează între instanțe; Postgres-pentru-tot — funcționează la scară mică, dar încarcă baza tranzacțională cu trafic efemer; Dragonfly — licență BSL.
-- **Când altfel:** Postgres-only pentru un MVP minimal; Valkey dacă licența AGPL/RSAL a Redis 8 e o problemă pentru distribuire comercială (API-ul e identic → schimbare de imagine Docker).
-
-### ADR-09 — Message broker: BullMQ peste Redis
-- **Decizie:** **BullMQ** (cozi de job-uri peste Redis Streams/liste) pentru comunicarea asincronă API → worker.
-- **De ce:** avem nevoie de **job queue** (task-uri cu retry, backoff exponențial, prioritate, întârziere, job-uri programate, dead-letter), nu de un bus de evenimente pentru zeci de servicii; refolosește Redis (deja cerut); dashboard de monitorizare (Bull Board); integrare oficială NestJS.
-- **Alternative:** RabbitMQ; Apache Kafka; NATS / JetStream; Redis Streams „brut”; Postgres (pg-boss).
-- **De ce nu:** RabbitMQ — rutare puternică (exchanges, topic), dar încă o componentă de operat pentru un singur consumator; Kafka — log distribuit pentru debit foarte mare și event sourcing, supradimensionat (ZooKeeper/KRaft, partiții) pentru câteva mii de evenimente/zi; NATS — excelent pentru microservicii, dar semantica de job (retry/backoff/programare) trebuie construită; Redis Streams brut — reinventăm ce oferă BullMQ; pg-boss — bun, dar încarcă Postgres.
-- **Când altfel:** RabbitMQ când apar consumatori în alte limbaje sau rutare complexă; Kafka când trebuie reluat istoricul evenimentelor (event sourcing, analytics la scară); NATS în arhitectură de microservicii.
-- **Cozi definite:** `stats` (recalcul statistici), `mail` (e-mailuri), `reports` (raport săptămânal, cron), `gdpr` (export/ștergere), `content` (construire pachete), `push` (notificări părinți).
-
-### ADR-10 — Comunicare: REST + OpenAPI, WebSocket, cozi
-- Vezi §8 pentru detalii. **De ce nu GraphQL:** clientul copilului face aproape doar sync în lot; GraphQL adaugă complexitate (N+1, caching) fără beneficiu. **De ce nu gRPC:** suport slab în browser (dashboard web), debugging mai greu; ar avea sens între microservicii interne.
-- **Când altfel:** GraphQL dacă dashboard-ul ar avea multe ecrane cu nevoi de date foarte diferite; gRPC pentru servicii interne cu latență critică.
-
-### ADR-11 — Sincronizare: jurnal de evenimente append-only + Outbox + Idempotency Key
-- **Decizie:** rezultatele de joc sunt **evenimente imuabile** (UUIDv7 generat pe client) → nu există conflicte de scriere. Setările/profilul → *last-write-wins* pe câmp cu `updatedAt`.
-- **De ce:** cel mai simplu model corect pentru offline; reîncercările sunt sigure (serverul ignoră ID-urile deja primite); UUIDv7 e ordonabil în timp → indexuri eficiente.
-- **Alternative:** CRDT-uri; sincronizare de stare completă (snapshot); soluții gata (PowerSync, ElectricSQL, Firebase).
-- **De ce nu:** CRDT — util pentru editare colaborativă, aici nu există editare concurentă a aceluiași obiect; snapshot — pierde istoricul, trafic mare; soluții gata — dependență externă, locația datelor.
-- **Când altfel:** CRDT dacă părintele și terapeutul ar edita simultan același plan de lucru.
-
-### ADR-12 — Autentificare: doar părinții au conturi
-- **Decizie:** conturile sunt ale **adulților** (e-mail + parolă Argon2id, sau Google/Apple Sign-In). Copilul are un **profil** (poreclă + avatar), fără credențiale, fără e-mail. Access token JWT scurt (15 min) + refresh token opac, rotit, stocat în Redis (revocare imediată). **Poartă parentală** în aplicație (ex. „ține apăsat 3 s” + întrebare pentru adulți) pentru zona de setări/cont.
-- **De ce:** minimizarea datelor copilului (GDPR art. 5, 8, 25); consimțământul trebuie dat de părinte sub 14 ani (Legea 195/2024); cerințele Google Play Families și Apple Kids (poartă parentală înainte de link-uri externe/cumpărături).
-- **Alternative:** conturi pentru copii; sesiuni server clasice (cookie); Auth-as-a-service (Auth0, Firebase Auth, Keycloak).
-- **De ce nu:** conturi copii — date în plus fără beneficiu; sesiuni cookie — mai puțin potrivite pentru aplicația mobilă; Auth0/Firebase — date în SUA, cost; Keycloak — foarte bun dar greu (JVM, configurare) pentru un proiect mic.
-- **Când altfel:** Keycloak dacă apar instituții (grădinițe) cu SSO propriu.
-
-### ADR-13 — Dashboard în Flutter Web
-- **Decizie:** panoul părinte/terapeut în Flutter Web.
-- **De ce:** refolosim `licurici_ui`, `licurici_core`, modelele și clientul API; un singur limbaj; grafice cu `fl_chart`.
-- **Alternative:** React/Next.js; Angular; Vue.
-- **De ce nu:** ar dubla modelele, componentele și testele; SEO nu contează (panou autentificat).
-- **Când altfel:** React/Next dacă panoul devine un site public cu SEO sau o echipă web separată îl dezvoltă. Dezavantaj asumat: bundle inițial mai mare (~2 MB) → mitigat prin caching și `--wasm`.
-
-### ADR-14 — Docker Compose (nu Kubernetes)
-- **Decizie:** Docker pentru toate serviciile; Compose pentru dev și prod (un VPS).
-- **De ce:** mediu reproductibil („la mine merge” dispare), onboarding cu o comandă, paritate dev/prod, imagini multi-stage mici (Node alpine/distroless).
-- **Alternative:** Kubernetes (k3s); PaaS (Render, Fly.io, Railway); instalare directă pe VM.
-- **De ce nu:** K8s — supradimensionat pentru un nod; PaaS — cost, date în afara controlului; instalare directă — nereproductibil.
-- **Când altfel:** k3s/K8s când avem nevoie de auto-scalare pe mai multe noduri sau zero-downtime la scară.
-
-### ADR-15 — MinIO (S3) pentru conținut și exporturi
-- **Decizie:** fișierele mari (pachete de conținut, audio, exporturi GDPR) stau în MinIO, servite prin URL-uri pre-semnate cu expirare.
-- **De ce:** API S3 standard → migrare ușoară la orice cloud; nu încărcăm Postgres cu blob-uri; link-uri temporare = securitate pentru exporturi.
-- **Alternative:** sistem de fișiere local; AWS S3 / Cloudflare R2; Postgres `bytea`.
-- **Când altfel:** R2/S3 în producție la scară (CDN, durabilitate), cu regiune UE.
-
-### ADR-16 — Voce: TTS neural pre-generat la build (Azure Speech)
-- **Decizie:** replicile se generează **la build** cu Azure AI Speech (voce `ro-RO-AlinaNeural`, `en-US-JennyNeural`) și se livrează ca MP3/OGG în pachetele de conținut. Replicile dinamice (ex. numele copilului) se compun din fragmente.
-- **De ce:** voce naturală fără internet; **nicio dată a copilului nu pleacă spre un serviciu extern la rulare**; cost ~0 (nivelul gratuit acoperă generarea). Prototipul folosea `edge-tts` (endpoint neoficial) — pentru un produs/teză folosim API-ul oficial, cu cheie și termeni clari.
-- **Alternative:** TTS de pe dispozitiv (`flutter_tts`); TTS în cloud la rulare; înregistrări cu actor.
-- **De ce nu:** TTS dispozitiv — vocile românești lipsesc sau sună robotic pe multe dispozitive; cloud la rulare — necesită internet + trimite text (posibil numele copilului) la terți; actor — cost, greu de extins.
-- **Când altfel:** TTS on-device neural (ex. modele Piper) dacă devine suficient de bun în română → elimină complet serviciul extern.
-
-### ADR-17 — Traefik ca reverse proxy
-- **Decizie:** Traefik (TLS automat Let’s Encrypt, rutare pe etichete Docker, rate limit de bază, headere de securitate).
-- **Alternative:** Nginx; Caddy; HAProxy.
-- **De ce nu:** Nginx — configurare manuală a certificatelor/rutelor; Caddy — la fel de valid (mai simplu), Traefik câștigă prin descoperirea automată a containerelor.
-- **Când altfel:** Nginx pentru control fin/performanță la fișiere statice mari.
-
-### ADR-18 — Observabilitate
-- **Decizie:** loguri JSON structurate (pino) cu `requestId`, **fără PII**; Sentry (regiune UE, scrubbing PII) pentru erori; endpoint `/health` (liveness/readiness pentru Postgres, Redis, MinIO); Bull Board pentru cozi; opțional Prometheus + Grafana (metrici HTTP, lungimea cozilor).
-- **Alternative:** ELK/Loki stack complet; OpenTelemetry + Jaeger; nimic.
-- **Când altfel:** OpenTelemetry + tracing distribuit dacă trecem la microservicii.
-
-### ADR-19 — Jocuri ca date + mecanici reutilizabile
-- **Decizie:** fiecare joc = `GameSpec` (metadate + generator de runde) peste un număr mic de **mecanici** (§15). Conținutul (cuvinte, imagini, audio) = JSON versionat în `game_content`.
-- **De ce:** 58 de jocuri peste ~9 mecanici → UI/accesibilitate/recompense scrise o singură dată; conținutul poate fi actualizat fără release în magazin (content packs); testare pe generator (pur Dart).
-- **Alternative:** fiecare joc scris de la zero; un DSL/scripting (Lua); jocuri web încapsulate (WebView).
-- **Când altfel:** jocuri scrise individual doar pentru cele cu mecanici unice (labirint, colorare).
-
-### ADR-20 — Găzduire în UE
-- **Decizie:** VPS în UE (ex. Hetzner, Germania) sau furnizor din RM; backup-uri criptate în altă locație UE.
-- **De ce:** Legea 195/2024 și GDPR permit liber transferul către SEE; evităm transferuri în SUA pentru datele copiilor.
-- **Când altfel:** găzduire în RM dacă o instituție publică (ex. minister) o cere.
-
-### ADR-21 — Animații: Rive + flutter_animate + Flame (strat pe strat)
-- **Decizie:** Rive pentru personaje și obiecte cu stări (mascota, emoții, ceas); `flutter_animate` și animațiile implicite pentru efectele de UI; Flame doar pentru jocurile cu buclă (ADR-02). Toate trec prin `MotionPolicy`, ca modul calm să funcționeze peste tot.
-- **De ce:** Rive are **state machines** (idle → bucurie → încurajare, controlate din cod), fișiere mici (zeci de KB) și randare vectorială clară la orice rezoluție. `flutter_animate` înlocuiește sute de `AnimationController` cu cod declarativ scurt.
-- **Alternative:** Lottie; sprite sheets (PNG); doar animații Flutter scrise manual; Spine.
-- **De ce nu:** Lottie redă doar „filme” After Effects, fără state machine interactivă, și are fișiere mai mari. Sprite sheets sunt grele în MB și se pixelizează pe tablete mari. Animațiile manuale înseamnă mult cod repetitiv. Spine e licență comercială, gândit pentru jocuri.
-- **Când altfel:** Lottie dacă primim animații gata făcute de la un designer în After Effects; sprite sheets pentru stil pixel-art.
-- **Consecințe:** trebuie învățat editorul Rive (gratuit pentru uz individual). Animațiile personajelor sunt active separate și se versionează în `game_content`.
+| ADR | Decizie |
+|-----|---------|
+| [ADR-001](docs/adr/ADR-001-flutter-pentru-aplicatia-copilului.md) | Flutter pentru aplicația copilului |
+| [ADR-002](docs/adr/ADR-002-widget-uri-flutter-ca-baza-flame-doar-unde-e-nevoi.md) | Widget-uri Flutter ca bază, Flame doar unde e nevoie |
+| [ADR-003](docs/adr/ADR-003-riverpod-go-router.md) | Riverpod + go_router |
+| [ADR-004](docs/adr/ADR-004-offline-first-cu-drift-sqlite-local.md) | Offline-first cu Drift (SQLite) local |
+| [ADR-005](docs/adr/ADR-005-monolit-modular-worker-nu-microservicii.md) | Monolit modular + worker (nu microservicii) |
+| [ADR-006](docs/adr/ADR-006-nestjs-typescript-pentru-backend.md) | NestJS (TypeScript) pentru backend |
+| [ADR-007](docs/adr/ADR-007-postgresql-prisma.md) | PostgreSQL (+ Prisma) |
+| [ADR-008](docs/adr/ADR-008-redis-roluri-multiple-licenta.md) | Redis: roluri multiple, licență |
+| [ADR-009](docs/adr/ADR-009-message-broker-bullmq-peste-redis.md) | Message broker: BullMQ peste Redis |
+| [ADR-010](docs/adr/ADR-010-comunicare-rest-openapi-websocket-cozi.md) | Comunicare: REST + OpenAPI, WebSocket, cozi |
+| [ADR-011](docs/adr/ADR-011-sincronizare-jurnal-de-evenimente-append-only-outb.md) | Sincronizare: jurnal de evenimente append-only + Outbox + Idempotency Key |
+| [ADR-012](docs/adr/ADR-012-autentificare-doar-parintii-au-conturi.md) | Autentificare: doar părinții au conturi |
+| [ADR-013](docs/adr/ADR-013-dashboard-in-flutter-web.md) | Dashboard în Flutter Web |
+| [ADR-014](docs/adr/ADR-014-docker-compose-nu-kubernetes.md) | Docker Compose (nu Kubernetes) |
+| [ADR-015](docs/adr/ADR-015-stocare-obiecte-s3-compatibila-rustfs-in-dezvoltar.md) | Stocare obiecte S3-compatibilă (RustFS în dezvoltare) |
+| [ADR-016](docs/adr/ADR-016-voce-tts-neural-pre-generat-la-build-azure-speech.md) | Voce: TTS neural pre-generat la build (Azure Speech) |
+| [ADR-017](docs/adr/ADR-017-traefik-ca-reverse-proxy.md) | Traefik ca reverse proxy |
+| [ADR-018](docs/adr/ADR-018-observabilitate.md) | Observabilitate |
+| [ADR-019](docs/adr/ADR-019-jocuri-ca-date-mecanici-reutilizabile.md) | Jocuri ca date + mecanici reutilizabile |
+| [ADR-020](docs/adr/ADR-020-gazduire-in-ue.md) | Găzduire în UE |
+| [ADR-021](docs/adr/ADR-021-animatii-rive-flutter-animate-flame-strat-pe-strat.md) | Animații: Rive + flutter_animate + Flame (strat pe strat) |
+| [ADR-022](docs/adr/ADR-022-fontul-nunito-nu-fredoka.md) | Fontul: Nunito (nu Fredoka) |
 
 ---
 
@@ -644,7 +534,7 @@ culori vesele dar calme), **fără a copia** grafica, numele sau brandul lor —
 
 **Design system (`packages/licurici_ui`):**
 - **Tokeni:** culori pe materii (8), neutre calde, un singur „verde = corect”; spațiere pe grilă de 8; raze mari (24–32 dp); umbre moi.
-- **Tipografie:** Fredoka (titluri, rotunjit) + Nunito/Andika (text, lizibil pentru cititori începători); ≥ 20 sp pentru copil; interlinie 1.5.
+- **Tipografie:** Nunito (rotunjit, cu toate diacriticele românești — ADR-022), inclus local; ≥ 20 sp pentru copil; interlinie 1.3–1.5. Andika — candidat pentru jocurile de citire.
 - **Componente:** `BigChoiceCard`, `SubjectTile`, `GameTile`, `MascotBubble` (Rive), `StarBar`, `ParentGate`, `CalmToggle`, `RoundProgressDots`, `DropZone`, `TraceCanvas`.
 - **Teme:** Normal · Calm (saturație redusă, fără animații de fundal) · Contrast ridicat · Întunecat.
 - **Animații:** implicite (AnimatedScale, Hero), 200–400 ms, curbe `easeOutBack` blânde; totul oprit la `reduceMotion`.
@@ -850,9 +740,14 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 **Total S1:** 48 de jocuri (≈ 83%) — țintă suficientă pentru „70% din aplicație”. **S2:** 10 jocuri + rafinare.
 
-**Cum adaugi un joc:** 1) `apps/child_app/lib/features/games/<id>/` cu `GameSpec` + generator; 2) conținut în
-`packages/game_content/<locale>/<id>.json`; 3) replici audio în `tools/gen-voice` → rulează generatorul;
-4) înregistrează în `GameRegistry`; 5) teste pentru generator (runde valide la tier 0, 5, 20); 6) bifează în §16.
+**Cum adaugi un joc** (mecanica `choice`; structura actuală):
+1. Portează sau scrie generatorul ca `GameSpec` în `packages/licurici_core/lib/src/games/games.dart`. Referința e jocul JS din `legacy/electron/src/games/<id>.js`. Generează GENEROS: 5 variante, 8 runde.
+2. Conținutul (liste de cuvinte, emoții…) merge în `packages/licurici_core/lib/src/games/content.dart`, portat din `legacy/electron/src/data/content.js`. Mutarea în JSON versionat în `game_content` e în roadmap.
+3. Adaugă-l în lista `allGames`. Apare automat pe ecranul principal, la materia și clasele lui.
+4. Ilustrații: orice emoji folosit trebuie să aibă SVG în `packages/game_content/art/openmoji/`.
+5. Voce: frazele rostite (`speak`) trebuie să existe în `packages/game_content/audio/ro/voice.json`. Altfel sunt sărite în tăcere.
+6. Testele din `packages/licurici_core/test/games_test.dart` verifică automat fiecare joc din `allGames`: un singur răspuns corect, fără variante duplicate, numărul corect de runde și variante la tier 1, 3, 6, 20. Adaugă un test pentru regula specifică jocului (ex. suma corectă).
+7. Bifează în §0 și §21.
 
 ---
 
@@ -880,9 +775,10 @@ Toate prin **Adapter** + **Circuit Breaker** + chei în variabile de mediu (nici
 |----------|---------|-----------|------|
 | `postgres` | `postgres:17-alpine` | 5432 | volum `pgdata`, healthcheck `pg_isready` |
 | `redis` | `redis:8-alpine` (sau `valkey/valkey`) | 6379 | AOF, parolă, `noeviction` |
-| `minio` | `minio/minio` | 9000 / 9001 (consolă) | bucket-uri `content`, `exports` |
-| `api` | build `backend/api` (multi-stage, node:24-alpine) | 3000 | depinde de postgres/redis healthy; rulează migrările |
-| `worker` | build `backend/worker` | — | scalabil `--scale worker=N` |
+| `storage` | `rustfs/rustfs:1.0.0` (S3) | 9000 (API + consolă) | bucket-uri `content`, `exports` |
+| `migrate` | build `backend` (target `migrate`) | — | `prisma migrate deploy`, apoi se oprește; api/worker pornesc după |
+| `api` | build `backend` (multi-stage, node:24-alpine) | 3000 | depinde de postgres/redis healthy + migrate reușit |
+| `worker` | aceeași imagine, `node dist/worker.js` | — | scalabil `--scale worker=N` |
 | `dashboard` | build `apps/dashboard` (Flutter web → nginx:alpine) | 8080 | |
 | `mailpit` | `axllent/mailpit` | 8025 | prinde e-mailurile în dev |
 | `bullboard` | build mic | 3001 | doar dev, monitorizare cozi |
@@ -947,20 +843,21 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
 ### Sprint 0–1 · 28 sep – 11 oct 2026 — Fundația
-- [ ] Monorepo: mută prototipul în `legacy/electron/`, creează `apps/`, `packages/`, `backend/`, `infra/`, `docs/`
-- [ ] `infra/docker-compose.yml` cu postgres, redis, minio, mailpit (healthchecks, volume, `.env.example`)
-- [ ] Schelet NestJS (api + worker), `/health`, config validat (zod/joi), pino, Prisma + prima migrare
-- [ ] Schelet Flutter `child_app` + `licurici_core` + `licurici_ui` (Melos/pub workspaces)
-- [ ] `docs/adr/` — ADR-01…ADR-09 scrise în format complet
+- [x] Monorepo: mută prototipul în `legacy/electron/`, creează `apps/`, `packages/`, `backend/`, `infra/`, `docs/`
+- [x] `infra/docker-compose.yml` cu postgres, redis, storage (RustFS), migrate, mailpit (healthchecks, volume, `.env.example`)
+- [ ] **Pornit și verificat `docker compose up`** (necesită Docker Desktop instalat)
+- [x] Schelet NestJS (api + worker), `/health`, config validat (zod), pino, Prisma + prima migrare
+- [x] Schelet Flutter `child_app` + `licurici_core` + `game_content` (pub workspaces)
+- [x] `docs/adr/` — ADR-001…ADR-022 în fișiere separate
 - [ ] Documentele de cercetare §23 începute (arhitectură, comunicare)
 
 ### Sprint 2 · 12 – 25 oct — Design system + primul joc
 - [ ] Tokeni, teme (normal/calm/contrast), componente de bază, mascota Rive (idle + bucurie + încurajare)
-- [ ] `MotionPolicy` (full/gentle/off) + cele 7 straturi de animație din §15.1 în `ChoiceMechanic`
-- [ ] Home: „Jocurile de azi” + categorii; alegerea clasei; navigație fixă
-- [ ] Port `difficulty.js` → Dart + teste de paritate
-- [ ] `ChoiceMechanic` + audio + recompense + final cu stele
-- [ ] 10 jocuri `choice` (alfabetul, numaram, adunam, scadem, culori, forme, emotii, opuse, comparam, da-nu)
+- [x] `MotionPolicy` (full/gentle/off) + cele 7 straturi de animație din §15.1 în `ChoiceMechanic` (mascota desenată în cod; Rive urmează)
+- [ ] Home: „Jocurile de azi” + categorii; alegerea clasei; navigație fixă — 🟨 clase, materii și bara fixă gata; lipsește „Jocurile de azi”
+- [x] Port `difficulty.js` → Dart + teste de paritate
+- [x] `ChoiceMechanic` + audio + recompense + final cu stele
+- [ ] 10 jocuri `choice` (alfabetul, numaram, adunam, scadem, culori, forme, emotii, opuse, comparam, da-nu) — 🟨 4/10: numaram, adunam, culori, emotii
 - [ ] Drift: profil local, setări, evenimente, outbox
 
 ### Sprint 3 · 26 oct – 8 nov — Conturi + sincronizare
@@ -974,7 +871,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] `DragDropMechanic`, `SequenceMechanic`, `MemoryCardsMechanic`, `TraceMechanic` — cu interacțiunile animate din §15.1 (ridicare, magnet, flip 3D, cerneală magică)
 - [ ] +15 jocuri (sortare, grupam, habitate, umbre, marimi, perechi, memorie, secventa, ordonam, trasare-litere, trasare-cifre, ceasul, bani, zeci, semne)
 - [ ] BullMQ: cozi `stats`, `mail`; read model `child_skill_stats`; Bull Board
-- [ ] Pipeline voce Azure Speech (`tools/gen-voice`), pachet de conținut în MinIO + `/content/manifest`
+- [ ] Pipeline voce Azure Speech (`tools/gen-voice`), pachet de conținut în stocarea S3 + `/content/manifest`
 - [ ] Aventura: hartă, niveluri infinite, stele
 
 ### Sprint 5 · 23 nov – 6 dec — Dashboard + timp real
@@ -985,7 +882,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] +12 jocuri (restul `choice` din S1 + explorare-stiinte, explorare-istorie, explorare-viata)
 
 ### Sprint 6 · 7 – 20 dec — GDPR + producție = **70%**
-- [ ] Export date (job → ZIP în MinIO → link pe e-mail), ștergere cont (soft + purge), retragere consimțământ
+- [ ] Export date (job → ZIP în stocarea S3 → link pe e-mail), ștergere cont (soft + purge), retragere consimțământ
 - [ ] `docs/gdpr/*` (politică, RoPA, DPIA, proceduri)
 - [ ] `docker-compose.prod.yml` + Traefik + TLS + backup; deploy pe VPS UE
 - [ ] Sentry (app + API), testare de încărcare k6, audit accesibilitate
