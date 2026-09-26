@@ -47,18 +47,48 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 |------|-------|------|
 | Prototip desktop (Electron, JS) | ✅ funcțional | 44 jocuri, motor de dificultate, Aventură, voce RO. **Referință** pentru portare (vezi §3). |
 | Monorepo (`apps/`, `packages/`, `backend/`, `infra/`, `docs/`, `legacy/`) | ✅ | Workspace Dart (pub workspaces) la rădăcină. |
-| `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS (teste de paritate), regulă adaptivă, modelul jocurilor, 4 generatoare. 45 teste. |
-| `packages/game_content` | 🟨 | 329 SVG OpenMoji, 433 clipuri voce RO + `voice.json`, font Nunito. Conținutul jocurilor e încă în Dart (`content.dart`) → de mutat în JSON. |
-| Aplicația copil — Flutter | 🟨 | **Landscape** (telefon + tabletă, ADR-023), ecran de pornire cu pre-încărcare, ecran principal cu jocuri derulate orizontal, mecanica `choice` cu animații (§15.1) pe două panouri, mascota animată, voce, modul calm. 4 jocuri: numărăm, adunăm, culori, emoții. 7 teste de widget (inclusiv layout la 4 dimensiuni de ecran). Setările sunt în memorie (Drift urmează). |
+| `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS (teste de paritate), regulă adaptivă, modelul jocurilor (`ChoiceGame` = metadate în constructor), **10 jocuri** împărțite pe materii (`lib/src/games/<materie>.dart`), `Lesson.art` pentru pre-încărcare, `tool/voice_coverage.dart`. 74 de teste. |
+| `packages/game_content` | 🟨 | 329 SVG OpenMoji, **532 clipuri voce RO** (acoperire 100% a frazelor rostite), font Nunito. Conținutul jocurilor e încă în Dart (`content.dart`) → de mutat în JSON. |
+| Aplicația copil — Flutter | 🟨 | **Landscape** (telefon + tabletă, ADR-023), ecran de pornire cu pre-încărcare, ecran principal cu jocuri derulate orizontal, mecanica `choice` cu animații (§15.1) pe două panouri, variante cu grupuri de obiecte, mascota desenată în cod, voce, modul calm. 7 teste de widget (inclusiv layout la 4 dimensiuni de ecran). Setările sunt în memorie (Drift urmează). **UI-ul e încă simplu** (carduri albe): va fi refăcut cu ilustrații ChatGPT + animații Rive (§14.1). |
 | Panou părinte/terapeut — Flutter Web | ⬜ | |
 | Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrare inițială, `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. 6 teste. Fără auth/sync încă. |
 | Docker Compose (dev) | 🟨 | postgres, redis, storage (RustFS), migrate, api, worker, mailpit. **Netestat încă**: Docker nu e instalat pe mașina de dezvoltare. Prod (Traefik, TLS) — de făcut. |
 | GDPR (consimțământ, export, ștergere, documente) | ⬜ | §13. Schema are deja tabelele `consents`, soft delete, audit. |
-| Documente ADR / cercetare pentru teză | 🟨 | 22 ADR-uri în `docs/adr/`. `docs/research/` — de început. |
+| Documente ADR / cercetare pentru teză | 🟨 | 25 de ADR-uri în `docs/adr/`. `docs/research/` — de început. |
+| Unelte | 🟨 | `tools/gen-voice/gen-voice.mjs` (Azure AI Speech sau edge-tts, incremental). |
 
 **Termen:** 70% din aplicație gata la finalul semestrului 1 (**decembrie 2026**). Teza propriu-zisă — semestrul 2.
 
 Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gata · 🔁 portat din prototip.
+
+### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
+
+**Ultima actualizare: 26.09.2026.** Ultimul lucru terminat: 6 jocuri noi (total 10), vocea completă, generatorul de voce.
+
+**Următorii pași, în ordine:**
+1. ⬜ **Câte un folder per joc**: `packages/licurici_core/lib/src/games/<materie>/<id>/` cu `<id>.dart` + `continut.json` + `<id>_test.dart`. Fiecare joc e autonom și mic, ușor de modificat fără să atingi restul (§16.1).
+2. ⬜ **Schema de parametri per joc** (`GameConfig`): nivel min/max, runde, subset de conținut. Panoul specialistului generează formularul automat din schemă (§2.1, ADR-025).
+3. ⬜ **Drift (SQLite local)** în aplicația copilului: profil + setări persistente, sesiuni și evenimente de joc, **outbox** pentru sincronizare, **plan** primit de la specialist, **acvariu** (stele + pești). Versiuni verificate: `drift` 2.35, `drift_flutter` 0.3.1, `uuid` 4.6 (UUIDv7).
+4. ⬜ **Ghid de ilustrații** `docs/art/ghid-ilustratii.md`: lista resurselor per joc, dimensiuni, nume de fișiere, prompturi ChatGPT cu stil fix, cum se taie personajele pentru Rive (§14.1).
+5. ⬜ „Jocurile de azi” pe ecranul principal (5 jocuri alese zilnic).
+6. ⬜ Restul Sprintului 3 (§21): conturi părinte, consimțământ, sincronizare.
+
+**Ce trebuie să facă utilizatorul (nu se poate automatiza):**
+- ⬜ Windows **Developer Mode** pornit (necesar pentru build-urile Flutter cu plugin-uri: APK, Windows).
+- ⬜ `flutter doctor --android-licenses` (acceptarea licențelor Android SDK). Apoi: `flutter build apk --release --split-per-abi` → `app-arm64-v8a-release.apk`.
+- ⬜ **Docker Desktop** instalat → `docker compose -f infra/docker-compose.yml up -d --build`.
+- ⬜ Ilustrațiile cu ChatGPT (după ghidul de la pasul 4) și animațiile în Rive.
+- ⬜ Opțional: conectorul **Figma** trebuie autorizat din setările conectorilor claude.ai ca să poată fi folosit.
+
+**Decizii luate recent (nu le rediscuta fără motiv nou):**
+- Grafica: **ChatGPT → Rive → Flutter**, NU Unity/Spine (ADR-024).
+- Aplicația copilului: **doar landscape** (ADR-023).
+- Font: **Nunito** (Fredoka nu are ă/ș/ț — ADR-022).
+- Stocare fișiere: S3-compatibil, **RustFS** în dezvoltare (imaginea MinIO nu mai e publicată — ADR-015).
+- Un singur panou web cu **două roluri** (părinte / specialist), nu două aplicații (§2.1).
+- Chat AI **doar pentru adulți**, niciodată pentru copil (§2.1).
+- Jocuri „generative”: **algoritmi la rulare, AI doar la crearea conținutului** (§2.1).
+- Clasele 5–12: arhitectura se pregătește acum, conținutul vine în semestrul 2 (§2.1).
 
 ---
 
@@ -101,6 +131,46 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 **Diferențiatori față de AutiSpark / Otsimo:** limba română + curriculum MD/RO, dificultate procedurală infinită
 (conținut nerepetitiv), episoade de explorare narativă, offline complet, confidențialitate implicită.
+
+### 2.1 Module decise (septembrie 2026)
+
+**Panoul web: un singur produs, două roluri** (Flutter Web, ADR-013)
+- **Părinte:** progresul copilului pe abilități, profilul senzorial, timp de joc, consimțăminte, datele mele (GDPR), invitarea specialistului.
+- **Specialist** (terapeut / educator): mai mulți copii (doar cei care i-au fost partajați), **planuri de lucru**, personalizarea jocurilor, sesiune live, notițe.
+- Același cod; meniul și permisiunile diferă după rol (RBAC în API: `PARENT`, `THERAPIST`).
+
+**Planuri și personalizarea jocurilor (fără muncă per joc în panou)**
+- Fiecare joc își declară **abilitățile** (pentru statistici) și o **schemă de parametri** (`GameConfig`): nivel min/max, număr de runde, subset de conținut (ex. doar literele A–M, doar emoțiile de bază), fără cronometru etc.
+- Specialistul creează un **plan** pentru copil: listă de jocuri + parametri + ordine. Panoul **generează formularul automat din schemă**. Un joc nou apare automat, fără cod în panou.
+- Aplicația copilului primește planul la sincronizare și îl joacă offline.
+- Statisticile vin din **evenimentele standard** trimise de motor (joc, abilitate, corect din prima, timp de răspuns, nivel). Panoul lucrează pe **abilități**, nu pe jocuri, deci merge la fel pentru 10 sau 100 de jocuri.
+
+**Chat AI integrat — doar pentru adulți**
+- Asistent în panou (ex. „La ce a progresat copilul luna asta?”, „Ce jocuri recomanzi pentru atenție?”), prin API-ul Claude, **apelat din backend** (cheia nu stă niciodată în aplicație). Limită de utilizare în Redis.
+- Primește doar **statistici agregate, pseudonimizate** (fără nume, fără poreclă). Consimțământ separat, procesator cu DPA (§13, §17).
+- **Fără chat AI pentru copil** (siguranță, lege, previzibilitate).
+
+**Acvariul — sistemul de recompense** (integrează proiectul `paper-aquarium`)
+- Copilul câștigă **stele** în jocuri. Cu ele „cumpără” pești sau hrană pentru acvariu.
+- **Licuriciul e ghidul în toată aplicația.** La început îi dăruiește copilului un **pește gata desenat**.
+- Apoi copilul **colorează o fișă printată**, o **scanează cu camera**, iar peștele lui desenat apare și înoată în acvariu.
+- Acvariul: Flame (pești care înoată, bule, hrănire), animații calme, respectă modul calm.
+- Scanarea se face **pe dispozitiv** (detectarea fișei după marcaje, corecția perspectivei, decuparea peștelui). Imaginea desenului **rămâne pe telefon** implicit; sincronizarea ei cere consimțământ (e creația copilului). Logica de scanare se refolosește din `paper-aquarium`.
+
+**Jocuri „generative” (nivele și conținut fără șablon vizibil)**
+- **La rulare: algoritmi** (gratuit, offline, previzibil): labirinturi generate (dimensiune și ramificare cresc cu nivelul), puzzle-uri din orice imagine (mai multe piese), „găsește diferența” cu obiecte plasate procedural, memorie cu grile tot mai mari, șiruri logice, probleme de matematică, sortări. Animațiile se generează tot în cod (fizică, particule, tranziții). Motorul de dificultate (`Difficulty.tier`, nemărginit) e baza.
+- **La creare: AI** (ChatGPT / Claude): se generează o dată sute de probleme cu text, povești, întrebări. **Un om le verifică**, apoi intră în pachete de conținut JSON. Cost: câțiva dolari.
+- **Nu folosim AI la rulare** pentru conținutul copilului: cost per utilizare, internet obligatoriu, latență, imprevizibil, nesigur pentru copii.
+
+**Clasele 5–12 (până la 18 ani)**
+- Arhitectura se pregătește acum: `Grade` extins, **teme pe vârste** (mascota și stilul „copilăresc” doar la G–4; temă mai matură la 5+), același motor.
+- **Consimțământ:** de la 14 ani adolescentul își poate da singur consimțământul (Legea 195/2024). Deci conturi proprii pentru adolescenți și alt flux de consimțământ (§13).
+- **Conținutul** pentru 5–12 (algebră, științe, lectură) vine în **semestrul 2**, ca să nu punem în pericol ținta de 70% din decembrie.
+
+**Imagini cu fețe (emoții etc.)**
+- Personaje **inventate**, ilustrate, într-un stil fix: 2–3 personaje, fiecare în toate emoțiile (consistență = aspect profesionist).
+- **Niciodată fotografii de copii reali sau fețe de persoane reale.**
+- Trecerea între emoții se animă în Rive sau în cod.
 
 ---
 
@@ -318,6 +388,8 @@ Fiecare decizie are fișierul ei în [`docs/adr/`](docs/adr/). Rezumat:
 | [ADR-021](docs/adr/ADR-021-animatii-rive-flutter-animate-flame-strat-pe-strat.md) | Animații: Rive + flutter_animate + Flame (strat pe strat) |
 | [ADR-022](docs/adr/ADR-022-fontul-nunito-nu-fredoka.md) | Fontul: Nunito (nu Fredoka) |
 | [ADR-023](docs/adr/ADR-023-landscape-si-ecran-de-pornire.md) | Landscape obligatoriu și ecran de pornire cu pre-încărcare |
+| [ADR-024](docs/adr/ADR-024-grafica-chatgpt-rive-flutter.md) | Grafică și animație: ChatGPT → Rive → Flutter (nu Unity/Spine) |
+| [ADR-025](docs/adr/ADR-025-jocuri-configurabile-si-planuri.md) | Jocuri configurabile (schemă de parametri) și planuri de la specialist |
 
 ---
 
@@ -543,6 +615,21 @@ culori vesele dar calme), **fără a copia** grafica, numele sau brandul lor —
 - **Ilustrații:** OpenMoji (CC BY-SA 4.0, atribuire în „Despre”) + scene desenate în cod; mascota Licurici în Rive.
 - **Responsiv:** **landscape** pe telefon (≥ 640×360) și tabletă; două panouri (stimul | variante) când lățimea ≥ 1,2 × înălțimea; stimulii se scalează după înălțime (0,6×–1,5×). Verificat automat de `test/layout_test.dart` la 4 dimensiuni (ADR-023).
 
+### 14.1 Pipeline-ul de grafică și animație (ADR-024)
+
+```
+ChatGPT (ilustrații PNG transparente, stil fix)
+   → tăiere pe bucăți (corp, aripi, coadă, cap, ochi…) — în ChatGPT sau Photopea/Krita
+   → Rive (oase + animații Idle/Fly/Happy/Blink… + state machine cu intrări)
+   → fișier .riv în packages/game_content
+   → Flutter: pachetul `rive`, controlat din joc (ex. input „corect” → animația FlyToNest)
+```
+- **Fundaluri pe straturi** (cer, copaci în spate, frunze în față): PNG separate, animate în cod (legănare, parallax, nori).
+- **Personaje**: Rive (state machine). Ce face Rive față de Spine: editor gratuit, runtime oficial Flutter, stările comută singure. Spine rămâne alternativa (`spine_flutter`), dar e plătit.
+- **Sărbătorile** (baloane, stele) sunt mai blânde decât în AutiSpark: fără fundal întunecat, fără sute de particule. Intensitatea vine din `MotionPolicy`.
+- **Ce face fiecare:** ChatGPT desenează; Claude scrie codul, integrează, animă în cod și leagă animațiile de logică. Claude nu generează ilustrații pictate.
+- Specificația exactă (listă, dimensiuni, nume, prompturi) va fi în `docs/art/ghid-ilustratii.md` (pasul 4 din §0.1).
+
 ---
 
 ## 15. Motorul de jocuri în Flutter
@@ -741,6 +828,12 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 **Total S1:** 48 de jocuri (≈ 83%) — țintă suficientă pentru „70% din aplicație”. **S2:** 10 jocuri + rafinare.
 
+### 16.1 Stare și structură
+
+**Gata în Flutter (10):** alfabetul, opuse, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu.
+Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii}.dart` + registrul `games.dart`.
+**Urmează** (pasul 1 din §0.1): câte un folder per joc — `games/<materie>/<id>/`.
+
 **Cum adaugi un joc** (mecanica `choice`; structura actuală):
 1. Portează sau scrie generatorul ca `GameSpec` în `packages/licurici_core/lib/src/games/games.dart`. Referința e jocul JS din `legacy/electron/src/games/<id>.js`. Generează GENEROS: 5 variante, 8 runde.
 2. Conținutul (liste de cuvinte, emoții…) merge în `packages/licurici_core/lib/src/games/content.dart`, portat din `legacy/electron/src/data/content.js`. Mutarea în JSON versionat în `game_content` e în roadmap.
@@ -858,8 +951,11 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Home: „Jocurile de azi” + categorii; alegerea clasei; navigație fixă — 🟨 clase, materii și bara fixă gata; lipsește „Jocurile de azi”
 - [x] Port `difficulty.js` → Dart + teste de paritate
 - [x] `ChoiceMechanic` + audio + recompense + final cu stele
-- [ ] 10 jocuri `choice` (alfabetul, numaram, adunam, scadem, culori, forme, emotii, opuse, comparam, da-nu) — 🟨 4/10: numaram, adunam, culori, emotii
-- [ ] Drift: profil local, setări, evenimente, outbox
+- [x] 10 jocuri `choice` (alfabetul, numaram, adunam, scadem, culori, forme, emotii, opuse, comparam, da-nu)
+- [x] Vocea: generator (`tools/gen-voice`) + raport de acoperire (`tool/voice_coverage.dart`) — 100%
+- [ ] Câte un folder per joc + `GameConfig` (schema de parametri)
+- [ ] Ghid de ilustrații pentru ChatGPT + Rive (`docs/art/`)
+- [ ] Drift: profil local, setări, evenimente, outbox, plan, acvariu (stele + pești)
 
 ### Sprint 3 · 26 oct – 8 nov — Conturi + sincronizare
 - [ ] Auth părinte (e-mail + Argon2id, verificare e-mail prin Mailpit/Brevo), JWT + refresh în Redis, rate limit
@@ -895,6 +991,9 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Dificultate adaptivă pe abilități, recomandări „Jocurile de azi” mai inteligente
 - [ ] Prometheus + Grafana, optimizări, build-uri pentru magazine (Families/Kids), semnare
 - [ ] Testare cu copii/educatori (cu acord parental), iterații UX
+- [ ] Acvariul complet: scanarea desenelor (din `paper-aquarium`), pești animați, hrănire
+- [ ] Chat AI în panoul adulților (Claude API, date agregate)
+- [ ] Conținut pentru clasele 5–12 + temă „matură” + conturi pentru adolescenți (14+)
 - [ ] Redactarea tezei (§23) + prezentare
 
 ---
