@@ -1,0 +1,30 @@
+name: licurici
+description: Licurici - jocuri educative pentru copii (gradinita + clasele 1-4).
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  licurici_core:
+    path: ../../packages/licurici_core
+  game_content:
+    path: ../../packages/game_content
+  flutter_riverpod: ^3.0.0
+  go_router: ^18.0.0
+  flutter_animate: ^4.5.0
+  flutter_svg: ^2.2.0
+  audioplayers: ^6.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
