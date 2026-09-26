@@ -49,7 +49,7 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 | Monorepo (`apps/`, `packages/`, `backend/`, `infra/`, `docs/`, `legacy/`) | ✅ | Workspace Dart (pub workspaces) la rădăcină. |
 | `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS (teste de paritate), regulă adaptivă, modelul jocurilor, 4 generatoare. 45 teste. |
 | `packages/game_content` | 🟨 | 329 SVG OpenMoji, 433 clipuri voce RO + `voice.json`, font Nunito. Conținutul jocurilor e încă în Dart (`content.dart`) → de mutat în JSON. |
-| Aplicația copil — Flutter | 🟨 | Ecran principal (clase, materii), mecanica `choice` cu animații (§15.1), mascota animată, voce, modul calm. 4 jocuri: numărăm, adunăm, culori, emoții. 2 teste de widget. Setările sunt în memorie (Drift urmează). |
+| Aplicația copil — Flutter | 🟨 | **Landscape** (telefon + tabletă, ADR-023), ecran de pornire cu pre-încărcare, ecran principal cu jocuri derulate orizontal, mecanica `choice` cu animații (§15.1) pe două panouri, mascota animată, voce, modul calm. 4 jocuri: numărăm, adunăm, culori, emoții. 7 teste de widget (inclusiv layout la 4 dimensiuni de ecran). Setările sunt în memorie (Drift urmează). |
 | Panou părinte/terapeut — Flutter Web | ⬜ | |
 | Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrare inițială, `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. 6 teste. Fără auth/sync încă. |
 | Docker Compose (dev) | 🟨 | postgres, redis, storage (RustFS), migrate, api, worker, mailpit. **Netestat încă**: Docker nu e instalat pe mașina de dezvoltare. Prod (Traefik, TLS) — de făcut. |
@@ -90,7 +90,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - **Terapeutul / educatorul** (opțional, invitat de părinte): vede progresul copiilor pe care îi urmărește, poate „fixa” jocuri recomandate.
 
 **Principii non-negociabile** (moștenite din prototip, `DESIGN.md`):
-1. O singură sarcină pe ecran, ținte mari (≥ 64 dp), 2→5 variante în funcție de nivel.
+1. O singură sarcină pe ecran, ținte mari (≥ 64 dp), 2→5 variante în funcție de nivel. **Doar landscape** pe telefon și tabletă (ADR-023).
 2. **Fără pedeapsă** la greșeală: fără X roșu, fără buzzer, fără „Greșit!". Învățare fără eroare.
 3. Recompensă imediată (< 1 s). Răsplătim efortul, nu doar corectitudinea.
 4. Culori calme, „modul calm” (stimulare redusă), sunet și mișcare comutabile, `reduce motion` respectat.
@@ -317,6 +317,7 @@ Fiecare decizie are fișierul ei în [`docs/adr/`](docs/adr/). Rezumat:
 | [ADR-020](docs/adr/ADR-020-gazduire-in-ue.md) | Găzduire în UE |
 | [ADR-021](docs/adr/ADR-021-animatii-rive-flutter-animate-flame-strat-pe-strat.md) | Animații: Rive + flutter_animate + Flame (strat pe strat) |
 | [ADR-022](docs/adr/ADR-022-fontul-nunito-nu-fredoka.md) | Fontul: Nunito (nu Fredoka) |
+| [ADR-023](docs/adr/ADR-023-landscape-si-ecran-de-pornire.md) | Landscape obligatoriu și ecran de pornire cu pre-încărcare |
 
 ---
 
@@ -540,7 +541,7 @@ culori vesele dar calme), **fără a copia** grafica, numele sau brandul lor —
 - **Animații:** implicite (AnimatedScale, Hero), 200–400 ms, curbe `easeOutBack` blânde; totul oprit la `reduceMotion`.
 - **Accesibilitate:** `Semantics` pe fiecare țintă, contrast AA, ținte ≥ 64 dp, suport TalkBack/VoiceOver în zona părintelui, niciodată doar culoarea ca informație (icon + text + voce).
 - **Ilustrații:** OpenMoji (CC BY-SA 4.0, atribuire în „Despre”) + scene desenate în cod; mascota Licurici în Rive.
-- **Responsiv:** telefon portret/landscape, tabletă (principal), desktop; layout-uri adaptive pe `LayoutBuilder`.
+- **Responsiv:** **landscape** pe telefon (≥ 640×360) și tabletă; două panouri (stimul | variante) când lățimea ≥ 1,2 × înălțimea; stimulii se scalează după înălțime (0,6×–1,5×). Verificat automat de `test/layout_test.dart` la 4 dimensiuni (ADR-023).
 
 ---
 
@@ -830,7 +831,7 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 
 ## 20. Performanță & optimizare
 
-- **App:** pornire < 2 s; 60 fps constant; imagini SVG pre-cache-uite per joc; audio pre-încărcat per rundă; `const` widgets; `RepaintBoundary` pe animații; build `--split-debug-info --obfuscate`; APK per ABI (< 60 MB), conținut suplimentar în pachete descărcabile.
+- **App:** pornire < 2 s (splash nativ + ecran de pornire care pre-încarcă vocea și ilustrațiile; fiecare joc își pre-încarcă ilustrațiile înainte de prima rundă — ADR-023); 60 fps constant; imagini SVG pre-cache-uite per joc; audio pre-încărcat per rundă; `const` widgets; `RepaintBoundary` pe animații; build `--split-debug-info --obfuscate`; APK per ABI (< 60 MB), conținut suplimentar în pachete descărcabile.
 - **Conținut:** audio OGG/Opus mono 32–48 kbps (vs MP3 → ~40% mai mic); SVG-uri optimizate (svgo); pachete versionate cu hash (descărcăm doar ce s-a schimbat).
 - **Sync:** loturi + gzip; doar evenimente noi; backoff; pe Wi-Fi implicit.
 - **API:** indexuri pe `(childId, at)`; partiționare lunară `game_events`; read models pentru statistici; cache Redis; paginare cursor-based; pool de conexiuni Prisma; răspunsuri comprimate.
