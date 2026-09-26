@@ -1,0 +1,10 @@
+name: licurici_workspace
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+workspace:
+  - packages/licurici_core
+  - packages/game_content
+  - apps/child_app

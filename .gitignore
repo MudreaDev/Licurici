@@ -14,3 +14,14 @@ src/audio-ro/_tmp.aiff
 
 # proiect separat (repo propriu: MudreaDev/paper-aquarium)
 paper-aquarium/
+
+# Dart / Flutter
+.dart_tool/
+build/
+*.iml
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# secrete
+.env
+*.env.local
