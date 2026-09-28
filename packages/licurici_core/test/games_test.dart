@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:licurici_core/licurici_core.dart';
+import 'package:licurici_core/src/games/content.dart' show ortograme, stories;
 import 'package:test/test.dart';
 
 void main() {
@@ -213,5 +214,33 @@ void main() {
     expect(g[Subject.matematica]!.map((x) => x.id), isNot(contains('adunam')));
     expect(gameById('culori'), isA<CuloriGame>());
     expect(gameById('nu-exista'), isNull);
+  });
+
+  test('scriem corect: variantele sunt perechea ortogramei, iar propoziția are un gol', () {
+    for (var seed = 0; seed < 40; seed++) {
+      final ctx = GameContext(difficulty: const Difficulty(6), grade: Grade.clasa3, random: Random(seed));
+      for (final r in const OrtografieGame().build(ctx).rounds) {
+        final labels = r.choices.map((c) => c.label).toSet();
+        expect(ortograme.any((o) => labels.containsAll({o.a, o.b})), isTrue, reason: '$labels');
+        final sentence = (r.visuals.single as SceneVisual).text;
+        expect('___'.allMatches(sentence), hasLength(1));
+        final answer = r.choices.firstWhere((c) => c.correct).label!;
+        expect(r.speak.last, sentence.replaceAll('___', answer));
+      }
+    }
+  });
+
+  test('povești: pașii sunt în ordine, finalul e mereu inclus, nimic nu se pierde din poveste', () {
+    for (final tier in [1, 3, 8]) {
+      for (var seed = 0; seed < 30; seed++) {
+        final ctx = GameContext(difficulty: Difficulty(tier), grade: Grade.clasa1, random: Random(seed));
+        final lesson = const PovestiGame().build(ctx);
+        final story = stories.firstWhere((s) => lesson.title.startsWith(s.title));
+        final spoken = [for (final r in lesson.rounds) ...r.speak];
+        final narrations = [for (final s in story.steps) s.narration];
+        expect(spoken.where(narrations.contains).toList(), narrations);
+        expect(lesson.rounds.last.prompt, story.steps.last.question);
+      }
+    }
   });
 }

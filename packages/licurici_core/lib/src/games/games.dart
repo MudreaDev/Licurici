@@ -18,6 +18,8 @@ const List<GameSpec> allGames = [
   // Limba română
   AlfabetulGame(),
   OpuseGame(),
+  OrtografieGame(),
+  PovestiGame(),
   // Matematică
   NumaramGame(),
   ComparamGame(),

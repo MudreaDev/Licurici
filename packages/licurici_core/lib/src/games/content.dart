@@ -119,3 +119,277 @@ const emotions = [
       ['a terminat un desen frumos', 'a ajutat un prieten', 'a învățat ceva nou'],
       similar: ['fericit']),
 ];
+
+// ---------------------------------------------------------------- ortografie (clasele 2–4)
+
+/// O ortogramă: două forme care se aud la fel, dar se scriu diferit (ex. `sau` / `s-au`).
+/// Propozițiile au `___` în locul cuvântului lipsă.
+class Ortograma {
+  const Ortograma(this.a, this.ruleA, this.sentencesA, this.b, this.ruleB, this.sentencesB);
+  final String a;
+  final String ruleA;
+  final List<String> sentencesA;
+  final String b;
+  final String ruleB;
+  final List<String> sentencesB;
+}
+
+const ortograme = [
+  Ortograma(
+    'sau',
+    '„sau” înseamnă „ori”.',
+    ['Vrei lapte ___ ceai?', 'Mergem în parc ___ la bunica?'],
+    's-au',
+    '„s-au” vine de la „se” + „au”.',
+    ['Copiii ___ jucat în curte.', 'Florile ___ deschis dimineața.'],
+  ),
+  Ortograma(
+    'la',
+    '„la” arată locul sau direcția.',
+    ['Mâine merg ___ școală.', 'Pisica doarme ___ soare.'],
+    'l-a',
+    '„l-a” vine de la „îl” + „a”.',
+    ['Mama ___ îmbrățișat pe Andrei.', 'Bunicul ___ ajutat pe vecin.'],
+  ),
+  Ortograma(
+    'sa',
+    '„sa” înseamnă „a lui” sau „a ei”.',
+    ['Fetița se joacă cu păpușa ___.', 'Ionel o ajută pe sora ___.'],
+    's-a',
+    '„s-a” vine de la „se” + „a”.',
+    ['Ursul ___ trezit primăvara.', 'Bebelușul ___ ridicat singur.'],
+  ),
+  Ortograma(
+    'ia',
+    '„ia” înseamnă că cineva ia ceva.',
+    ['Maria ___ o carte de pe raft.', 'Tata ___ umbrela, că plouă.'],
+    'i-a',
+    '„i-a” vine de la „îi” + „a”.',
+    ['Bunica ___ dat o prăjitură.', 'Învățătoarea ___ citit o poveste.'],
+  ),
+  Ortograma(
+    'iau',
+    '„iau” înseamnă „eu iau”.',
+    ['Eu ___ ghiozdanul și plec.', 'Acum îmi ___ haina.'],
+    'i-au',
+    '„i-au” vine de la „îi” + „au”.',
+    ['Colegii ___ făcut o felicitare.', 'Părinții ___ cumpărat o minge.'],
+  ),
+  Ortograma(
+    'va',
+    '„va” arată ce se întâmplă mai târziu.',
+    ['Mâine ___ ploua.', 'Ana ___ cânta la serbare.'],
+    'v-a',
+    '„v-a” vine de la „vă” + „a”.',
+    ['Doamna învățătoare ___ lăudat pe toți.', 'Cine ___ ajutat, copii?'],
+  ),
+  Ortograma(
+    'mai',
+    '„mai” înseamnă „încă”.',
+    ['Pot să ___ citesc o poveste?', 'Afară ___ ninge puțin.'],
+    'm-ai',
+    '„m-ai” vine de la „mă” + „ai”.',
+    ['Tu ___ ajutat mult azi.', 'De ce nu ___ strigat?'],
+  ),
+];
+
+// ---------------------------------------------------------------- povești (domeniu public)
+
+/// O variantă de răspuns dintr-o poveste: text + ilustrație opțională.
+class StoryOption {
+  const StoryOption(this.label, [this.emoji]);
+  final String label;
+  final String? emoji;
+}
+
+/// Un pas din poveste: ce se povestește, apoi o întrebare de înțelegere.
+class StoryStep {
+  const StoryStep(this.narration, this.question, this.answer, this.wrong);
+  final String narration;
+  final String question;
+  final StoryOption answer;
+  final List<StoryOption> wrong;
+}
+
+class Story {
+  const Story(this.title, this.author, this.emoji, this.steps);
+  final String title;
+  final String author;
+  final String emoji;
+  final List<StoryStep> steps;
+}
+
+/// Povești românești din domeniul public, repovestite pe scurt (texte proprii, nu citate).
+const stories = [
+  Story('Punguța cu doi bani', 'Ion Creangă', '🐓', [
+    StoryStep(
+      'Un moș avea un cocoș, iar o babă avea o găină. Găina babei făcea ouă.',
+      'Ce făcea găina babei?',
+      StoryOption('ouă', '🥚'),
+      [StoryOption('lapte', '🥛'), StoryOption('pâine', '🍞'), StoryOption('mere', '🍎'), StoryOption('flori', '🌸')],
+    ),
+    StoryStep(
+      'Moșul l-a trimis pe cocoș să aducă și el ceva. Cocoșul a găsit în drum o punguță.',
+      'Ce era în punguță?',
+      StoryOption('doi bani', '🪙'),
+      [
+        StoryOption('două mere', '🍎'),
+        StoryOption('două ouă', '🥚'),
+        StoryOption('două flori', '🌸'),
+        StoryOption('două bomboane', '🍭'),
+      ],
+    ),
+    StoryStep(
+      'Pe drum a trecut un boier. I-a luat cocoșului punguța și a plecat cu ea.',
+      'Cine i-a luat punguța?',
+      StoryOption('boierul', '🎩'),
+      [
+        StoryOption('vulpea', '🦊'),
+        StoryOption('baba', '👵'),
+        StoryOption('un câine', '🐶'),
+        StoryOption('o pisică', '🐱'),
+      ],
+    ),
+    StoryStep(
+      'Cocoșul a mers după boier și îi cerea punguța înapoi. Supărat, boierul a poruncit să fie aruncat într-o fântână.',
+      'Unde a fost aruncat cocoșul prima dată?',
+      StoryOption('în fântână', '💧'),
+      [
+        StoryOption('în cuptor', '🔥'),
+        StoryOption('în pădure', '🌲'),
+        StoryOption('pe casă', '🏠'),
+        StoryOption('în mare', '🌊'),
+      ],
+    ),
+    StoryStep(
+      'Dar cocoșul a înghițit toată apa din fântână și a ieșit afară.',
+      'Ce a înghițit cocoșul din fântână?',
+      StoryOption('apa', '💧'),
+      [
+        StoryOption('pietrele', '🪨'),
+        StoryOption('peștii', '🐟'),
+        StoryOption('frunzele', '🍂'),
+        StoryOption('florile', '🌸'),
+      ],
+    ),
+    StoryStep(
+      'Atunci boierul l-a aruncat într-un cuptor fierbinte. Cocoșul a dat drumul apei și a stins focul.',
+      'Cu ce a stins cocoșul focul?',
+      StoryOption('cu apă', '💧'),
+      [
+        StoryOption('cu zăpadă', '❄️'),
+        StoryOption('cu frunze', '🍂'),
+        StoryOption('cu lapte', '🥛'),
+        StoryOption('cu pietre', '🪨'),
+      ],
+    ),
+    StoryStep(
+      'Boierul l-a aruncat apoi printre boi. Cocoșul a înghițit toți boii.',
+      'Ce animale a înghițit cocoșul?',
+      StoryOption('boii', '🐄'),
+      [StoryOption('caii', '🐎'), StoryOption('oile', '🐑'), StoryOption('porcii', '🐖'), StoryOption('iepurii', '🐇')],
+    ),
+    StoryStep(
+      'La urmă, cocoșul a fost aruncat în camera cu bani și a înghițit toți banii. Boierul i-a dat punguța înapoi.',
+      'Ce i-a dat boierul la sfârșit?',
+      StoryOption('punguța', '🪙'),
+      [
+        StoryOption('o coroană', '👑'),
+        StoryOption('o minge', '⚽'),
+        StoryOption('o carte', '📖'),
+        StoryOption('un pepene', '🍉'),
+      ],
+    ),
+    StoryStep(
+      'Cocoșul s-a întors acasă cu bani și cu boi. Moșul s-a bucurat foarte tare.',
+      'Cum s-a simțit moșul?',
+      StoryOption('bucuros', '😄'),
+      [
+        StoryOption('trist', '😢'),
+        StoryOption('supărat', '😠'),
+        StoryOption('speriat', '😨'),
+        StoryOption('obosit', '😴'),
+      ],
+    ),
+  ]),
+  Story('Ursul păcălit de vulpe', 'Ion Creangă', '🐻', [
+    StoryStep(
+      'Era iarnă, iar vulpea era flămândă. Pe drum venea un om cu un car plin cu pește.',
+      'Ce ducea omul în car?',
+      StoryOption('pește', '🐟'),
+      [StoryOption('mere', '🍎'), StoryOption('morcovi', '🥕'), StoryOption('pâine', '🍞'), StoryOption('flori', '🌸')],
+    ),
+    StoryStep(
+      'Vulpea s-a întins în drum și s-a prefăcut că doarme adânc. Omul a luat-o și a pus-o în car.',
+      'Ce a făcut vulpea în drum?',
+      StoryOption('s-a prefăcut că doarme', '😴'),
+      [
+        StoryOption('a cântat', '🎵'),
+        StoryOption('a dansat'),
+        StoryOption('a plâns', '😢'),
+        StoryOption('a construit o casă', '🏠'),
+      ],
+    ),
+    StoryStep(
+      'Pe drum, vulpea a aruncat peștele din car, apoi a sărit și a fugit.',
+      'Ce a aruncat vulpea din car?',
+      StoryOption('peștele', '🐟'),
+      [
+        StoryOption('merele', '🍎'),
+        StoryOption('zăpada', '❄️'),
+        StoryOption('morcovii', '🥕'),
+        StoryOption('pietrele', '🪨'),
+      ],
+    ),
+    StoryStep(
+      'A venit ursul și a întrebat-o de unde are atâta pește.',
+      'Cine a venit la vulpe?',
+      StoryOption('ursul', '🐻'),
+      [
+        StoryOption('iepurele', '🐇'),
+        StoryOption('câinele', '🐶'),
+        StoryOption('vaca', '🐄'),
+        StoryOption('pisica', '🐱'),
+      ],
+    ),
+    StoryStep(
+      'Vulpea l-a păcălit: i-a spus să-și bage coada în apa rece a lacului și să aștepte peștii.',
+      'Unde și-a băgat ursul coada?',
+      StoryOption('în apa lacului', '💧'),
+      [
+        StoryOption('în scorbură', '🌳'),
+        StoryOption('în foc', '🔥'),
+        StoryOption('în nisip'),
+        StoryOption('în pământ'),
+      ],
+    ),
+    StoryStep(
+      'Ursul a stat acolo toată noaptea, iar apa a înghețat în jurul cozii.',
+      'Ce s-a întâmplat cu apa?',
+      StoryOption('a înghețat', '❄️'),
+      [
+        StoryOption('a fiert', '🔥'),
+        StoryOption('s-a făcut lapte', '🥛'),
+        StoryOption('s-a făcut curcubeu', '🌈'),
+        StoryOption('s-a uscat', '☀️'),
+      ],
+    ),
+    StoryStep(
+      'Dimineața ursul a tras tare și a rămas fără coadă. De atunci ursul are coada scurtă.',
+      'Cum este coada ursului?',
+      StoryOption('scurtă'),
+      [StoryOption('lungă'), StoryOption('cu dungi'), StoryOption('cu pene'), StoryOption('albastră')],
+    ),
+    StoryStep(
+      'Ursul a înțeles că nu trebuie să crezi pe oricine.',
+      'Cine l-a păcălit pe urs?',
+      StoryOption('vulpea', '🦊'),
+      [
+        StoryOption('iepurele', '🐇'),
+        StoryOption('omul', '👨'),
+        StoryOption('bufnița', '🦉'),
+        StoryOption('veverița', '🐿️'),
+      ],
+    ),
+  ]),
+];

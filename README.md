@@ -747,6 +747,8 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 | 6 | plural | Singular-plural | 234 | choice | morfologie | 🔁 | S1 |
 | 7 | trasare-litere | Scriem literele | G12 | trace | grafomotricitate | 🆕 | S1 |
 | 8 | sunetul-initial | Primul sunet | G1 | choice | conștiință fonologică | 🆕 | S2 |
+| 59 | ortografie | Scriem corect | 234 | choice | ortograme (sau/s-au, la/l-a…) | 🆕 | S1 |
+| 60 | povesti | Povești | G1234 | choice | ascultare, înțelegerea textului (Creangă, domeniu public) | 🆕 | S1 |
 
 ### Matematică
 | # | id | Nume | Clase | Mecanică | Abilitate | Tip | Faza |
@@ -830,7 +832,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (10):** alfabetul, opuse, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu.
+**Gata în Flutter (12):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu.
 Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii}.dart` + registrul `games.dart`.
 **Urmează** (pasul 1 din §0.1): câte un folder per joc — `games/<materie>/<id>/`.
 

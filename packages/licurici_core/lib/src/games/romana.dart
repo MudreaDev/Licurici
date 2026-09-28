@@ -111,3 +111,92 @@ class OpuseGame extends ChoiceGame {
     );
   }
 }
+
+/// Scriem corect — ortograme care se aud la fel (sau / s-au, la / l-a …). Mecanică inspirată de
+/// jocurile de ortografie din seria „Să ne jucăm pe calculator” (Aidem Media), cu conținut propriu.
+class OrtografieGame extends ChoiceGame {
+  const OrtografieGame()
+    : super(
+        id: 'ortografie',
+        name: 'Scriem corect',
+        emoji: '✍️',
+        description: 'sau sau s-au?',
+        subject: Subject.romana,
+        gradeCodes: '234',
+      );
+
+  @override
+  Lesson generate(GameContext ctx) => Lesson(
+    title: name,
+    instruction: 'Alege cum se scrie cuvântul lipsă.',
+    rounds: [for (var i = 0; i < 8; i++) _round(ctx)],
+  );
+
+  ChoiceRound _round(GameContext ctx) {
+    final o = ctx.pick(content.ortograme);
+    final useA = ctx.random.nextBool();
+    final answer = useA ? o.a : o.b;
+    final sentence = ctx.pick(useA ? o.sentencesA : o.sentencesB);
+    final options = [o.a, o.b]..shuffle(ctx.random);
+    return ChoiceRound(
+      prompt: 'Cum se scrie?',
+      // Formele se aud la fel, deci propoziția rostită completă nu dă răspunsul.
+      speak: ['Cum se scrie?', sentence.replaceAll('___', answer)],
+      visuals: [SceneVisual(sentence)],
+      fixedChoices: true,
+      hint: useA ? o.ruleA : o.ruleB,
+      choices: [for (final w in options) Choice(label: w, correct: w == answer)],
+    );
+  }
+}
+
+/// Povești — ascultare și înțelegere pe povești românești din domeniul public (Creangă).
+/// Ideea vine din poveștile interactive ale seriei Aidem Media („Punguța cu 2 bani”, „Ursul
+/// păcălit de vulpe”); textele și întrebările sunt ale noastre.
+class PovestiGame extends ChoiceGame {
+  const PovestiGame()
+    : super(
+        id: 'povesti',
+        name: 'Povești',
+        emoji: '📖',
+        description: 'Ascultă și răspunde',
+        subject: Subject.romana,
+        gradeCodes: 'G1234',
+      );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final story = ctx.pick(content.stories);
+    final steps = story.steps;
+    // Câte întrebări cere tier-ul; finalul poveștii e mereu inclus. Pașii săriți nu se pierd:
+    // povestirea lor se spune înaintea următoarei întrebări.
+    final n = ctx.difficulty.roundCount.clamp(1, steps.length);
+    final asked = {
+      ...ctx.sample([for (var i = 0; i < steps.length - 1; i++) i], n - 1),
+      steps.length - 1,
+    }.toList()..sort();
+    final rounds = <ChoiceRound>[];
+    var from = 0;
+    for (final i in asked) {
+      rounds.add(_round(ctx, [for (var j = from; j <= i; j++) steps[j].narration], steps[i]));
+      from = i + 1;
+    }
+    return Lesson(
+      title: '${story.title} — ${story.author}',
+      instruction: 'Ascultă povestea și răspunde la întrebări.',
+      rounds: rounds,
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, List<String> narration, content.StoryStep step) {
+    final options = [step.answer, ...ctx.sample(step.wrong, 4)]..shuffle(ctx.random);
+    return ChoiceRound(
+      prompt: step.question,
+      speak: [...narration, step.question],
+      // Pe ecran doar pasul curent (textul rămâne scurt pe telefon); vocea le spune pe toate.
+      visuals: [SceneVisual(narration.last)],
+      hint: 'Răspunsul este: ${step.answer.label}.',
+      choices: [for (final o in options) Choice(label: o.label, art: o.emoji, correct: identical(o, step.answer))],
+    );
+  }
+}
