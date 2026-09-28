@@ -63,7 +63,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 26.09.2026.** Ultimul lucru terminat: 6 jocuri noi (total 10), vocea completă, generatorul de voce.
+**Ultima actualizare: 28.09.2026.** Ultimul lucru terminat: jocurile „Scriem corect” (ortograme) și „Povești” (Creangă, domeniu public), inspirate ca mecanică din seria Aidem Media „Să ne jucăm pe calculator” (fără resursele lor: au drepturi de autor). Total 12 jocuri, voce 100%.
 
 **Următorii pași, în ordine:**
 1. ⬜ **Câte un folder per joc**: `packages/licurici_core/lib/src/games/<materie>/<id>/` cu `<id>.dart` + `continut.json` + `<id>_test.dart`. Fiecare joc e autonom și mic, ușor de modificat fără să atingi restul (§16.1).
