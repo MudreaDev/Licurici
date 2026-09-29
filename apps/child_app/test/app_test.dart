@@ -76,7 +76,15 @@ void main() {
     tester,
   ) async {
     await pumpApp(tester);
-    await tester.ensureVisible(find.text('Culori'));
+    // Lista de jocuri e leneșă (ListView): derulăm până e construit cardul.
+    await tester.scrollUntilVisible(
+      find.text('Culori'),
+      300,
+      scrollable: find.descendant(
+        of: find.byType(ListView),
+        matching: find.byType(Scrollable),
+      ),
+    );
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Culori'));
     await pumpUntil(tester, find.byKey(const ValueKey('choice-0')));

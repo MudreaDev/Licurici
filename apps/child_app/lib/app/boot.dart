@@ -41,6 +41,10 @@ class BootNotifier extends Notifier<BootState> {
   Future<void> _run() async {
     final started = DateTime.now();
     final steps = <Future<void> Function()>[
+      // mascota apare chiar pe ecranul de pornire
+      () => ref
+          .read(mascotRigProvider.future)
+          .timeout(const Duration(seconds: 3)),
       () => ref.read(voiceManifestProvider.future),
       () => precacheArt(uiArt),
       () => precacheArt(allGames.map((g) => g.emoji)),
