@@ -12,10 +12,10 @@ import '../../../app/theme.dart';
 import '../../../shared/art_cache.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/emoji_art.dart';
-import '../../../shared/juice.dart';
 import '../../../shared/mascot.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/pressable.dart';
+import '../../../shared/role_fx.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
@@ -43,8 +43,6 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   /// Ilustrațiile lecției sunt pre-încărcate (vezi [_start]).
   bool _ready = false;
   final Set<int> _wrong = {};
-  int? _lastWrong;
-  int _wrongTick = 0;
 
   MascotMood _mood = MascotMood.idle;
   int _reaction = 0;
@@ -89,7 +87,6 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _attempts = 0;
     _solved = false;
     _wrong.clear();
-    _lastWrong = null;
     _mood = MascotMood.idle;
     _bubble = _lesson.instruction ?? '';
     _armGuide();
@@ -105,6 +102,14 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _guideTimer = Timer(const Duration(seconds: 5), () {
       if (mounted && !_solved) setState(() => _guide = true);
     });
+  }
+
+  /// Rolul fiecărei variante (efectele vin din rol, ADR-028).
+  FxRole _roleOf(int i) {
+    final correct = _round.choices[i].correct;
+    if (_wrong.contains(i)) return FxRole.rejected;
+    if (_solved) return correct ? FxRole.correct : FxRole.faded;
+    return _guide && correct ? FxRole.hinted : FxRole.target;
   }
 
   void _pick(int i) {
@@ -128,8 +133,6 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
       _attempts++;
       setState(() {
         _wrong.add(i);
-        _lastWrong = i;
-        _wrongTick++;
         _mood = MascotMood.encourage;
         _reaction++;
         // Învățare fără eroare: după a doua greșeală arătăm indiciul și ghidăm spre corect.
@@ -304,24 +307,14 @@ class _RoundView extends ConsumerWidget {
         children: [
           for (final (i, c) in round.choices.indexed)
             _ChoiceCard(
-                  key: ValueKey('choice-$i'),
-                  choice: c,
-                  width: width,
-                  compact: layout.compact,
-                  faded:
-                      state._wrong.contains(i) || (state._solved && !c.correct),
-                  solved: state._solved && c.correct,
-                  guide: state._guide && c.correct,
-                  shakeTick: state._lastWrong == i ? state._wrongTick : 0,
-                  onTap: () => state._pick(i),
-                )
-                .animate(delay: motion.d(60 * i))
-                .fadeIn(duration: motion.d(280))
-                .slideX(
-                  begin: motion.movement ? 0.2 : 0,
-                  end: 0,
-                  curve: Curves.easeOutBack,
-                ),
+              key: ValueKey('choice-$i'),
+              index: i,
+              choice: c,
+              width: width,
+              compact: layout.compact,
+              role: state._roleOf(i),
+              onTap: () => state._pick(i),
+            ),
         ],
       );
     }
@@ -401,28 +394,27 @@ class _RoundView extends ConsumerWidget {
 class _ChoiceCard extends ConsumerWidget {
   const _ChoiceCard({
     super.key,
+    required this.index,
     required this.choice,
     required this.width,
     required this.compact,
-    required this.faded,
-    required this.solved,
-    required this.guide,
-    required this.shakeTick,
+    required this.role,
     required this.onTap,
   });
 
+  final int index;
   final Choice choice;
   final double width;
   final bool compact;
-  final bool faded;
-  final bool solved;
-  final bool guide;
-  final int shakeTick;
+  final FxRole role;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
+    final solved = role == FxRole.correct;
+    final guide = role == FxRole.hinted;
+    final faded = role == FxRole.rejected || role == FxRole.faded;
     final hasColor = choice.color != null;
     Widget content = Column(
       mainAxisSize: MainAxisSize.min,
@@ -473,7 +465,7 @@ class _ChoiceCard extends ConsumerWidget {
       ],
     );
 
-    Widget card = AnimatedContainer(
+    final Widget card = AnimatedContainer(
       duration: motion.d(260),
       width: width,
       constraints: BoxConstraints(minHeight: compact ? 68 : 130),
@@ -491,22 +483,13 @@ class _ChoiceCard extends ConsumerWidget {
       child: content,
     );
 
-    card = AnimatedOpacity(
-      opacity: faded ? 0.35 : 1,
-      duration: motion.d(300),
-      child: card,
-    );
-
-    return Pressable(
+    // Animația vine din rol (apăsare, pop, tremur, pulsare, estompare, intrare eșalonată).
+    return RoleFx(
+      role: role,
+      index: index,
       semanticLabel: choice.spoken ?? choice.label,
-      onTap: faded ? null : onTap,
-      child: Juice(
-        enabled: motion.movement,
-        popTick: solved ? 1 : 0,
-        shakeTick: shakeTick,
-        pulse: guide,
-        child: card,
-      ),
+      onTap: onTap,
+      child: card,
     );
   }
 }
@@ -646,16 +629,11 @@ class _FinishView extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Opacity(
                       opacity: i < stars ? 1 : 0.25,
-                      child: EmojiArt('⭐', size: compact ? 64 : 96)
-                          .animate(delay: motion.d(250 + 350 * i))
-                          .fadeIn(duration: motion.d(200))
-                          .scaleXY(
-                            begin: motion.movement ? 0.2 : 1,
-                            end: 1,
-                            duration: motion.d(500),
-                            curve: Curves.elasticOut,
-                          )
-                          .rotate(begin: motion.movement ? -0.15 : 0, end: 0),
+                      child: RoleFx(
+                        role: FxRole.reward,
+                        index: i,
+                        child: EmojiArt('⭐', size: compact ? 64 : 96),
+                      ),
                     ),
                   ),
               ],

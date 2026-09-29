@@ -10,7 +10,8 @@ import 'package:flutter/widgets.dart';
 /// - [popTick]: crește scurt și revine (răspuns corect);
 /// - [hopTick]: sare în sus și revine (valul de obiecte), cu întârzierea [hopDelay];
 /// - [shakeTick]: clătinare blândă ±4 px, care se stinge (greșeală, fără roșu);
-/// - [pulse]: pulsează continuu cât e activ (ghidaj după inactivitate).
+/// - [pulse]: pulsează continuu cât e activ (ghidaj după inactivitate);
+/// - [float]: plutește lin ±4 px cât e activ (recompense), cu faza [floatPhase] (0..1).
 class Juice extends StatefulWidget {
   const Juice({
     super.key,
@@ -21,6 +22,8 @@ class Juice extends StatefulWidget {
     this.hopDelay = Duration.zero,
     this.shakeTick = 0,
     this.pulse = false,
+    this.float = false,
+    this.floatPhase = 0,
   });
 
   final Widget child;
@@ -30,6 +33,8 @@ class Juice extends StatefulWidget {
   final Duration hopDelay;
   final int shakeTick;
   final bool pulse;
+  final bool float;
+  final double floatPhase;
 
   @override
   State<Juice> createState() => _JuiceState();
@@ -52,17 +57,29 @@ class _JuiceState extends State<Juice> with TickerProviderStateMixin {
     vsync: this,
     duration: const Duration(milliseconds: 1400),
   );
+  late final _float = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2400),
+  );
   Timer? _hopTimer;
 
   @override
   void initState() {
     super.initState();
     _syncPulse();
+    _syncFloat();
   }
 
   @override
   void didUpdateWidget(Juice old) {
     super.didUpdateWidget(old);
+    // Buclele se opresc și când efectele se dezactivează (ex. se trece în modul calm).
+    if (widget.pulse != old.pulse || widget.enabled != old.enabled) {
+      _syncPulse();
+    }
+    if (widget.float != old.float || widget.enabled != old.enabled) {
+      _syncFloat();
+    }
     if (!widget.enabled) return;
     if (widget.popTick != old.popTick) _pop.forward(from: 0);
     if (widget.shakeTick != old.shakeTick) _shake.forward(from: 0);
@@ -72,8 +89,15 @@ class _JuiceState extends State<Juice> with TickerProviderStateMixin {
         if (mounted) _hop.forward(from: 0);
       });
     }
-    if (widget.pulse != old.pulse || widget.enabled != old.enabled) {
-      _syncPulse();
+  }
+
+  void _syncFloat() {
+    if (widget.float && widget.enabled) {
+      if (!_float.isAnimating) _float.repeat();
+    } else {
+      _float
+        ..stop()
+        ..value = 0;
     }
   }
 
@@ -94,19 +118,24 @@ class _JuiceState extends State<Juice> with TickerProviderStateMixin {
     _hop.dispose();
     _shake.dispose();
     _pulse.dispose();
+    _float.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-    animation: Listenable.merge([_pop, _hop, _shake, _pulse]),
+    animation: Listenable.merge([_pop, _hop, _shake, _pulse, _float]),
     child: widget.child,
     builder: (context, child) {
       final scale =
           1 +
           0.12 * math.sin(math.pi * Curves.easeOut.transform(_pop.value)) +
           0.035 * (1 - math.cos(2 * math.pi * _pulse.value));
-      final dy = -14 * math.sin(math.pi * _hop.value);
+      final dy =
+          -14 * math.sin(math.pi * _hop.value) +
+          (_float.isAnimating
+              ? 4 * math.sin(2 * math.pi * (_float.value + widget.floatPhase))
+              : 0);
       final s = _shake.value;
       final dx = s == 0 ? 0.0 : math.sin(s * math.pi * 6) * 4 * (1 - s);
       return Transform.translate(
