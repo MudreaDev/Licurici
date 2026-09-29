@@ -1,6 +1,6 @@
 # ADR-021: Animații: Rive + flutter_animate + Flame (strat pe strat)
 
-Status: Acceptat · Data: 2026-09-26
+Status: Acceptat · Data: 2026-09-26 · **Partea de Rive e înlocuită de [ADR-028](ADR-028-animatie-procedurala-din-cod-fara-rive.md)** (animație procedurală din cod).
 
 ## Context
 Jocurile trebuie să fie vii și interactive, dar fără să distragă sau să supra-stimuleze, și cu modul calm respectat peste tot.

@@ -49,7 +49,7 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 | Monorepo (`apps/`, `packages/`, `backend/`, `infra/`, `docs/`, `legacy/`) | ✅ | Workspace Dart (pub workspaces) la rădăcină. |
 | `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS (teste de paritate), regulă adaptivă, modelul jocurilor (`ChoiceGame` = metadate în constructor), **10 jocuri** împărțite pe materii (`lib/src/games/<materie>.dart`), `Lesson.art` pentru pre-încărcare, `tool/voice_coverage.dart`. 74 de teste. |
 | `packages/game_content` | 🟨 | 329 SVG OpenMoji, **532 clipuri voce RO** (acoperire 100% a frazelor rostite), font Nunito. Conținutul jocurilor e încă în Dart (`content.dart`) → de mutat în JSON. |
-| Aplicația copil — Flutter | 🟨 | **Landscape** (telefon + tabletă, ADR-023), ecran de pornire cu pre-încărcare, ecran principal cu jocuri derulate orizontal, mecanica `choice` cu animații (§15.1) pe două panouri, variante cu grupuri de obiecte, mascota desenată în cod, voce, modul calm. 7 teste de widget (inclusiv layout la 4 dimensiuni de ecran). Setările sunt în memorie (Drift urmează). **UI-ul e încă simplu** (carduri albe): va fi refăcut cu ilustrații ChatGPT + animații Rive (§14.1). |
+| Aplicația copil — Flutter | 🟨 | **Landscape** (telefon + tabletă, ADR-023), ecran de pornire cu pre-încărcare, ecran principal cu jocuri derulate orizontal, mecanica `choice` cu animații (§15.1) pe două panouri, variante cu grupuri de obiecte, mascota desenată în cod, voce, modul calm. 7 teste de widget (inclusiv layout la 4 dimensiuni de ecran). Setările sunt în memorie (Drift urmează). **UI-ul e încă simplu** (carduri albe): va fi refăcut cu ilustrații ChatGPT + animație procedurală din cod (§14.1, ADR-028). |
 | Panou părinte/terapeut — Flutter Web | ⬜ | |
 | Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrare inițială, `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. 6 teste. Fără auth/sync încă. |
 | Docker Compose (dev) | 🟨 | postgres, redis, storage (RustFS), migrate, api, worker, mailpit. **Netestat încă**: Docker nu e instalat pe mașina de dezvoltare. Prod (Traefik, TLS) — de făcut. |
@@ -63,32 +63,34 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 28.09.2026.** Ultimul lucru terminat: jocurile „Scriem corect” (ortograme) și „Povești” (Creangă, domeniu public), inspirate ca mecanică din seria Aidem Media „Să ne jucăm pe calculator” (fără resursele lor: au drepturi de autor). Total 12 jocuri, voce 100%.
+**Ultima actualizare: 29.09.2026.** Ultimul lucru terminat: **planul de reorientare spre terapie gamificată** — [docs/plan-dezvoltare-terapeutica.md](docs/plan-dezvoltare-terapeutica.md) + [ADR-026](docs/adr/ADR-026-trasee-de-dezvoltare-nu-clase.md) + [ADR-027](docs/adr/ADR-027-niveluri-generate-procedural.md) (status: propus). Pe scurt: **arii de dezvoltare cu trasee de trepte** în loc de clase și materii, fiecare rundă = **încercare măsurată** (corect, nivel de ajutor P0–P4, latență, stimul), KPI-uri pentru specialist (independență, stăpânire, generalizare, menținere), plan individual cu obiective, grafice ABA. Înainte: 12 jocuri, voce 100%.
 
-**Următorii pași, în ordine:**
-1. ⬜ **Câte un folder per joc**: `packages/licurici_core/lib/src/games/<materie>/<id>/` cu `<id>.dart` + `continut.json` + `<id>_test.dart`. Fiecare joc e autonom și mic, ușor de modificat fără să atingi restul (§16.1).
-2. ⬜ **Schema de parametri per joc** (`GameConfig`): nivel min/max, runde, subset de conținut. Panoul specialistului generează formularul automat din schemă (§2.1, ADR-025).
-3. ⬜ **Drift (SQLite local)** în aplicația copilului: profil + setări persistente, sesiuni și evenimente de joc, **outbox** pentru sincronizare, **plan** primit de la specialist, **acvariu** (stele + pești). Versiuni verificate: `drift` 2.35, `drift_flutter` 0.3.1, `uuid` 4.6 (UUIDv7).
-4. ⬜ **Ghid de ilustrații** `docs/art/ghid-ilustratii.md`: lista resurselor per joc, dimensiuni, nume de fișiere, prompturi ChatGPT cu stil fix, cum se taie personajele pentru Rive (§14.1).
-5. ⬜ „Jocurile de azi” pe ecranul principal (5 jocuri alese zilnic).
-6. ⬜ Restul Sprintului 3 (§21): conturi părinte, consimțământ, sincronizare.
+**Următorii pași, în ordine** (roadmap-ul revizuit e în plan, §11; §21 de mai jos se actualizează după acceptarea ADR-026):
+1. ⬜ **Validează planul** (utilizatorul) și, ideal, cu 1–2 specialiști: ariile și treptele (plan §3), KPI-urile (plan §4). Apoi ADR-026 → Acceptat și README §2, §11, §15, §16 rescrise pe arii.
+2. ⬜ `Domain`, `Step`, `Ladder` în `licurici_core` + trasee JSON pentru **POT, LRC, EMO, PAC-numerație**; cele 12 jocuri re-etichetate pe trepte.
+3. ⬜ Câte un folder per joc + `GameConfig` (ADR-025), acum legate de trepte.
+4. ⬜ `Trial` + `PromptLevel` + ierarhia de ajutor în `ChoiceMechanic`; `MasteryEvaluator` cu teste.
+4a. ⬜ **Paleta = [catalogul de 52 de jocuri pe arii](docs/catalog-jocuri-pe-arii.md)** (axe de dificultate, KPI specifici, paradigme din cercetare). **Paleta de jocuri + alocarea pe copil** (plan §5.1): fără clase/materii; specialistul (sau părintele, fără specialist) alege jocurile fiecărui copil; aplicația copilului arată doar jocurile alocate.
+4b. ⬜ **Niveluri generate procedural** (plan §3.5, ADR-027): axe de dificultate per joc, rating Elo copil × treaptă, bază de stimuli cu atribute, fără repetări, seed reproductibil. Primul: Potrivire.
+5. ⬜ Drift: sesiuni, încercări, progres pe trasee, outbox.
+6. ⬜ `SessionPlanner` (încălzire, 70/30, menținere), orar vizual, pauză; ecranul „Drumul de azi”.
 
 **Ce trebuie să facă utilizatorul (nu se poate automatiza):**
 - ⬜ Windows **Developer Mode** pornit (necesar pentru build-urile Flutter cu plugin-uri: APK, Windows).
 - ⬜ `flutter doctor --android-licenses` (acceptarea licențelor Android SDK). Apoi: `flutter build apk --release --split-per-abi` → `app-arm64-v8a-release.apk`.
 - ⬜ **Docker Desktop** instalat → `docker compose -f infra/docker-compose.yml up -d --build`.
-- ⬜ Ilustrațiile cu ChatGPT (după ghidul de la pasul 4) și animațiile în Rive.
+- ⬜ Ilustrațiile cu ChatGPT (după ghidul de ilustrații), gândite pentru decupare pe straturi. Animațiile le face codul (ADR-028).
 - ⬜ Opțional: conectorul **Figma** trebuie autorizat din setările conectorilor claude.ai ca să poată fi folosit.
 
 **Decizii luate recent (nu le rediscuta fără motiv nou):**
-- Grafica: **ChatGPT → Rive → Flutter**, NU Unity/Spine (ADR-024).
+- Grafica: **ilustrații ChatGPT → decupare pe straturi → animație procedurală din cod**, fără Rive (ADR-028, înlocuiește partea de Rive din ADR-021/024). NU Unity/Spine, NU mutare pe Phaser/Capacitor.
 - Aplicația copilului: **doar landscape** (ADR-023).
 - Font: **Nunito** (Fredoka nu are ă/ș/ț — ADR-022).
 - Stocare fișiere: S3-compatibil, **RustFS** în dezvoltare (imaginea MinIO nu mai e publicată — ADR-015).
 - Un singur panou web cu **două roluri** (părinte / specialist), nu două aplicații (§2.1).
 - Chat AI **doar pentru adulți**, niciodată pentru copil (§2.1).
 - Jocuri „generative”: **algoritmi la rulare, AI doar la crearea conținutului** (§2.1).
-- Clasele 5–12: arhitectura se pregătește acum, conținutul vine în semestrul 2 (§2.1).
+- Clasele 5–12: **propus să se retragă** (ADR-026) — focusul e dezvoltarea, nu curriculumul școlar.
 
 ---
 
@@ -170,7 +172,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 **Imagini cu fețe (emoții etc.)**
 - Personaje **inventate**, ilustrate, într-un stil fix: 2–3 personaje, fiecare în toate emoțiile (consistență = aspect profesionist).
 - **Niciodată fotografii de copii reali sau fețe de persoane reale.**
-- Trecerea între emoții se animă în Rive sau în cod.
+- Trecerea între emoții se animă în cod (cadre de expresie + tranziție, ADR-028).
 
 ---
 
@@ -191,7 +193,7 @@ Nu îl ștergem: îl folosim ca referință de comportament și conținut.
 | `src/audio-ro/*.mp3` + `manifest.js` (~430 clipuri) | `packages/game_content/audio/` | Regenerate cu Azure Speech (ADR-16). |
 | `src/art/openmoji/` (SVG) | `packages/game_content/art/` | Licență **CC BY-SA 4.0** → atribuire obligatorie în „Despre”. |
 | `src/music.js` (muzică generată în cod) | `flutter_soloud` / sinteză simplă sau loop-uri pre-randate | |
-| `src/mascot.js` (licuriciul SVG) | Animație **Rive** (stări: idle, bucurie, încurajare, somn) | |
+| `src/mascot.js` (licuriciul SVG) | `CutoutRig` animat din cod (stări: idle, bucurie, încurajare, somn — ADR-028) | |
 | `store.js` (localStorage) | Drift/SQLite local (ADR-04) | |
 
 ---
@@ -328,7 +330,7 @@ Monorepo Dart: **pub workspaces** (nativ din Dart 3.6, un singur `pubspec.lock` 
 | Modele | **freezed** + `json_serializable` | | — |
 | Audio | **audioplayers** (voce; suport Windows fără pachete extra), `flutter_soloud` (efecte, latență mică — ulterior) | | 16 |
 | Ilustrații | **flutter_svg** (OpenMoji), `CustomPainter` pentru scene | | 19 |
-| Mascota + personaje animate | **Rive** (state machines) | | 21 |
+| Mascota + personaje animate | **Decupaje pe straturi animate din cod** (`CutoutRig`) | | 28 |
 | Animații UI / efecte | **flutter_animate** + animații implicite Flutter | | 21 |
 | Sincronizare în fundal | **workmanager** + `connectivity_plus` | | 11 |
 | Backend | **NestJS** (TypeScript) pe **Node.js 24 LTS** | 11.x | 06 |
@@ -390,6 +392,9 @@ Fiecare decizie are fișierul ei în [`docs/adr/`](docs/adr/). Rezumat:
 | [ADR-023](docs/adr/ADR-023-landscape-si-ecran-de-pornire.md) | Landscape obligatoriu și ecran de pornire cu pre-încărcare |
 | [ADR-024](docs/adr/ADR-024-grafica-chatgpt-rive-flutter.md) | Grafică și animație: ChatGPT → Rive → Flutter (nu Unity/Spine) |
 | [ADR-025](docs/adr/ADR-025-jocuri-configurabile-si-planuri.md) | Jocuri configurabile (schemă de parametri) și planuri de la specialist |
+| [ADR-026](docs/adr/ADR-026-trasee-de-dezvoltare-nu-clase.md) | Trasee de dezvoltare pe arii, nu clase și materii (propus) |
+| [ADR-027](docs/adr/ADR-027-niveluri-generate-procedural.md) | Niveluri generate procedural, rating adaptiv, fără repetări (propus) |
+| [ADR-028](docs/adr/ADR-028-animatie-procedurala-din-cod-fara-rive.md) | Animație procedurală din cod, fără Rive (propus) |
 
 ---
 
@@ -608,24 +613,26 @@ culori vesele dar calme), **fără a copia** grafica, numele sau brandul lor —
 **Design system (`packages/licurici_ui`):**
 - **Tokeni:** culori pe materii (8), neutre calde, un singur „verde = corect”; spațiere pe grilă de 8; raze mari (24–32 dp); umbre moi.
 - **Tipografie:** Nunito (rotunjit, cu toate diacriticele românești — ADR-022), inclus local; ≥ 20 sp pentru copil; interlinie 1.3–1.5. Andika — candidat pentru jocurile de citire.
-- **Componente:** `BigChoiceCard`, `SubjectTile`, `GameTile`, `MascotBubble` (Rive), `StarBar`, `ParentGate`, `CalmToggle`, `RoundProgressDots`, `DropZone`, `TraceCanvas`.
+- **Componente:** `BigChoiceCard`, `SubjectTile`, `GameTile`, `MascotBubble` (`CutoutRig`), `StarBar`, `ParentGate`, `CalmToggle`, `RoundProgressDots`, `DropZone`, `TraceCanvas`.
 - **Teme:** Normal · Calm (saturație redusă, fără animații de fundal) · Contrast ridicat · Întunecat.
 - **Animații:** implicite (AnimatedScale, Hero), 200–400 ms, curbe `easeOutBack` blânde; totul oprit la `reduceMotion`.
 - **Accesibilitate:** `Semantics` pe fiecare țintă, contrast AA, ținte ≥ 64 dp, suport TalkBack/VoiceOver în zona părintelui, niciodată doar culoarea ca informație (icon + text + voce).
-- **Ilustrații:** OpenMoji (CC BY-SA 4.0, atribuire în „Despre”) + scene desenate în cod; mascota Licurici în Rive.
+- **Ilustrații:** OpenMoji (CC BY-SA 4.0, atribuire în „Despre”) + scene desenate în cod; mascota Licurici = decupaj pe straturi animat din cod.
 - **Responsiv:** **landscape** pe telefon (≥ 640×360) și tabletă; două panouri (stimul | variante) când lățimea ≥ 1,2 × înălțimea; stimulii se scalează după înălțime (0,6×–1,5×). Verificat automat de `test/layout_test.dart` la 4 dimensiuni (ADR-023).
 
-### 14.1 Pipeline-ul de grafică și animație (ADR-024)
+### 14.1 Pipeline-ul de grafică și animație (ADR-024 + ADR-028)
 
 ```
-ChatGPT (ilustrații PNG transparente, stil fix)
-   → tăiere pe bucăți (corp, aripi, coadă, cap, ochi…) — în ChatGPT sau Photopea/Krita
-   → Rive (oase + animații Idle/Fly/Happy/Blink… + state machine cu intrări)
-   → fișier .riv în packages/game_content
-   → Flutter: pachetul `rive`, controlat din joc (ex. input „corect” → animația FlyToNest)
+ChatGPT (ilustrații, stil fix, personaj pe fundal verde uniform + foaie de expresii)
+   → tools/mascot-rig/split.py: decupare automată pe straturi (corp, aripi, brațe, ochi…)
+     + rig.json (poziții, puncte de articulație)
+   → packages/game_content (PNG-uri + rig.json)
+   → Flutter: `CutoutRig` animă straturile din cod (respirație, clipit, aripi, privire, bucurie);
+     obiectele din jocuri primesc efectele automat, după rolul lor în mecanică
 ```
+**Fără Rive (ADR-028):** muncă manuală per personaj și incompatibil cu nivelurile generate algoritmic.
 - **Fundaluri pe straturi** (cer, copaci în spate, frunze în față): PNG separate, animate în cod (legănare, parallax, nori).
-- **Personaje**: Rive (state machine). Ce face Rive față de Spine: editor gratuit, runtime oficial Flutter, stările comută singure. Spine rămâne alternativa (`spine_flutter`), dar e plătit.
+- **Personaje**: decupaje pe straturi + `CutoutRig` (stări în Dart), expresiile = cadre desenate cu tranziție. Rive/Spine doar dacă apare un animator (ADR-028).
 - **Sărbătorile** (baloane, stele) sunt mai blânde decât în AutiSpark: fără fundal întunecat, fără sute de particule. Intensitatea vine din `MotionPolicy`.
 - **Ce face fiecare:** ChatGPT desenează; Claude scrie codul, integrează, animă în cod și leagă animațiile de logică. Claude nu generează ilustrații pictate.
 - Specificația exactă (listă, dimensiuni, nume, prompturi) va fi în `docs/art/ghid-ilustratii.md` (pasul 4 din §0.1).
@@ -677,7 +684,8 @@ iar mascota participă. Totuși, animația **servește învățarea** și nu tre
 |---------|-----------|
 | `flutter_animate` | Efecte declarative pe widget-uri: apariție, săritură, tremur blând, strălucire, înlănțuiri (`.animate().scale().then().shake()`) |
 | Animații implicite Flutter (`AnimatedScale`, `AnimatedSlide`, `Hero`, `TweenAnimationBuilder`) | Tranziții între stări, fără cod suplimentar |
-| **Rive** (state machines) | Mascota Licurici și personajele din jocuri: idle, privește spre răspuns, bucurie, încurajare, somn; obiecte animate (floare care crește, ceas cu ace) |
+| **`CutoutRig`** (propriu, ADR-028) | Mascota Licurici și personajele: straturi animate din cod — idle, privește spre răspuns, bucurie, încurajare, somn |
+| **Bibliotecă de efecte pe roluri** (propriu) | Țintă, distractor, corect, recompensă, obiect tras → apăsare, squash & stretch, plutire, magnet, pop, particule; automat în orice joc |
 | `CustomPainter` + `AnimationController` | Scene desenate în cod (fundaluri cu nori care plutesc, apă, iarbă în vânt), trasee de trasare |
 | **Flame** (+ `flame_forge2d` unde e fizică) | Jocuri cu buclă: labirint, obiecte care cad/plutesc, particule |
 | Particule ușoare (`flame` sau painter propriu) | Steluțe, confetti, sclipiri de licurici, limitate la ≤ 40 de particule |
@@ -700,7 +708,7 @@ iar mascota participă. Totuși, animația **servește învățarea** și nu tre
 | `memoryCards` | Întoarcere 3D a cărților (`Transform` + `rotateY`); perechile găsite se ridică și se strâng în colț |
 | `sequence` | Elementele se aprind pe rând, cu sunet (Simon); pașii rutinei se așază pe o „bandă” animată |
 | `trace` | O steluță merge înaintea degetului, iar traseul se colorează cu „cerneală magică”; la final litera prinde viață (ex. **A** devine albină care zboară) |
-| `puzzle` | Piesele se „lipesc” cu snap și ușoară vibrație; imaginea completă se animă (Rive) |
+| `puzzle` | Piesele se „lipesc” cu snap și ușoară vibrație; imaginea completă se animă (efecte din cod) |
 | `maze` | Personajul se mișcă cu degetul, cu coliziuni moi (fără „game over”); la ieșire îl așteaptă o surpriză |
 | `freePlay` | Colorare: umplere cu „val” de culoare. Respiră: balonul/floarea crește și scade în ritmul respirației. AAC: cardul atins crește și este rostit |
 | `explore` | Autobuzul lui Licurici merge pe hartă între opriri; scene cu parallax (3 straturi) |
@@ -710,7 +718,7 @@ iar mascota participă. Totuși, animația **servește învățarea** și nu tre
 - `adunam` / `scadem`: merele intră în coș sau ies din coș în animație, iar ecuația se scrie singură.
 - `ceasul`: acele se rotesc animat până la oră, iar copilul le poate trage cu degetul.
 - `bani`: monedele se rostogolesc în pușculiță.
-- `emotii`: fața personajului (Rive) trece lin de la o emoție la alta.
+- `emotii`: fața personajului trece de la o emoție la alta (cadre de expresie + cross-fade + squash).
 - `habitate`: animalul plasat corect „intră” în habitat (peștele înoată, pasărea zboară în cuib).
 - `anotimpuri`: copacul își schimbă frunzele animat (înflorește, cad frunzele, ninge).
 - `culori`: pata de culoare se împrăștie și colorează un desen alb-negru.
@@ -726,7 +734,7 @@ iar mascota participă. Totuși, animația **servește învățarea** și nu tre
 - **Modul calm / `reduceMotion`:** fără idle și parallax, fără particule; feedbackul devine o simplă estompare sau schimbare de culoare. O singură clasă `MotionPolicy` (în `licurici_ui`) decide intensitatea: `full` / `gentle` / `off`. Toate animațiile o citesc, niciuna nu ocolește setarea.
 - Fără clipiri rapide (> 3/s) și fără tremur puternic, pentru siguranța copiilor cu epilepsie fotosensibilă și sensibilitate senzorială.
 - O singură animație „mare” pe ecran la un moment dat, ca atenția să rămână pe sarcină.
-- Performanță: 60 fps pe o tabletă Android modestă. Folosim `RepaintBoundary`, ținem Rive-ul în afara listelor lungi și măsurăm cu DevTools.
+- Performanță: 60 fps pe o tabletă Android modestă. Folosim `RepaintBoundary`, ținem personajele animate în afara listelor lungi și măsurăm cu DevTools.
 - Testabil: animațiile sunt deterministe în teste (`tester.pump(duration)`), iar golden tests se fac cu `MotionPolicy.off`.
 
 ---
@@ -948,15 +956,15 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Documentele de cercetare §23 începute (arhitectură, comunicare)
 
 ### Sprint 2 · 12 – 25 oct — Design system + primul joc
-- [ ] Tokeni, teme (normal/calm/contrast), componente de bază, mascota Rive (idle + bucurie + încurajare)
-- [x] `MotionPolicy` (full/gentle/off) + cele 7 straturi de animație din §15.1 în `ChoiceMechanic` (mascota desenată în cod; Rive urmează)
+- [ ] Tokeni, teme (normal/calm/contrast), componente de bază, mascota `CutoutRig` (idle + bucurie + încurajare)
+- [x] `MotionPolicy` (full/gentle/off) + cele 7 straturi de animație din §15.1 în `ChoiceMechanic` (mascota desenată în cod; `CutoutRig` urmează)
 - [ ] Home: „Jocurile de azi” + categorii; alegerea clasei; navigație fixă — 🟨 clase, materii și bara fixă gata; lipsește „Jocurile de azi”
 - [x] Port `difficulty.js` → Dart + teste de paritate
 - [x] `ChoiceMechanic` + audio + recompense + final cu stele
 - [x] 10 jocuri `choice` (alfabetul, numaram, adunam, scadem, culori, forme, emotii, opuse, comparam, da-nu)
 - [x] Vocea: generator (`tools/gen-voice`) + raport de acoperire (`tool/voice_coverage.dart`) — 100%
 - [ ] Câte un folder per joc + `GameConfig` (schema de parametri)
-- [ ] Ghid de ilustrații pentru ChatGPT + Rive (`docs/art/`)
+- [ ] Ghid de ilustrații pentru ChatGPT, cu reguli de decupare pe straturi (`docs/art/`)
 - [ ] Drift: profil local, setări, evenimente, outbox, plan, acvariu (stele + pești)
 
 ### Sprint 3 · 26 oct – 8 nov — Conturi + sincronizare

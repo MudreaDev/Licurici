@@ -28,3 +28,6 @@ build/
 
 # lista generată de tool/voice_coverage.dart --write
 packages/game_content/audio/ro/lipsa.txt
+
+# Python
+__pycache__/

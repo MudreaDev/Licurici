@@ -1,6 +1,6 @@
 # ADR-024: Grafică și animație: ChatGPT → Rive → Flutter (nu Unity/Spine)
 
-Status: Acceptat · Data: 2026-09-26
+Status: Acceptat · Data: 2026-09-26 · **Etapa Rive e înlocuită de [ADR-028](ADR-028-animatie-procedurala-din-cod-fara-rive.md)**: ilustrațiile ChatGPT rămân, animația se face din cod.
 
 ## Context
 Aplicația trebuie să arate profesionist, la nivelul AutiSpark: personaje ilustrate, fundaluri pe straturi, animații (pasărea respiră, bate din aripi, zboară la cuib, se bucură, clipește). Există un singur dezvoltator, fără ilustrator. A fost propus pipeline-ul „ChatGPT (grafică) → Claude (cod) → Unity (joc) → Spine / Unity 2D Animation (animații)”.
