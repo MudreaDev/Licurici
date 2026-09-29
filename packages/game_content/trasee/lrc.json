@@ -1,0 +1,51 @@
+{
+  "id": "LRC",
+  "domain": "LRC",
+  "version": 1,
+  "title": "Limbaj receptiv",
+  "criterion": { "independence": 0.8, "sessions": 2, "stimulusSets": 2, "minTrials": 5 },
+  "steps": [
+    {
+      "id": "LRC1",
+      "title": "Arată obiectul, 2 variante",
+      "goal": "Arată obiectul numit, din 2 variante, cu obiecte foarte cunoscute.",
+      "exercises": [{ "game": "arata-mi", "config": { "variante": [2, 2], "familiar": 1 } }]
+    },
+    {
+      "id": "LRC2",
+      "title": "3–5 variante, 20+ obiecte",
+      "goal": "Arată obiectul numit din 3–5 variante; vocabular de peste 20 de obiecte.",
+      "exercises": [{ "game": "arata-mi", "config": { "variante": [3, 5] } }]
+    },
+    {
+      "id": "LRC3",
+      "title": "Părțile corpului și acțiuni",
+      "goal": "Arată părți ale corpului și acțiuni („cine doarme?”).",
+      "exercises": [{ "game": "ce-face", "config": {} }]
+    },
+    {
+      "id": "LRC4",
+      "title": "Atribute",
+      "goal": "Înțelege atribute: mare/mic, culoare + obiect („mingea roșie”).",
+      "exercises": [{ "game": "mingea-rosie", "config": { "elemente": 1, "atribute": true } }]
+    },
+    {
+      "id": "LRC5",
+      "title": "Două elemente",
+      "goal": "Arată două lucruri cerute deodată („câinele și mingea”).",
+      "exercises": [{ "game": "mingea-rosie", "config": { "elemente": 2 } }]
+    },
+    {
+      "id": "LRC6",
+      "title": "Prepoziții și poziții",
+      "goal": "Înțelege sus, jos, în, lângă, sub.",
+      "exercises": [{ "game": "unde-este", "config": {} }]
+    },
+    {
+      "id": "LRC7",
+      "title": "Întrebări despre o scenă",
+      "goal": "Răspunde la cine? ce? unde? despre o scenă sau o poveste scurtă.",
+      "exercises": [{ "game": "povesti", "config": {} }]
+    }
+  ]
+}

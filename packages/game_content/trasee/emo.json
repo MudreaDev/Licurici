@@ -1,0 +1,45 @@
+{
+  "id": "EMO",
+  "domain": "EMO",
+  "version": 1,
+  "title": "Emoții și cogniție socială",
+  "criterion": { "independence": 0.8, "sessions": 2, "stimulusSets": 2, "minTrials": 5 },
+  "steps": [
+    {
+      "id": "EMO1",
+      "title": "Bucuros sau trist",
+      "goal": "Recunoaște bucuria și tristețea, 2 variante, același personaj.",
+      "exercises": [{ "game": "emotii", "config": { "emotii": ["bucuros", "trist"], "personaje": "acelasi" } }]
+    },
+    {
+      "id": "EMO2",
+      "title": "4 emoții, personaje diferite",
+      "goal": "Recunoaște bucuria, tristețea, furia și frica la personaje diferite (generalizare).",
+      "exercises": [{ "game": "emotii", "config": { "emotii": ["bucuros", "trist", "furios", "speriat"], "personaje": "diferite" } }]
+    },
+    {
+      "id": "EMO3",
+      "title": "Emoția din situație",
+      "goal": "Spune ce simte cineva într-o situație („i s-a spart balonul”).",
+      "exercises": [{ "game": "ce-simte", "config": { "indicii": "context" } }]
+    },
+    {
+      "id": "EMO4",
+      "title": "Ce poate face",
+      "goal": "Alege o strategie ca să se simtă mai bine.",
+      "exercises": [{ "game": "ce-simte", "config": { "strategii": true } }]
+    },
+    {
+      "id": "EMO5",
+      "title": "Perspectivă",
+      "goal": "Înțelege ce știe sau crede altcineva („ce crede Ana că e în cutie?”).",
+      "exercises": [{ "game": "cine-stie", "config": {} }]
+    },
+    {
+      "id": "EMO6",
+      "title": "Situații sociale",
+      "goal": "Alege ce e potrivit: a cere, a aștepta rândul, a spune nu.",
+      "exercises": [{ "game": "povesti-sociale", "config": {} }]
+    }
+  ]
+}

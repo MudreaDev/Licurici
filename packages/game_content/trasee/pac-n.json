@@ -1,0 +1,57 @@
+{
+  "id": "PAC-N",
+  "domain": "PAC",
+  "version": 1,
+  "title": "Numerație",
+  "criterion": { "independence": 0.8, "sessions": 2, "stimulusSets": 2, "minTrials": 5 },
+  "steps": [
+    {
+      "id": "PAC-N1",
+      "title": "Cantități mici",
+      "goal": "Potrivește cantități mici (1–3).",
+      "exercises": [{ "game": "numaram", "config": { "interval": [1, 3], "mod": "cantitate" } }]
+    },
+    {
+      "id": "PAC-N2",
+      "title": "Numără până la 5",
+      "goal": "Numără obiecte până la 5.",
+      "exercises": [{ "game": "numaram", "config": { "interval": [1, 5] } }]
+    },
+    {
+      "id": "PAC-N3",
+      "title": "Cifra și cantitatea",
+      "goal": "Potrivește cifra cu numărul de obiecte.",
+      "exercises": [{ "game": "numaram", "config": { "interval": [1, 5], "mod": "cifra" } }]
+    },
+    {
+      "id": "PAC-N4",
+      "title": "Mai mult, mai puțin",
+      "goal": "Compară două grupe: unde sunt mai multe / mai puține.",
+      "exercises": [{ "game": "comparam", "config": {} }]
+    },
+    {
+      "id": "PAC-N5",
+      "title": "Numără până la 10–20",
+      "goal": "Numără obiecte până la 10, apoi 20.",
+      "exercises": [{ "game": "numaram", "config": { "interval": [1, 20] } }]
+    },
+    {
+      "id": "PAC-N6",
+      "title": "Adunare cu obiecte",
+      "goal": "Adună cu sprijin vizual.",
+      "exercises": [{ "game": "adunam", "config": { "obiecte": true } }]
+    },
+    {
+      "id": "PAC-N7",
+      "title": "Scădere cu obiecte",
+      "goal": "Scade cu sprijin vizual.",
+      "exercises": [{ "game": "scadem", "config": { "obiecte": true } }]
+    },
+    {
+      "id": "PAC-N8",
+      "title": "Adunare fără obiecte",
+      "goal": "Adună fără sprijin vizual.",
+      "exercises": [{ "game": "adunam", "config": { "obiecte": false } }]
+    }
+  ]
+}

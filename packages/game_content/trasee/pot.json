@@ -1,0 +1,63 @@
+{
+  "id": "POT",
+  "domain": "POT",
+  "version": 1,
+  "title": "Potrivire și percepție vizuală",
+  "criterion": { "independence": 0.8, "sessions": 2, "stimulusSets": 2, "minTrials": 5 },
+  "steps": [
+    {
+      "id": "POT1",
+      "title": "Identic, 2 variante",
+      "goal": "Potrivește un obiect cu perechea lui identică, din 2 variante.",
+      "exercises": [{ "game": "potriveste", "config": { "mod": "obiect", "identic": true, "variante": [2, 2] } }]
+    },
+    {
+      "id": "POT2",
+      "title": "Identic, 3–5 variante",
+      "goal": "Potrivește obiectul identic din 3–5 variante.",
+      "exercises": [{ "game": "potriveste", "config": { "mod": "obiect", "identic": true, "variante": [3, 5] } }]
+    },
+    {
+      "id": "POT3",
+      "title": "Obiect cu silueta lui",
+      "goal": "Potrivește obiectul cu umbra lui.",
+      "exercises": [{ "game": "umbre", "config": {} }]
+    },
+    {
+      "id": "POT4",
+      "title": "Neidentic",
+      "goal": "Potrivește obiecte de același fel, dar desenate diferit (alt câine, altă minge).",
+      "exercises": [{ "game": "potriveste", "config": { "mod": "obiect", "identic": false, "variante": [2, 5] } }]
+    },
+    {
+      "id": "POT5",
+      "title": "Culori și forme",
+      "goal": "Potrivește după culoare sau după formă, pe obiecte diferite.",
+      "exercises": [
+        { "game": "potriveste", "config": { "mod": "culoare", "variante": [2, 5] } },
+        { "game": "potriveste", "config": { "mod": "forma", "variante": [2, 5] } }
+      ]
+    },
+    {
+      "id": "POT6",
+      "title": "După categorie",
+      "goal": "Pune împreună obiectele din aceeași categorie (animale, mâncare, vehicule).",
+      "exercises": [
+        { "game": "potriveste", "config": { "mod": "categorie", "variante": [2, 5] } },
+        { "game": "sortam", "config": { "regula": "categorie" } }
+      ]
+    },
+    {
+      "id": "POT7",
+      "title": "După asociere",
+      "goal": "Potrivește obiectele care merg împreună (periuță–pastă, cheie–lacăt).",
+      "exercises": [{ "game": "perechi", "config": { "mod": "asociere" } }]
+    },
+    {
+      "id": "POT8",
+      "title": "Șiruri și modele",
+      "goal": "Continuă un model (AB, ABC, AAB).",
+      "exercises": [{ "game": "ce-urmeaza", "config": {} }]
+    }
+  ]
+}

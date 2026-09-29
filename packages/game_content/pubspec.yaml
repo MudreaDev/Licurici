@@ -17,6 +17,7 @@ flutter:
   assets:
     - art/openmoji/
     - audio/ro/
+    - trasee/
   fonts:
     - family: Nunito
       fonts:
