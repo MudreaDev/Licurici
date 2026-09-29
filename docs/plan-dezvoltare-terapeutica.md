@@ -460,10 +460,10 @@ Pentru teză: documentul `docs/research/06-ux-autism.md` se extinde cu acest tab
 
 ### Sprint 2 · până la 25 oct — Modelul de dezvoltare
 - [ ] ADR-026 acceptat; README §2, §11, §15, §16 actualizate (arii în loc de materii/clase)
-- [ ] `Domain`, `Step`, `Ladder` + JSON pentru 4 trasee: **POT, LRC, EMO, PAC-numerație** (validate ulterior)
+- [x] `Domain`, `Step` (`LadderStep`), `Ladder` + JSON pentru 4 trasee: **POT, LRC, EMO, PAC-numerație** (validate ulterior)
 - [ ] Cele 12 jocuri re-etichetate pe trepte; câte un folder per joc + `GameConfig`
-- [ ] `Trial` + `PromptLevel` + ierarhia de ajutor în `ChoiceMechanic`; `MasteryEvaluator` cu teste
-- [ ] Generarea procedurală: `DifficultyAxes`, `SkillRating` (Elo), `StimulusBank` cu atribute, istoric anti-repetare; aplicate pe Potrivire, Emoții, Numerație
+- [x] `Trial` + `PromptLevel` + ierarhia de ajutor în `ChoiceMechanic`; `MasteryEvaluator` cu teste
+- [ ] Generarea procedurală: `DifficultyAxes`, `SkillRating` (Elo), `StimulusBank` cu atribute, istoric anti-repetare; aplicate pe Potrivire, Emoții, Numerație — 🟨 piesele + Potrivire gata; Emoții, Numerație urmează
 - [ ] Drift: sesiuni, încercări, progres pe trasee, outbox
 
 ### Sprint 3 · 26 oct – 8 nov — Sesiunea terapeutică + conturi

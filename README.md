@@ -47,15 +47,15 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 |------|-------|------|
 | Prototip desktop (Electron, JS) | ✅ funcțional | 44 jocuri, motor de dificultate, Aventură, voce RO. **Referință** pentru portare (vezi §3). |
 | Monorepo (`apps/`, `packages/`, `backend/`, `infra/`, `docs/`, `legacy/`) | ✅ | Workspace Dart (pub workspaces) la rădăcină. |
-| `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS (teste de paritate), regulă adaptivă, modelul jocurilor (`ChoiceGame` = metadate în constructor), **10 jocuri** împărțite pe materii (`lib/src/games/<materie>.dart`), `Lesson.art` pentru pre-încărcare, `tool/voice_coverage.dart`. 74 de teste. |
-| `packages/game_content` | 🟨 | 329 SVG OpenMoji, **532 clipuri voce RO** (acoperire 100% a frazelor rostite), font Nunito. Conținutul jocurilor e încă în Dart (`content.dart`) → de mutat în JSON. |
-| Aplicația copil — Flutter | 🟨 | **Landscape** (telefon + tabletă, ADR-023), ecran de pornire cu pre-încărcare, ecran principal cu jocuri derulate orizontal, mecanica `choice` cu animații (§15.1) pe două panouri, variante cu grupuri de obiecte, mascota desenată în cod, voce, modul calm. 7 teste de widget (inclusiv layout la 4 dimensiuni de ecran). Setările sunt în memorie (Drift urmează). **UI-ul e încă simplu** (carduri albe): va fi refăcut cu ilustrații ChatGPT + animație procedurală din cod (§14.1, ADR-028). |
+| `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS, regulă adaptivă, modelul jocurilor, **13 jocuri**. **Fundația terapeutică** (`lib/src/therapy/`): arii, trasee și trepte (`Ladder`, `LadderStep`, JSON pentru POT, LRC, EMO, PAC-N), `Trial` + `PromptLevel` P0–P4, `PromptStrategy` (puțin→mult, mult→puțin, întârziere progresivă), `MasteryEvaluator` + KPI de bază, `SkillRating` (Elo), `DifficultyAxes`, `ExposureHistory` + `SpacedReview` (Leitner), `StimulusBank` cu atribute. **`potriveste`** = primul joc generat procedural (5 moduri, test pe 10 000 de seed-uri). 123 de teste. |
+| `packages/game_content` | 🟨 | 329 SVG OpenMoji, clipuri voce RO (lipsesc 4 fraze noi din `potriveste`), font Nunito, **trasee JSON** (`trasee/`). Conținutul jocurilor și banca de stimuli sunt încă în Dart → de mutat în JSON. |
+| Aplicația copil — Flutter | 🟨 | **Landscape** (telefon + tabletă, ADR-023), ecran de pornire cu pre-încărcare, ecran principal cu jocuri derulate orizontal, mecanica `choice` cu animații (§15.1) pe două panouri, variante cu grupuri de obiecte, **mascota Licurici din straturi, animată din cod (`CutoutRig`)**, **efecte pe roluri (`RoleFx`)**, **ierarhia de ajutor P0–P4** (mâna animată → indicare → mai puține variante → indiciu) și **încercările înregistrate** (în memorie, cu rating Elo pe treaptă), voce, modul calm. 24 de teste de widget. Setările și încercările sunt în memorie (Drift urmează). **UI-ul e încă simplu** (carduri albe): va fi refăcut cu ilustrații ChatGPT + animație procedurală din cod (§14.1, ADR-028). |
 | Panou părinte/terapeut — Flutter Web | ⬜ | |
 | Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrare inițială, `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. 6 teste. Fără auth/sync încă. |
 | Docker Compose (dev) | 🟨 | postgres, redis, storage (RustFS), migrate, api, worker, mailpit. **Netestat încă**: Docker nu e instalat pe mașina de dezvoltare. Prod (Traefik, TLS) — de făcut. |
 | GDPR (consimțământ, export, ștergere, documente) | ⬜ | §13. Schema are deja tabelele `consents`, soft delete, audit. |
 | Documente ADR / cercetare pentru teză | 🟨 | 25 de ADR-uri în `docs/adr/`. `docs/research/` — de început. |
-| Unelte | 🟨 | `tools/gen-voice/gen-voice.mjs` (Azure AI Speech sau edge-tts, incremental). |
+| Unelte | 🟨 | `tools/gen-voice/gen-voice.mjs` (Azure AI Speech sau edge-tts, incremental), `tools/mascot-rig/` (decupare pe straturi + `rig.json` cu pivoți și repere). |
 
 **Termen:** 70% din aplicație gata la finalul semestrului 1 (**decembrie 2026**). Teza propriu-zisă — semestrul 2.
 
@@ -63,16 +63,33 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 29.09.2026.** Ultimul lucru terminat: **planul de reorientare spre terapie gamificată** — [docs/plan-dezvoltare-terapeutica.md](docs/plan-dezvoltare-terapeutica.md) + [ADR-026](docs/adr/ADR-026-trasee-de-dezvoltare-nu-clase.md) + [ADR-027](docs/adr/ADR-027-niveluri-generate-procedural.md) (status: propus). Pe scurt: **arii de dezvoltare cu trasee de trepte** în loc de clase și materii, fiecare rundă = **încercare măsurată** (corect, nivel de ajutor P0–P4, latență, stimul), KPI-uri pentru specialist (independență, stăpânire, generalizare, menținere), plan individual cu obiective, grafice ABA. Înainte: 12 jocuri, voce 100%.
+**Ultima actualizare: 29.09.2026 (sesiune în cloud, pe branch-ul `feat/fundatia-terapeutica-8uqamb`).** Planul de reorientare spre terapie gamificată e în [docs/plan-dezvoltare-terapeutica.md](docs/plan-dezvoltare-terapeutica.md) + ADR-026/027/028 (status: propus). Pe scurt: arii cu trasee de trepte în loc de clase, fiecare rundă = încercare măsurată, KPI-uri pentru specialist, niveluri generate procedural.
 
-**Următorii pași, în ordine** (roadmap-ul revizuit e în plan, §11; §21 de mai jos se actualizează după acceptarea ADR-026):
-1. ⬜ **Validează planul** (utilizatorul) și, ideal, cu 1–2 specialiști: ariile și treptele (plan §3), KPI-urile (plan §4). Apoi ADR-026 → Acceptat și README §2, §11, §15, §16 rescrise pe arii.
-2. ⬜ `Domain`, `Step`, `Ladder` în `licurici_core` + trasee JSON pentru **POT, LRC, EMO, PAC-numerație**; cele 12 jocuri re-etichetate pe trepte.
-3. ⬜ Câte un folder per joc + `GameConfig` (ADR-025), acum legate de trepte.
-4. ⬜ `Trial` + `PromptLevel` + ierarhia de ajutor în `ChoiceMechanic`; `MasteryEvaluator` cu teste.
-4a. ⬜ **Paleta = [catalogul de 52 de jocuri pe arii](docs/catalog-jocuri-pe-arii.md)** (axe de dificultate, KPI specifici, paradigme din cercetare). **Paleta de jocuri + alocarea pe copil** (plan §5.1): fără clase/materii; specialistul (sau părintele, fără specialist) alege jocurile fiecărui copil; aplicația copilului arată doar jocurile alocate.
-4b. ⬜ **Niveluri generate procedural** (plan §3.5, ADR-027): axe de dificultate per joc, rating Elo copil × treaptă, bază de stimuli cu atribute, fără repetări, seed reproductibil. Primul: Potrivire.
-5. ⬜ Drift: sesiuni, încercări, progres pe trasee, outbox.
+**Ce s-a făcut în sesiunea asta** (câte un commit pe pas):
+1. ✅ `tools/mascot-rig/split.py`: brațul se decupează pe clase de culoare + componenta conexă mare (scipy) → fără resturi de aripă; rulează în ~40 s (înainte ~2 min). `rig.json` are acum **pivoți** (rădăcina aripilor, umărul) și **repere** (lanterna, vârful baghetei, ochii, culoarea pielii). Dependențe: `pip install numpy pillow scipy`.
+2. ✅ **`CutoutRig`** (`apps/child_app/lib/shared/rig/`): încarcă `rig.json` + straturile și le animă din cod — respirație, plutire, bătaie din aripi, clipit (pleoape desenate), lanterna care strălucește, bagheta cu scântei la bucurie, înclinare la încurajare, somn. Poza e o **funcție pură** (`RigPose.of`) de timp, stare și `MotionPolicy` (testată: `off` = static, `gentle` = doar lumina). `Mascot` păstrează API-ul (stări: idle / happy / encourage / **sleep**); straturile se încarcă la pornire (boot). Captură: `flutter test test/mascot_test.dart --update-goldens --dart-define=SHOTS=true` → `test/shots/mascota-stari.png`.
+3. ✅ **Efecte pe roluri** (`shared/role_fx.dart`, ADR-028): `FxRole` țintă / indicat / modelat (mâna) / corect / respins / estompat / recompensă / tras → intrare eșalonată, apăsare, pop, tremur, pulsare, plutire, estompare. Cardurile și stelele din `ChoiceMechanic` nu mai animă singure.
+4. ✅ **Fundația** în `licurici_core/lib/src/therapy/` (vezi §0). Traseele: `packages/game_content/trasee/{pot,lrc,emo,pac-n}.json`.
+5. ✅ **`potriveste`** (catalog #9): `StimulusBank` (~120 de obiecte OpenMoji adnotate), 5 moduri (identic, neidentic, culoare, formă, categorie), axe (variante · asemănarea distractorilor · identic/neidentic), seed determinist, `RoundTag` pe fiecare rundă, fără combinații repetate și fără corectul de 3 ori pe aceeași poziție. Test pe 10 000 de seed-uri.
+6. ✅ **Ierarhia de ajutor în `ChoiceMechanic`** + **înregistrarea încercărilor** (`features/therapy/trial_log.dart`, în memorie): treaptă nouă → pornește cu mâna (P4) și se estompează după reușite; joc liber → pornește fără ajutor, urcă la greșeli/pauze. Fiecare rundă → `Trial` (treaptă, ajutor maxim, încercări, latență, seed, axe, stimul); rating-ul Elo al treptei se actualizează.
+7. 🔧 Reparat testul `app_test` (lista de jocuri e leneșă: `scrollUntilVisible`).
+
+**Decizii luate pe parcurs** (de validat, ușor de schimbat):
+- `Step` → **`LadderStep`** (se ciocnea cu `Step` din Material).
+- `Trial.correct` = **primul răspuns a fost corect** (în învățarea fără eroare copilul ajunge oricum la corect); `independent` = corect + P0.
+- Încercarea unui joc vechi (fără treaptă) se înregistrează cu `stepId` = id-ul jocului și strategia puțin→mult; jocurile pe modelul nou folosesc strategia implicită după istoricul treptei.
+- Ierarhia pe greșeli/pauze: fiecare greșeală sau 5 s fără răspuns urcă ajutorul un nivel (P1 indiciu → P2 rămâne un singur distractor activ → P3 corectul pulsează → P4 mâna). Înainte, pulsarea venea după 5 s.
+- `potriveste` apare deocamdată în registrul vechi (Forme & logică, G1), cu tier → mod + dificultate țintă. **`culori` și `forme` rămân** în registru până la paleta pe arii (modurile lor de „numire” țin de LRC, nu de potrivire).
+- Banca de stimuli e în Dart (`therapy/stimulus.dart`), cu `fromJson`/`toJson` pregătite; culorile dominante sunt estimate după desenele OpenMoji — **de verificat de un om**.
+- Vocea pentru 4 fraze noi din `potriveste` **nu s-a putut genera din cloud** (serviciul edge-tts răspunde 403): rulează local `dart run tool/voice_coverage.dart --write` + `node tools/gen-voice/gen-voice.mjs`. Până atunci frazele sunt sărite în tăcere.
+- Straturile mascotei stau în `apps/child_app/assets/mascot/licurici/` (nu în `game_content`), ca în scriptul existent.
+
+**Următorii pași, în ordine** (roadmap-ul revizuit e în plan, §11):
+1. ⬜ **Validează planul** (utilizatorul) și, ideal, cu 1–2 specialiști: ariile și treptele (plan §3, traseele JSON), KPI-urile (plan §4), culorile/categoriile din banca de stimuli. Apoi ADR-026/027/028 → Acceptat și README §2, §11, §15, §16 rescrise pe arii.
+2. ⬜ Drift: sesiuni, încercări, progres pe trasee (rating), istoricul de expunere, outbox — înlocuiește jurnalul din memorie.
+3. ⬜ `potriveste` adaptiv în aplicație: rundă cu rundă din rating (`SkillRating.targetDifficulty` → `DifficultyAxes.pointFor`), nu lecție fixă pe tier; apoi **Emoții** și **Numerație** pe același model.
+4. ⬜ Câte un folder per joc + `GameConfig` (ADR-025), legate de trepte; cele 12 jocuri vechi re-etichetate pe trepte.
+5. ⬜ Ghidul de ilustrații (`docs/art/`) + foaia de expresii a lui Licurici în `CutoutRig` (cross-fade între cadre).
 6. ⬜ `SessionPlanner` (încălzire, 70/30, menținere), orar vizual, pauză; ecranul „Drumul de azi”.
 
 **Ce trebuie să facă utilizatorul (nu se poate automatiza):**
@@ -788,7 +805,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 | 25 | culori | Culori | G1 | choice | culori | 🔁 | S1 |
 | 26 | forme | Forme | G12 | choice | forme geometrice | 🔁 | S1 |
 | 27 | modele | Modele | G12 | choice | continuarea șirului | 🔁 | S1 |
-| 28 | potriveste | Potrivește | G1 | choice | potrivire vizuală | 🔁 | S1 |
+| 28 | potriveste | Potrivește ✅ | G1 | choice | potrivire vizuală (identic, neidentic, culoare, formă, categorie) | 🔁 | S1 |
 | 29 | intrusul | Intrusul | G1234 | choice | categorii, excludere | 🔁 | S1 |
 | 30 | perechi | Perechi | G1234 | memoryCards | memorie vizuală | 🔁 | S1 |
 | 31 | memorie | Memorie (Simon) | G1234 | sequence | memorie de lucru | 🔁 | S1 |
@@ -840,7 +857,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (12):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu.
+**Gata în Flutter (13):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu, **potriveste** (primul pe modelul nou: generator pe axe, seed determinist, trepte POT1–6 — `games/potriveste.dart`).
 Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii}.dart` + registrul `games.dart`.
 **Urmează** (pasul 1 din §0.1): câte un folder per joc — `games/<materie>/<id>/`.
 
@@ -956,8 +973,10 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Documentele de cercetare §23 începute (arhitectură, comunicare)
 
 ### Sprint 2 · 12 – 25 oct — Design system + primul joc
-- [ ] Tokeni, teme (normal/calm/contrast), componente de bază, mascota `CutoutRig` (idle + bucurie + încurajare)
-- [x] `MotionPolicy` (full/gentle/off) + cele 7 straturi de animație din §15.1 în `ChoiceMechanic` (mascota desenată în cod; `CutoutRig` urmează)
+- [ ] Tokeni, teme (normal/calm/contrast), componente de bază — 🟨 mascota `CutoutRig` gata (idle + bucurie + încurajare + somn)
+- [x] `MotionPolicy` (full/gentle/off) + cele 7 straturi de animație din §15.1 în `ChoiceMechanic`, acum prin efectele pe roluri (`RoleFx`)
+- [x] Ierarhia de ajutor P0–P4 în `ChoiceMechanic` + înregistrarea încercărilor (în memorie)
+- [x] Fundația terapeutică în `licurici_core` (trasee, încercări, stăpânire, Elo, axe, istoric) + `potriveste` pe modelul nou
 - [ ] Home: „Jocurile de azi” + categorii; alegerea clasei; navigație fixă — 🟨 clase, materii și bara fixă gata; lipsește „Jocurile de azi”
 - [x] Port `difficulty.js` → Dart + teste de paritate
 - [x] `ChoiceMechanic` + audio + recompense + final cu stele
