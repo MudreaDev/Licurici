@@ -12,4 +12,5 @@ export 'src/therapy/ladder.dart';
 export 'src/therapy/mastery.dart';
 export 'src/therapy/prompting.dart';
 export 'src/therapy/rating.dart';
+export 'src/therapy/stimulus.dart';
 export 'src/therapy/trial.dart';

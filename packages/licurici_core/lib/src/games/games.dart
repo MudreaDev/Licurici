@@ -7,11 +7,13 @@ import '../grades.dart';
 import 'emotii.dart';
 import 'forme.dart';
 import 'matematica.dart';
+import 'potriveste.dart';
 import 'romana.dart';
 
 export 'emotii.dart';
 export 'forme.dart';
 export 'matematica.dart';
+export 'potriveste.dart';
 export 'romana.dart';
 
 const List<GameSpec> allGames = [
@@ -26,6 +28,7 @@ const List<GameSpec> allGames = [
   AdunamGame(),
   ScademGame(),
   // Forme & logică
+  PotrivesteGame(),
   CuloriGame(),
   FormeGame(),
   // Emoții & viață

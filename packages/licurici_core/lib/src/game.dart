@@ -97,6 +97,34 @@ class Choice {
   String toString() => 'Choice(${label ?? art ?? color}${correct ? ', corect' : ''})';
 }
 
+/// Cum a fost generată o rundă (ADR-027): suficient ca nivelul să fie reprodus exact și ca
+/// încercarea (`Trial`) să fie legată de treaptă, stimul și axe.
+class RoundTag {
+  const RoundTag({
+    required this.generator,
+    required this.version,
+    required this.seed,
+    this.stepId,
+    this.config = const {},
+    this.axes = const {},
+    this.difficulty,
+    this.stimulusId,
+    this.stimulusSet,
+  });
+
+  final String generator;
+  final int version;
+  final int seed;
+  final String? stepId;
+  final Map<String, Object?> config;
+  final Map<String, num> axes;
+
+  /// Dificultatea estimată (scara Elo, vezi `DifficultyAxes`).
+  final double? difficulty;
+  final String? stimulusId;
+  final String? stimulusSet;
+}
+
 /// O rundă de tip „alege răspunsul”.
 class ChoiceRound {
   ChoiceRound({
@@ -106,6 +134,7 @@ class ChoiceRound {
     List<String>? speak,
     this.hint,
     this.fixedChoices = false,
+    this.tag,
   })  : speak = speak ?? [prompt],
         assert(choices.any((c) => c.correct), 'o rundă are cel puțin un răspuns corect');
 
@@ -122,6 +151,9 @@ class ChoiceRound {
   /// Jocurile al căror text presupune un număr fix de variante nu sunt tăiate.
   final bool fixedChoices;
 
+  /// Proveniența rundei generate procedural (`null` la jocurile vechi).
+  final RoundTag? tag;
+
   ChoiceRound copyWith({List<Choice>? choices}) => ChoiceRound(
         prompt: prompt,
         visuals: visuals,
@@ -129,6 +161,7 @@ class ChoiceRound {
         speak: speak,
         hint: hint,
         fixedChoices: fixedChoices,
+        tag: tag,
       );
 }
 
