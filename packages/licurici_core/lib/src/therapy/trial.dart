@@ -92,7 +92,8 @@ class Trial {
   final String stepId;
   final String gameId;
 
-  /// A ajuns la răspunsul corect (cu sau fără ajutor).
+  /// Primul răspuns a fost cel corect (cu sau fără ajutor). În învățarea fără eroare copilul
+  /// ajunge oricum la răspuns, deci „a ajuns la corect” n-ar măsura nimic.
   final bool correct;
   final DateTime at;
 

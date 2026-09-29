@@ -37,7 +37,7 @@ void main() {
             for (final r in FxRole.values)
               if (RoleStyle.of(r, m).tappable) r,
           },
-          {FxRole.target, FxRole.hinted, FxRole.dragged},
+          {FxRole.target, FxRole.hinted, FxRole.modeled, FxRole.dragged},
         );
       }
     });
@@ -52,6 +52,10 @@ void main() {
 
     test('pulsarea, plutirea și înclinarea doar cu mișcare', () {
       expect(RoleStyle.of(FxRole.hinted, full).pulse, isTrue);
+      // mâna (P4) e ajutor, nu decor: rămâne vizibilă în toate modurile
+      for (final m in [full, gentle, off]) {
+        expect(RoleStyle.of(FxRole.modeled, m).hand, isTrue);
+      }
       expect(RoleStyle.of(FxRole.reward, full).float, isTrue);
       for (final m in [gentle, off]) {
         expect(RoleStyle.of(FxRole.hinted, m).pulse, isFalse);

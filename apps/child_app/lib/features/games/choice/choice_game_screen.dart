@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,10 +20,11 @@ import '../../../shared/role_fx.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../therapy/trial_log.dart';
 import 'visuals.dart';
 
-/// Mecanica „alege răspunsul” (port din `engine.js`), cu învățare fără eroare și
-/// straturile de animație din README §15.1.
+/// Mecanica „alege răspunsul” (port din `engine.js`), cu învățare fără eroare, ierarhia de
+/// ajutor P0–P4 (plan §3.3), înregistrarea încercărilor și straturile de animație din §15.1.
 class ChoiceGameScreen extends ConsumerStatefulWidget {
   const ChoiceGameScreen({super.key, required this.game});
 
@@ -34,6 +36,7 @@ class ChoiceGameScreen extends ConsumerStatefulWidget {
 
 class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   late Lesson _lesson;
+  late String _sessionId;
   int _index = 0;
   int _attempts = 0;
   int _firstTry = 0;
@@ -48,11 +51,24 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   int _reaction = 0;
   String _bubble = '';
   int _burst = 0;
-  bool _guide = false;
-  Timer? _guideTimer;
   Timer? _advanceTimer;
 
+  // Ierarhia de ajutor (plan §3.3): strategia și planul rundei, nivelul curent și cel maxim.
+  PromptStrategy _strategy = const PromptStrategy();
+  PromptPlan _plan = const PromptPlan();
+  PromptLevel _level = PromptLevel.p0;
+  PromptLevel _maxLevel = PromptLevel.p0;
+  bool _hintSpoken = false;
+
+  /// Ceasul injectabil (`package:clock`): în teste merge pe timpul simulat.
+  final Stopwatch _watch = clock.stopwatch();
+  int? _latencyMs;
+  Timer? _promptTimer;
+
   ChoiceRound get _round => _lesson.rounds[_index];
+
+  /// Treapta rundei (jocurile vechi, fără treaptă, se înregistrează pe id-ul jocului).
+  String get _stepId => _round.tag?.stepId ?? widget.game.id;
 
   @override
   void initState() {
@@ -68,6 +84,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
         grade: s.grade,
       ),
     );
+    _sessionId = newSessionId();
     _index = 0;
     _firstTry = 0;
     _finished = false;
@@ -89,44 +106,98 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _wrong.clear();
     _mood = MascotMood.idle;
     _bubble = _lesson.instruction ?? '';
-    _armGuide();
+    _hintSpoken = false;
+    _latencyMs = null;
+
+    // Treptele noi pornesc cu ajutor mult, care se estompează; jocul liber fără treaptă pornește
+    // fără ajutor și îl crește doar la greșeli sau pauze.
+    final history = ref.read(trialLogProvider).forStep(_stepId);
+    _strategy = _round.tag?.stepId == null
+        ? const PromptStrategy()
+        : PromptStrategy.defaultFor(history);
+    _plan = _strategy.planFor(history);
+    _maxLevel = PromptLevel.p0;
+    _applyLevel(_strategy.levelAt(_plan, elapsed: Duration.zero));
+    _watch
+      ..reset()
+      ..start();
+    _promptTimer?.cancel();
+    _promptTimer = Timer.periodic(
+      const Duration(milliseconds: 250),
+      (_) => _tickPrompt(),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) ref.read(voiceProvider).say(_round.speak);
     });
   }
 
-  /// Stratul 3: după 5 s fără răspuns, ținta corectă pulsează ușor.
-  void _armGuide() {
-    _guide = false;
-    _guideTimer?.cancel();
-    _guideTimer = Timer(const Duration(seconds: 5), () {
-      if (mounted && !_solved) setState(() => _guide = true);
-    });
+  /// Recalculează ajutorul după timp și greșeli; reconstruiește doar când se schimbă nivelul.
+  void _tickPrompt() {
+    if (!mounted || _solved) return;
+    final level = _strategy.levelAt(
+      _plan,
+      elapsed: _watch.elapsed,
+      errors: _attempts,
+    );
+    if (level != _level) setState(() => _applyLevel(level));
   }
 
-  /// Rolul fiecărei variante (efectele vin din rol, ADR-028).
+  void _applyLevel(PromptLevel level) {
+    _level = level;
+    _maxLevel = PromptLevel.max(_maxLevel, level);
+    // P1: indiciul neutru, afișat și rostit o singură dată pe rundă.
+    if (level >= PromptLevel.p1 && _round.hint != null) {
+      _bubble = _round.hint!;
+      if (!_hintSpoken) {
+        _hintSpoken = true;
+        final hint = _round.hint!;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) ref.read(voiceProvider).say([hint]);
+        });
+      }
+    }
+  }
+
+  /// Distractorul care rămâne activ la P2 (reducerea variantelor): primul încă neatins.
+  int? get _keptDistractor {
+    for (final (i, c) in _round.choices.indexed) {
+      if (!c.correct && !_wrong.contains(i)) return i;
+    }
+    return null;
+  }
+
+  /// Rolul fiecărei variante (efectele vin din rol, ADR-028; ajutorul P2–P4 tot prin rol).
   FxRole _roleOf(int i) {
     final correct = _round.choices[i].correct;
     if (_wrong.contains(i)) return FxRole.rejected;
     if (_solved) return correct ? FxRole.correct : FxRole.faded;
-    return _guide && correct ? FxRole.hinted : FxRole.target;
+    if (correct) {
+      if (_level >= PromptLevel.p4) return FxRole.modeled;
+      if (_level >= PromptLevel.p3) return FxRole.hinted;
+      return FxRole.target;
+    }
+    return _level >= PromptLevel.p2 && i != _keptDistractor
+        ? FxRole.faded
+        : FxRole.target;
   }
 
   void _pick(int i) {
     if (_solved || _wrong.contains(i)) return;
+    _latencyMs ??= _watch.elapsedMilliseconds;
     final choice = _round.choices[i];
     final voice = ref.read(voiceProvider);
     if (choice.correct) {
       if (_attempts == 0) _firstTry++;
+      _record();
+      _watch.stop();
+      _promptTimer?.cancel();
       setState(() {
         _solved = true;
         _mood = MascotMood.happy;
         _reaction++;
         _burst++;
         _bubble = 'Bravo!';
-        _guide = false;
       });
-      _guideTimer?.cancel();
       voice.say([if (choice.spoken != null) choice.spoken!, 'Bravo']);
       _advanceTimer = Timer(const Duration(milliseconds: 1400), _next);
     } else {
@@ -135,15 +206,46 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
         _wrong.add(i);
         _mood = MascotMood.encourage;
         _reaction++;
-        // Învățare fără eroare: după a doua greșeală arătăm indiciul și ghidăm spre corect.
-        _bubble = _attempts >= 2 && _round.hint != null
-            ? _round.hint!
-            : 'Mai încearcă';
-        _guide = _attempts >= 2;
+        _bubble = 'Mai încearcă';
+        // Învățare fără eroare: fiecare greșeală urcă ajutorul un nivel (indiciu → mai puține
+        // variante → indicare → mâna care arată), până la plafonul strategiei.
+        _applyLevel(
+          _strategy.levelAt(_plan, elapsed: _watch.elapsed, errors: _attempts),
+        );
       });
       voice.say([if (choice.spoken != null) choice.spoken!, 'Mai încearcă']);
-      if (_attempts < 2) _armGuide();
     }
+  }
+
+  /// Încercarea (plan §4.1), cu nivelul exact al rundei (seed, axe) dacă e generată procedural.
+  void _record() {
+    final tag = _round.tag;
+    final log = ref.read(trialLogProvider.notifier);
+    log.add(
+      Trial(
+        sessionId: _sessionId,
+        stepId: _stepId,
+        gameId: widget.game.id,
+        correct: _attempts == 0,
+        attempts: _attempts + 1,
+        promptLevel: _maxLevel,
+        latencyMs: _latencyMs,
+        seed: tag?.seed,
+        config: tag?.config ?? const {},
+        axes: {
+          for (final MapEntry(:key, :value) in (tag?.axes ?? const {}).entries)
+            key: value.toDouble(),
+        },
+        rating: tag?.difficulty == null
+            ? null
+            : ref.read(trialLogProvider).ratingOf(_stepId).value,
+        stimulusId: tag?.stimulusId,
+        stimulusSet: tag?.stimulusSet,
+        mode: TrialMode.liber,
+        at: clock.now(),
+      ),
+      difficulty: tag?.difficulty,
+    );
   }
 
   void _next() {
@@ -163,7 +265,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
 
   @override
   void dispose() {
-    _guideTimer?.cancel();
+    _promptTimer?.cancel();
     _advanceTimer?.cancel();
     super.dispose();
   }
@@ -413,7 +515,7 @@ class _ChoiceCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
     final solved = role == FxRole.correct;
-    final guide = role == FxRole.hinted;
+    final guide = role == FxRole.hinted || role == FxRole.modeled;
     final faded = role == FxRole.rejected || role == FxRole.faded;
     final hasColor = choice.color != null;
     Widget content = Column(

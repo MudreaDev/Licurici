@@ -15,6 +15,9 @@ enum FxRole {
   /// Ținta indicată de ajutor (P3 / ghidaj după pauză): pulsează.
   hinted,
 
+  /// Ținta arătată de mâna animată (P4, model complet): mâna vine și „atinge” răspunsul.
+  modeled,
+
   /// Răspunsul corect, ales: pop (squash & stretch), rămâne evidențiat.
   correct,
 
@@ -40,6 +43,7 @@ class RoleStyle {
     this.tappable = false,
     this.pulse = false,
     this.float = false,
+    this.hand = false,
   });
 
   final double opacity;
@@ -49,12 +53,16 @@ class RoleStyle {
   final bool pulse;
   final bool float;
 
+  /// Mâna care arată răspunsul (vizibilă și fără mișcare: e ajutor, nu decor).
+  final bool hand;
+
   static RoleStyle of(FxRole role, MotionPolicy motion) {
     final move = motion.movement;
     return switch (role) {
       FxRole.target => const RoleStyle(tappable: true),
       // la `gentle`/`off` ghidajul rămâne vizibil prin chenar (îl desenează jocul), fără pulsare
       FxRole.hinted => RoleStyle(tappable: true, pulse: move),
+      FxRole.modeled => RoleStyle(tappable: true, pulse: move, hand: true),
       FxRole.correct => const RoleStyle(),
       FxRole.rejected || FxRole.faded => const RoleStyle(opacity: 0.35),
       FxRole.reward => RoleStyle(float: motion.ambient),
@@ -137,6 +145,18 @@ class _RoleFxState extends ConsumerState<RoleFx> {
       duration: motion.d(300),
       child: w,
     );
+    // Structură stabilă: mâna e mereu al doilea copil al stivei (sau nimic), obiectul rămâne primul.
+    w = Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: [
+        w,
+        if (style.hand)
+          Positioned.fill(
+            child: IgnorePointer(child: _ModelHand(moving: motion.movement)),
+          ),
+      ],
+    );
     w = Pressable(
       semanticLabel: widget.semanticLabel,
       onTap: style.tappable ? widget.onTap : null,
@@ -163,5 +183,46 @@ class _RoleFxState extends ConsumerState<RoleFx> {
                 end: 0,
                 curve: Curves.easeOutBack,
               );
+  }
+}
+
+/// Mâna animată (P4): intră dinspre colț, apasă de două ori ținta, se oprește, reia.
+/// Fără mișcare (modul calm, reduce motion) stă nemișcată pe țintă.
+class _ModelHand extends StatelessWidget {
+  const _ModelHand({required this.moving});
+
+  final bool moving;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget hand = const Icon(
+      Icons.touch_app_rounded,
+      key: ValueKey('model-hand'),
+      size: 54,
+      color: Color(0xFF3D4A5C),
+      shadows: [Shadow(color: Colors.white, blurRadius: 6)],
+    );
+    if (moving) {
+      hand = hand
+          .animate(onPlay: (c) => c.repeat())
+          .fadeIn(duration: 200.ms)
+          .move(
+            begin: const Offset(70, 80),
+            end: Offset.zero,
+            duration: 650.ms,
+            curve: Curves.easeOutCubic,
+          )
+          .then()
+          .scaleXY(end: 0.85, duration: 140.ms)
+          .then()
+          .scaleXY(end: 1 / 0.85, duration: 140.ms)
+          .then()
+          .scaleXY(end: 0.85, duration: 140.ms)
+          .then()
+          .scaleXY(end: 1 / 0.85, duration: 140.ms)
+          .then(delay: 700.ms)
+          .fadeOut(duration: 250.ms);
+    }
+    return Align(alignment: const Alignment(0.35, 0.45), child: hand);
   }
 }
