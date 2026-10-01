@@ -131,7 +131,9 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     if (choice.correct) {
       if (_attempts == 0) _firstTry++;
       final round = _round;
-      ref.read(sessionProvider.notifier).record(
+      ref
+          .read(sessionProvider.notifier)
+          .record(
             (r) => r.choiceRound(
               gameId: widget.game.id,
               round: round,

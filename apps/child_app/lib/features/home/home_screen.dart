@@ -15,6 +15,7 @@ import '../../data/session.dart';
 import '../parent/parent_gate.dart';
 import '../session/mood_check.dart';
 import '../settings/settings.dart';
+import 'today_path.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -86,6 +87,8 @@ class HomeScreen extends ConsumerWidget {
                     layout.compact ? 8 : 20,
                   ),
                   children: [
+                    const TodayPath(compact: true),
+                    SizedBox(width: layout.compact ? 20 : 32),
                     for (final (i, e) in groups.entries.indexed) ...[
                       if (i > 0) SizedBox(width: layout.compact ? 20 : 32),
                       section(i, e.key, e.value),
@@ -113,6 +116,8 @@ class HomeScreen extends ConsumerWidget {
                   const _Greeting(),
                   const SizedBox(height: 20),
                   _GradePicker(selected: settings.grade),
+                  const SizedBox(height: 12),
+                  const TodayPath(),
                   const SizedBox(height: 12),
                   for (final (i, e) in groups.entries.indexed)
                     section(i, e.key, e.value),
@@ -416,7 +421,8 @@ class _HomeBar extends ConsumerWidget {
             emoji: '📋',
             label: 'Pentru părinți',
             onTap: () async {
-              if (await askParentGate(context) && context.mounted) context.go('/parinte');
+              if (await askParentGate(context) && context.mounted)
+                context.go('/parinte');
             },
           ),
         ],

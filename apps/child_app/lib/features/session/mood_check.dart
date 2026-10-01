@@ -62,7 +62,9 @@ class _MoodDialog extends ConsumerWidget {
                   // Mereu vizibil, și pe telefonul mic: întrebarea nu e obligatorie.
                   TextButton(
                     key: const ValueKey('mood-skip'),
-                    style: TextButton.styleFrom(minimumSize: const Size(64, 64)),
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(64, 64),
+                    ),
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text('Sari peste'),
                   ),

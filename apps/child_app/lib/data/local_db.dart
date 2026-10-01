@@ -31,12 +31,14 @@ class Meta extends Table {
 
 @DriftDatabase(tables: [Sessions, Meta])
 class LocalDb extends _$LocalDb {
-  LocalDb([QueryExecutor? executor]) : super(executor ?? driftDatabase(name: 'licurici'));
+  LocalDb([QueryExecutor? executor])
+    : super(executor ?? driftDatabase(name: 'licurici'));
 
   @override
   int get schemaVersion => 1;
 
-  Future<void> saveSession(SessionRecord r) => into(sessions).insertOnConflictUpdate(
+  Future<void> saveSession(SessionRecord r) =>
+      into(sessions).insertOnConflictUpdate(
         SessionsCompanion.insert(
           id: r.id,
           childId: r.childId,
@@ -48,23 +50,32 @@ class LocalDb extends _$LocalDb {
 
   /// Sesiunile copilului, cronologic.
   Future<List<SessionRecord>> sessionsOf(String childId) async {
-    final rows = await (select(sessions)
-          ..where((s) => s.childId.equals(childId))
-          ..orderBy([(s) => OrderingTerm.asc(s.startedAt)]))
-        .get();
+    final rows =
+        await (select(sessions)
+              ..where((s) => s.childId.equals(childId))
+              ..orderBy([(s) => OrderingTerm.asc(s.startedAt)]))
+            .get();
     return [
       for (final r in rows)
-        SessionRecord.fromJson((jsonDecode(r.payload) as Map).cast<String, Object?>()),
+        SessionRecord.fromJson(
+          (jsonDecode(r.payload) as Map).cast<String, Object?>(),
+        ),
     ];
   }
 
   /// Sesiunile încă netrimise (pentru sincronizare).
-  Future<List<String>> unsyncedIds() async =>
-      [for (final r in await (select(sessions)..where((s) => s.synced.equals(false))).get()) r.id];
+  Future<List<String>> unsyncedIds() async => [
+    for (final r in await (select(
+      sessions,
+    )..where((s) => s.synced.equals(false))).get())
+      r.id,
+  ];
 
-  Future<String?> readMeta(String key) async =>
-      (await (select(meta)..where((m) => m.key.equals(key))).getSingleOrNull())?.value;
+  Future<String?> readMeta(String key) async => (await (select(
+    meta,
+  )..where((m) => m.key.equals(key))).getSingleOrNull())?.value;
 
-  Future<void> writeMeta(String key, String value) =>
-      into(meta).insertOnConflictUpdate(MetaCompanion.insert(key: key, value: value));
+  Future<void> writeMeta(String key, String value) => into(
+    meta,
+  ).insertOnConflictUpdate(MetaCompanion.insert(key: key, value: value));
 }

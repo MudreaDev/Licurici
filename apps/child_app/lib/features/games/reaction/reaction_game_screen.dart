@@ -209,9 +209,9 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     _effect.stop();
     _ambient.stop();
     _speaker.stop();
-    ref.read(sessionProvider.notifier).record(
-          (s) => s.event(SessionEventKind.pause, gameId: widget.game.id),
-        );
+    ref
+        .read(sessionProvider.notifier)
+        .record((s) => s.event(SessionEventKind.pause, gameId: widget.game.id));
     setState(() => _paused = true);
   }
 

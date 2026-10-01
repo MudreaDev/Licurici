@@ -8,11 +8,15 @@ import '../../shared/top_bar.dart';
 
 /// Rapoartele sesiunilor salvate pe dispozitiv (cele mai noi întâi), fiecare cu raportul
 /// sesiunii anterioare pentru comparație.
-final localReportsProvider = FutureProvider.autoDispose<List<SessionReport>>((ref) async {
+final localReportsProvider = FutureProvider.autoDispose<List<SessionReport>>((
+  ref,
+) async {
   final records = await ref.watch(sessionStoreProvider).all();
   final reports = <SessionReport>[];
   for (final r in records) {
-    reports.add(SessionReport.from(r, previous: reports.isEmpty ? null : reports.last));
+    reports.add(
+      SessionReport.from(r, previous: reports.isEmpty ? null : reports.last),
+    );
   }
   return reports.reversed.toList();
 });
@@ -33,7 +37,9 @@ class ParentScreen extends ConsumerWidget {
             Expanded(
               child: reports.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => const Center(child: Text('Sesiunile nu au putut fi citite.')),
+                error: (e, _) => const Center(
+                  child: Text('Sesiunile nu au putut fi citite.'),
+                ),
                 data: (list) => list.isEmpty
                     ? const Center(
                         child: Padding(
@@ -49,7 +55,8 @@ class ParentScreen extends ConsumerWidget {
                         padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                         itemCount: list.length,
                         separatorBuilder: (_, _) => const SizedBox(height: 12),
-                        itemBuilder: (context, i) => _SessionCard(report: list[i]),
+                        itemBuilder: (context, i) =>
+                            _SessionCard(report: list[i]),
                       ),
               ),
             ),
@@ -69,7 +76,8 @@ class _SessionCard extends StatelessWidget {
     final r = report.record;
     final d = r.start.toLocal();
     String two(int x) => x.toString().padLeft(2, '0');
-    final when = '${two(d.day)}.${two(d.month)}.${d.year} · ${two(d.hour)}:${two(d.minute)}';
+    final when =
+        '${two(d.day)}.${two(d.month)}.${d.year} · ${two(d.hour)}:${two(d.minute)}';
     final text = Theme.of(context).textTheme;
     return Card(
       key: ValueKey('session-${r.id}'),
@@ -94,7 +102,9 @@ class _SessionCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(report.parentSummary, style: text.bodyLarge),
             Theme(
-              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              data: Theme.of(
+                context,
+              ).copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
                 tilePadding: EdgeInsets.zero,
                 title: const Text('Detalii pentru specialist'),

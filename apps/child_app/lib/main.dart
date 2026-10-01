@@ -30,7 +30,8 @@ Future<void> main() async {
       // Sesiunile se păstrează pe dispozitiv (Drift, ADR-004). Pe web (doar previzualizare)
       // Drift ar cere sqlite3.wasm + worker; acolo rămân în memorie.
       overrides: [
-        if (!kIsWeb) sessionStoreProvider.overrideWithValue(DriftSessionStore(LocalDb())),
+        if (!kIsWeb)
+          sessionStoreProvider.overrideWithValue(DriftSessionStore(LocalDb())),
       ],
       child: const LicuriciApp(),
     ),
@@ -56,7 +57,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           game: reactionGameById(state.pathParameters['id']!)!,
         ),
       ),
-      GoRoute(path: '/parinte', builder: (context, state) => const ParentScreen()),
+      GoRoute(
+        path: '/parinte',
+        builder: (context, state) => const ParentScreen(),
+      ),
       GoRoute(
         path: '/joc/:id',
         redirect: (context, state) =>

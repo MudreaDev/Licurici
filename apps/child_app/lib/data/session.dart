@@ -36,7 +36,9 @@ class DriftSessionStore implements SessionStore {
 /// îl primește la sincronizare, când părintele își face cont (ADR-012).
 const localChildId = 'local';
 
-final sessionStoreProvider = Provider<SessionStore>((ref) => MemorySessionStore());
+final sessionStoreProvider = Provider<SessionStore>(
+  (ref) => MemorySessionStore(),
+);
 
 /// Sesiunea în curs (null = nicio sesiune deschisă). O sesiune începe la primul joc și se
 /// încheie când copilul apasă „Gata pe azi” (sau, implicit, la următoarea pornire).
@@ -84,15 +86,17 @@ class SessionController extends Notifier<SessionRecorder?> {
   }
 
   SessionRecord _snapshot(SessionRecorder r) => SessionRecord(
-        id: r.id,
-        childId: r.childId,
-        start: r.start,
-        end: DateTime.now(),
-        trials: r.trials,
-        events: r.events,
-        moodBefore: r.moodBefore,
-        moodAfter: r.moodAfter,
-      );
+    id: r.id,
+    childId: r.childId,
+    start: r.start,
+    end: DateTime.now(),
+    trials: r.trials,
+    events: r.events,
+    moodBefore: r.moodBefore,
+    moodAfter: r.moodAfter,
+  );
 }
 
-final sessionProvider = NotifierProvider<SessionController, SessionRecorder?>(SessionController.new);
+final sessionProvider = NotifierProvider<SessionController, SessionRecorder?>(
+  SessionController.new,
+);

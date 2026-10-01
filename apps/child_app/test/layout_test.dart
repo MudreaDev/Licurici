@@ -92,7 +92,17 @@ void main() {
           );
         }
 
-        await tester.ensureVisible(find.text('Adunăm'));
+        // Lista de jocuri e orizontală și leneșă: cardurile se construiesc doar la derulare.
+        await tester.scrollUntilVisible(
+          find.text('Adunăm'),
+          200,
+          scrollable: find
+              .descendant(
+                of: find.byType(ListView),
+                matching: find.byType(Scrollable),
+              )
+              .first,
+        );
         await settle(tester, 2);
         await tester.tap(find.text('Adunăm'));
         // Primul joc din sesiune: „Cum te simți?” (trebuie să încapă și pe telefonul mic).
