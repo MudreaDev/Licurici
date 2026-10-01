@@ -6,6 +6,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../app/theme.dart';
 import '../../data/session.dart';
 import '../../shared/top_bar.dart';
+import 'sync_dialog.dart';
 
 /// Rapoartele sesiunilor salvate pe dispozitiv (cele mai noi întâi), fiecare cu raportul
 /// sesiunii anterioare pentru comparație.
@@ -36,11 +37,23 @@ class ParentScreen extends ConsumerWidget {
           children: [
             TopBar(
               title: 'Pentru părinți',
-              trailing: BarButton(
-                key: const ValueKey('export-sessions'),
-                emoji: '📋',
-                label: 'Copiază sesiunile pentru specialist',
-                onTap: () => _export(context, ref),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BarButton(
+                    key: const ValueKey('sync-sessions'),
+                    emoji: '☁️',
+                    label: 'Trimite sesiunile pe server',
+                    onTap: () => showSyncDialog(context),
+                  ),
+                  const SizedBox(width: 8),
+                  BarButton(
+                    key: const ValueKey('export-sessions'),
+                    emoji: '📋',
+                    label: 'Copiază sesiunile pentru specialist',
+                    onTap: () => _export(context, ref),
+                  ),
+                ],
               ),
             ),
             Expanded(

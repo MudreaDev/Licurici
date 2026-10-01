@@ -1,0 +1,179 @@
+import 'dart:convert';
+
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:licurici/data/local_db.dart';
+import 'package:licurici/data/session.dart';
+import 'package:licurici/data/sync.dart';
+import 'package:licurici_core/licurici_core.dart';
+
+const serverChild = '0190a1b2-0000-7000-8000-000000000001';
+
+/// Serverul simulat: aceleași rute și răspunsuri ca `backend/src/api/controllers.ts`.
+class FakeServer {
+  final received = <Map<String, dynamic>>[];
+  final consents = <String>[];
+  bool hasChild = false;
+  bool down = false;
+
+  http.Response json(Object body, [int status = 200]) =>
+      http.Response.bytes(utf8.encode(jsonEncode(body)), status);
+
+  Future<http.Response> handle(http.Request r) async {
+    if (down) throw const SocketLikeException();
+    final path = r.url.path.replaceFirst('/api/v1', '');
+    final body = r.body.isEmpty ? null : jsonDecode(r.body);
+    if (path == '/auth/login') {
+      return (body as Map)['password'] == 'parola-lunga-1'
+          ? json({
+              'accessToken': 'tok',
+              'refreshToken': 'r' * 30,
+              'expiresIn': 900,
+            })
+          : json({
+              'statusCode': 401,
+              'message': 'E-mail sau parolă greșită.',
+            }, 401);
+    }
+    expect(r.headers['authorization'], 'Bearer tok');
+    if (path == '/consents') {
+      consents.add('${(body as Map)['purpose']}=${body['granted']}');
+      return json({'SYNC': true});
+    }
+    if (path == '/children' && r.method == 'GET') {
+      return json(
+        hasChild
+            ? [
+                {'id': serverChild, 'nickname': 'Ilinca'},
+              ]
+            : [],
+      );
+    }
+    if (path == '/children' && r.method == 'POST') {
+      hasChild = true;
+      return json({'id': serverChild, 'nickname': (body as Map)['nickname']});
+    }
+    if (path == '/children/$serverChild/sessions') {
+      final sessions = ((body as Map)['sessions'] as List)
+          .cast<Map<String, dynamic>>();
+      received.addAll(sessions);
+      return json({'accepted': sessions.length});
+    }
+    return json({'statusCode': 404, 'message': 'Nu există.'}, 404);
+  }
+}
+
+class SocketLikeException implements Exception {
+  const SocketLikeException();
+}
+
+void main() {
+  final demo = demoChildren().first.sessions.take(4).toList();
+  List<SessionRecord> local() => [
+    for (final s in demo)
+      SessionRecord.fromJson({...s.toJson(), 'childId': localChildId}),
+  ];
+
+  Future<int> run(
+    FakeServer server,
+    SessionStore store, {
+    String password = 'parola-lunga-1',
+    bool consent = true,
+  }) =>
+      SyncClient(
+        client: MockClient(server.handle),
+        baseUrl: 'http://api/api/v1',
+      ).run(
+        store: store,
+        email: 'ana@example.md',
+        password: password,
+        consent: consent,
+      );
+
+  test(
+    'fără bifa de acord nu pleacă nimic (nici măcar autentificarea)',
+    () async {
+      final server = FakeServer();
+      final store = MemorySessionStore();
+      for (final s in local()) {
+        await store.save(s);
+      }
+      await expectLater(
+        run(server, store, consent: false),
+        throwsA(isA<SyncException>()),
+      );
+      expect(server.received, isEmpty);
+      expect(server.consents, isEmpty);
+    },
+  );
+
+  test(
+    'trimite doar sesiunile netrimise, cu faptele calculate pe tabletă; a doua oară nimic',
+    () async {
+      final server = FakeServer();
+      final db = LocalDb(NativeDatabase.memory());
+      addTearDown(db.close);
+      final store = DriftSessionStore(db);
+      for (final s in local()) {
+        await store.save(s);
+      }
+
+      expect(await run(server, store), demo.length);
+      expect(server.consents, ['SYNC=true']);
+      expect(
+        server.hasChild,
+        isTrue,
+      ); // profilul s-a creat la prima sincronizare
+      final first = server.received.first;
+      expect(
+        (first['record'] as Map)['childId'],
+        localChildId,
+      ); // serverul pune id-ul real
+      expect(first['facts'], SessionReport.from(demo.first).toAiJson());
+      // Faptele includ comparația cu sesiunea anterioară (calculată în ordine).
+      expect(
+        server.received[1]['facts'],
+        SessionReport.from(
+          demo[1],
+          previous: SessionReport.from(demo[0]),
+        ).toAiJson(),
+      );
+
+      expect(await run(server, store), 0);
+      expect(server.received, hasLength(demo.length));
+
+      // O sesiune nouă (sau modificată) se trimite la următoarea sincronizare.
+      final extra = demoChildren()[1].sessions.first;
+      await store.save(
+        SessionRecord.fromJson({...extra.toJson(), 'childId': localChildId}),
+      );
+      expect(await run(server, store), 1);
+    },
+  );
+
+  test(
+    'parolă greșită sau server căzut: mesaj clar, sesiunile rămân de trimis',
+    () async {
+      final server = FakeServer();
+      final store = MemorySessionStore();
+      for (final s in local()) {
+        await store.save(s);
+      }
+      await expectLater(
+        run(server, store, password: 'gresita-gresita'),
+        throwsA(
+          isA<SyncException>().having(
+            (e) => e.message,
+            'message',
+            'E-mail sau parolă greșită.',
+          ),
+        ),
+      );
+      server.down = true;
+      await expectLater(run(server, store), throwsA(isA<SyncException>()));
+      expect(await store.unsyncedIds(), hasLength(demo.length));
+    },
+  );
+}

@@ -8,13 +8,30 @@ import 'local_db.dart';
 abstract interface class SessionStore {
   Future<void> save(SessionRecord record);
   Future<List<SessionRecord>> all();
+
+  /// Sesiunile încă netrimise pe server (outbox).
+  Future<List<String>> unsyncedIds();
+  Future<void> markSynced(List<String> ids);
 }
 
 class MemorySessionStore implements SessionStore {
   final _records = <String, SessionRecord>{};
+  final _synced = <String>{};
 
   @override
-  Future<void> save(SessionRecord record) async => _records[record.id] = record;
+  Future<void> save(SessionRecord record) async {
+    _records[record.id] = record;
+    _synced.remove(record.id); // modificată după trimitere → se retrimite
+  }
+
+  @override
+  Future<List<String>> unsyncedIds() async => [
+    for (final id in _records.keys)
+      if (!_synced.contains(id)) id,
+  ];
+
+  @override
+  Future<void> markSynced(List<String> ids) async => _synced.addAll(ids);
 
   @override
   Future<List<SessionRecord>> all() async =>
@@ -30,6 +47,12 @@ class DriftSessionStore implements SessionStore {
 
   @override
   Future<List<SessionRecord>> all() => db.sessionsOf(localChildId);
+
+  @override
+  Future<List<String>> unsyncedIds() => db.unsyncedIds();
+
+  @override
+  Future<void> markSynced(List<String> ids) => db.markSynced(ids);
 }
 
 /// Pe dispozitiv există un singur profil de copil, fără cont; id-ul real (pseudonim, UUID)

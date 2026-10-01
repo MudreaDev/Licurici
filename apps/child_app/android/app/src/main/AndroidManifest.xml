@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Doar pentru sincronizarea opțională din Pentru părinți (cont + consimțământ). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Licurici"
         android:name="${applicationName}"

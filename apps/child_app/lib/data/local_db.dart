@@ -37,6 +37,7 @@ class LocalDb extends _$LocalDb {
   @override
   int get schemaVersion => 1;
 
+  /// Salvarea resetează `synced`: o sesiune modificată după trimitere se retrimite.
   Future<void> saveSession(SessionRecord r) =>
       into(sessions).insertOnConflictUpdate(
         SessionsCompanion.insert(
@@ -45,7 +46,13 @@ class LocalDb extends _$LocalDb {
           startedAt: r.start,
           endedAt: r.end,
           payload: jsonEncode(r.toJson()),
+          synced: const Value(false),
         ),
+      );
+
+  Future<void> markSynced(List<String> ids) =>
+      (update(sessions)..where((s) => s.id.isIn(ids))).write(
+        const SessionsCompanion(synced: Value(true)),
       );
 
   /// Sesiunile copilului, cronologic.
