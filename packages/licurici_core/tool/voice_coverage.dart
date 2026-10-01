@@ -40,6 +40,12 @@ void main(List<String> args) {
     }
   }
 
+  for (final game in reactionGames) {
+    for (var level = 1; level <= 30; level++) {
+      add(game.generate(level, seed: level).instruction, game.id);
+    }
+  }
+
   final missing = phrases.keys.where((p) => !clips.contains(p)).toList()..sort();
   final covered = phrases.length - missing.length;
   stdout.writeln('Fraze rostite: ${phrases.length} · cu voce: $covered · lipsă: ${missing.length}');

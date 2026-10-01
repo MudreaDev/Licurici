@@ -1,0 +1,124 @@
+/// Modelul de dezvoltare (plan §3, ADR-026): arii → trepte → încercări.
+/// Treptele de aici sunt prima versiune (de validat cu un specialist, plan §10); vor fi mutate
+/// în JSON (`game_content/trasee/<arie>.json`) când le editează panoul.
+library;
+
+/// Ariile de dezvoltare (plan §3.1).
+enum Domain {
+  atn('ATN', 'Atenție și atenție comună'),
+  imi('IMI', 'Imitație'),
+  pot('POT', 'Potrivire și percepție vizuală'),
+  lrc('LRC', 'Limbaj receptiv'),
+  com('COM', 'Comunicare și limbaj expresiv'),
+  cog('COG', 'Cogniție'),
+  emo('EMO', 'Emoții și cogniție socială'),
+  fex('FEX', 'Funcții executive și autoreglare'),
+  aut('AUT', 'Autonomie și rutine'),
+  mot('MOT', 'Motricitate fină'),
+  pac('PAC', 'Pre-academic → academic');
+
+  const Domain(this.code, this.label);
+
+  final String code;
+  final String label;
+
+  static Domain fromCode(String code) => Domain.values.firstWhere(
+        (d) => d.code == code,
+        orElse: () => throw ArgumentError.value(code, 'code', 'arie necunoscută'),
+      );
+}
+
+/// O treaptă dintr-un traseu: un obiectiv observabil, cu jocurile care îl exersează.
+class Step {
+  const Step(this.id, this.objective, {this.games = const []});
+
+  /// `EMO3`, `PAC-N4`.
+  final String id;
+  final String objective;
+
+  /// Id-urile jocurilor care exersează treapta.
+  final List<String> games;
+
+  Domain get domain => Domain.fromCode(id.split(RegExp('[-0-9]')).first);
+
+  @override
+  String toString() => 'Step($id)';
+}
+
+/// Traseul unei arii: trepte ordonate de la mic la mare.
+class Ladder {
+  const Ladder(this.domain, this.steps);
+
+  final Domain domain;
+  final List<Step> steps;
+
+  Step? step(String id) {
+    for (final s in steps) {
+      if (s.id == id) return s;
+    }
+    return null;
+  }
+
+  /// Treapta următoare (null la capăt).
+  Step? after(String id) {
+    final i = steps.indexWhere((s) => s.id == id);
+    return i < 0 || i + 1 >= steps.length ? null : steps[i + 1];
+  }
+}
+
+/// Traseele de pornire (plan §3.2 + catalog). Doar ariile cu jocuri în aplicație.
+const List<Ladder> ladders = [
+  Ladder(Domain.atn, [
+    Step('ATN1', 'Se orientează spre un stimul care apare în centru', games: ['prinde-licuriciul']),
+    Step('ATN2', 'Găsește stimulul oriunde pe ecran, inclusiv la margini',
+        games: ['prinde-licuriciul']),
+    Step('ATN3', 'Urmărește privirea și gestul cuiva spre un obiect'),
+    Step('ATN4', 'Urmărește doar privirea (fără gest)'),
+  ]),
+  Ladder(Domain.pot, [
+    Step('POT5', 'Potrivește culori și forme pe obiecte diferite', games: ['culori', 'forme']),
+  ]),
+  Ladder(Domain.lrc, [
+    Step('LRC7', 'Răspunde la întrebări despre o poveste ascultată', games: ['povesti']),
+  ]),
+  Ladder(Domain.com, [
+    Step('COM2', 'Răspunde cu da/nu la întrebări despre ce vede', games: ['da-nu']),
+  ]),
+  Ladder(Domain.emo, [
+    Step('EMO1', 'Deosebește bucuros de trist', games: ['emotii']),
+    Step('EMO2', 'Recunoaște emoțiile de bază pe fețe diferite', games: ['emotii']),
+    Step('EMO3', 'Spune ce simte cineva într-o situație', games: ['ce-simte']),
+    Step('EMO4', 'Alege ce poate face cineva ca să se simtă mai bine', games: ['ce-ma-ajuta']),
+    Step('EMO5', 'Înțelege ce știe și ce crede altcineva (perspectivă)', games: ['cine-stie']),
+    Step('EMO6', 'Alege comportamentul potrivit în situații sociale', games: ['situatii']),
+  ]),
+  Ladder(Domain.fex, [
+    Step('FEX2', 'Atinge doar ținta cerută și se abține la celelalte (go/no-go)',
+        games: ['pescarul']),
+    Step('FEX5', 'Ține minte și repetă o secvență (memorie de lucru)', games: ['simon']),
+  ]),
+  Ladder(Domain.pac, [
+    Step('PAC-N2', 'Numără până la 5', games: ['numaram']),
+    Step('PAC-N4', 'Compară cantități (mai mult / mai puțin)', games: ['comparam']),
+    Step('PAC-N6', 'Adună cu obiecte', games: ['adunam']),
+    Step('PAC-N7', 'Scade cu obiecte', games: ['scadem']),
+    Step('PAC-L1', 'Recunoaște literele', games: ['alfabetul']),
+    Step('PAC-L5', 'Vocabular: opuse', games: ['opuse']),
+    Step('PAC-L8', 'Scrie corect ortogramele', games: ['ortografie']),
+  ]),
+];
+
+Ladder ladderFor(Domain d) => ladders.firstWhere((l) => l.domain == d);
+
+/// Treapta după id, căutată în toate traseele.
+Step? stepById(String id) {
+  for (final l in ladders) {
+    final s = l.step(id);
+    if (s != null) return s;
+  }
+  return null;
+}
+
+/// Treptele exersate de un joc.
+List<Step> stepsForGame(String gameId) =>
+    [for (final l in ladders) ...l.steps.where((s) => s.games.contains(gameId))];

@@ -8,11 +8,13 @@ import 'emotii.dart';
 import 'forme.dart';
 import 'matematica.dart';
 import 'romana.dart';
+import 'social.dart';
 
 export 'emotii.dart';
 export 'forme.dart';
 export 'matematica.dart';
 export 'romana.dart';
+export 'social.dart';
 
 const List<GameSpec> allGames = [
   // Limba română
@@ -31,6 +33,10 @@ const List<GameSpec> allGames = [
   // Emoții & viață
   EmotiiGame(),
   DaNuGame(),
+  CeSimteGame(),
+  CeMaAjutaGame(),
+  CineStieGame(),
+  SituatiiGame(),
 ];
 
 GameSpec? gameById(String id) {
