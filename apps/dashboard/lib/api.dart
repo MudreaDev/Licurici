@@ -11,6 +11,9 @@ const apiUrl = String.fromEnvironment(
   defaultValue: 'http://localhost:3000/api/v1',
 );
 
+/// Versiunea politicii de confidențialitate acceptate (dovada consimțământului, GDPR art. 7).
+const privacyPolicyVersion = '2026-10';
+
 class ApiException implements Exception {
   const ApiException(this.status, this.message);
   final int status;
@@ -66,6 +69,40 @@ class ApiClient {
         ),
     ];
   }
+
+  /// Consimțămintele părintelui: scop → acordat (README §13).
+  Future<Map<String, bool>> consents() async =>
+      ((await _send('GET', '/consents')) as Map).cast<String, bool>();
+
+  Future<Map<String, bool>> setConsent(String purpose, bool granted) async =>
+      ((await _send(
+                'POST',
+                '/consents',
+                body: {
+                  'purpose': purpose,
+                  'granted': granted,
+                  'policyVersion': privacyPolicyVersion,
+                },
+              ))
+              as Map)
+          .cast<String, bool>();
+
+  /// Copiii părintelui (fără sesiuni), pentru pagina de cont.
+  Future<List<Map<String, dynamic>>> ownChildren() async =>
+      ((await _send('GET', '/children')) as List).cast<Map<String, dynamic>>();
+
+  Future<List<Map<String, dynamic>>> shares(String childId) async =>
+      ((await _send('GET', '/children/$childId/share')) as List)
+          .cast<Map<String, dynamic>>();
+
+  Future<void> share(String childId, String email, {int days = 90}) => _send(
+    'POST',
+    '/children/$childId/share',
+    body: {'email': email, 'days': days},
+  );
+
+  Future<void> unshare(String childId, String therapistId) =>
+      _send('DELETE', '/children/$childId/share/$therapistId');
 
   Future<Map<String, dynamic>> summary(
     String childId,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_content/game_content.dart' as content;
 import 'package:go_router/go_router.dart';
+import 'account_page.dart';
 import 'api.dart';
 import 'import_dialog.dart';
 import 'login_page.dart';
@@ -13,6 +14,7 @@ GoRouter createRouter({String? initialLocation}) => GoRouter(
   routes: [
     GoRoute(path: '/', builder: (_, _) => const RolePage()),
     GoRoute(path: '/autentificare', builder: (_, _) => const LoginPage()),
+    GoRoute(path: '/cont', builder: (_, _) => const AccountPage()),
     GoRoute(path: '/parinte', builder: (_, _) => const ParentPage()),
     GoRoute(path: '/specialist', builder: (_, _) => const SpecialistPage()),
     GoRoute(
@@ -184,10 +186,20 @@ class SignInButton extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: signedIn
-          ? TextButton(
-              onPressed: () =>
-                  ref.read(serverChildrenProvider.notifier).signOut(),
-              child: const Text('Ieși'),
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton(
+                  key: const ValueKey('account'),
+                  onPressed: () => context.go('/cont'),
+                  child: const Text('Contul meu'),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      ref.read(serverChildrenProvider.notifier).signOut(),
+                  child: const Text('Ieși'),
+                ),
+              ],
             )
           : TextButton(
               key: const ValueKey('sign-in'),

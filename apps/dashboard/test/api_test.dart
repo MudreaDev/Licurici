@@ -17,6 +17,14 @@ class FakeBackend {
   bool consent;
   int accessVersion = 1;
   final calls = <String>[];
+  final consents = <String, bool>{
+    'SYNC': true,
+    'AI_SUMMARY': false,
+    'THERAPIST_SHARING': false,
+    'WEEKLY_REPORT': false,
+    'PUSH_NOTIFICATIONS': false,
+  };
+  final shares = <Map<String, dynamic>>[];
   final sessions = demoChildren().first.sessions;
 
   http.Response json(Object body, [int status = 200]) => http.Response.bytes(
@@ -87,6 +95,34 @@ class FakeBackend {
         'cached': false,
       });
     }
+    if (path == '/consents') {
+      if (r.method == 'POST') {
+        final b = jsonDecode(r.body) as Map;
+        consents[b['purpose'] as String] = b['granted'] as bool;
+      }
+      return json(consents);
+    }
+    if (path == '/children/$childId/share') {
+      if (r.method == 'POST') {
+        final b = jsonDecode(r.body) as Map;
+        if (b['email'] != 'dr@clinica.md') {
+          return json({
+            'statusCode': 404,
+            'message': 'Nu există un cont de specialist cu acest e-mail.',
+          }, 404);
+        }
+        shares.add({
+          'therapistId': 't1',
+          'expiresAt': '2026-12-30T12:00:00.000Z',
+        });
+        return json(shares.last);
+      }
+      return json(shares);
+    }
+    if (path == '/children/$childId/share/t1' && r.method == 'DELETE') {
+      shares.clear();
+      return http.Response('', 204);
+    }
     return json({'statusCode': 404, 'message': 'Nu există.'}, 404);
   }
 }
@@ -147,8 +183,8 @@ void main() {
       ); // după autentificare, fără copii demo
 
       await tester.tap(find.text('Ilinca').first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('ai-summary')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('ai-summary')));
       await tester.pumpAndSettle();
       expect(
         find.text('Ilinca a lucrat foarte bine la emoții.'),
@@ -170,8 +206,8 @@ void main() {
       await tester.tap(find.text('Sunt specialist'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Ilinca').first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('ai-summary')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('ai-summary')));
       await tester.pumpAndSettle();
       expect(find.text('Rezumatul AI nu e disponibil'), findsOneWidget);
       expect(find.textContaining('consimțământul'), findsOneWidget);
@@ -190,5 +226,57 @@ void main() {
     expect(kids.single.child.nickname, 'Ilinca');
     expect(kids.single.sessions, hasLength(backend.sessions.length));
     expect(backend.calls, contains('POST /auth/refresh'));
+  });
+
+  testWidgets('contul meu: consimțăminte și partajarea cu specialistul', (
+    tester,
+  ) async {
+    final backend = FakeBackend();
+    await pumpDashboard(tester, backend);
+    await signIn(tester, 'parola-lunga-1');
+    await tester.tap(find.byKey(const ValueKey('account')));
+    await tester.pumpAndSettle();
+
+    // Consimțământul pentru rezumatele AI: dat din panou, salvat pe server.
+    expect(
+      tester
+          .widget<SwitchListTile>(
+            find.byKey(const ValueKey('consent-AI_SUMMARY')),
+          )
+          .value,
+      isFalse,
+    );
+    await tester.tap(find.byKey(const ValueKey('consent-AI_SUMMARY')));
+    await tester.pumpAndSettle();
+    expect(backend.consents['AI_SUMMARY'], isTrue);
+    expect(
+      tester
+          .widget<SwitchListTile>(
+            find.byKey(const ValueKey('consent-AI_SUMMARY')),
+          )
+          .value,
+      isTrue,
+    );
+
+    // Invitație cu e-mail necunoscut → mesajul serverului; apoi corect → apare; revocare → dispare.
+    Future<void> invite(String email) async {
+      await tester.tap(find.byKey(const ValueKey('share-$childId')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const ValueKey('share-email')), email);
+      await tester.tap(find.byKey(const ValueKey('share-confirm')));
+      await tester.pumpAndSettle();
+    }
+
+    await invite('altcineva@x.md');
+    expect(
+      find.text('Nu există un cont de specialist cu acest e-mail.'),
+      findsOneWidget,
+    );
+    await invite('dr@clinica.md');
+    expect(find.text('Acces până la 2026-12-30'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('unshare-t1')));
+    await tester.pumpAndSettle();
+    expect(find.text('Acces până la 2026-12-30'), findsNothing);
+    expect(backend.calls, contains('DELETE /children/$childId/share/t1'));
   });
 }
