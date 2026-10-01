@@ -49,7 +49,7 @@ class CeSimteGame extends ChoiceGame {
       visuals: [EmojiVisual(c.emoji), SceneVisual(scene)],
       hint: 'Gândește-te cum te-ai simți tu.',
       choices: [
-        for (final o in options) Choice(label: o.label(c), art: o.emoji, correct: o == target),
+        for (final o in options) Choice(label: o.label(c), art: o.emoji, id: o.key, correct: o == target),
       ],
     );
   }

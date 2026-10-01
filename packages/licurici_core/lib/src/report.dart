@@ -75,6 +75,41 @@ class SessionRecord {
   final List<SessionEvent> events;
   final Mood? moodBefore;
   final Mood? moodAfter;
+
+  Map<String, Object?> toJson() => {
+        'id': id,
+        'childId': childId,
+        'start': start.toUtc().toIso8601String(),
+        'end': end.toUtc().toIso8601String(),
+        'trials': [for (final t in trials) t.toJson()],
+        'events': [
+          for (final e in events)
+            {'kind': e.kind.name, 'at': e.at.toUtc().toIso8601String(), 'gameId': e.gameId},
+        ],
+        'moodBefore': moodBefore?.name,
+        'moodAfter': moodAfter?.name,
+      };
+
+  factory SessionRecord.fromJson(Map<String, Object?> j) {
+    Mood? mood(Object? v) => v == null ? null : Mood.values.byName(v as String);
+    return SessionRecord(
+      id: j['id']! as String,
+      childId: j['childId']! as String,
+      start: DateTime.parse(j['start']! as String),
+      end: DateTime.parse(j['end']! as String),
+      trials: [for (final t in j['trials']! as List) Trial.fromJson((t as Map).cast<String, Object?>())],
+      events: [
+        for (final e in j['events']! as List)
+          SessionEvent(
+            SessionEventKind.values.byName((e as Map)['kind'] as String),
+            DateTime.parse(e['at'] as String),
+            gameId: e['gameId'] as String?,
+          ),
+      ],
+      moodBefore: mood(j['moodBefore']),
+      moodAfter: mood(j['moodAfter']),
+    );
+  }
 }
 
 /// Statisticile pe o treaptă într-o sesiune.

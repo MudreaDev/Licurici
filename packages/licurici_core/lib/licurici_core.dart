@@ -13,3 +13,4 @@ export 'src/sequence.dart';
 export 'src/session.dart';
 export 'src/report.dart';
 export 'src/demo.dart';
+export 'src/recorder.dart';

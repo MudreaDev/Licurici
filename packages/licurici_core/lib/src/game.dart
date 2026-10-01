@@ -77,7 +77,15 @@ class SceneVisual extends Visual {
 
 /// O variantă de răspuns: text și/sau ilustrație și/sau culoare și/sau un grup de obiecte.
 class Choice {
-  const Choice({this.label, this.art, this.color, this.objects, this.correct = false, this.speak})
+  const Choice({
+    this.label,
+    this.art,
+    this.color,
+    this.objects,
+    this.correct = false,
+    this.speak,
+    this.id,
+  })
       : assert(label != null || art != null || color != null || objects != null, 'variantă goală');
 
   final String? label;
@@ -92,6 +100,13 @@ class Choice {
   final String? speak;
 
   String? get spoken => speak ?? label;
+
+  /// Identificatorul stabil al stimulului (ex. cheia emoției `trist`), pentru matricea de
+  /// confuzii. Implicit: eticheta / ilustrația / culoarea / cantitatea.
+  final String? id;
+
+  String get key =>
+      id ?? label?.toLowerCase() ?? art ?? color?.toRadixString(16) ?? '${objects?.count}';
 
   @override
   String toString() => 'Choice(${label ?? art ?? color}${correct ? ', corect' : ''})';

@@ -36,7 +36,7 @@ class EmotiiGame extends ChoiceGame {
         prompt: 'Cum se simte?',
         visuals: [EmojiVisual(target.emoji)],
         hint: 'Fața asta arată „${target.label.toLowerCase()}”.',
-        choices: [for (final o in options) Choice(label: o.label, correct: o == target)],
+        choices: [for (final o in options) Choice(label: o.label, id: o.key, correct: o == target)],
       );
     }
     final situation = ctx.pick(target.contexts);
@@ -46,7 +46,7 @@ class EmotiiGame extends ChoiceGame {
       visuals: [SceneVisual('Un copil $situation.')],
       hint: 'Când $situation, te simți ${target.label.toLowerCase()}.',
       choices: [
-        for (final o in options) Choice(label: o.label, art: o.emoji, correct: o == target),
+        for (final o in options) Choice(label: o.label, art: o.emoji, id: o.key, correct: o == target),
       ],
     );
   }

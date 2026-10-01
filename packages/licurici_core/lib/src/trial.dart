@@ -120,6 +120,23 @@ class Trial {
   /// Corect, din prima, fără ajutor.
   bool get independent => correct && attempts == 1 && promptLevel == PromptLevel.p0;
 
+  factory Trial.fromJson(Map<String, Object?> j) => Trial(
+        stepId: j['stepId']! as String,
+        gameId: j['gameId']! as String,
+        correct: j['correct']! as bool,
+        promptLevel: PromptLevel.values.firstWhere((p) => p.code == j['promptLevel']),
+        attempts: (j['attempts'] as int?) ?? 1,
+        latencyMs: j['latencyMs'] as int?,
+        stimulusId: j['stimulusId'] as String?,
+        stimulusSet: j['stimulusSet'] as String?,
+        seed: j['seed'] as int?,
+        difficulty: (j['difficulty'] as num?)?.toDouble(),
+        offTargetTaps: (j['offTargetTaps'] as int?) ?? 0,
+        targetId: j['targetId'] as String?,
+        chosenId: j['chosenId'] as String?,
+        at: DateTime.parse(j['at']! as String),
+      );
+
   Map<String, Object?> toJson() => {
         'stepId': stepId,
         'gameId': gameId,

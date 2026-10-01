@@ -1,0 +1,153 @@
+/// Înregistrarea unei sesiuni pe dispozitiv: jocurile raportează încercări și evenimente,
+/// copilul își alege dispoziția la început și la final, iar la închidere rezultă un
+/// [SessionRecord] (salvat local, sincronizat doar cu cont + consimțământ — ADR-004, ADR-011).
+library;
+
+import 'dart:math';
+
+import 'development.dart';
+import 'game.dart';
+import 'reaction.dart';
+import 'report.dart';
+import 'sequence.dart';
+import 'trial.dart';
+
+/// Treapta pe care o exersează un joc (prima din trasee) — încercările se leagă de ea.
+String stepFor(String gameId) {
+  final steps = stepsForGame(gameId);
+  return steps.isEmpty ? 'NONE' : steps.first.id;
+}
+
+/// Ajutorul maxim primit într-o rundă `choice`, din ce a arătat ecranul (plan §3.3):
+/// ghidaj vizual (ținta pulsează) → P3; indiciu vocal / variante estompate după greșeală → P2;
+/// altfel P0.
+PromptLevel choicePromptLevel({required int wrongAttempts, required bool guideShown}) {
+  if (guideShown) return PromptLevel.p3;
+  if (wrongAttempts > 0) return PromptLevel.p2;
+  return PromptLevel.p0;
+}
+
+class SessionRecorder {
+  SessionRecorder({required this.childId, DateTime Function()? clock, String? id})
+      : _clock = clock ?? DateTime.now,
+        id = id ?? _newId() {
+    start = _clock();
+  }
+
+  final String id;
+  final String childId;
+  final DateTime Function() _clock;
+  late final DateTime start;
+
+  final List<Trial> _trials = [];
+  final List<SessionEvent> _events = [];
+  Mood? moodBefore;
+  Mood? moodAfter;
+  bool _closed = false;
+
+  List<Trial> get trials => List.unmodifiable(_trials);
+  List<SessionEvent> get events => List.unmodifiable(_events);
+  bool get isEmpty => _trials.isEmpty;
+  bool get closed => _closed;
+
+  void add(Trial t) {
+    if (!_closed) _trials.add(t);
+  }
+
+  void event(SessionEventKind kind, {String? gameId}) {
+    if (!_closed) _events.add(SessionEvent(kind, _clock(), gameId: gameId));
+  }
+
+  /// O rundă `choice` terminată. [chosenKey] = prima variantă greșită aleasă (dacă a existat).
+  void choiceRound({
+    required String gameId,
+    required ChoiceRound round,
+    required int wrongAttempts,
+    required bool guideShown,
+    required int latencyMs,
+    String? chosenKey,
+    int? seed,
+  }) {
+    final prompt = choicePromptLevel(wrongAttempts: wrongAttempts, guideShown: guideShown);
+    add(Trial(
+      stepId: stepFor(gameId),
+      gameId: gameId,
+      // Runda se termină mereu pe răspunsul corect (învățare fără eroare); încercarea e
+      // „corectă” doar dacă primul răspuns a fost cel bun.
+      correct: wrongAttempts == 0,
+      promptLevel: prompt,
+      attempts: wrongAttempts + 1,
+      latencyMs: latencyMs,
+      at: _clock(),
+      seed: seed,
+      targetId: round.choices.firstWhere((c) => c.correct).key,
+      chosenId: chosenKey,
+    ));
+  }
+
+  /// Un nivel `reaction`: câte o încercare pe stimul (atinge / se abține).
+  void reactionLevel(ReactionLevel level, List<ReactionResponse> responses) {
+    final byIndex = {for (final r in responses) r.index: r};
+    final step = stepFor(level.gameId);
+    for (final s in level.stimuli) {
+      final r = byIndex[s.index];
+      final tapped = r?.tapped ?? false;
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: s.isGo == tapped,
+        promptLevel: PromptLevel.p0,
+        latencyMs: tapped ? r?.reactionMs : null,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: s.kind.name,
+        targetId: s.isGo ? 'atinge' : 'nu-atinge',
+        chosenId: tapped ? 'atinge' : 'nu-atinge',
+      ));
+    }
+  }
+
+  /// O secvență `simon` (o încercare; corectă dacă a fost repetată complet).
+  void sequence(SequenceResult result, {required bool secondChance, int? latencyMs}) {
+    add(Trial(
+      stepId: stepFor(result.level.gameId),
+      gameId: result.level.gameId,
+      correct: result.complete,
+      // A doua vizionare a secvenței e un ajutor (model repetat).
+      promptLevel: secondChance ? PromptLevel.p4 : PromptLevel.p0,
+      attempts: secondChance ? 2 : 1,
+      latencyMs: latencyMs,
+      at: _clock(),
+      seed: result.level.seed,
+      stimulusId: 'span-${result.level.expected.length}',
+    ));
+  }
+
+  /// Închide sesiunea. Null dacă nu s-a jucat nimic (nu salvăm sesiuni goale).
+  SessionRecord? close() {
+    if (_closed) return null;
+    _closed = true;
+    if (_trials.isEmpty) return null;
+    return SessionRecord(
+      id: id,
+      childId: childId,
+      start: start,
+      end: _clock(),
+      trials: List.unmodifiable(_trials),
+      events: List.unmodifiable(_events),
+      moodBefore: moodBefore,
+      moodAfter: moodAfter,
+    );
+  }
+
+  static final _rnd = Random.secure();
+
+  /// UUID v4 (fără dependențe).
+  static String _newId() {
+    final b = List<int>.generate(16, (_) => _rnd.nextInt(256));
+    b[6] = (b[6] & 0x0f) | 0x40;
+    b[8] = (b[8] & 0x3f) | 0x80;
+    String h(int i, int j) => [for (var k = i; k < j; k++) b[k].toRadixString(16).padLeft(2, '0')].join();
+    return '${h(0, 4)}-${h(4, 6)}-${h(6, 8)}-${h(8, 10)}-${h(10, 16)}';
+  }
+}
