@@ -34,3 +34,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  shaders:
+    - shaders/meadow.frag
+    - shaders/water.frag

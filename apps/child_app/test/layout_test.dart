@@ -84,7 +84,7 @@ void main() {
           );
         }
 
-        await settleUntil(tester, find.text('Clasa 1'));
+        await settleUntil(tester, find.byKey(const ValueKey('domain-ATN')));
         if (shots) {
           await expectLater(
             find.byType(LicuriciApp),
@@ -94,7 +94,7 @@ void main() {
 
         // Lista de jocuri e orizontală și leneșă: cardurile se construiesc doar la derulare.
         await tester.scrollUntilVisible(
-          find.text('Adunăm'),
+          find.byKey(const ValueKey('domain-PAC')),
           200,
           scrollable: find
               .descendant(
@@ -104,7 +104,27 @@ void main() {
               .first,
         );
         await settle(tester, 2);
-        await tester.tap(find.text('Adunăm'));
+        await tester.tap(find.byKey(const ValueKey('domain-PAC')));
+        // Ecranul ariei: cardurile jocurilor trebuie să încapă și pe telefonul mic.
+        await settleUntil(tester, find.byKey(const ValueKey('game-alfabetul')));
+        if (shots) {
+          await expectLater(
+            find.byType(LicuriciApp),
+            matchesGoldenFile('shots/$name-1b-arie.png'),
+          );
+        }
+        await tester.scrollUntilVisible(
+          find.byKey(const ValueKey('game-adunam')),
+          200,
+          scrollable: find
+              .descendant(
+                of: find.byType(ListView),
+                matching: find.byType(Scrollable),
+              )
+              .first,
+        );
+        await settle(tester, 2);
+        await tester.tap(find.byKey(const ValueKey('game-adunam')));
         // Primul joc din sesiune: „Cum te simți?” (trebuie să încapă și pe telefonul mic).
         await settleUntil(tester, find.byKey(const ValueKey('mood-bucuros')));
         if (shots) {

@@ -11,6 +11,7 @@ import 'app/boot.dart';
 import 'app/theme.dart';
 import 'data/local_db.dart';
 import 'data/session.dart';
+import 'features/domain/domain_screen.dart';
 import 'features/games/choice/choice_game_screen.dart';
 import 'features/games/reaction/reaction_game_screen.dart';
 import 'features/home/home_screen.dart';
@@ -62,12 +63,26 @@ Future<void> main() async {
   );
 }
 
+Domain? _domainOf(String code) {
+  for (final d in catalogByDomain().keys) {
+    if (d.code.toLowerCase() == code.toLowerCase()) return d;
+  }
+  return null;
+}
+
 /// Routerul aparține instanței aplicației (nu e global): fiecare ProviderScope are
 /// propria stare de navigare — important în teste și la repornirea aplicației.
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     routes: [
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/arie/:code',
+        redirect: (context, state) =>
+            _domainOf(state.pathParameters['code']!) == null ? '/' : null,
+        builder: (context, state) =>
+            DomainScreen(domain: _domainOf(state.pathParameters['code']!)!),
+      ),
       GoRoute(
         path: '/secventa/simon',
         builder: (context, state) => const SimonScreen(),

@@ -3,15 +3,16 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'mascot_layers.dart';
 import 'motion.dart';
 
-enum MascotMood { idle, happy, encourage }
+export 'mascot_layers.dart' show MascotMood, MascotRig;
 
-/// Licurici, mascota. Desenat în cod (port din `mascot.js`); în Sprint 2 se înlocuiește cu
-/// un fișier Rive cu state machine (ADR-21) — interfața widget-ului rămâne aceeași.
+/// Licurici, mascota (ADR-028). Din ilustrațiile generate, pe straturi animate din cod
+/// (`LayeredMascot`); până se încarcă ele (sau dacă lipsesc) — desenată în cod.
 ///
-/// Animații: plutire + aripi care bat + coada care pulsează (idle, doar la motion `full`);
-/// săritură și strălucire la `happy`; înclinare blândă la `encourage`.
+/// Animații: plutire + aripi care bat + burtica-felinar care pulsează + clipit (idle, doar la
+/// motion `full`); săritură și strălucire la `happy`; înclinare blândă la `encourage`/`think`.
 /// Schimbă [reaction] (ex. un contor) ca să redeclanșezi aceeași stare.
 class Mascot extends ConsumerStatefulWidget {
   const Mascot({
@@ -38,6 +39,19 @@ class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
     vsync: this,
     duration: const Duration(milliseconds: 750),
   );
+  late final AnimationController _blink = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 4200),
+  );
+  bool _images = false;
+
+  @override
+  void initState() {
+    super.initState();
+    MascotRig.available().then((ok) {
+      if (mounted && ok) setState(() => _images = true);
+    });
+  }
 
   @override
   void didUpdateWidget(Mascot old) {
@@ -51,16 +65,19 @@ class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
   void dispose() {
     _idle.dispose();
     _react.dispose();
+    _blink.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final motion = MotionPolicy.of(context, ref);
-    if (motion.ambient && !_idle.isAnimating) {
-      _idle.repeat();
-    } else if (!motion.ambient && _idle.isAnimating) {
-      _idle.stop();
+    for (final c in [_idle, _blink]) {
+      if (motion.ambient && !c.isAnimating) {
+        c.repeat();
+      } else if (!motion.ambient && c.isAnimating) {
+        c.stop();
+      }
     }
     return RepaintBoundary(
       child: Semantics(
@@ -68,36 +85,48 @@ class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
         image: true,
         child: SizedBox.square(
           dimension: widget.size,
-          child: AnimatedBuilder(
-            animation: Listenable.merge([_idle, _react]),
-            builder: (context, _) {
-              final t = _idle.value * 2 * math.pi;
-              final r = motion.movement
-                  ? Curves.easeOut.transform(_react.value)
-                  : 0.0;
-              final bump = math.sin(r * math.pi); // 0 → 1 → 0
-              final happy = widget.mood == MascotMood.happy;
-              final dy =
-                  math.sin(t) * 4 - (happy ? bump * widget.size * 0.18 : 0);
-              final tilt = widget.mood == MascotMood.encourage
-                  ? math.sin(r * math.pi * 2) * 0.12
-                  : 0.0;
-              return Transform.translate(
-                offset: Offset(0, dy),
-                child: Transform.rotate(
-                  angle: tilt,
-                  child: CustomPaint(
-                    painter: _FireflyPainter(
-                      wing: math.sin(t * 3) * 0.12,
-                      glow:
-                          0.75 + math.sin(t) * 0.15 + (happy ? bump * 0.5 : 0),
-                      smile: happy ? 1 + bump : 1,
-                    ),
-                  ),
+          child: _images
+              ? LayeredMascot(
+                  size: widget.size,
+                  mood: widget.mood,
+                  motion: motion,
+                  idle: _idle,
+                  react: _react,
+                  blink: _blink,
+                )
+              : AnimatedBuilder(
+                  animation: Listenable.merge([_idle, _react]),
+                  builder: (context, _) {
+                    final t = _idle.value * 2 * math.pi;
+                    final r = motion.movement
+                        ? Curves.easeOut.transform(_react.value)
+                        : 0.0;
+                    final bump = math.sin(r * math.pi); // 0 → 1 → 0
+                    final happy = widget.mood == MascotMood.happy;
+                    final dy =
+                        math.sin(t) * 4 -
+                        (happy ? bump * widget.size * 0.18 : 0);
+                    final tilt = widget.mood == MascotMood.encourage
+                        ? math.sin(r * math.pi * 2) * 0.12
+                        : 0.0;
+                    return Transform.translate(
+                      offset: Offset(0, dy),
+                      child: Transform.rotate(
+                        angle: tilt,
+                        child: CustomPaint(
+                          painter: _FireflyPainter(
+                            wing: math.sin(t * 3) * 0.12,
+                            glow:
+                                0.75 +
+                                math.sin(t) * 0.15 +
+                                (happy ? bump * 0.5 : 0),
+                            smile: happy ? 1 + bump : 1,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ),
     );

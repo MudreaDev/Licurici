@@ -11,6 +11,7 @@ import '../../../shared/art_cache.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/emoji_art.dart';
 import '../../../shared/mascot.dart';
+import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
@@ -263,47 +264,51 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     if (!motion.movement) _drift.stop();
     if (!motion.feedback) _effect.stop();
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            TopBar(
-              title: widget.game.name,
-              trailing: SizedBox(
-                width: 64,
-                height: 64,
-                child: IconButton(
-                  tooltip: _paused ? 'Continuă' : 'Pauză',
-                  onPressed: _paused ? _resume : _pause,
-                  icon: Icon(
-                    _paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+      body: SceneBackground(
+        spec: SceneSpec.forLevel(widget.game.id, _level.level),
+        kind: widget.game.id == 'pescarul' ? SceneKind.water : SceneKind.meadow,
+        child: SafeArea(
+          child: Column(
+            children: [
+              TopBar(
+                title: widget.game.name,
+                trailing: SizedBox(
+                  width: 64,
+                  height: 64,
+                  child: IconButton(
+                    tooltip: _paused ? 'Continuă' : 'Pauză',
+                    onPressed: _paused ? _resume : _pause,
+                    icon: Icon(
+                      _paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: _paused
-                  ? Center(child: _button('Continuă', _resume))
-                  : _phase == _Phase.introduction
-                  ? _introduction()
-                  : _phase == _Phase.finished
-                  ? ReactionFinish(
-                      summary: _summary!,
-                      onAgain: () => setState(_start),
-                      onNext: () {
-                        ref
-                            .read(
-                              reactionLevelProvider(widget.game.id).notifier,
-                            )
-                            .setLevel(
-                              _summary!.suggestedNextLevel(_level.level),
-                            );
-                        setState(_start);
-                      },
-                      burst: _burst,
-                    )
-                  : _scene(motion),
-            ),
-          ],
+              Expanded(
+                child: _paused
+                    ? Center(child: _button('Continuă', _resume))
+                    : _phase == _Phase.introduction
+                    ? _introduction()
+                    : _phase == _Phase.finished
+                    ? ReactionFinish(
+                        summary: _summary!,
+                        onAgain: () => setState(_start),
+                        onNext: () {
+                          ref
+                              .read(
+                                reactionLevelProvider(widget.game.id).notifier,
+                              )
+                              .setLevel(
+                                _summary!.suggestedNextLevel(_level.level),
+                              );
+                          setState(_start);
+                        },
+                        burst: _burst,
+                      )
+                    : _scene(motion),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -9,6 +9,7 @@ export 'src/grades.dart';
 export 'src/reaction.dart';
 export 'src/development.dart';
 export 'src/catalog.dart';
+export 'src/scene.dart';
 export 'src/trial.dart';
 export 'src/sequence.dart';
 export 'src/session.dart';

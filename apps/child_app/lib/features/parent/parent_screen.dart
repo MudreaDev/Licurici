@@ -6,6 +6,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../app/theme.dart';
 import '../../data/session.dart';
 import '../../shared/top_bar.dart';
+import '../settings/settings.dart';
 import 'sync_dialog.dart';
 
 /// Rapoartele sesiunilor salvate pe dispozitiv (cele mai noi întâi), fiecare cu raportul
@@ -56,6 +57,7 @@ class ParentScreen extends ConsumerWidget {
                 ],
               ),
             ),
+            const _StartLevel(),
             Expanded(
               child: reports.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -84,6 +86,49 @@ class ParentScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Nivelul de pornire al jocurilor cu alegere (dificultatea inițială). Pe ecranul copilului
+/// jocurile sunt pe arii de dezvoltare, nu pe clase (ADR-026); clasa rămâne doar aici.
+class _StartLevel extends ConsumerWidget {
+  const _StartLevel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selected = ref.watch(settingsProvider.select((s) => s.grade));
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+      child: Row(
+        children: [
+          Text(
+            'Nivel de pornire:',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final g in Grade.values)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        key: ValueKey('start-level-${g.name}'),
+                        label: Text(g.label),
+                        selected: g == selected,
+                        onSelected: (_) =>
+                            ref.read(settingsProvider.notifier).setGrade(g),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

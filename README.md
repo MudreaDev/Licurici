@@ -647,8 +647,9 @@ ChatGPT (ilustrații, stil fix, personaj pe fundal verde uniform + foaie de expr
 - **Fundaluri pe straturi** (cer, copaci în spate, frunze în față): PNG separate, animate în cod (legănare, parallax, nori).
 - **Personaje**: decupaje pe straturi + `CutoutRig` (stări în Dart), expresiile = cadre desenate cu tranziție. Rive/Spine doar dacă apare un animator (ADR-028).
 - **Sărbătorile** (baloane, stele) sunt mai blânde decât în AutiSpark: fără fundal întunecat, fără sute de particule. Intensitatea vine din `MotionPolicy`.
-- **Ce face fiecare:** ChatGPT desenează; Claude scrie codul, integrează, animă în cod și leagă animațiile de logică. Claude nu generează ilustrații pictate.
-- Specificația exactă (listă, dimensiuni, nume, prompturi) va fi în `docs/art/ghid-ilustratii.md` (pasul 4 din §0.1).
+- **Ce face fiecare:** ilustrațiile le generează **Codex** (generare de imagini, același model ca ChatGPT) după identitatea fixată a lui Licurici (`assets-src/licurici/ref_sheet.jpg`); Claude scrie logica, verifică și integrează; animația e din cod. Claude nu generează ilustrații pictate.
+- Ilustrațiile stau în `packages/game_content/art/illustrations/` (`mascot/`, `domains/`, `games/`, `scenes/`, WebP); lista și prompturile pentru regenerare — în `README.md` din acel folder.
+- **Ecranul principal e pe arii de dezvoltare** (`catalogByDomain()` din `licurici_core/lib/src/catalog.dart`, ADR-026): un card ilustrat pe arie → ecranul ariei (`/arie/:code`) cu jocurile ei. Clasa nu mai apare pe ecranul copilului; rămâne doar ca „nivel de pornire” în Colțul părintelui.
 
 ---
 

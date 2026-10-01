@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:game_content/game_content.dart' as content;
+import 'package:licurici_core/licurici_core.dart';
 
 /// Tokenii de design (README §14) — paletă calmă, saturație redusă, fără alb/negru pur.
 abstract final class Tokens {
@@ -39,6 +40,21 @@ abstract final class Tokens {
     BoxShadow(color: Color(0x292F3D3B), blurRadius: 34, offset: Offset(0, 12)),
   ];
 }
+
+/// O culoare pastel per arie de dezvoltare (cardurile și ecranul ariei).
+Color domainColor(Domain d) => switch (d) {
+  Domain.atn => const Color(0xFFF2CF6B),
+  Domain.imi => const Color(0xFFF0B9A0),
+  Domain.pot => const Color(0xFF7FC0A3),
+  Domain.lrc => const Color(0xFF5B9BB5),
+  Domain.com => const Color(0xFFF0B9A0),
+  Domain.cog => const Color(0xFF8FB8DE),
+  Domain.emo => const Color(0xFFE8A3B8),
+  Domain.fex => const Color(0xFFA9A3D1),
+  Domain.aut => const Color(0xFF9CCBB0),
+  Domain.mot => const Color(0xFFE6A86A),
+  Domain.pac => const Color(0xFF6FB3C9),
+};
 
 /// Tema „calm”: mai palidă, contrast mai blând.
 abstract final class CalmTokens {

@@ -29,7 +29,7 @@ Future<void> pumpApp(WidgetTester tester, {SessionStore? store}) async {
   );
   // Ecranul de pornire pre-încarcă resursele, apoi dispare.
   expect(find.text('Se pregătesc jocurile…'), findsOneWidget);
-  await pumpUntil(tester, find.text('Grădiniță'));
+  await pumpUntil(tester, find.text('Potrivim'));
   await tester.pump(
     const Duration(milliseconds: 600),
   ); // estomparea ecranului de pornire
@@ -61,17 +61,19 @@ void main() {
     svg.cache.clear();
   });
 
-  testWidgets('ecranul principal arată clasele și jocurile clasei alese', (
+  testWidgets('ecranul principal: jocurile pe arii de dezvoltare, fără clase', (
     tester,
   ) async {
     await pumpApp(tester);
-    expect(find.text('Grădiniță'), findsOneWidget);
-    expect(find.text('Adunăm'), findsOneWidget); // clasa 1 implicit
+    expect(find.text('Grădiniță'), findsNothing); // clasa e doar la părinte
+    expect(find.byKey(const ValueKey('domain-ATN')), findsOneWidget);
+    expect(find.byKey(const ValueKey('domain-POT')), findsOneWidget);
 
-    await tester.tap(find.text('Grădiniță'));
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('Adunăm'), findsNothing); // adunarea începe din clasa 1
-    expect(find.text('Numărăm'), findsOneWidget);
+    // Atingerea unei arii deschide doar jocurile ei.
+    await tester.tap(find.byKey(const ValueKey('domain-POT')));
+    await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
+    expect(find.byKey(const ValueKey('game-forme')), findsOneWidget);
+    expect(find.byKey(const ValueKey('game-adunam')), findsNothing);
     await closeApp(tester);
   });
 
@@ -80,19 +82,9 @@ void main() {
   ) async {
     final store = MemorySessionStore();
     await pumpApp(tester, store: store);
-    // Lista de jocuri e orizontală și leneșă: cardurile se construiesc doar la derulare.
-    await tester.scrollUntilVisible(
-      find.text('Culori'),
-      300,
-      scrollable: find
-          .descendant(
-            of: find.byType(ListView),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.tap(find.text('Culori'));
+    await tester.tap(find.byKey(const ValueKey('domain-POT')));
+    await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
+    await tester.tap(find.byKey(const ValueKey('game-culori')));
     await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
     await tester.tap(find.byKey(const ValueKey('mood-skip')));
     await pumpUntil(tester, find.byKey(const ValueKey('choice-0')));
@@ -125,8 +117,7 @@ void main() {
 
     expect(find.text('Încă o dată'), findsOneWidget);
     await tester.tap(find.text('Acasă').last);
-    await tester.pump(const Duration(milliseconds: 600));
-    expect(find.text('Grădiniță'), findsOneWidget);
+    await pumpUntil(tester, find.text('Potrivim'));
 
     // „Gata pe azi” → dispoziția de final → sesiunea se salvează cu toate rundele jucate.
     await tester.tap(find.byKey(const ValueKey('finish-session')));
@@ -187,7 +178,7 @@ void main() {
       );
       await tester.tap(wrong.first);
       await tester.pump(const Duration(milliseconds: 400));
-      expect(find.text('Grădiniță'), findsOneWidget);
+      expect(find.text('Potrivim'), findsOneWidget);
 
       // Răspuns corect → rezumatul pentru părinte.
       await tester.tap(find.byKey(const ValueKey('parent-corner')));
@@ -197,6 +188,8 @@ void main() {
       // Singura sesiune salvată → raportul fără comparație, exact cel calculat de core.
       expect(find.text(SessionReport.from(demo).parentSummary), findsOneWidget);
       expect(find.text('Detalii pentru specialist'), findsOneWidget);
+      // Clasa a devenit „nivel de pornire”, doar aici.
+      expect(find.byKey(const ValueKey('start-level-gradinita')), findsOneWidget);
       await closeApp(tester);
     },
   );

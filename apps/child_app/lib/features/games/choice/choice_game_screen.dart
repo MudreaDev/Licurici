@@ -15,6 +15,7 @@ import '../../../shared/celebration.dart';
 import '../../../shared/emoji_art.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/mascot.dart';
+import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/pressable.dart';
 import '../../../shared/top_bar.dart';
@@ -205,77 +206,81 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     // Spațiul rezervat colțului cu mascota (strat fix, care nu se schimbă între runde).
     final corner = layout.mascot + 12;
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            TopBar(
-              title: widget.game.name,
-              trailing: BarButton(
-                emoji: '🔁',
-                label: 'Ascultă din nou',
-                onTap: _finished || !_ready
-                    ? null
-                    : () => ref.read(voiceProvider).say(_round.speak),
+      body: SceneBackground(
+        spec: SceneSpec.forLevel(widget.game.id, 1),
+        kind: SceneKind.meadow,
+        child: SafeArea(
+          child: Column(
+            children: [
+              TopBar(
+                title: widget.game.name,
+                trailing: BarButton(
+                  emoji: '🔁',
+                  label: 'Ascultă din nou',
+                  onTap: _finished || !_ready
+                      ? null
+                      : () => ref.read(voiceProvider).say(_round.speak),
+                ),
               ),
-            ),
-            Expanded(
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: AnimatedSwitcher(
-                      duration: motion.d(420),
-                      switchInCurve: Curves.easeOutCubic,
-                      switchOutCurve: Curves.easeInCubic,
-                      transitionBuilder: (child, anim) => FadeTransition(
-                        opacity: anim,
-                        child: motion.movement
-                            ? SlideTransition(
-                                position: Tween(
-                                  begin: const Offset(0.12, 0),
-                                  end: Offset.zero,
-                                ).animate(anim),
-                                child: child,
+              Expanded(
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: AnimatedSwitcher(
+                        duration: motion.d(420),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        transitionBuilder: (child, anim) => FadeTransition(
+                          opacity: anim,
+                          child: motion.movement
+                              ? SlideTransition(
+                                  position: Tween(
+                                    begin: const Offset(0.12, 0),
+                                    end: Offset.zero,
+                                  ).animate(anim),
+                                  child: child,
+                                )
+                              : child,
+                        ),
+                        child: !_ready
+                            ? const SizedBox.shrink(key: ValueKey('loading'))
+                            : _finished
+                            ? _FinishView(
+                                key: const ValueKey('finish'),
+                                stars: _stars,
+                                onAgain: () => setState(_start),
+                                onHome: () => context.go('/'),
                               )
-                            : child,
+                            : _RoundView(
+                                key: ValueKey('round-$_index'),
+                                round: _round,
+                                state: this,
+                                reserveBottom: corner,
+                              ),
                       ),
-                      child: !_ready
-                          ? const SizedBox.shrink(key: ValueKey('loading'))
-                          : _finished
-                          ? _FinishView(
-                              key: const ValueKey('finish'),
-                              stars: _stars,
-                              onAgain: () => setState(_start),
-                              onHome: () => context.go('/'),
-                            )
-                          : _RoundView(
-                              key: ValueKey('round-$_index'),
-                              round: _round,
-                              state: this,
-                              reserveBottom: corner,
-                            ),
                     ),
-                  ),
-                  Positioned(
-                    left: 12,
-                    bottom: 6,
-                    // Cu două panouri, colțul rămâne sub panoul din stânga.
-                    width: layout.twoPane ? layout.size.width * 0.5 : null,
-                    right: layout.twoPane ? null : 12,
-                    child: _MascotCorner(
-                      size: layout.mascot,
-                      total: _lesson.rounds.length,
-                      index: _finished ? _lesson.rounds.length : _index,
-                      mood: _mood,
-                      reaction: _reaction,
-                      bubble: _finished
-                          ? 'Ai terminat! Bravo!'
-                          : (_ready ? _bubble : ''),
+                    Positioned(
+                      left: 12,
+                      bottom: 6,
+                      // Cu două panouri, colțul rămâne sub panoul din stânga.
+                      width: layout.twoPane ? layout.size.width * 0.5 : null,
+                      right: layout.twoPane ? null : 12,
+                      child: _MascotCorner(
+                        size: layout.mascot,
+                        total: _lesson.rounds.length,
+                        index: _finished ? _lesson.rounds.length : _index,
+                        mood: _mood,
+                        reaction: _reaction,
+                        bubble: _finished
+                            ? 'Ai terminat! Bravo!'
+                            : (_ready ? _bubble : ''),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -9,37 +9,19 @@ import '../../data/session.dart';
 import '../../shared/emoji_art.dart';
 import '../../shared/pressable.dart';
 import '../session/mood_check.dart';
-import '../settings/settings.dart';
 
 /// Jocurile care există în aplicație, cu ruta și ilustrația lor.
 ({String route, String emoji, String name})? gameEntry(String id) {
-  if (gameById(id) case final g?) {
-    return (route: '/joc/$id', emoji: g.emoji, name: g.name);
-  }
-  if (reactionGameById(id) case final g?) {
-    return (route: '/reactie/$id', emoji: g.emoji, name: g.name);
-  }
-  if (id == const SimonGame().id) {
-    return (
-      route: '/secventa/simon',
-      emoji: const SimonGame().emoji,
-      name: const SimonGame().name,
-    );
-  }
-  return null;
+  final e = catalogEntry(id);
+  return e == null ? null : (route: e.route, emoji: e.emoji, name: e.name);
 }
 
 /// „Drumul de azi” (plan §3.4): încălzire → obiective → menținere → final pe succes, din
 /// progresul salvat. Aceeași zi → același drum (seed pe dată), ca orarul să fie previzibil.
 final todayPlanProvider = FutureProvider.autoDispose<SessionPlan>((ref) async {
-  final grade = ref.watch(settingsProvider.select((s) => s.grade));
   final records = await ref.watch(sessionStoreProvider).all();
-  final games = {
-    for (final g in allGames)
-      if (g.grades.contains(grade)) g.id,
-    for (final g in reactionGames) g.id,
-    const SimonGame().id,
-  };
+  // Toate jocurile (pe arii, nu pe clase — ADR-026); alocarea pe copil vine din plan §5.1.
+  final games = {for (final e in catalog) e.id};
   final now = DateTime.now();
   return const SessionPlanner(config: SessionConfig(targetBlocks: 2)).plan(
     progress: defaultObjectives(progressFromSessions(records), games),
