@@ -8,3 +8,4 @@ workspace:
   - packages/licurici_core
   - packages/game_content
   - apps/child_app
+  - apps/dashboard

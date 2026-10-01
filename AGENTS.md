@@ -4,7 +4,8 @@ Lucrezi împreună cu un alt agent (Claude) pe același repo. **Sursa unică de 
 
 ## Împărțirea muncii
 - **Claude — arhitectură:** `packages/licurici_core` (logica pură, generatoare, modele, teste), `backend/`, `docs/adr/`, README.
-- **Codex — front:** `apps/child_app/lib/**` (ecrane, widget-uri, animații procedurale), teste de widget în `apps/child_app/test/`.
+- **Codex — front:** `apps/child_app/lib/**` (ecrane, widget-uri, animații procedurale), teste de widget în `apps/child_app/test/`; `apps/dashboard/lib/**` + `apps/dashboard/test/` (panourile web pentru părinte și specialist).
+- Panourile web sunt pentru **adulți**: desktop-first, responsive până la tabletă, Material 3, grafice cu `fl_chart` (ADR-013). Nu au regulile de UX ale aplicației copilului (landscape, ținte de 64 dp), dar au aceeași paletă calmă și fontul Nunito.
 - Nu modifica fișierele din zona celuilalt. Dacă ai nevoie de o schimbare în `licurici_core`, scrie-o în raportul final ca propunere.
 - Nu face commit-uri; Claude verifică și face commit-ul.
 

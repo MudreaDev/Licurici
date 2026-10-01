@@ -89,7 +89,14 @@ class Trial {
     this.seed,
     this.difficulty,
     this.offTargetTaps = 0,
+    this.targetId,
+    this.chosenId,
   });
+
+  /// Răspunsul corect (ex. `trist`) și ce a ales copilul prima dată când a greșit (ex. `suparat`).
+  /// Din perechi se construiește matricea de confuzii („confundă trist cu supărat”).
+  final String? targetId;
+  final String? chosenId;
 
   final String stepId;
   final String gameId;
@@ -125,6 +132,8 @@ class Trial {
         'seed': seed,
         'difficulty': difficulty,
         'offTargetTaps': offTargetTaps,
+        'targetId': targetId,
+        'chosenId': chosenId,
         'at': at.toUtc().toIso8601String(),
       };
 }
