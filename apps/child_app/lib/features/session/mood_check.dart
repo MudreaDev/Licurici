@@ -51,11 +51,27 @@ class _MoodDialog extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Cum te simți?', style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Cum te simți?',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  // Mereu vizibil, și pe telefonul mic: întrebarea nu e obligatorie.
+                  TextButton(
+                    key: const ValueKey('mood-skip'),
+                    style: TextButton.styleFrom(minimumSize: const Size(64, 64)),
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Sari peste'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
               Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: 8,
+                runSpacing: 8,
                 alignment: WrapAlignment.center,
                 children: [
                   for (final m in Mood.values)
@@ -67,10 +83,10 @@ class _MoodDialog extends ConsumerWidget {
                         Navigator.of(context).pop(m);
                       },
                       child: SizedBox(
-                        width: 88,
+                        width: 80,
                         child: Column(
                           children: [
-                            EmojiArt(m.emoji, size: 72, semanticLabel: m.label),
+                            EmojiArt(m.emoji, size: 64, semanticLabel: m.label),
                             const SizedBox(height: 4),
                             Text(m.label, textAlign: TextAlign.center),
                           ],
@@ -80,12 +96,6 @@ class _MoodDialog extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              TextButton(
-                key: const ValueKey('mood-skip'),
-                style: TextButton.styleFrom(minimumSize: const Size(64, 64)),
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Sari peste'),
-              ),
             ],
           ),
         ),

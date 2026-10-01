@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../app/layout.dart';
@@ -11,6 +12,7 @@ import '../../shared/motion.dart';
 import '../../shared/pressable.dart';
 import '../../shared/top_bar.dart';
 import '../../data/session.dart';
+import '../parent/parent_gate.dart';
 import '../session/mood_check.dart';
 import '../settings/settings.dart';
 
@@ -397,14 +399,28 @@ class _HomeBar extends ConsumerWidget {
     ref.watch(sessionProvider);
     final played = ref.read(sessionProvider.notifier).hasPlayed;
     return TopBar(
-      trailing: played
-          ? BarButton(
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (played) ...[
+            BarButton(
               key: const ValueKey('finish-session'),
               emoji: '👋',
               label: 'Gata pe azi',
               onTap: () => finishSession(context, ref),
-            )
-          : null,
+            ),
+            const SizedBox(width: 8),
+          ],
+          BarButton(
+            key: const ValueKey('parent-corner'),
+            emoji: '📋',
+            label: 'Pentru părinți',
+            onTap: () async {
+              if (await askParentGate(context) && context.mounted) context.go('/parinte');
+            },
+          ),
+        ],
+      ),
     );
   }
 }

@@ -85,7 +85,10 @@ void main() {
       find.text('Culori'),
       300,
       scrollable: find
-          .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
+          .descendant(
+            of: find.byType(ListView),
+            matching: find.byType(Scrollable),
+          )
           .first,
     );
     await tester.pump(const Duration(milliseconds: 300));
@@ -136,11 +139,65 @@ void main() {
     expect(session.moodBefore, isNull); // a sărit peste întrebare
     expect(session.moodAfter, Mood.linistit);
     expect(session.trials, isNotEmpty);
-    expect(session.trials.every((t) => t.gameId == 'culori' && t.stepId == 'POT5'), isTrue);
-    expect(session.trials.every((t) => t.latencyMs != null && t.targetId != null), isTrue);
+    expect(
+      session.trials.every((t) => t.gameId == 'culori' && t.stepId == 'POT5'),
+      isTrue,
+    );
+    expect(
+      session.trials.every((t) => t.latencyMs != null && t.targetId != null),
+      isTrue,
+    );
     // Raportul pentru părinte se poate calcula direct din ce s-a salvat.
     expect(SessionReport.from(session).parentSummary, isNotEmpty);
     expect(find.byKey(const ValueKey('finish-session')), findsNothing);
     await closeApp(tester);
   });
+
+  testWidgets(
+    'colțul părintelui: poarta pentru adulți, apoi rezumatul sesiunilor salvate',
+    (tester) async {
+      final store = MemorySessionStore();
+      final demo = demoChildren().first.sessions.last;
+      await tester.runAsync(
+        () => store.save(
+          SessionRecord.fromJson({...demo.toJson(), 'childId': localChildId}),
+        ),
+      );
+      await pumpApp(tester, store: store);
+
+      // Răspuns greșit → rămâne pe ecranul principal.
+      await tester.tap(find.byKey(const ValueKey('parent-corner')));
+      await pumpUntil(tester, find.text('Pentru adulți'));
+      const words = {'șase': 6, 'șapte': 7, 'opt': 8, 'nouă': 9};
+      int answer() {
+        final q = tester
+            .widgetList<Text>(find.textContaining('Cât fac'))
+            .single
+            .data!
+            .replaceAll('?', '')
+            .split(' ');
+        return words[q[2]]! * words[q[4]]!;
+      }
+
+      final wrong = find.byWidgetPredicate(
+        (w) =>
+            w.key is ValueKey<String> &&
+            (w.key! as ValueKey<String>).value.startsWith('gate-') &&
+            (w.key! as ValueKey<String>).value != 'gate-${answer()}',
+      );
+      await tester.tap(wrong.first);
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('Grădiniță'), findsOneWidget);
+
+      // Răspuns corect → rezumatul pentru părinte.
+      await tester.tap(find.byKey(const ValueKey('parent-corner')));
+      await pumpUntil(tester, find.text('Pentru adulți'));
+      await tester.tap(find.byKey(ValueKey('gate-${answer()}')));
+      await pumpUntil(tester, find.byKey(ValueKey('session-${demo.id}')));
+      // Singura sesiune salvată → raportul fără comparație, exact cel calculat de core.
+      expect(find.text(SessionReport.from(demo).parentSummary), findsOneWidget);
+      expect(find.text('Detalii pentru specialist'), findsOneWidget);
+      await closeApp(tester);
+    },
+  );
 }
