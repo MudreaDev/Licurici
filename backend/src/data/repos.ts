@@ -2,6 +2,7 @@ import type { UserRepo } from '../auth/auth.service';
 import type { Role } from '../auth/tokens';
 import type { ChildRepo } from '../children/access';
 import type { ChildrenRepo } from '../children/children';
+import type { SharingRepo } from '../children/sharing';
 import { type ConsentStore, consentPurposes } from '../consents/consents';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { ConsentRepo, SummaryRepo } from '../reports/summary-flow';
@@ -134,6 +135,29 @@ export class PrismaRepos {
         consentPurposes.map(async (p) => [p, await this.consents.granted(userId, p)] as const),
       );
       return Object.fromEntries(entries) as Record<(typeof consentPurposes)[number], boolean>;
+    },
+  };
+
+  readonly sharing: SharingRepo = {
+    findTherapist: (email) =>
+      this.db.user.findFirst({ where: { email, role: 'THERAPIST', deletedAt: null }, select: { id: true } }),
+    upsertLink: async (childId, therapistId, expiresAt) => {
+      await this.db.careLink.upsert({
+        where: { childId_therapistId: { childId, therapistId } },
+        create: { childId, therapistId, expiresAt },
+        update: { expiresAt },
+      });
+    },
+    removeLink: async (childId, therapistId) =>
+      (await this.db.careLink.deleteMany({ where: { childId, therapistId } })).count > 0,
+    links: async (childId) =>
+      (await this.db.careLink.findMany({ where: { childId }, orderBy: { createdAt: 'asc' } })).map((l) => ({
+        therapistId: l.therapistId,
+        // Partajările vechi fără termen sunt afișate ca expirând „acum” — trebuie reînnoite.
+        expiresAt: l.expiresAt ?? new Date(0),
+      })),
+    audit: async (actorId, action, targetId) => {
+      await this.db.auditLog.create({ data: { actorId, action, targetId } });
     },
   };
 }

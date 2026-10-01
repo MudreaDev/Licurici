@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Inject, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Inject, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
 
@@ -6,6 +6,7 @@ import { AuthService, credentialsSchema, registerSchema } from '../auth/auth.ser
 import { AuthGuard, CurrentUser } from '../auth/guard';
 import type { AuthUser } from '../auth/tokens';
 import { ChildrenService } from '../children/children';
+import { SharingService } from '../children/sharing';
 import { ConsentService } from '../consents/consents';
 import { parseWith } from '../common/validation';
 import { SummaryFlow } from '../reports/summary-flow';
@@ -53,7 +54,30 @@ export class ChildrenController {
     @Inject(ChildrenService) private readonly children: ChildrenService,
     @Inject(SyncService) private readonly sync: SyncService,
     @Inject(SummaryFlow) private readonly summaries: SummaryFlow,
+    @Inject(SharingService) private readonly sharing: SharingService,
   ) {}
+
+  /** Partajarea cu specialistul (CareLink): doar părintele, cu consimțământ, pe termen limitat. */
+  @Get(':childId/share')
+  shares(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string) {
+    return this.sharing.list(user, childId);
+  }
+
+  @Post(':childId/share')
+  @HttpCode(200)
+  share(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string, @Body() body: unknown) {
+    return this.sharing.share(user, childId, body);
+  }
+
+  @Delete(':childId/share/:therapistId')
+  @HttpCode(204)
+  async unshare(
+    @CurrentUser() user: AuthUser,
+    @Param('childId', ParseUUIDPipe) childId: string,
+    @Param('therapistId', ParseUUIDPipe) therapistId: string,
+  ): Promise<void> {
+    await this.sharing.revoke(user, childId, therapistId);
+  }
 
   @Get()
   list(@CurrentUser() user: AuthUser) {

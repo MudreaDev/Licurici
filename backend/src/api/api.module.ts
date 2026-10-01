@@ -7,6 +7,7 @@ import { AuthGuard } from '../auth/guard';
 import { TokenService } from '../auth/tokens';
 import { ChildAccess } from '../children/access';
 import { ChildrenService } from '../children/children';
+import { SharingService } from '../children/sharing';
 import { DomainErrorFilter } from '../common/domain-error.filter';
 import { ConsentService } from '../consents/consents';
 import { ENV, type Env } from '../config/env';
@@ -44,6 +45,11 @@ import { AuthController, ChildrenController, ConsentsController } from './contro
       useFactory: (r: PrismaRepos) => new ChildrenService(r.children),
     },
     { provide: ConsentService, inject: [PrismaRepos], useFactory: (r: PrismaRepos) => new ConsentService(r.consents) },
+    {
+      provide: SharingService,
+      inject: [ChildAccess, ConsentService, PrismaRepos],
+      useFactory: (a: ChildAccess, c: ConsentService, r: PrismaRepos) => new SharingService(a, c, r.sharing),
+    },
     {
       provide: SyncService,
       inject: [ChildAccess, PrismaRepos, ConsentService],
