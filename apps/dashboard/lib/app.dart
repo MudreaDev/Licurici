@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_content/game_content.dart' as content;
 import 'package:go_router/go_router.dart';
+import 'api.dart';
 import 'import_dialog.dart';
+import 'login_page.dart';
 import 'parent.dart';
 import 'specialist.dart';
 
@@ -9,6 +12,7 @@ GoRouter createRouter({String? initialLocation}) => GoRouter(
   initialLocation: initialLocation,
   routes: [
     GoRoute(path: '/', builder: (_, _) => const RolePage()),
+    GoRoute(path: '/autentificare', builder: (_, _) => const LoginPage()),
     GoRoute(path: '/parinte', builder: (_, _) => const ParentPage()),
     GoRoute(path: '/specialist', builder: (_, _) => const SpecialistPage()),
     GoRoute(
@@ -77,10 +81,7 @@ class RolePage extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Licurici'),
-      actions: const [
-        ImportButton(),
-        Padding(padding: EdgeInsets.all(20), child: Text('DEMO')),
-      ],
+      actions: const [ImportButton(), SignInButton()],
     ),
     body: Center(
       child: SingleChildScrollView(
@@ -169,4 +170,30 @@ class _RoleCard extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// „Conectează-te” (mod demo) sau „Ieși” (după autentificare).
+class SignInButton extends ConsumerWidget {
+  const SignInButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final signedIn =
+        ref.watch(serverChildrenProvider).isNotEmpty ||
+        ref.read(apiClientProvider).signedIn;
+    return Padding(
+      padding: const EdgeInsets.only(right: 12),
+      child: signedIn
+          ? TextButton(
+              onPressed: () =>
+                  ref.read(serverChildrenProvider.notifier).signOut(),
+              child: const Text('Ieși'),
+            )
+          : TextButton(
+              key: const ValueKey('sign-in'),
+              onPressed: () => context.go('/autentificare'),
+              child: const Text('Conectează-te · DEMO'),
+            ),
+    );
+  }
 }

@@ -1,3 +1,4 @@
+import 'api.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -184,13 +185,7 @@ class _ChildDetail extends StatelessWidget {
                   ),
                 ],
               ),
-              const Tooltip(
-                message: 'disponibil după conectarea la server și consimțământ',
-                child: OutlinedButton(
-                  onPressed: null,
-                  child: Text('Generează rezumat cu AI'),
-                ),
-              ),
+              AiSummaryButton(history: history),
             ],
           ),
         ),
