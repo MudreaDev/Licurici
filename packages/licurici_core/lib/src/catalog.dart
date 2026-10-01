@@ -1,0 +1,116 @@
+/// Catalogul jocurilor grupat pe arii de dezvoltare (ADR-026), nu pe clase și materii.
+/// Ecranul principal al copilului îl afișează așa cum e; aria unui joc = aria primei trepte
+/// pe care o exersează.
+library;
+
+import 'development.dart';
+import 'games/games.dart';
+import 'reaction.dart';
+import 'sequence.dart';
+
+/// Mecanica de care depinde ruta ecranului.
+enum GameKind { choice, reaction, sequence }
+
+/// Un joc din catalog, indiferent de mecanică.
+class CatalogEntry {
+  const CatalogEntry({
+    required this.id,
+    required this.name,
+    required this.emoji,
+    required this.description,
+    required this.kind,
+    required this.domain,
+  });
+
+  final String id;
+  final String name;
+
+  /// Ilustrația de rezervă (OpenMoji) cât timp jocul nu are o ilustrație proprie.
+  final String emoji;
+  final String description;
+  final GameKind kind;
+  final Domain domain;
+
+  /// Ruta din aplicația copilului.
+  String get route => switch (kind) {
+        GameKind.choice => '/joc/$id',
+        GameKind.reaction => '/reactie/$id',
+        GameKind.sequence => '/secventa/$id',
+      };
+
+  @override
+  String toString() => 'CatalogEntry($id, ${domain.code})';
+}
+
+/// Numele ariei pe înțelesul copilului (eticheta din [Domain] e pentru specialist).
+String childLabel(Domain d) => switch (d) {
+      Domain.atn => 'Atenție',
+      Domain.imi => 'Fac și eu',
+      Domain.pot => 'Potrivim',
+      Domain.lrc => 'Ascult și înțeleg',
+      Domain.com => 'Vorbim',
+      Domain.cog => 'Gândim',
+      Domain.emo => 'Emoții și prieteni',
+      Domain.fex => 'Memorie și răbdare',
+      Domain.aut => 'Singur',
+      Domain.mot => 'Mâini dibace',
+      Domain.pac => 'Numere și litere',
+    };
+
+Domain _domainOf(String gameId, List<String> declaredSteps) {
+  final steps = stepsForGame(gameId);
+  if (steps.isNotEmpty) return steps.first.domain;
+  if (declaredSteps.isNotEmpty) return Step(declaredSteps.first, '').domain;
+  throw StateError('jocul $gameId nu exersează nicio treaptă');
+}
+
+/// Toate jocurile din aplicație.
+List<CatalogEntry> get catalog => [
+      for (final g in allGames)
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.choice,
+          domain: _domainOf(g.id, const []),
+        ),
+      for (final g in reactionGames)
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.reaction,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [SimonGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.sequence,
+          domain: _domainOf(g.id, g.steps),
+        ),
+    ];
+
+/// Jocurile grupate pe arii, în ordinea din [Domain]; doar ariile care au jocuri.
+/// [only] restrânge la jocurile alocate copilului (plan §5.1); null = toate.
+Map<Domain, List<CatalogEntry>> catalogByDomain({Set<String>? only}) {
+  final entries = [
+    for (final e in catalog)
+      if (only == null || only.contains(e.id)) e,
+  ];
+  return {
+    for (final d in Domain.values)
+      if (entries.any((e) => e.domain == d)) d: entries.where((e) => e.domain == d).toList(),
+  };
+}
+
+CatalogEntry? catalogEntry(String id) {
+  for (final e in catalog) {
+    if (e.id == id) return e;
+  }
+  return null;
+}
