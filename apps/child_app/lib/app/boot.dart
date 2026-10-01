@@ -39,11 +39,12 @@ class BootNotifier extends Notifier<BootState> {
   }
 
   Future<void> _run() async {
-    final started = DateTime.now();
+    final started = Stopwatch()..start();
     final steps = <Future<void> Function()>[
       () => ref.read(voiceManifestProvider.future),
       () => precacheArt(uiArt),
       () => precacheArt(allGames.map((g) => g.emoji)),
+      () => precacheArt(reactionGames.map((g) => g.emoji)),
       // Sprint 2: deschiderea bazei locale Drift + migrările ei.
       // Mai târziu: verificarea pachetelor de conținut descărcate.
     ];
@@ -55,7 +56,7 @@ class BootNotifier extends Notifier<BootState> {
       }
       state = BootState((i + 1) / steps.length);
     }
-    final elapsed = DateTime.now().difference(started);
+    final elapsed = started.elapsed;
     if (elapsed < minVisible) await Future<void>.delayed(minVisible - elapsed);
     state = const BootState(1, done: true);
   }

@@ -22,6 +22,13 @@ class HomeScreen extends ConsumerWidget {
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     final groups = gamesForGrade(settings.grade);
+    final reactionSection = _SubjectSection(
+      subject: Subject.emotii,
+      games: const [],
+      reaction: reactionGames,
+      title: 'Atenție și autocontrol',
+      horizontal: layout.twoPane,
+    );
 
     Widget section(int i, Subject subject, List<GameSpec> games) =>
         _SubjectSection(
@@ -79,6 +86,8 @@ class HomeScreen extends ConsumerWidget {
                       if (i > 0) SizedBox(width: layout.compact ? 20 : 32),
                       section(i, e.key, e.value),
                     ],
+                    const SizedBox(width: 24),
+                    reactionSection,
                   ],
                 ),
               ),
@@ -103,6 +112,7 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   for (final (i, e) in groups.entries.indexed)
                     section(i, e.key, e.value),
+                  reactionSection,
                 ],
               ),
             ),
@@ -208,10 +218,14 @@ class _SubjectSection extends StatelessWidget {
     required this.subject,
     required this.games,
     this.horizontal = false,
+    this.reaction = const [],
+    this.title,
   });
 
   final Subject subject;
   final List<GameSpec> games;
+  final List<ReactionGame> reaction;
+  final String? title;
 
   /// Landscape: titlul deasupra, cardurile pe un rând (lista părinte derulează orizontal).
   final bool horizontal;
@@ -219,6 +233,12 @@ class _SubjectSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Color(subject.color);
+    final tiles = <Widget>[
+      for (final (i, g) in games.indexed)
+        GameTile(game: g, color: color, index: i),
+      for (final (i, g) in reaction.indexed)
+        GameTile.reaction(game: g, color: color, index: i),
+    ];
     final compact = AppLayout.of(context).compact;
     return Padding(
       padding: EdgeInsets.only(top: horizontal ? 0 : 20),
@@ -237,7 +257,7 @@ class _SubjectSection extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                subject.label,
+                title ?? subject.label,
                 style: compact
                     ? Theme.of(context).textTheme.titleLarge
                     : Theme.of(context).textTheme.headlineMedium,
@@ -250,27 +270,20 @@ class _SubjectSection extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  for (final (i, g) in games.indexed) ...[
+                  for (final (i, tile) in tiles.indexed) ...[
                     if (i > 0) const SizedBox(width: 14),
                     // Pe telefoanele mici cardul se micșorează proporțional ca să încapă pe înălțime.
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.topCenter,
-                      child: GameTile(game: g, color: color, index: i),
+                      child: tile,
                     ),
                   ],
                 ],
               ),
             )
           else
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                for (final (i, g) in games.indexed)
-                  GameTile(game: g, color: color, index: i),
-              ],
-            ),
+            Wrap(spacing: 16, runSpacing: 16, children: tiles),
         ],
       ),
     );
@@ -279,14 +292,27 @@ class _SubjectSection extends StatelessWidget {
 
 /// Card mare de joc: ilustrația „respiră” ușor (stratul 2, doar la motion `full`).
 class GameTile extends ConsumerWidget {
-  const GameTile({
+  GameTile({
     super.key,
-    required this.game,
+    required GameSpec game,
     required this.color,
     this.index = 0,
-  });
+  }) : name = game.name,
+       emoji = game.emoji,
+       description = game.description,
+       route = '/joc/${game.id}';
 
-  final GameSpec game;
+  GameTile.reaction({
+    super.key,
+    required ReactionGame game,
+    required this.color,
+    this.index = 0,
+  }) : name = game.name,
+       emoji = game.emoji,
+       description = game.description,
+       route = '/reactie/${game.id}';
+
+  final String name, emoji, description, route;
   final Color color;
   final int index;
 
@@ -294,7 +320,7 @@ class GameTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
     final compact = AppLayout.of(context).compact;
-    Widget art = EmojiArt(game.emoji, size: compact ? 52 : 72);
+    Widget art = EmojiArt(emoji, size: compact ? 52 : 72);
     if (motion.ambient) {
       art = art
           .animate(
@@ -309,8 +335,8 @@ class GameTile extends ConsumerWidget {
           );
     }
     return Pressable(
-      semanticLabel: game.name,
-      onTap: () => context.go('/joc/${game.id}'),
+      semanticLabel: name,
+      onTap: () => context.go(route),
       child: Container(
         width: compact ? 150 : 190,
         padding: EdgeInsets.all(compact ? 12 : 18),
@@ -334,13 +360,13 @@ class GameTile extends ConsumerWidget {
             ),
             SizedBox(height: compact ? 6 : 12),
             Text(
-              game.name,
+              name,
               style: Theme.of(context).textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
             Text(
-              game.description,
+              description,
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),

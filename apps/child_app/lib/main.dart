@@ -7,6 +7,7 @@ import 'package:licurici_core/licurici_core.dart';
 import 'app/boot.dart';
 import 'app/theme.dart';
 import 'features/games/choice/choice_game_screen.dart';
+import 'features/games/reaction/reaction_game_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/settings/settings.dart';
 
@@ -28,6 +29,15 @@ final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     routes: [
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/reactie/:id',
+        redirect: (context, state) =>
+            reactionGameById(state.pathParameters['id']!) == null ? '/' : null,
+        builder: (context, state) => ReactionGameScreen(
+          key: ValueKey(state.pathParameters['id']),
+          game: reactionGameById(state.pathParameters['id']!)!,
+        ),
+      ),
       GoRoute(
         path: '/joc/:id',
         redirect: (context, state) =>
