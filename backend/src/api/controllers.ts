@@ -6,6 +6,7 @@ import { AuthService, credentialsSchema, registerSchema } from '../auth/auth.ser
 import { AuthGuard, CurrentUser } from '../auth/guard';
 import type { AuthUser } from '../auth/tokens';
 import { ChildrenService } from '../children/children';
+import { ConsentService } from '../consents/consents';
 import { parseWith } from '../common/validation';
 import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
@@ -85,5 +86,25 @@ export class ChildrenController {
     @Param('sessionId', ParseUUIDPipe) sessionId: string,
   ) {
     return this.summaries.summary(user, childId, sessionId);
+  }
+}
+
+/** Consimțămintele părintelui (README §13, GDPR art. 7–8): jurnal append-only, retragere oricând. */
+@ApiTags('consents')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
+@Controller('consents')
+export class ConsentsController {
+  constructor(@Inject(ConsentService) private readonly consents: ConsentService) {}
+
+  @Get()
+  get(@CurrentUser() user: AuthUser) {
+    return this.consents.get(user);
+  }
+
+  @Post()
+  @HttpCode(200)
+  set(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    return this.consents.set(user, body);
   }
 }

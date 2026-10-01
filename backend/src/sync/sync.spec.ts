@@ -6,6 +6,7 @@ import { ChildAccess, type ChildRepo, type ChildRow } from '../children/access';
 import { ForbiddenError, NotFoundError, RateLimitedError, UnavailableError, ValidationError } from '../common/errors';
 import type { SessionSummary } from '../reports/session-summary';
 import { SummaryFlow, type Summarizer, type SummaryRepo } from '../reports/summary-flow';
+import { ConsentService, type ConsentStore } from '../consents/consents';
 import { type SessionRepo, type StoredSession, SyncService } from './sessions';
 
 /** Corpul trimis de tabletă, generat de `licurici_core/tool/sync_fixture.dart` (contract Dart ↔ TS). */
@@ -44,11 +45,27 @@ class Sessions implements SessionRepo {
   }
 }
 
-function setup(now = new Date('2026-10-01T12:00:00Z')) {
+class Consents implements ConsentStore {
+  readonly log: { userId: string; purpose: string; granted: boolean }[] = [];
+  async granted(userId: string, purpose: string) {
+    return [...this.log].reverse().find((c) => c.userId === userId && c.purpose === purpose)?.granted ?? false;
+  }
+  async record(userId: string, d: { purpose: string; granted: boolean }) {
+    this.log.push({ userId, purpose: d.purpose, granted: d.granted });
+  }
+  async current() {
+    return {} as never;
+  }
+}
+
+function setup(now = new Date('2026-10-01T12:00:00Z'), syncConsent = true) {
   const children = new Children();
   const access = new ChildAccess(children, () => now);
   const sessions = new Sessions();
-  return { children, access, sessions, sync: new SyncService(access, sessions) };
+  const store = new Consents();
+  if (syncConsent) store.log.push({ userId: 'p1', purpose: 'SYNC', granted: true });
+  const consents = new ConsentService(store);
+  return { children, access, sessions, store, consents, sync: new SyncService(access, sessions, consents) };
 }
 
 describe('ChildAccess', () => {
@@ -100,6 +117,26 @@ describe('SyncService', () => {
     const withFactsName = { sessions: [{ ...fixture.sessions[0], facts: { ...(fixture.sessions[0].facts as object), childName: 'x' } }] };
     await expect(sync.push(parent, CHILD, withFactsName)).rejects.toBeInstanceOf(ValidationError);
     expect(sessions.rows.size).toBe(0);
+  });
+
+  it('fără consimțământ pentru sincronizare (sau după retragere) → 403, nimic salvat', async () => {
+    const none = setup(undefined, false);
+    await expect(none.sync.push(parent, CHILD, fixture)).rejects.toBeInstanceOf(ForbiddenError);
+    expect(none.sessions.rows.size).toBe(0);
+
+    const withdrawn = setup();
+    await withdrawn.consents.set(parent, { purpose: 'SYNC', granted: false, policyVersion: '2026-10' });
+    await expect(withdrawn.sync.push(parent, CHILD, fixture)).rejects.toBeInstanceOf(ForbiddenError);
+  });
+
+  it('doar părintele își dă consimțământul; scopurile necunoscute sunt respinse', async () => {
+    const { consents } = setup();
+    await expect(
+      consents.set(therapist, { purpose: 'SYNC', granted: true, policyVersion: '1' }),
+    ).rejects.toBeInstanceOf(ForbiddenError);
+    await expect(
+      consents.set(parent, { purpose: 'MARKETING', granted: true, policyVersion: '1' }),
+    ).rejects.toBeInstanceOf(ValidationError);
   });
 
   it('specialistul legat poate citi sesiunile', async () => {

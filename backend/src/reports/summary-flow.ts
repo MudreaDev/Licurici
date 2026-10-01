@@ -1,5 +1,6 @@
 import type { AuthUser } from '../auth/tokens';
 import type { ChildAccess } from '../children/access';
+import type { ConsentPurpose } from '../consents/consents';
 import { ForbiddenError, NotFoundError, RateLimitedError, UnavailableError } from '../common/errors';
 import type { SessionRepo } from '../sync/sessions';
 import { type SessionFacts, type SessionSummary, SummaryUnavailableError } from './session-summary';
@@ -11,7 +12,7 @@ export interface SummaryRepo {
 
 export interface ConsentRepo {
   /** Ultima decizie a utilizatorului pentru scopul dat (consimțământul se poate retrage). */
-  granted(userId: string, purpose: 'AI_SUMMARY'): Promise<boolean>;
+  granted(userId: string, purpose: ConsentPurpose): Promise<boolean>;
 }
 
 export interface Counter {

@@ -2,6 +2,7 @@ import type { UserRepo } from '../auth/auth.service';
 import type { Role } from '../auth/tokens';
 import type { ChildRepo } from '../children/access';
 import type { ChildrenRepo } from '../children/children';
+import { type ConsentStore, consentPurposes } from '../consents/consents';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { ConsentRepo, SummaryRepo } from '../reports/summary-flow';
 import type { SessionFacts, SessionSummary } from '../reports/session-summary';
@@ -122,8 +123,17 @@ export class PrismaRepos {
     },
   };
 
-  readonly consents: ConsentRepo = {
+  readonly consents: ConsentRepo & ConsentStore = {
     granted: async (userId, purpose) =>
       (await this.db.consent.findFirst({ where: { userId, purpose }, orderBy: { at: 'desc' } }))?.granted ?? false,
+    record: async (userId, data) => {
+      await this.db.consent.create({ data: { userId, ...data } });
+    },
+    current: async (userId) => {
+      const entries = await Promise.all(
+        consentPurposes.map(async (p) => [p, await this.consents.granted(userId, p)] as const),
+      );
+      return Object.fromEntries(entries) as Record<(typeof consentPurposes)[number], boolean>;
+    },
   };
 }

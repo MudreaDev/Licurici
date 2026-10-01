@@ -8,6 +8,7 @@ import { TokenService } from '../auth/tokens';
 import { ChildAccess } from '../children/access';
 import { ChildrenService } from '../children/children';
 import { DomainErrorFilter } from '../common/domain-error.filter';
+import { ConsentService } from '../consents/consents';
 import { ENV, type Env } from '../config/env';
 import { PrismaRepos } from '../data/repos';
 import { PrismaService } from '../prisma/prisma.service';
@@ -15,14 +16,14 @@ import { REDIS } from '../redis/redis.module';
 import { SessionSummaryService } from '../reports/session-summary';
 import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
-import { AuthController, ChildrenController } from './controllers';
+import { AuthController, ChildrenController, ConsentsController } from './controllers';
 
 /**
  * Modulele de domeniu ale API-ului. Serviciile sunt TypeScript simplu (testate fără Nest);
  * aici doar le legăm de Prisma, Redis și configurație.
  */
 @Module({
-  controllers: [AuthController, ChildrenController],
+  controllers: [AuthController, ChildrenController, ConsentsController],
   providers: [
     { provide: APP_FILTER, useClass: DomainErrorFilter },
     { provide: PrismaRepos, inject: [PrismaService], useFactory: (db: PrismaService) => new PrismaRepos(db) },
@@ -42,10 +43,11 @@ import { AuthController, ChildrenController } from './controllers';
       inject: [PrismaRepos],
       useFactory: (r: PrismaRepos) => new ChildrenService(r.children),
     },
+    { provide: ConsentService, inject: [PrismaRepos], useFactory: (r: PrismaRepos) => new ConsentService(r.consents) },
     {
       provide: SyncService,
-      inject: [ChildAccess, PrismaRepos],
-      useFactory: (a: ChildAccess, r: PrismaRepos) => new SyncService(a, r.sessions),
+      inject: [ChildAccess, PrismaRepos, ConsentService],
+      useFactory: (a: ChildAccess, r: PrismaRepos, c: ConsentService) => new SyncService(a, r.sessions, c),
     },
     {
       provide: SummaryFlow,

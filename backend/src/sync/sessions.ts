@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type { AuthUser } from '../auth/tokens';
 import type { ChildAccess } from '../children/access';
+import type { ConsentService } from '../consents/consents';
 import { ValidationError } from '../common/errors';
 import { parseWith } from '../common/validation';
 import { sessionFactsSchema, type SessionFacts } from '../reports/session-summary';
@@ -84,17 +85,21 @@ export interface SessionRepo {
 
 /**
  * Sincronizarea sesiunilor de pe dispozitiv (ADR-011, outbox): idempotentă după id-ul
- * sesiunii (retrimiterea o actualizează), doar de către părinte, doar pentru copilul lui.
+ * sesiunii (retrimiterea o actualizează), doar de către părinte, doar pentru copilul lui și
+ * doar cu consimțământul lui pentru sincronizare.
  * `childId` din înregistrare (pe dispozitiv: „local”) e înlocuit cu cel din cale.
  */
 export class SyncService {
   constructor(
     private readonly access: ChildAccess,
     private readonly sessions: SessionRepo,
+    private readonly consents: ConsentService,
   ) {}
 
   async push(user: AuthUser, childId: string, body: unknown): Promise<{ accepted: number }> {
-    await this.access.assert(user, childId, 'write');
+    const child = await this.access.assert(user, childId, 'write');
+    // Fără cont + consimțământ, nimic nu pleacă de pe dispozitiv (README §2, principiul 7).
+    await this.consents.require(child.parentId, 'SYNC', 'Sincronizarea cere consimțământul părintelui.');
     const { sessions } = parseWith(pushBodySchema, body);
     for (const { record } of sessions) {
       if (Date.parse(record.end) < Date.parse(record.start)) {
