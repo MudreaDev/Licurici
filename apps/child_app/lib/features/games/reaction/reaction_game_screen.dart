@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
 
+import '../../../data/session.dart';
 import '../../../shared/art_cache.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/emoji_art.dart';
@@ -172,6 +173,10 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
         _phase = _Phase.finished;
         _burst++;
       });
+      final session = ref.read(sessionProvider.notifier);
+      final level = _level, responses = List.of(_responses);
+      session.record((s) => s.reactionLevel(level, responses));
+      session.checkpoint();
       _speaker.say(['Ai terminat! Bravo!']);
     }
   }
@@ -204,6 +209,9 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     _effect.stop();
     _ambient.stop();
     _speaker.stop();
+    ref.read(sessionProvider.notifier).record(
+          (s) => s.event(SessionEventKind.pause, gameId: widget.game.id),
+        );
     setState(() => _paused = true);
   }
 

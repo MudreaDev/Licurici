@@ -95,11 +95,20 @@ void main() {
         await tester.ensureVisible(find.text('Adunăm'));
         await settle(tester, 2);
         await tester.tap(find.text('Adunăm'));
+        // Primul joc din sesiune: „Cum te simți?” (trebuie să încapă și pe telefonul mic).
+        await settleUntil(tester, find.byKey(const ValueKey('mood-bucuros')));
+        if (shots) {
+          await expectLater(
+            find.byType(LicuriciApp),
+            matchesGoldenFile('shots/$name-2-dispozitie.png'),
+          );
+        }
+        await tester.tap(find.byKey(const ValueKey('mood-bucuros')));
         await settleUntil(tester, find.byKey(const ValueKey('choice-0')));
         if (shots) {
           await expectLater(
             find.byType(LicuriciApp),
-            matchesGoldenFile('shots/$name-2-joc.png'),
+            matchesGoldenFile('shots/$name-3-joc.png'),
           );
         }
 

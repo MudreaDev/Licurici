@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
 
+import '../../../data/session.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/emoji_art.dart';
 import '../../../shared/mascot.dart';
@@ -130,6 +131,10 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
   }
 
   void _finishRound(SequenceResult result) {
+    final session = ref.read(sessionProvider.notifier);
+    final secondChance = _attempt > 0;
+    session.record((s) => s.sequence(result, secondChance: secondChance));
+    session.checkpoint();
     setState(() {
       if (result.complete) {
         _wins++;

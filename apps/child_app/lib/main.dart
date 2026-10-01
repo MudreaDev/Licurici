@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,8 @@ import 'package:licurici_core/licurici_core.dart';
 
 import 'app/boot.dart';
 import 'app/theme.dart';
+import 'data/local_db.dart';
+import 'data/session.dart';
 import 'features/games/choice/choice_game_screen.dart';
 import 'features/games/reaction/reaction_game_screen.dart';
 import 'features/home/home_screen.dart';
@@ -21,7 +24,16 @@ Future<void> main() async {
   ]);
   // Ecran complet: fără bare de sistem, ca copilul să nu iasă din aplicație din greșeală.
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-  runApp(const ProviderScope(child: LicuriciApp()));
+  runApp(
+    ProviderScope(
+      // Sesiunile se păstrează pe dispozitiv (Drift, ADR-004). Pe web (doar previzualizare)
+      // Drift ar cere sqlite3.wasm + worker; acolo rămân în memorie.
+      overrides: [
+        if (!kIsWeb) sessionStoreProvider.overrideWithValue(DriftSessionStore(LocalDb())),
+      ],
+      child: const LicuriciApp(),
+    ),
+  );
 }
 
 /// Routerul aparține instanței aplicației (nu e global): fiecare ProviderScope are

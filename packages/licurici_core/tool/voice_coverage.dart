@@ -21,6 +21,9 @@ const uiPhrases = [
   'Atinge-le invers, de la ultimul.',
   'Mai privim o dată',
   'Continuăm',
+  // Check-in-ul de dispoziție și finalul sesiunii
+  'Cum te simți?',
+  'Ne vedem data viitoare!',
 ];
 
 void main(List<String> args) {
@@ -33,6 +36,9 @@ void main(List<String> args) {
 
   for (final p in uiPhrases) {
     add(p, 'interfață');
+  }
+  for (final m in Mood.values) {
+    add(m.label, 'dispoziție');
   }
   for (final game in allGames) {
     for (final tier in [1, 2, 3, 4, 5, 6, 8, 12]) {

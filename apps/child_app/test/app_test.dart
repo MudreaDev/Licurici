@@ -4,11 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_content/game_content.dart';
+import 'package:licurici/data/session.dart';
 import 'package:licurici/main.dart';
+import 'package:licurici_core/licurici_core.dart';
 import 'package:licurici/shared/voice.dart';
 
 /// Pornește aplicația fără voce și cu „reduce motion” (animații deterministe).
-Future<void> pumpApp(WidgetTester tester) async {
+Future<void> pumpApp(WidgetTester tester, {SessionStore? store}) async {
   tester.view.physicalSize = const Size(1280, 900);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
@@ -17,6 +19,7 @@ Future<void> pumpApp(WidgetTester tester) async {
       overrides: [
         voiceProvider.overrideWithValue(const SilentSpeaker()),
         voiceManifestProvider.overrideWith((ref) => VoiceManifest(const {})),
+        sessionStoreProvider.overrideWithValue(store ?? MemorySessionStore()),
       ],
       child: const MediaQuery(
         data: MediaQueryData(disableAnimations: true, size: Size(1280, 900)),
@@ -75,7 +78,8 @@ void main() {
   testWidgets('un joc se poate juca până la final, iar greșelile nu blochează', (
     tester,
   ) async {
-    await pumpApp(tester);
+    final store = MemorySessionStore();
+    await pumpApp(tester, store: store);
     // Lista de jocuri e orizontală și leneșă: cardurile se construiesc doar la derulare.
     await tester.scrollUntilVisible(
       find.text('Culori'),
@@ -86,6 +90,8 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Culori'));
+    await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
+    await tester.tap(find.byKey(const ValueKey('mood-skip')));
     await pumpUntil(tester, find.byKey(const ValueKey('choice-0')));
 
     for (
@@ -118,6 +124,23 @@ void main() {
     await tester.tap(find.text('Acasă').last);
     await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('Grădiniță'), findsOneWidget);
+
+    // „Gata pe azi” → dispoziția de final → sesiunea se salvează cu toate rundele jucate.
+    await tester.tap(find.byKey(const ValueKey('finish-session')));
+    await pumpUntil(tester, find.byKey(const ValueKey('mood-linistit')));
+    await tester.tap(find.byKey(const ValueKey('mood-linistit')));
+    await tester.pump(const Duration(milliseconds: 300));
+    final saved = (await tester.runAsync(store.all))!;
+    expect(saved, hasLength(1));
+    final session = saved.single;
+    expect(session.moodBefore, isNull); // a sărit peste întrebare
+    expect(session.moodAfter, Mood.linistit);
+    expect(session.trials, isNotEmpty);
+    expect(session.trials.every((t) => t.gameId == 'culori' && t.stepId == 'POT5'), isTrue);
+    expect(session.trials.every((t) => t.latencyMs != null && t.targetId != null), isTrue);
+    // Raportul pentru părinte se poate calcula direct din ce s-a salvat.
+    expect(SessionReport.from(session).parentSummary, isNotEmpty);
+    expect(find.byKey(const ValueKey('finish-session')), findsNothing);
     await closeApp(tester);
   });
 }

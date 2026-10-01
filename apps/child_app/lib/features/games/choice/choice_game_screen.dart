@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/layout.dart';
+import '../../../data/session.dart';
 import '../../../app/theme.dart';
 import '../../../shared/art_cache.dart';
 import '../../../shared/celebration.dart';
@@ -54,6 +55,13 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   Timer? _guideTimer;
   Timer? _advanceTimer;
 
+  // Măsurătorile încercării (plan §4.1): latența până la primul răspuns, prima variantă
+  // greșită aleasă (confuzii) și dacă a apărut ghidajul vizual (ajutor P3).
+  final _roundClock = Stopwatch();
+  int? _latencyMs;
+  String? _firstWrongKey;
+  bool _guideShown = false;
+
   ChoiceRound get _round => _lesson.rounds[_index];
 
   @override
@@ -90,6 +98,12 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _solved = false;
     _wrong.clear();
     _lastWrong = null;
+    _latencyMs = null;
+    _firstWrongKey = null;
+    _guideShown = false;
+    _roundClock
+      ..reset()
+      ..start();
     _mood = MascotMood.idle;
     _bubble = _lesson.instruction ?? '';
     _armGuide();
@@ -103,7 +117,9 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _guide = false;
     _guideTimer?.cancel();
     _guideTimer = Timer(const Duration(seconds: 5), () {
-      if (mounted && !_solved) setState(() => _guide = true);
+      if (mounted && !_solved) {
+        setState(() => _guide = _guideShown = true);
+      }
     });
   }
 
@@ -111,8 +127,20 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     if (_solved || _wrong.contains(i)) return;
     final choice = _round.choices[i];
     final voice = ref.read(voiceProvider);
+    _latencyMs ??= _roundClock.elapsedMilliseconds;
     if (choice.correct) {
       if (_attempts == 0) _firstTry++;
+      final round = _round;
+      ref.read(sessionProvider.notifier).record(
+            (r) => r.choiceRound(
+              gameId: widget.game.id,
+              round: round,
+              wrongAttempts: _attempts,
+              guideShown: _guideShown,
+              latencyMs: _latencyMs!,
+              chosenKey: _firstWrongKey,
+            ),
+          );
       setState(() {
         _solved = true;
         _mood = MascotMood.happy;
@@ -126,6 +154,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
       _advanceTimer = Timer(const Duration(milliseconds: 1400), _next);
     } else {
       _attempts++;
+      _firstWrongKey ??= choice.key;
       setState(() {
         _wrong.add(i);
         _lastWrong = i;
@@ -137,6 +166,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
             ? _round.hint!
             : 'Mai încearcă';
         _guide = _attempts >= 2;
+        _guideShown |= _guide;
       });
       voice.say([if (choice.spoken != null) choice.spoken!, 'Mai încearcă']);
       if (_attempts < 2) _armGuide();
@@ -148,6 +178,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     setState(() {
       if (_index + 1 >= _lesson.rounds.length) {
         _finished = true;
+        ref.read(sessionProvider.notifier).checkpoint();
         _mood = MascotMood.happy;
         _reaction++;
         ref.read(voiceProvider).say(['Ai terminat! Bravo!']);

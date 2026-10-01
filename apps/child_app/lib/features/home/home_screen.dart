@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../app/layout.dart';
@@ -11,6 +10,8 @@ import '../../shared/mascot.dart';
 import '../../shared/motion.dart';
 import '../../shared/pressable.dart';
 import '../../shared/top_bar.dart';
+import '../../data/session.dart';
+import '../session/mood_check.dart';
 import '../settings/settings.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -57,7 +58,7 @@ class HomeScreen extends ConsumerWidget {
         body: SafeArea(
           child: Column(
             children: [
-              const TopBar(),
+              const _HomeBar(),
               Padding(
                 padding: EdgeInsets.fromLTRB(16, layout.compact ? 0 : 8, 16, 0),
                 child: Row(
@@ -102,7 +103,7 @@ class HomeScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const TopBar(),
+            const _HomeBar(),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
@@ -345,7 +346,7 @@ class GameTile extends ConsumerWidget {
     }
     return Pressable(
       semanticLabel: name,
-      onTap: () => context.go(route),
+      onTap: () => openGame(context, ref, route),
       child: Container(
         width: compact ? 150 : 190,
         padding: EdgeInsets.all(compact ? 12 : 18),
@@ -382,6 +383,28 @@ class GameTile extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Bara de sus a ecranului principal: după ce copilul a jucat, apare „Gata pe azi”
+/// (dispoziția de final + salvarea sesiunii).
+class _HomeBar extends ConsumerWidget {
+  const _HomeBar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(sessionProvider);
+    final played = ref.read(sessionProvider.notifier).hasPlayed;
+    return TopBar(
+      trailing: played
+          ? BarButton(
+              key: const ValueKey('finish-session'),
+              emoji: '👋',
+              label: 'Gata pe azi',
+              onTap: () => finishSession(context, ref),
+            )
+          : null,
     );
   }
 }
