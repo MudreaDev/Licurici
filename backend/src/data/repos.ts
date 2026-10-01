@@ -3,6 +3,7 @@ import type { Role } from '../auth/tokens';
 import type { ChildRepo } from '../children/access';
 import type { ChildrenRepo } from '../children/children';
 import type { SharingRepo } from '../children/sharing';
+import type { GdprRepo } from '../gdpr/gdpr';
 import { type ConsentStore, consentPurposes } from '../consents/consents';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { ConsentRepo, SummaryRepo } from '../reports/summary-flow';
@@ -156,6 +157,41 @@ export class PrismaRepos {
         // Partajările vechi fără termen sunt afișate ca expirând „acum” — trebuie reînnoite.
         expiresAt: l.expiresAt ?? new Date(0),
       })),
+    audit: async (actorId, action, targetId) => {
+      await this.db.auditLog.create({ data: { actorId, action, targetId } });
+    },
+  };
+
+  readonly gdpr: GdprRepo = {
+    account: async (userId) => {
+      const u = await this.db.user.findUniqueOrThrow({ where: { id: userId } });
+      return { email: u.email, role: u.role, createdAt: u.createdAt.toISOString() };
+    },
+    consentLog: async (userId) =>
+      (await this.db.consent.findMany({ where: { userId }, orderBy: { at: 'asc' } })).map((c) => ({
+        purpose: c.purpose,
+        granted: c.granted,
+        policyVersion: c.policyVersion,
+        at: c.at.toISOString(),
+      })),
+    childrenWithSessions: async (parentId) =>
+      (
+        await this.db.child.findMany({
+          where: { parentId, deletedAt: null },
+          include: { therapySessions: { orderBy: { startedAt: 'asc' }, include: { summary: true } } },
+        })
+      ).map((c) => ({
+        nickname: c.nickname,
+        avatar: c.avatar,
+        birthYear: c.birthYear,
+        sessions: c.therapySessions.map((s) => ({ record: s.record, summary: s.summary?.content ?? null })),
+      })),
+    softDeleteChild: async (childId, at) => {
+      await this.db.$transaction([
+        this.db.child.update({ where: { id: childId }, data: { deletedAt: at } }),
+        this.db.careLink.deleteMany({ where: { childId } }),
+      ]);
+    },
     audit: async (actorId, action, targetId) => {
       await this.db.auditLog.create({ data: { actorId, action, targetId } });
     },

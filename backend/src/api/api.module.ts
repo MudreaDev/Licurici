@@ -1,5 +1,7 @@
+import { getQueueToken } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
+import type { Queue } from 'bullmq';
 import type { Redis } from 'ioredis';
 
 import { AuthService } from '../auth/auth.service';
@@ -7,24 +9,29 @@ import { AuthGuard } from '../auth/guard';
 import { TokenService } from '../auth/tokens';
 import { ChildAccess } from '../children/access';
 import { ChildrenService } from '../children/children';
+import { CommonModule } from '../common.module';
 import { SharingService } from '../children/sharing';
 import { DomainErrorFilter } from '../common/domain-error.filter';
 import { ConsentService } from '../consents/consents';
 import { ENV, type Env } from '../config/env';
+import { GdprService } from '../gdpr/gdpr';
+import { Queues } from '../queues/queues';
 import { PrismaRepos } from '../data/repos';
 import { PrismaService } from '../prisma/prisma.service';
 import { REDIS } from '../redis/redis.module';
 import { SessionSummaryService } from '../reports/session-summary';
 import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
-import { AuthController, ChildrenController, ConsentsController } from './controllers';
+import { AuthController, ChildrenController, ConsentsController, MeController } from './controllers';
 
 /**
  * Modulele de domeniu ale API-ului. Serviciile sunt TypeScript simplu (testate fără Nest);
  * aici doar le legăm de Prisma, Redis și configurație.
  */
 @Module({
-  controllers: [AuthController, ChildrenController, ConsentsController],
+  // CommonModule exportă cozile BullMQ (coada `gdpr` pentru ștergerea definitivă).
+  imports: [CommonModule],
+  controllers: [AuthController, ChildrenController, ConsentsController, MeController],
   providers: [
     { provide: APP_FILTER, useClass: DomainErrorFilter },
     { provide: PrismaRepos, inject: [PrismaService], useFactory: (db: PrismaService) => new PrismaRepos(db) },
@@ -49,6 +56,21 @@ import { AuthController, ChildrenController, ConsentsController } from './contro
       provide: SharingService,
       inject: [ChildAccess, ConsentService, PrismaRepos],
       useFactory: (a: ChildAccess, c: ConsentService, r: PrismaRepos) => new SharingService(a, c, r.sharing),
+    },
+    {
+      provide: GdprService,
+      inject: [ChildAccess, PrismaRepos, getQueueToken(Queues.gdpr)],
+      useFactory: (a: ChildAccess, r: PrismaRepos, queue: Queue) =>
+        new GdprService(a, r.gdpr, {
+          // jobId fix → programarea e idempotentă (o a doua cerere nu dublează ștergerea).
+          schedulePurge: async (childId, at) => {
+            await queue.add(
+              'purge-child',
+              { childId },
+              { jobId: `purge-child-${childId}`, delay: Math.max(0, at.getTime() - Date.now()) },
+            );
+          },
+        }),
     },
     {
       provide: SyncService,

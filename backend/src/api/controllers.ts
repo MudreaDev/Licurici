@@ -8,6 +8,7 @@ import type { AuthUser } from '../auth/tokens';
 import { ChildrenService } from '../children/children';
 import { SharingService } from '../children/sharing';
 import { ConsentService } from '../consents/consents';
+import { GdprService } from '../gdpr/gdpr';
 import { parseWith } from '../common/validation';
 import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
@@ -55,7 +56,15 @@ export class ChildrenController {
     @Inject(SyncService) private readonly sync: SyncService,
     @Inject(SummaryFlow) private readonly summaries: SummaryFlow,
     @Inject(SharingService) private readonly sharing: SharingService,
+    @Inject(GdprService) private readonly gdpr: GdprService,
   ) {}
+
+  /** Ștergerea profilului copilului (GDPR art. 17): acces tăiat acum, ștergere definitivă în 7 zile. */
+  @Delete(':childId')
+  @HttpCode(202)
+  remove(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string) {
+    return this.gdpr.deleteChild(user, childId);
+  }
 
   /** Partajarea cu specialistul (CareLink): doar părintele, cu consimțământ, pe termen limitat. */
   @Get(':childId/share')
@@ -130,5 +139,19 @@ export class ConsentsController {
   @HttpCode(200)
   set(@CurrentUser() user: AuthUser, @Body() body: unknown) {
     return this.consents.set(user, body);
+  }
+}
+
+/** Datele mele (GDPR art. 15, 20): export complet, citibil de mașină. */
+@ApiTags('gdpr')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
+@Controller('me')
+export class MeController {
+  constructor(@Inject(GdprService) private readonly gdpr: GdprService) {}
+
+  @Get('export')
+  export(@CurrentUser() user: AuthUser) {
+    return this.gdpr.export(user);
   }
 }
