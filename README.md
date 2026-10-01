@@ -47,8 +47,8 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 |------|-------|------|
 | Prototip desktop (Electron, JS) | ✅ funcțional | 44 jocuri, motor de dificultate, Aventură, voce RO. **Referință** pentru portare (vezi §3). |
 | Monorepo (`apps/`, `packages/`, `backend/`, `infra/`, `docs/`, `legacy/`) | ✅ | Workspace Dart (pub workspaces) la rădăcină. |
-| `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS (teste de paritate), regulă adaptivă, modelul jocurilor (`ChoiceGame` = metadate în constructor), **10 jocuri** împărțite pe materii (`lib/src/games/<materie>.dart`), `Lesson.art` pentru pre-încărcare, `tool/voice_coverage.dart`. 74 de teste. |
-| `packages/game_content` | 🟨 | 329 SVG OpenMoji, **532 clipuri voce RO** (acoperire 100% a frazelor rostite), font Nunito. Conținutul jocurilor e încă în Dart (`content.dart`) → de mutat în JSON. |
+| `packages/licurici_core` (Dart pur) | 🟨 | Dificultate portată 1:1 din JS (teste de paritate), regulă adaptivă, modelul jocurilor (`ChoiceGame` = metadate în constructor), **16 jocuri `choice`** (`lib/src/games/<materie>.dart`, inclusiv `social.dart`: EMO3–EMO6), **modelul de dezvoltare** (`development.dart`: arii + trasee de trepte; `trial.dart`: `Trial`, `PromptLevel` P0–P4, `PromptLadder`, `MasteryCriterion`, `EloRating`), **mecanica `reaction`** (`reaction.dart`: `pescarul` go/no-go, `prinde-licuriciul`, niveluri procedurale nemărginite + KPI comisii/omisiuni/TR), **`sequence`** (`sequence.dart`: `simon`, span 2→7, ordine inversă). `tool/voice_coverage.dart`. 136 de teste. |
+| `packages/game_content` | 🟨 | 329 SVG OpenMoji, **1241 de clipuri voce RO** (acoperire 100% a frazelor rostite), font Nunito. Conținutul jocurilor e încă în Dart (`content.dart`) → de mutat în JSON. |
 | Aplicația copil — Flutter | 🟨 | **Landscape** (telefon + tabletă, ADR-023), ecran de pornire cu pre-încărcare, ecran principal cu jocuri derulate orizontal, mecanica `choice` cu animații (§15.1) pe două panouri, variante cu grupuri de obiecte, mascota desenată în cod, voce, modul calm. 7 teste de widget (inclusiv layout la 4 dimensiuni de ecran). Setările sunt în memorie (Drift urmează). **UI-ul e încă simplu** (carduri albe): va fi refăcut cu ilustrații ChatGPT + animație procedurală din cod (§14.1, ADR-028). |
 | Panou părinte/terapeut — Flutter Web | ⬜ | |
 | Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrare inițială, `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. 6 teste. Fără auth/sync încă. |
@@ -63,7 +63,12 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 29.09.2026.** Ultimul lucru terminat: **planul de reorientare spre terapie gamificată** — [docs/plan-dezvoltare-terapeutica.md](docs/plan-dezvoltare-terapeutica.md) + [ADR-026](docs/adr/ADR-026-trasee-de-dezvoltare-nu-clase.md) + [ADR-027](docs/adr/ADR-027-niveluri-generate-procedural.md) (status: propus). Pe scurt: **arii de dezvoltare cu trasee de trepte** în loc de clase și materii, fiecare rundă = **încercare măsurată** (corect, nivel de ajutor P0–P4, latență, stimul), KPI-uri pentru specialist (independență, stăpânire, generalizare, menținere), plan individual cu obiective, grafice ABA. Înainte: 12 jocuri, voce 100%.
+**Ultima actualizare: 01.10.2026.** Ultimul lucru terminat: **prima sesiune de lucru Claude + Codex** (împărțirea muncii în [AGENTS.md](AGENTS.md): Claude = `licurici_core`/backend/docs, Codex = `apps/child_app`). Făcut: modelul de dezvoltare în cod (arii, trepte, încercări, ajutor P0–P4, criteriu de stăpânire, Elo), 4 jocuri sociale noi cu niveluri pe axe (`ce-simte` EMO3, `ce-ma-ajuta` EMO4, `cine-stie` EMO5 — teoria minții, `situatii` EMO6), mecanica `reaction` (`pescarul` FEX2, `prinde-licuriciul` ATN1–2) cu ecran Flutter (Codex), jocul `simon` / Felinarele (FEX5, span 2→7, ordine inversă; ecran Codex), nivel adaptiv în `reaction` și `simon` (`suggestedNextLevel`), `SessionPlanner` (orarul „Drumul de azi”, încă fără ecran), vocea 100% (1241 de clipuri).
+Codex se rulează din `%LOCALAPPDATA%\OpenAI\Codex\bin\<versiune>\codex.exe exec -s workspace-write --add-dir D:/src/flutter --add-dir %LOCALAPPDATA%/Pub/Cache` (fără `--add-dir` nu poate rula `flutter test`). Brief-ul sarcinii: contractul din `licurici_core` + reguli din AGENTS.md; Claude verifică (`flutter analyze`, `flutter test`) și face commit-ul.
+
+**Pasul imediat următor:** `PromptLadder` + `Trial` legate în `ChoiceGameScreen` (P3 pulsează, P4 mânuța; Codex) · ecranul „Drumul de azi” din `SessionPlanner` (Codex) · Drift: salvarea încercărilor și a progresului pe trepte (Claude) · sunetul notelor pentru Felinarele (nu există încă sinteză audio — de decis, cu ADR dacă e pachet nou).
+
+Înainte: **planul de reorientare spre terapie gamificată** — [docs/plan-dezvoltare-terapeutica.md](docs/plan-dezvoltare-terapeutica.md) + [ADR-026](docs/adr/ADR-026-trasee-de-dezvoltare-nu-clase.md) + [ADR-027](docs/adr/ADR-027-niveluri-generate-procedural.md) (status: propus). Pe scurt: **arii de dezvoltare cu trasee de trepte** în loc de clase și materii, fiecare rundă = **încercare măsurată** (corect, nivel de ajutor P0–P4, latență, stimul), KPI-uri pentru specialist (independență, stăpânire, generalizare, menținere), plan individual cu obiective, grafice ABA. Înainte: 12 jocuri, voce 100%.
 
 **Următorii pași, în ordine** (roadmap-ul revizuit e în plan, §11; §21 de mai jos se actualizează după acceptarea ADR-026):
 1. ⬜ **Validează planul** (utilizatorul) și, ideal, cu 1–2 specialiști: ariile și treptele (plan §3), KPI-urile (plan §4). Apoi ADR-026 → Acceptat și README §2, §11, §15, §16 rescrise pe arii.
@@ -840,8 +845,11 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (12):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu.
-Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii}.dart` + registrul `games.dart`.
+**Gata în Flutter (19):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
+🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`).
+🆕 simon / Felinarele (`sequence`).
+Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii,social}.dart` + registrul `games.dart`;
+`reaction.dart` (`reactionGames`), `sequence.dart`. Legătura joc → trepte: `development.dart` (testul cere ca fiecare joc să aibă o treaptă).
 **Urmează** (pasul 1 din §0.1): câte un folder per joc — `games/<materie>/<id>/`.
 
 **Cum adaugi un joc** (mecanica `choice`; structura actuală):

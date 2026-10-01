@@ -27,6 +27,7 @@ class HomeScreen extends ConsumerWidget {
       games: const [],
       reaction: reactionGames,
       title: 'Atenție și autocontrol',
+      sequence: true,
       horizontal: layout.twoPane,
     );
 
@@ -219,12 +220,14 @@ class _SubjectSection extends StatelessWidget {
     required this.games,
     this.horizontal = false,
     this.reaction = const [],
+    this.sequence = false,
     this.title,
   });
 
   final Subject subject;
   final List<GameSpec> games;
   final List<ReactionGame> reaction;
+  final bool sequence;
   final String? title;
 
   /// Landscape: titlul deasupra, cardurile pe un rând (lista părinte derulează orizontal).
@@ -234,6 +237,7 @@ class _SubjectSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Color(subject.color);
     final tiles = <Widget>[
+      if (sequence) GameTile.sequence(color: color),
       for (final (i, g) in games.indexed)
         GameTile(game: g, color: color, index: i),
       for (final (i, g) in reaction.indexed)
@@ -313,6 +317,11 @@ class GameTile extends ConsumerWidget {
        route = '/reactie/${game.id}';
 
   final String name, emoji, description, route;
+  const GameTile.sequence({super.key, required this.color, this.index = 0})
+    : name = 'Felinarele',
+      emoji = '💡',
+      description = 'Ține minte ordinea luminilor',
+      route = '/secventa/simon';
   final Color color;
   final int index;
 

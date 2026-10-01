@@ -18,6 +18,7 @@ class ReactionProgress extends Notifier<int> {
   @override
   int build() => 1;
   void advance() => state++;
+  void setLevel(int level) => state = level;
 }
 
 final reactionLevelProvider =
@@ -285,7 +286,9 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
                             .read(
                               reactionLevelProvider(widget.game.id).notifier,
                             )
-                            .advance();
+                            .setLevel(
+                              _summary!.suggestedNextLevel(_level.level),
+                            );
                         setState(_start);
                       },
                       burst: _burst,
@@ -313,10 +316,10 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _example(_level.goArt, 'Acesta da', Icons.touch_app_rounded),
+              _example(_level.goArt, 'Da, atinge', Icons.touch_app_rounded),
               if (_level.noGoArt case final art?) ...[
                 const SizedBox(width: 40),
-                _example(art, 'Acesta nu', Icons.pan_tool_outlined),
+                _example(art, 'Nu atinge', Icons.pan_tool_outlined),
               ],
             ],
           ),

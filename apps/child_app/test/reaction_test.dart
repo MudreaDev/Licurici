@@ -87,13 +87,16 @@ Future<void> _play(
   ReactionLevel level, {
   bool tapFirst = false,
   bool tapNoGo = false,
+  bool tapGo = false,
 }) async {
   for (final stimulus in level.stimuli) {
     await tester.pump(Duration(milliseconds: stimulus.gapBeforeMs));
     final target = find.byKey(ValueKey('reaction-stimulus-${stimulus.index}'));
     expect(target, findsOneWidget);
     expect(tester.getSize(target).shortestSide, greaterThanOrEqualTo(64));
-    if ((tapFirst && stimulus.index == 0) || (tapNoGo && !stimulus.isGo)) {
+    if ((tapFirst && stimulus.index == 0) ||
+        (tapNoGo && !stimulus.isGo) ||
+        (tapGo && stimulus.isGo)) {
       await tester.tap(target);
       await tester.pump();
     }
@@ -114,9 +117,9 @@ void main() {
       (tester) async {
         await _open(tester, game, size: const Size(640, 360));
         expect(find.text(game.name), findsOneWidget);
-        expect(find.text('Acesta da'), findsOneWidget);
+        expect(find.text('Da, atinge'), findsOneWidget);
         expect(
-          find.text('Acesta nu'),
+          find.text('Nu atinge'),
           game is PescarulGame ? findsOneWidget : findsNothing,
         );
         await _begin(tester);
@@ -173,17 +176,22 @@ void main() {
     'repetare și avansare păstrează nivelul separat pentru fiecare joc',
     (tester) async {
       const game = _SeededFirefly();
-      final container = await _open(tester, game);
+      final container = await _open(tester, game, initialLevel: 5);
       await _begin(tester);
-      await _play(tester, game.generate(1));
+      await _play(tester, game.generate(5));
       await tester.tap(find.text('Încă o dată'));
       await pumpUntil(tester, find.text('Începem'));
-      expect(container.read(reactionLevelProvider(game.id)), 1);
+      expect(container.read(reactionLevelProvider(game.id)), 5);
       await _begin(tester);
-      await _play(tester, game.generate(1));
+      await _play(tester, game.generate(5));
       await tester.tap(find.text('Mai departe'));
       await pumpUntil(tester, find.text('Începem'));
-      expect(container.read(reactionLevelProvider(game.id)), 2);
+      expect(container.read(reactionLevelProvider(game.id)), 4);
+      await _begin(tester);
+      await _play(tester, game.generate(4), tapGo: true);
+      await tester.tap(find.text('Mai departe'));
+      await pumpUntil(tester, find.text('Începem'));
+      expect(container.read(reactionLevelProvider(game.id)), 6);
       expect(container.read(reactionLevelProvider('pescarul')), 1);
       await closeApp(tester);
     },

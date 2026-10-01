@@ -11,7 +11,17 @@ import 'dart:math';
 import 'package:licurici_core/licurici_core.dart';
 
 /// Fraze rostite de interfață (în afara jocurilor).
-const uiPhrases = ['Bravo', 'Mai încearcă', 'Ai terminat! Bravo!'];
+const uiPhrases = [
+  'Bravo',
+  'Bravo!',
+  'Mai încearcă',
+  'Ai terminat! Bravo!',
+  // Felinarele (simon)
+  'Rândul tău',
+  'Atinge-le invers, de la ultimul.',
+  'Mai privim o dată',
+  'Continuăm',
+];
 
 void main(List<String> args) {
   final manifestFile = File('../game_content/audio/ro/voice.json');
@@ -44,6 +54,10 @@ void main(List<String> args) {
     for (var level = 1; level <= 30; level++) {
       add(game.generate(level, seed: level).instruction, game.id);
     }
+  }
+
+  for (var level = 1; level <= 30; level++) {
+    add(const SimonGame().generate(level, seed: level).instruction, 'simon');
   }
 
   final missing = phrases.keys.where((p) => !clips.contains(p)).toList()..sort();
