@@ -10,3 +10,4 @@ export 'src/reaction.dart';
 export 'src/development.dart';
 export 'src/trial.dart';
 export 'src/sequence.dart';
+export 'src/session.dart';
