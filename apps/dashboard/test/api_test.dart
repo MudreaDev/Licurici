@@ -30,11 +30,12 @@ class FakeBackend {
     calls.add('${r.method} $path');
     if (path == '/auth/login') {
       final b = jsonDecode(r.body) as Map;
-      if (b['password'] != 'parola-lunga-1')
+      if (b['password'] != 'parola-lunga-1') {
         return json({
           'statusCode': 401,
           'message': 'E-mail sau parolă greșită.',
         }, 401);
+      }
       return json({
         'accessToken': 'a$accessVersion',
         'refreshToken': 'r$accessVersion',
