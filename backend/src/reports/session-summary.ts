@@ -81,6 +81,8 @@ Câmpuri: independence = răspunsuri corecte din prima, fără ajutor; meanPromp
 export class SummaryUnavailableError extends Error {}
 
 export class SessionSummaryService {
+  readonly model = SUMMARY_MODEL;
+
   constructor(private readonly client: Anthropic = new Anthropic()) {}
 
   async summarize(rawFacts: unknown): Promise<SessionSummary> {

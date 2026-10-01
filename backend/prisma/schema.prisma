@@ -31,6 +31,8 @@ enum ConsentPurpose {
   WEEKLY_REPORT
   THERAPIST_SHARING
   PUSH_NOTIFICATIONS
+  /// Rezumatele sesiunilor scrise de AI (ADR-029) — consimțământ separat.
+  AI_SUMMARY
 }
 
 /// Doar adulții au conturi (ADR-12).
@@ -71,6 +73,7 @@ model Child {
   parent    User               @relation(fields: [parentId], references: [id], onDelete: Cascade)
   settings  ChildSettings?
   sessions  GameSession[]
+  therapySessions TherapySession[]
   stats     ChildSkillStats[]
   adventure AdventureProgress?
   careLinks CareLink[]
@@ -212,4 +215,39 @@ model AuditLog {
 
   @@index([actorId, at])
   @@map("audit_logs")
+}
+
+/// O sesiune de lucru sincronizată de pe dispozitiv (`SessionRecord` din licurici_core, plan §4).
+/// Id-ul vine de pe dispozitiv: retrimiterea aceleiași sesiuni o actualizează, nu o dublează
+/// (idempotență, ADR-011). `facts` = `SessionReport.toAiJson()` calculat pe dispozitiv
+/// (o singură implementare a KPI-urilor) — agregate, fără nume.
+model TherapySession {
+  id         String   @id @db.Uuid
+  childId    String   @db.Uuid
+  startedAt  DateTime
+  endedAt    DateTime
+  moodBefore String?  @db.VarChar(16)
+  moodAfter  String?  @db.VarChar(16)
+  record     Json
+  facts      Json
+  receivedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  child   Child           @relation(fields: [childId], references: [id], onDelete: Cascade)
+  summary SessionSummary?
+
+  @@index([childId, startedAt])
+  @@map("therapy_sessions")
+}
+
+/// Rezumatul AI al unei sesiuni (ADR-029), generat o singură dată și păstrat (cost, consecvență).
+model SessionSummary {
+  sessionId String   @id @db.Uuid
+  model     String   @db.VarChar(40)
+  content   Json
+  createdAt DateTime @default(now())
+
+  session TherapySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("session_summaries")
 }

@@ -6,6 +6,7 @@ const valid = {
   S3_ENDPOINT: 'http://storage:9000',
   S3_ACCESS_KEY: 'licurici',
   S3_SECRET_KEY: 'secret-secret',
+  JWT_SECRET: 'x'.repeat(32),
 };
 
 describe('loadEnv', () => {

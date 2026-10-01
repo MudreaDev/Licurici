@@ -18,6 +18,15 @@ export const envSchema = z.object({
   S3_ACCESS_KEY: z.string().min(3),
   S3_SECRET_KEY: z.string().min(8),
 
+  /** Semnează tokenurile de acces (JWT, 15 min — ADR-012). Minim 32 de caractere aleatoare. */
+  JWT_SECRET: z.string().min(32),
+
+  /** Rezumatele sesiunii cu Claude (ADR-029). Lipsă = doar rezumatele din reguli. */
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
+
+  /** Câte rezumate AI poate cere un cont pe zi (limită în Redis). */
+  AI_SUMMARIES_PER_DAY: z.coerce.number().int().min(0).max(1000).default(30),
+
   /** Câte job-uri procesează un worker în paralel, pe coadă. */
   WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(64).default(4),
 });
