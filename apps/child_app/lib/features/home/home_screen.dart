@@ -421,8 +421,9 @@ class _HomeBar extends ConsumerWidget {
             emoji: '📋',
             label: 'Pentru părinți',
             onTap: () async {
-              if (await askParentGate(context) && context.mounted)
+              if (await askParentGate(context) && context.mounted) {
                 context.go('/parinte');
+              }
             },
           ),
         ],

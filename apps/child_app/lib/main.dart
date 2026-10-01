@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +18,9 @@ import 'features/parent/parent_screen.dart';
 import 'features/games/sequence/simon_screen.dart';
 import 'features/settings/settings.dart';
 
+/// Cheia setărilor copilului în tabela `meta`.
+const settingsKey = 'settings';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Jocul se joacă doar în landscape (și în manifestul Android / Info.plist iOS).
@@ -25,13 +30,32 @@ Future<void> main() async {
   ]);
   // Ecran complet: fără bare de sistem, ca copilul să nu iasă din aplicație din greșeală.
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  // Sesiunile și setările se păstrează pe dispozitiv (Drift, ADR-004). Pe web (doar
+  // previzualizare) Drift ar cere sqlite3.wasm + worker; acolo rămân în memorie.
+  final db = kIsWeb ? null : LocalDb();
+  var settings = const AppSettings();
+  try {
+    final raw = await db?.readMeta(settingsKey);
+    if (raw != null) {
+      settings = AppSettings.fromJson(
+        (jsonDecode(raw) as Map).cast<String, Object?>(),
+      );
+    }
+  } on Object {
+    // Setări ilizibile → pornim cu cele implicite; copilul nu trebuie să vadă o eroare.
+  }
   runApp(
     ProviderScope(
-      // Sesiunile se păstrează pe dispozitiv (Drift, ADR-004). Pe web (doar previzualizare)
-      // Drift ar cere sqlite3.wasm + worker; acolo rămân în memorie.
       overrides: [
-        if (!kIsWeb)
-          sessionStoreProvider.overrideWithValue(DriftSessionStore(LocalDb())),
+        if (db != null) ...[
+          sessionStoreProvider.overrideWithValue(DriftSessionStore(db)),
+          settingsProvider.overrideWith(
+            () => SettingsNotifier(
+              settings,
+              (s) => db.writeMeta(settingsKey, jsonEncode(s.toJson())),
+            ),
+          ),
+        ],
       ],
       child: const LicuriciApp(),
     ),

@@ -13,8 +13,9 @@ import '../settings/settings.dart';
 
 /// Jocurile care există în aplicație, cu ruta și ilustrația lor.
 ({String route, String emoji, String name})? gameEntry(String id) {
-  if (gameById(id) case final g?)
+  if (gameById(id) case final g?) {
     return (route: '/joc/$id', emoji: g.emoji, name: g.name);
+  }
   if (reactionGameById(id) case final g?) {
     return (route: '/reactie/$id', emoji: g.emoji, name: g.name);
   }
