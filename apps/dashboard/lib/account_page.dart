@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'api.dart';
@@ -80,6 +81,60 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     });
   }
 
+  Future<void> _export() => _guard(() async {
+    final json = await _api.exportData();
+    await Clipboard.setData(ClipboardData(text: json));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Toate datele tale au fost copiate (JSON). Le poți salva într-un fișier.',
+          ),
+        ),
+      );
+  });
+
+  Future<void> _delete(Map<String, dynamic> child) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text('Ștergi profilul „${child['nickname']}”?'),
+        content: const Text(
+          'Accesul (inclusiv al specialiștilor) se oprește imediat. Datele se șterg definitiv după 7 zile; '
+          'până atunci poți scrie la suport ca să anulezi.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Renunță'),
+          ),
+          FilledButton(
+            key: const ValueKey('delete-confirm'),
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Șterge'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await _guard(() async {
+      final purgeAt = await _api.deleteChild(child['id'] as String);
+      await _load();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              'Profil șters. Ștergere definitivă la ${purgeAt.substring(0, 10)}.',
+            ),
+          ),
+        );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final consents = _consents;
@@ -125,6 +180,24 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                   ),
                 const Divider(height: 40),
                 Text(
+                  'Datele mele',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Tot ce păstrăm despre tine și copiii tăi, într-un format pe care îl poți salva sau muta.',
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    key: const ValueKey('export-data'),
+                    onPressed: _export,
+                    icon: const Icon(Icons.download_outlined),
+                    label: const Text('Copiază toate datele mele'),
+                  ),
+                ),
+                const Divider(height: 40),
+                Text(
                   'Specialiști cu acces',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
@@ -163,11 +236,22 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                                 child: const Text('Revocă'),
                               ),
                             ),
-                          TextButton.icon(
-                            key: ValueKey('share-${c['id']}'),
-                            onPressed: () => _invite(c['id'] as String),
-                            icon: const Icon(Icons.person_add_alt),
-                            label: const Text('Invită un specialist'),
+                          Wrap(
+                            spacing: 8,
+                            children: [
+                              TextButton.icon(
+                                key: ValueKey('share-${c['id']}'),
+                                onPressed: () => _invite(c['id'] as String),
+                                icon: const Icon(Icons.person_add_alt),
+                                label: const Text('Invită un specialist'),
+                              ),
+                              TextButton.icon(
+                                key: ValueKey('delete-${c['id']}'),
+                                onPressed: () => _delete(c),
+                                icon: const Icon(Icons.delete_outline),
+                                label: const Text('Șterge profilul'),
+                              ),
+                            ],
                           ),
                         ],
                       ),

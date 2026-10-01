@@ -101,6 +101,16 @@ class ApiClient {
     body: {'email': email, 'days': days},
   );
 
+  /// Exportul complet al datelor (GDPR art. 15, 20), ca text JSON.
+  Future<String> exportData() async => const JsonEncoder.withIndent(
+    '  ',
+  ).convert(await _send('GET', '/me/export'));
+
+  /// Ștergerea profilului copilului; întoarce data ștergerii definitive.
+  Future<String> deleteChild(String childId) async =>
+      ((await _send('DELETE', '/children/$childId')) as Map)['purgeAt']
+          as String;
+
   Future<void> unshare(String childId, String therapistId) =>
       _send('DELETE', '/children/$childId/share/$therapistId');
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +26,7 @@ class FakeBackend {
     'PUSH_NOTIFICATIONS': false,
   };
   final shares = <Map<String, dynamic>>[];
+  bool deleted = false;
   final sessions = demoChildren().first.sessions;
 
   http.Response json(Object body, [int status = 200]) => http.Response.bytes(
@@ -62,6 +64,7 @@ class FakeBackend {
       return json({'statusCode': 401, 'message': 'Neautentificat.'}, 401);
     }
     if (path == '/children') {
+      if (deleted) return json([]);
       return json([
         {
           'id': childId,
@@ -122,6 +125,13 @@ class FakeBackend {
     if (path == '/children/$childId/share/t1' && r.method == 'DELETE') {
       shares.clear();
       return http.Response('', 204);
+    }
+    if (path == '/me/export') {
+      return json({'format': 'licurici-export', 'version': 1, 'children': []});
+    }
+    if (path == '/children/$childId' && r.method == 'DELETE') {
+      deleted = true;
+      return json({'purgeAt': '2026-10-08T12:00:00.000Z'}, 202);
     }
     return json({'statusCode': 404, 'message': 'Nu există.'}, 404);
   }
@@ -279,4 +289,49 @@ void main() {
     expect(find.text('Acces până la 2026-12-30'), findsNothing);
     expect(backend.calls, contains('DELETE /children/$childId/share/t1'));
   });
+
+  testWidgets(
+    'datele mele: export copiat; ștergerea profilului cere confirmare',
+    (tester) async {
+      final backend = FakeBackend();
+      String? copied;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            copied = (call.arguments as Map)['text'] as String;
+          }
+          return null;
+        },
+      );
+      await pumpDashboard(tester, backend);
+      await signIn(tester, 'parola-lunga-1');
+      await tester.tap(find.byKey(const ValueKey('account')));
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('export-data')),
+        200,
+      );
+      await tester.tap(find.byKey(const ValueKey('export-data')));
+      await tester.pumpAndSettle();
+      expect(copied, contains('licurici-export'));
+
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('delete-$childId')),
+        200,
+      );
+      await tester.tap(find.byKey(const ValueKey('delete-$childId')));
+      await tester.pumpAndSettle();
+      expect(backend.deleted, isFalse); // doar dialogul de confirmare
+      await tester.tap(find.byKey(const ValueKey('delete-confirm')));
+      await tester.pumpAndSettle();
+      expect(backend.deleted, isTrue);
+      expect(
+        find.text('Profil șters. Ștergere definitivă la 2026-10-08.'),
+        findsOneWidget,
+      );
+      expect(find.byKey(const ValueKey('delete-$childId')), findsNothing);
+    },
+  );
 }
