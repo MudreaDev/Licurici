@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:game_content/game_content.dart' as content;
 import 'package:go_router/go_router.dart';
+import 'import_dialog.dart';
 import 'parent.dart';
 import 'specialist.dart';
 
@@ -77,6 +78,7 @@ class RolePage extends StatelessWidget {
     appBar: AppBar(
       title: const Text('Licurici'),
       actions: const [
+        ImportButton(),
         Padding(padding: EdgeInsets.all(20), child: Text('DEMO')),
       ],
     ),

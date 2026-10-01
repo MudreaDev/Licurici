@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
 
@@ -33,7 +34,15 @@ class ParentScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const TopBar(title: 'Pentru părinți'),
+            TopBar(
+              title: 'Pentru părinți',
+              trailing: BarButton(
+                key: const ValueKey('export-sessions'),
+                emoji: '📋',
+                label: 'Copiază sesiunile pentru specialist',
+                onTap: () => _export(context, ref),
+              ),
+            ),
             Expanded(
               child: reports.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -65,6 +74,22 @@ class ParentScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Copiază sesiunile (JSON pseudonimizat) în clipboard; specialistul le lipește în panoul web.
+Future<void> _export(BuildContext context, WidgetRef ref) async {
+  final sessions = await ref.read(sessionStoreProvider).all();
+  await Clipboard.setData(ClipboardData(text: exportSessions(sessions)));
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        sessions.isEmpty
+            ? 'Nu există încă sesiuni de copiat.'
+            : '${sessions.length} sesiuni copiate. Lipește-le în panoul web („Importă sesiuni”).',
+      ),
+    ),
+  );
 }
 
 class _SessionCard extends StatelessWidget {
