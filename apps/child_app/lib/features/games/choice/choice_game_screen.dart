@@ -58,6 +58,11 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   int _burst = 0;
   bool _guide = false;
   Timer? _guideTimer;
+
+  /// Mânuța care arată răspunsul (P4).
+  bool _hand = false;
+  bool _handShown = false;
+  Timer? _handTimer;
   Timer? _advanceTimer;
 
   // Măsurătorile încercării (plan §4.1): latența până la primul răspuns, prima variantă
@@ -109,6 +114,8 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _latencyMs = null;
     _firstWrongKey = null;
     _guideShown = false;
+    _hand = _handShown = false;
+    _handTimer?.cancel();
     _roundClock
       ..reset()
       ..start();
@@ -127,7 +134,17 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _guideTimer = Timer(const Duration(seconds: 5), () {
       if (mounted && !_solved) {
         setState(() => _guide = _guideShown = true);
+        _armHand();
       }
+    });
+  }
+
+  /// Ultima treaptă de ajutor (P4, model complet): dacă nici pulsarea nu ajunge, o mânuță
+  /// arată răspunsul după încă 5 s. Ajutorul crește treptat, ca în învățarea fără eroare.
+  void _armHand([Duration after = const Duration(seconds: 5)]) {
+    _handTimer?.cancel();
+    _handTimer = Timer(after, () {
+      if (mounted && !_solved) setState(() => _hand = _handShown = true);
     });
   }
 
@@ -148,6 +165,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
               round: round,
               wrongAttempts: _attempts,
               guideShown: _guideShown,
+              handShown: _handShown,
               latencyMs: _latencyMs!,
               chosenKey: _firstWrongKey,
             ),
@@ -159,8 +177,10 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
         _burst++;
         _bubble = 'Bravo!';
         _guide = false;
+        _hand = false;
       });
       _guideTimer?.cancel();
+      _handTimer?.cancel();
       voice.say([if (choice.spoken != null) choice.spoken!, 'Bravo']);
       _advanceTimer = Timer(const Duration(milliseconds: 1400), _next);
     } else {
@@ -178,9 +198,15 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
             : 'Mai încearcă';
         _guide = _attempts >= 2;
         _guideShown |= _guide;
+        // A treia greșeală: mânuța apare imediat.
+        if (_attempts >= 3) _hand = _handShown = true;
       });
       voice.say([if (choice.spoken != null) choice.spoken!, 'Mai încearcă']);
-      if (_attempts < 2) _armGuide();
+      if (_attempts < 2) {
+        _armGuide();
+      } else if (!_hand) {
+        _armHand();
+      }
     }
   }
 
@@ -204,6 +230,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   @override
   void dispose() {
     _guideTimer?.cancel();
+    _handTimer?.cancel();
     _advanceTimer?.cancel();
     super.dispose();
   }
@@ -379,6 +406,7 @@ class _RoundView extends ConsumerWidget {
                       state._wrong.contains(i) || (state._solved && !c.correct),
                   solved: state._solved && c.correct,
                   guide: state._guide && c.correct,
+                  hand: state._hand && c.correct,
                   shakeTick: state._lastWrong == i ? state._wrongTick : 0,
                   onTap: () => state._pick(i),
                 )
@@ -492,6 +520,7 @@ class _ChoiceCard extends ConsumerWidget {
     required this.faded,
     required this.solved,
     required this.guide,
+    required this.hand,
     required this.shakeTick,
     required this.onTap,
   });
@@ -502,6 +531,7 @@ class _ChoiceCard extends ConsumerWidget {
   final bool faded;
   final bool solved;
   final bool guide;
+  final bool hand;
   final int shakeTick;
   final VoidCallback onTap;
 
@@ -613,6 +643,12 @@ class _ChoiceCard extends ConsumerWidget {
             ),
           ),
         ),
+        if (hand)
+          Positioned(
+            right: -10,
+            bottom: -14,
+            child: IgnorePointer(child: PointingHand(size: compact ? 52 : 72)),
+          ),
       ],
     );
 
@@ -736,3 +772,51 @@ class ProgressDots extends ConsumerWidget {
 
 /// Unghi mic aleator stabil pentru un index (folosit la dispunerea „jucăușă” a obiectelor).
 double wobble(int i) => math.sin(i * 12.9898) * 0.08;
+
+/// Mânuța care „apasă” pe răspunsul corect (P4): coboară și urcă încet, ca un deget care
+/// arată. Ilustrația pictată (`sprites/hand`) dacă există, altfel iconița.
+class PointingHand extends ConsumerWidget {
+  const PointingHand({super.key, required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final motion = MotionPolicy.of(context, ref);
+    final sprite = spriteFor('👆');
+    Widget hand = sprite != null
+        ? SizedBox.square(
+            dimension: size,
+            child: Image(image: sprite, fit: BoxFit.contain),
+          )
+        : Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: Tokens.sun, width: 3),
+              boxShadow: Tokens.shadow,
+            ),
+            child: Icon(
+              Icons.touch_app_rounded,
+              size: size * 0.62,
+              color: Tokens.primaryDark,
+            ),
+          );
+    hand = Semantics(label: 'Aici', child: hand);
+    if (!motion.feedback) return hand;
+    return hand
+        .animate()
+        .fadeIn(duration: motion.d(250))
+        .then()
+        .animate(onPlay: (c) => c.repeat(reverse: true))
+        .move(
+          begin: Offset.zero,
+          end: motion.movement ? const Offset(-8, -10) : Offset.zero,
+          duration: 700.ms,
+          curve: Curves.easeInOut,
+        )
+        .scaleXY(begin: 1, end: 0.92, duration: 700.ms);
+  }
+}

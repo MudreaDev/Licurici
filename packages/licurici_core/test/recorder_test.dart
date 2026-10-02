@@ -38,6 +38,22 @@ void main() {
     expect(keys, contains(t[1].chosenId));
   });
 
+  test('mânuța care arată răspunsul = P4 (model complet), peste ghidaj', () {
+    expect(choicePromptLevel(wrongAttempts: 3, guideShown: true, handShown: true), PromptLevel.p4);
+    expect(choicePromptLevel(wrongAttempts: 0, guideShown: false, handShown: true), PromptLevel.p4);
+    final rec = SessionRecorder(childId: 'c', clock: clock);
+    rec.choiceRound(
+      gameId: 'emotii',
+      round: emotionRound(),
+      wrongAttempts: 0,
+      guideShown: true,
+      handShown: true,
+      latencyMs: 9000,
+    );
+    expect(rec.trials.single.promptLevel, PromptLevel.p4);
+    expect(rec.trials.single.promptLevel.credit, 0);
+  });
+
   test('nivelul reaction: o încercare pe stimul; comisia e greșeală', () {
     final rec = SessionRecorder(childId: 'c', clock: clock);
     final level = const PescarulGame().generate(5, seed: 2);

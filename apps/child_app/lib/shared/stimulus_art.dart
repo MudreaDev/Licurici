@@ -16,6 +16,7 @@ const _paths = {
   '🦀': 'sprites/crab',
   '🐠': 'sprites/fish_colorful',
   '✨': 'sprites/firefly',
+  '👆': 'sprites/hand',
   // Emoțiile: același copil, opt expresii
   '😊': 'faces/fericit',
   '😢': 'faces/trist',

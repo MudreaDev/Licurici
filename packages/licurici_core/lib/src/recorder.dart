@@ -19,9 +19,14 @@ String stepFor(String gameId) {
 }
 
 /// Ajutorul maxim primit într-o rundă `choice`, din ce a arătat ecranul (plan §3.3):
-/// ghidaj vizual (ținta pulsează) → P3; indiciu vocal / variante estompate după greșeală → P2;
-/// altfel P0.
-PromptLevel choicePromptLevel({required int wrongAttempts, required bool guideShown}) {
+/// mânuța care arată răspunsul (model complet) → P4; ghidaj vizual (ținta pulsează) → P3;
+/// indiciu vocal / variante estompate după greșeală → P2; altfel P0.
+PromptLevel choicePromptLevel({
+  required int wrongAttempts,
+  required bool guideShown,
+  bool handShown = false,
+}) {
+  if (handShown) return PromptLevel.p4;
   if (guideShown) return PromptLevel.p3;
   if (wrongAttempts > 0) return PromptLevel.p2;
   return PromptLevel.p0;
@@ -65,10 +70,15 @@ class SessionRecorder {
     required int wrongAttempts,
     required bool guideShown,
     required int latencyMs,
+    bool handShown = false,
     String? chosenKey,
     int? seed,
   }) {
-    final prompt = choicePromptLevel(wrongAttempts: wrongAttempts, guideShown: guideShown);
+    final prompt = choicePromptLevel(
+      wrongAttempts: wrongAttempts,
+      guideShown: guideShown,
+      handShown: handShown,
+    );
     add(Trial(
       stepId: stepFor(gameId),
       gameId: gameId,

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_content/game_content.dart';
 import 'package:licurici/data/session.dart';
+import 'package:licurici/features/games/choice/choice_game_screen.dart';
 import 'package:licurici/main.dart';
 import 'package:licurici_core/licurici_core.dart';
 import 'package:licurici/shared/voice.dart';
@@ -141,6 +142,40 @@ void main() {
     // Raportul pentru părinte se poate calcula direct din ce s-a salvat.
     expect(SessionReport.from(session).parentSummary, isNotEmpty);
     expect(find.byKey(const ValueKey('finish-session')), findsNothing);
+    await closeApp(tester);
+  });
+
+  testWidgets('fără răspuns: ținta pulsează, apoi mânuța o arată (P4)', (
+    tester,
+  ) async {
+    final store = MemorySessionStore();
+    await pumpApp(tester, store: store);
+    await tester.tap(find.byKey(const ValueKey('domain-POT')));
+    await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
+    await tester.tap(find.byKey(const ValueKey('game-culori')));
+    await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
+    await tester.tap(find.byKey(const ValueKey('mood-skip')));
+    await pumpUntil(tester, find.byKey(const ValueKey('choice-0')));
+
+    expect(find.byType(PointingHand), findsNothing);
+    await tester.pump(const Duration(seconds: 5)); // pulsează (P3)
+    expect(find.byType(PointingHand), findsNothing);
+    await tester.pump(const Duration(seconds: 5)); // mânuța (P4)
+    expect(find.byType(PointingHand), findsOneWidget);
+
+    // Mânuța stă pe răspunsul corect: îl atingem.
+    final correct = find.ancestor(
+      of: find.byType(PointingHand),
+      matching: find.byWidgetPredicate(
+        (w) =>
+            w.key is ValueKey<String> &&
+            (w.key! as ValueKey<String>).value.startsWith('choice-'),
+      ),
+    );
+    await tester.tap(correct.first, warnIfMissed: false);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('Bravo!'), findsWidgets);
+    expect(find.byType(PointingHand), findsNothing);
     await closeApp(tester);
   });
 
