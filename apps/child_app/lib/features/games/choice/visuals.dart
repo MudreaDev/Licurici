@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/theme.dart';
-import '../../../shared/emoji_art.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/stimulus_art.dart';
@@ -240,14 +239,15 @@ class _Scene extends StatelessWidget {
     constraints: const BoxConstraints(maxWidth: 640),
     padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
     decoration: BoxDecoration(
-      color: Tokens.surface,
+      color: const Color(0xFFFFFDF8),
       borderRadius: BorderRadius.circular(Tokens.radius),
+      border: Border.all(color: const Color(0xFFEDE3D2), width: 2),
       boxShadow: Tokens.shadow,
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        EmojiArt('🧒', size: 64 * VisualScale.of(context)),
+        StimulusArt('🧒', size: 96 * VisualScale.of(context)),
         const SizedBox(width: 16),
         Flexible(
           child: Text(

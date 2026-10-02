@@ -26,6 +26,7 @@ const _paths = {
   '😴': 'faces/obosit',
   '😌': 'faces/calm',
   '😄': 'faces/mandru',
+  '🧒': 'faces/calm',
   // Obiecte
   '🍎': 'objects/apple',
   '🍏': 'objects/green_apple',

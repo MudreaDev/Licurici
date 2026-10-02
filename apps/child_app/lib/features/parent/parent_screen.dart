@@ -5,6 +5,7 @@ import 'package:licurici_core/licurici_core.dart';
 
 import '../../app/theme.dart';
 import '../../data/session.dart';
+import '../../shared/mascot.dart';
 import '../../shared/top_bar.dart';
 import '../settings/settings.dart';
 import 'sync_dialog.dart';
@@ -70,10 +71,17 @@ class ParentScreen extends ConsumerWidget {
                     ? const Center(
                         child: Padding(
                           padding: EdgeInsets.all(24),
-                          child: Text(
-                            'Încă nu există sesiuni. După ce copilul se joacă și apasă „Gata pe azi”, '
-                            'rezumatul apare aici.',
-                            textAlign: TextAlign.center,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Mascot(size: 120, mood: MascotMood.sleep),
+                              SizedBox(height: 12),
+                              Text(
+                                'Încă nu există sesiuni. După ce copilul se joacă și apasă „Gata pe azi”, '
+                                'rezumatul apare aici.',
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
                       )
