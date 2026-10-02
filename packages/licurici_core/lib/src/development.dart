@@ -100,6 +100,7 @@ const List<Ladder> ladders = [
     Step('FEX2', 'Atinge doar ținta cerută și se abține la celelalte (go/no-go)',
         games: ['pescarul']),
     Step('FEX5', 'Ține minte și repetă o secvență (memorie de lucru)', games: ['simon', 'perechi']),
+    Step('FEX6', 'Se liniștește cu respirația ghidată', games: ['respira']),
   ]),
   Ladder(Domain.pac, [
     Step('PAC-N2', 'Numără până la 5', games: ['numaram']),

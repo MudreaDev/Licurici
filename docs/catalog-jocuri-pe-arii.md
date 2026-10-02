@@ -177,7 +177,7 @@ interpretate de specialist.
 | `trace` | 1 | ⬜ |
 | `puzzle`, `maze` (🌀) | 2 | ⬜ S2 |
 | `memoryCards` | 1 | ✅ `perechi` (`licurici_core/lib/src/memory.dart`, ecran `features/games/memory/`) |
-| `freePlay` (AAC, respirație, cauză–efect) | 3 | parțial |
+| `freePlay` (AAC, respirație, cauză–efect) | 3 | 🟨 `respira` (floarea care respiră) |
 
 Mecanica `reaction` e cea care aduce jocurile „de funcții executive”, cu KPI-uri de timp de reacție la nivel de milisecunde:
 evenimentele trebuie să folosească un ceas monoton (`Stopwatch`) și să înregistreze momentul afișării cadrului, nu doar al atingerii.
