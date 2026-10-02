@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../app/theme.dart';
 import '../../data/session.dart';
 import '../../shared/illustration.dart';
+import '../../shared/motion.dart';
 import '../../shared/ui/candy.dart';
 import '../session/mood_check.dart';
 
@@ -40,6 +42,7 @@ class TodayPath extends ConsumerWidget {
       for (final t in session?.trials ?? const <Trial>[]) t.gameId,
     };
     final size = compact ? 52.0 : 72.0;
+    final allDone = plan.activities.every((a) => played.contains(a.gameId));
     final stops = <Widget>[];
     for (final (i, a) in plan.activities.indexed) {
       final entry = catalogEntry(a.gameId);
@@ -107,7 +110,17 @@ class TodayPath extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Row(mainAxisSize: MainAxisSize.min, children: stops),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ...stops,
+            // La capătul drumului: cufărul cu comori — se luminează când e totul gata.
+            if (stops.isNotEmpty) ...[
+              _Dots(done: allDone),
+              _Chest(open: allDone, size: size + 12),
+            ],
+          ],
+        ),
       ],
     );
   }
@@ -135,4 +148,51 @@ class _Dots extends StatelessWidget {
       ],
     ),
   );
+}
+
+/// Cufărul de la capătul drumului: șters cât timp mai sunt activități, apoi plin de lumină.
+class _Chest extends ConsumerWidget {
+  const _Chest({required this.open, required this.size});
+
+  final bool open;
+  final double size;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final motion = MotionPolicy.of(context, ref);
+    final chest = SizedBox.square(
+      dimension: size,
+      child: Illustration(
+        illustration('rewards/chest'),
+        fallbackEmoji: '🎁',
+        semanticLabel: open ? 'Comoara de azi' : 'Comoara de la capăt',
+      ),
+    );
+    if (!open) {
+      return Opacity(
+        opacity: 0.45,
+        child: ColorFiltered(
+          colorFilter: const ColorFilter.matrix([
+            0.4, 0.4, 0.2, 0, 10, //
+            0.35, 0.45, 0.2, 0, 10,
+            0.3, 0.4, 0.3, 0, 10,
+            0, 0, 0, 1, 0,
+          ]),
+          child: chest,
+        ),
+      );
+    }
+    final glowing = DecoratedBox(
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [BoxShadow(color: Color(0x99F2CF6B), blurRadius: 22)],
+      ),
+      child: chest,
+    );
+    return motion.ambient
+        ? glowing
+              .animate(onPlay: (c) => c.repeat(reverse: true))
+              .scaleXY(begin: 1, end: 1.06, duration: 1200.ms)
+        : glowing;
+  }
 }
