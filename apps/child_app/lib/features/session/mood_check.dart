@@ -232,11 +232,15 @@ class _MoodDialog extends ConsumerWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  m.label,
-                                  textAlign: TextAlign.center,
-                                  style: text.titleMedium!.copyWith(
-                                    color: shade(_moodColor(m), 0.35),
+                                // Un singur rând, oricât de îngust e cardul.
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    m.label,
+                                    maxLines: 1,
+                                    style: text.titleMedium!.copyWith(
+                                      color: shade(_moodColor(m), 0.35),
+                                    ),
                                   ),
                                 ),
                               ],

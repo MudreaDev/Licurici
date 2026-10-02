@@ -9,6 +9,8 @@ import '../../app/theme.dart';
 import '../../shared/illustration.dart';
 import '../../shared/mascot.dart';
 import '../../shared/motion.dart';
+import '../../shared/sfx.dart';
+import '../../shared/voice.dart';
 import '../../shared/ui/candy.dart';
 import '../session/mood_check.dart';
 
@@ -265,7 +267,7 @@ class GameCard extends ConsumerWidget {
 }
 
 /// Licurici cu un balon de vorbire — colțul din stânga al ecranelor de alegere.
-class MascotCorner extends StatelessWidget {
+class MascotCorner extends ConsumerStatefulWidget {
   const MascotCorner({
     super.key,
     required this.message,
@@ -276,6 +278,20 @@ class MascotCorner extends StatelessWidget {
   final MascotMood mood;
 
   @override
+  ConsumerState<MascotCorner> createState() => _MascotCornerState();
+}
+
+class _MascotCornerState extends ConsumerState<MascotCorner> {
+  /// Copilul îl atinge pe Licurici → el se bucură și salută (o mică surpriză, fără scop).
+  int _pokes = 0;
+
+  void _poke() {
+    setState(() => _pokes++);
+    ref.read(sfxProvider).play(Sfx.tap);
+    ref.read(voiceProvider).say(['bună']);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final compact = AppLayout.of(context).compact;
     return LayoutBuilder(
@@ -283,7 +299,7 @@ class MascotCorner extends StatelessWidget {
         final bubble = SpeechBubble(
           tail: BubbleTail.bottom,
           child: Text(
-            message,
+            widget.message,
             style: compact
                 ? Theme.of(context).textTheme.titleMedium
                 : Theme.of(context).textTheme.titleLarge,
@@ -297,9 +313,13 @@ class MascotCorner extends StatelessWidget {
             SizedBox(height: compact ? 4 : 10),
             Flexible(
               child: LayoutBuilder(
-                builder: (context, m) => Mascot(
-                  size: m.biggest.shortestSide.clamp(60, 260),
-                  mood: mood,
+                builder: (context, m) => GestureDetector(
+                  onTap: _poke,
+                  child: Mascot(
+                    size: m.biggest.shortestSide.clamp(60, 260),
+                    mood: _pokes == 0 ? widget.mood : MascotMood.happy,
+                    reaction: _pokes,
+                  ),
                 ),
               ),
             ),
