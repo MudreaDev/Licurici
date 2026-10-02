@@ -13,6 +13,7 @@ export 'src/scene.dart';
 export 'src/trial.dart';
 export 'src/sequence.dart';
 export 'src/memory.dart';
+export 'src/sorting.dart';
 export 'src/session.dart';
 export 'src/report.dart';
 export 'src/demo.dart';

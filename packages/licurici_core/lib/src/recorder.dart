@@ -11,6 +11,7 @@ import 'memory.dart';
 import 'reaction.dart';
 import 'report.dart';
 import 'sequence.dart';
+import 'sorting.dart';
 import 'trial.dart';
 
 /// Treapta pe care o exersează un joc (prima din trasee) — încercările se leagă de ea.
@@ -135,6 +136,29 @@ class SessionRecorder {
         seed: level.seed,
         targetId: level.cards[m.first],
         chosenId: match ? null : level.cards[m.second],
+      ));
+    }
+  }
+
+  /// Un nivel `sortam`: câte o încercare pe lucru pus. Corectă = din prima; la greșeală,
+  /// ținta e grupa lui și „alegerea” prima grupă greșită (confuzii între categorii).
+  void sortLevel(SortResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final p in result.placements) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: p.firstTry,
+        // Lucrul greșit se întoarce înapoi: o nouă încercare, fără ajutor suplimentar.
+        promptLevel: p.firstTry ? PromptLevel.p0 : PromptLevel.p2,
+        attempts: p.wrongDrops + 1,
+        latencyMs: p.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: p.item.emoji,
+        targetId: p.item.binId,
+        chosenId: p.firstWrongBin,
       ));
     }
   }

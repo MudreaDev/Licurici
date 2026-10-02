@@ -84,6 +84,9 @@ const List<Ladder> ladders = [
   Ladder(Domain.com, [
     Step('COM2', 'Răspunde cu da/nu la întrebări despre ce vede', games: ['da-nu']),
   ]),
+  Ladder(Domain.cog, [
+    Step('COG3', 'Sortează obiecte după categorie', games: ['sortam']),
+  ]),
   Ladder(Domain.emo, [
     Step('EMO1', 'Deosebește bucuros de trist', games: ['emotii']),
     Step('EMO2', 'Recunoaște emoțiile de bază pe fețe diferite', games: ['emotii']),

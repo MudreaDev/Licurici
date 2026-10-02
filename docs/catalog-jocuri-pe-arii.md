@@ -170,7 +170,7 @@ interpretate de specialist.
 | Mecanică | Jocuri | Există? |
 |----------|--------|---------|
 | `choice` (alege răspunsul) | ~24 | ✅ |
-| `dragDrop` (trage, sortează, potrivește) | ~9 | ⬜ Sprint 4 |
+| `dragDrop` (trage, sortează, potrivește) | ~9 | 🟨 `sortam` (`licurici_core/lib/src/sorting.dart`, ecran `features/games/sort/`; tragere sau atinge-atinge) |
 | `sequence` (ordonează / repetă) | ~7 | 🟨 `simon` (Felinarele) |
 | `reaction` (**nouă**: stimuli în timp — go/no-go, flanker, semafor, reacție) | 5 | 🟨 `pescarul`, `prinde-licuriciul` |
 | `scene` (**nouă**: căutare / diferențe / atingere în scenă) | 3 | ⬜ S2 |
