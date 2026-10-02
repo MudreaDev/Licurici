@@ -26,7 +26,7 @@ void main() {
     });
 
     test('fiecare joc din trasee există, iar fiecare joc are cel puțin o treaptă', () {
-      final known = {...allGames.map((g) => g.id), ...reactionGames.map((g) => g.id), const SimonGame().id, const MemoryGame().id, const SortGame().id, const BreathingGame().id};
+      final known = {...allGames.map((g) => g.id), ...reactionGames.map((g) => g.id), const SimonGame().id, const MemoryGame().id, const SortGame().id, const BreathingGame().id, const ShellGame().id};
       for (final l in ladders) {
         for (final s in l.steps) {
           for (final g in s.games) {

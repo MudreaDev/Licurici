@@ -11,6 +11,7 @@ import 'memory.dart';
 import 'reaction.dart';
 import 'report.dart';
 import 'sequence.dart';
+import 'shell.dart';
 import 'sorting.dart';
 import 'trial.dart';
 
@@ -159,6 +160,29 @@ class SessionRecorder {
         stimulusId: p.item.emoji,
         targetId: p.item.binId,
         chosenId: p.firstWrongBin,
+      ));
+    }
+  }
+
+  /// Un nivel `cucu-bau`: câte o încercare pe rundă; dificultatea = numărul de mutări
+  /// (KPI: acuratețea în funcție de mutări).
+  void shellLevel(ShellResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final p in result.picks) {
+      final round = level.rounds[p.round];
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: result.isCorrect(p),
+        promptLevel: PromptLevel.p0,
+        latencyMs: p.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: round.thing.emoji,
+        difficulty: round.swaps.length.toDouble(),
+        targetId: 'pahar-${round.answer}',
+        chosenId: result.isCorrect(p) ? null : 'pahar-${p.slot}',
       ));
     }
   }

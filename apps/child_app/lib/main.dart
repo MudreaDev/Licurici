@@ -16,6 +16,7 @@ import 'features/domain/domain_screen.dart';
 import 'features/games/calm/breathing_screen.dart';
 import 'features/games/choice/choice_game_screen.dart';
 import 'features/games/memory/memory_screen.dart';
+import 'features/games/shell/shell_screen.dart';
 import 'features/games/sort/sort_screen.dart';
 import 'features/games/reaction/reaction_game_screen.dart';
 import 'features/album/album_screen.dart';
@@ -144,6 +145,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             game: reactionGameById(state.pathParameters['id']!)!,
           ),
         ),
+      ),
+      GoRoute(
+        path: '/cucu-bau',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const ShellScreen()),
       ),
       GoRoute(
         path: '/respira',

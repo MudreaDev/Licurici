@@ -85,6 +85,8 @@ const List<Ladder> ladders = [
     Step('COM2', 'Răspunde cu da/nu la întrebări despre ce vede', games: ['da-nu']),
   ]),
   Ladder(Domain.cog, [
+    Step('COG2', 'Găsește un obiect ascuns, chiar dacă s-a mutat (permanența obiectului)',
+        games: ['cucu-bau']),
     Step('COG3', 'Sortează obiecte după categorie', games: ['sortam']),
     Step('COG5', 'Continuă un model (AB, AAB, ABC)', games: ['continua-sirul']),
   ]),

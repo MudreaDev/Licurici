@@ -15,6 +15,7 @@ export 'src/sequence.dart';
 export 'src/memory.dart';
 export 'src/sorting.dart';
 export 'src/breathing.dart';
+export 'src/shell.dart';
 export 'src/session.dart';
 export 'src/report.dart';
 export 'src/demo.dart';
