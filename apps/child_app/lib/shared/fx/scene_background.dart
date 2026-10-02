@@ -145,20 +145,23 @@ class _SceneBackgroundState extends ConsumerState<SceneBackground>
       children: [
         fallback,
         RepaintBoundary(
-          child: ClipRect(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                for (final (i, l) in layers.indexed)
-                  _AnimatedLayer(
-                    layer: l,
-                    time: _time,
-                    parallax: widget.parallax,
-                    phase: phase + i,
-                    speed: windSpeed,
-                    opaque: i == 0,
-                  ),
-              ],
+          child: _calmFilter(
+            calm: motion.level == MotionLevel.gentle,
+            child: ClipRect(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  for (final (i, l) in layers.indexed)
+                    _AnimatedLayer(
+                      layer: l,
+                      time: _time,
+                      parallax: widget.parallax,
+                      phase: phase + i,
+                      speed: windSpeed,
+                      opaque: i == 0,
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -193,6 +196,22 @@ class _SceneBackgroundState extends ConsumerState<SceneBackground>
       ],
     );
   }
+}
+
+/// Modul calm: scena cu saturație redusă (README §14, tema „Calm”).
+Widget _calmFilter({required bool calm, required Widget child}) {
+  if (!calm) return child;
+  const s = 0.6; // păstrăm 60% din saturație
+  const r = 0.2126 * (1 - s), g = 0.7152 * (1 - s), b = 0.0722 * (1 - s);
+  return ColorFiltered(
+    colorFilter: const ColorFilter.matrix([
+      r + s, g, b, 0, 0, //
+      r, g + s, b, 0, 0,
+      r, g, b + s, 0, 0,
+      0, 0, 0, 1, 0,
+    ]),
+    child: child,
+  );
 }
 
 class _AnimatedLayer extends StatelessWidget {
