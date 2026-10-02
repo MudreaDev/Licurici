@@ -7,6 +7,7 @@ import '../../../app/theme.dart';
 import '../../../shared/emoji_art.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/motion.dart';
+import '../../../shared/stimulus_art.dart';
 import 'choice_game_screen.dart' show wobble;
 
 /// Desenează stimulii unei runde. Fiecare tip are animația lui semnătură (README §15.1):
@@ -59,7 +60,7 @@ class _BigEmoji extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
-    Widget w = EmojiArt(emoji, size: 150 * VisualScale.of(context));
+    Widget w = StimulusArt(emoji, size: 170 * VisualScale.of(context));
     if (motion.ambient) {
       w = w
           .animate(onPlay: (c) => c.repeat(reverse: true))
@@ -100,7 +101,7 @@ class _Objects extends ConsumerWidget {
       final w =
           Transform.rotate(
                 angle: motion.movement ? wobble(i) : 0,
-                child: EmojiArt(emoji, size: size),
+                child: StimulusArt(emoji, size: size),
               )
               .animate(delay: motion.d(90 * i))
               .fadeIn(duration: motion.d(200))

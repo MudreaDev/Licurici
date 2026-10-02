@@ -48,6 +48,10 @@ class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    // Apare direct cu o reacție (ex. sărbătoarea de la final): sare o dată.
+    if (widget.mood != MascotMood.idle && widget.reaction != 0) {
+      _react.forward(from: 0);
+    }
     MascotRig.available().then((ok) {
       if (mounted && ok) setState(() => _images = true);
     });
@@ -102,7 +106,9 @@ class _MascotState extends ConsumerState<Mascot> with TickerProviderStateMixin {
                         ? Curves.easeOut.transform(_react.value)
                         : 0.0;
                     final bump = math.sin(r * math.pi); // 0 → 1 → 0
-                    final happy = widget.mood == MascotMood.happy;
+                    final happy =
+                        widget.mood == MascotMood.happy ||
+                        widget.mood == MascotMood.celebrate;
                     final dy =
                         math.sin(t) * 4 -
                         (happy ? bump * widget.size * 0.18 : 0);

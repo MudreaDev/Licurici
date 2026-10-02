@@ -2,14 +2,17 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../../data/session.dart';
-import '../../../shared/art_cache.dart';
 import '../../../shared/celebration.dart';
-import '../../../shared/emoji_art.dart';
+import '../../../app/layout.dart';
+import '../../../app/theme.dart';
+import '../../../shared/pause_view.dart';
+import '../../../shared/reward_finish.dart';
+import '../../../shared/stimulus_art.dart';
+import '../../../shared/ui/candy.dart';
 import '../../../shared/mascot.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
@@ -42,10 +45,6 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   late ReactionLevel _level;
   late Speaker _speaker;
-  late final _ambient = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 12),
-  );
   late final _drift = AnimationController(vsync: this);
   late final _effect = AnimationController(
     vsync: this,
@@ -88,7 +87,10 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     _phase = _Phase.introduction;
     _summary = null;
     _ready = false;
-    precacheArt({..._level.art, '⭐'}).then((_) {
+    // Ilustrațiile pictate cer contextul: după ce ecranul e montat.
+    Future(
+      () => mounted ? precacheStimuli(context, {..._level.art, '⭐'}) : null,
+    ).then((_) {
       if (!mounted || generation != _generation) return;
       setState(() => _ready = true);
       if (!_paused) _speaker.say([_level.instruction]);
@@ -208,7 +210,6 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     _reactionClock.stop();
     _drift.stop();
     _effect.stop();
-    _ambient.stop();
     _speaker.stop();
     ref
         .read(sessionProvider.notifier)
@@ -245,7 +246,6 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     _cancelDeadline();
     _reactionClock.stop();
     _speaker.stop();
-    _ambient.dispose();
     _drift.dispose();
     _effect.dispose();
     super.dispose();
@@ -256,37 +256,29 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     _speaker = ref.watch(voiceProvider);
     final motion = MotionPolicy.of(context, ref);
     _motion = motion;
-    if (motion.ambient && !_paused && _phase != _Phase.finished) {
-      if (!_ambient.isAnimating) _ambient.repeat();
-    } else {
-      _ambient.stop();
-    }
     if (!motion.movement) _drift.stop();
     if (!motion.feedback) _effect.stop();
     return Scaffold(
       body: SceneBackground(
         spec: SceneSpec.forLevel(widget.game.id, _level.level),
-        kind: widget.game.id == 'pescarul' ? SceneKind.water : SceneKind.meadow,
+        kind: widget.game.id == 'pescarul' ? SceneKind.water : SceneKind.dusk,
         child: SafeArea(
           child: Column(
             children: [
               TopBar(
                 title: widget.game.name,
-                trailing: SizedBox(
-                  width: 64,
-                  height: 64,
-                  child: IconButton(
-                    tooltip: _paused ? 'Continuă' : 'Pauză',
-                    onPressed: _paused ? _resume : _pause,
-                    icon: Icon(
-                      _paused ? Icons.play_arrow_rounded : Icons.pause_rounded,
-                    ),
-                  ),
+                trailing: BarButton(
+                  icon: _paused
+                      ? Icons.play_arrow_rounded
+                      : Icons.pause_rounded,
+                  color: Tokens.mint,
+                  label: _paused ? 'Continuă' : 'Pauză',
+                  onTap: _paused ? _resume : _pause,
                 ),
               ),
               Expanded(
                 child: _paused
-                    ? Center(child: _button('Continuă', _resume))
+                    ? PauseView(onResume: _resume)
                     : _phase == _Phase.introduction
                     ? _introduction()
                     : _phase == _Phase.finished
@@ -314,50 +306,109 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     );
   }
 
-  Widget _introduction() => Center(
-    child: SingleChildScrollView(
+  Widget _introduction() {
+    final compact = AppLayout.of(context).compact;
+    final art = compact ? 76.0 : 120.0;
+    return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            _level.instruction,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _example(_level.goArt, 'Da, atinge', Icons.touch_app_rounded),
-              if (_level.noGoArt case final art?) ...[
-                const SizedBox(width: 40),
-                _example(art, 'Nu atinge', Icons.pan_tool_outlined),
-              ],
-            ],
-          ),
-          const SizedBox(height: 12),
-          _button(
-            _ready ? 'Începem' : 'Se pregătește…',
-            _ready ? _begin : null,
-          ),
-        ],
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Mascot(size: compact ? 96 : 170, mood: MascotMood.wave),
+            const SizedBox(width: 8),
+            CandyPanel(
+              padding: EdgeInsets.fromLTRB(28, compact ? 12 : 22, 28, 18),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _level.instruction,
+                    textAlign: TextAlign.center,
+                    style:
+                        (compact
+                                ? Theme.of(context).textTheme.titleLarge
+                                : Theme.of(context).textTheme.headlineMedium)!
+                            .copyWith(color: const Color(0xFF3D5A80)),
+                  ),
+                  SizedBox(height: compact ? 8 : 16),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _example(_level.goArt, 'Da, atinge', true, art),
+                      if (_level.noGoArt case final noGo?) ...[
+                        SizedBox(width: compact ? 20 : 36),
+                        _example(noGo, 'Nu atinge', false, art),
+                      ],
+                    ],
+                  ),
+                  SizedBox(height: compact ? 10 : 18),
+                  CandyButton(
+                    label: _ready ? 'Începem' : 'Se pregătește…',
+                    icon: Icons.play_arrow_rounded,
+                    color: Tokens.good,
+                    onTap: _ready ? _begin : null,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 
-  Widget _example(String art, String label, IconData icon) => Column(
-    children: [
-      EmojiArt(art, size: 64),
-      Row(
-        children: [
-          Icon(icon, color: const Color(0xFF527D79)),
-          const SizedBox(width: 8),
-          Text(label),
-        ],
-      ),
-    ],
-  );
+  /// Exemplul din instrucțiune: ce atingem (bifă verde) și ce lăsăm în pace (mânuță oprită).
+  Widget _example(String art, String label, bool go, double size) {
+    final color = go ? Tokens.good : Tokens.gentle;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: size + 24,
+              height: size + 24,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: tint(color, 0.3),
+                shape: BoxShape.circle,
+                border: Border.all(color: color, width: 4),
+              ),
+              child: StimulusArt(art, size: size),
+            ),
+            Positioned(
+              right: -2,
+              bottom: -2,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 3),
+                ),
+                child: Icon(
+                  go ? Icons.check_rounded : Icons.do_not_touch_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium!.copyWith(color: shade(color, 0.2)),
+        ),
+      ],
+    );
+  }
 
   Widget _scene(MotionPolicy motion) => LayoutBuilder(
     builder: (context, box) {
@@ -367,17 +418,6 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
       return ClipRect(
         child: Stack(
           children: [
-            Positioned.fill(
-              child: RepaintBoundary(
-                child: CustomPaint(
-                  painter: _ScenePainter(
-                    pond: widget.game.id == 'pescarul',
-                    clock: _ambient,
-                    animated: motion.ambient,
-                  ),
-                ),
-              ),
-            ),
             Positioned.fill(
               child: Listener(
                 key: const ValueKey('reaction-field'),
@@ -445,7 +485,15 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
                                       opacity: _tapped && motion.feedback
                                           ? 1 - _effect.value
                                           : 1,
-                                      child: EmojiArt(s.art, size: side),
+                                      child: _Glow(
+                                        on: s.art == '✨',
+                                        child: StimulusArt(
+                                          s.art,
+                                          size: side,
+                                          // Peștii privesc în direcția în care înoată.
+                                          flip: motion.movement && s.driftX < 0,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -471,12 +519,6 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     },
   );
 }
-
-Widget _button(String label, VoidCallback? onPressed) => FilledButton(
-  style: FilledButton.styleFrom(minimumSize: const Size(180, 64)),
-  onPressed: onPressed,
-  child: Text(label),
-);
 
 class ReactionFinish extends ConsumerStatefulWidget {
   const ReactionFinish({
@@ -510,55 +552,30 @@ class _ReactionFinishState extends ConsumerState<ReactionFinish> {
     final motion = MotionPolicy.of(context, ref);
     return Stack(
       children: [
-        Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Ai terminat! Bravo!',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Mascot(
-                      size: 90,
-                      mood: _celebrate ? MascotMood.happy : MascotMood.idle,
-                      reaction: _celebrate ? 1 : 0,
-                    ),
-                    for (var i = 0; i < widget.summary.stars; i++)
-                      const EmojiArt('⭐', size: 64)
-                          .animate(delay: motion.d(i * 250))
-                          .fadeIn(duration: motion.d(200))
-                          .scaleXY(
-                            begin: motion.movement ? .7 : 1,
-                            end: 1,
-                            duration: motion.d(300),
-                            curve: Curves.easeOutBack,
-                          ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 12,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    _button('Încă o dată', widget.onAgain),
-                    _button('Mai departe', widget.onNext),
-                  ],
-                ),
-              ],
+        RewardFinish(
+          stars: widget.summary.stars,
+          actions: [
+            FinishAction(
+              'Încă o dată',
+              Icons.replay_rounded,
+              Tokens.primary,
+              widget.onAgain,
             ),
-          ),
+            FinishAction(
+              'Mai departe',
+              Icons.arrow_forward_rounded,
+              Tokens.good,
+              widget.onNext,
+            ),
+          ],
         ),
         if (motion.particles)
           Positioned.fill(
-            child: StarBurst(
-              trigger: _celebrate ? widget.burst : 0,
-              enabled: motion.particles,
+            child: IgnorePointer(
+              child: StarBurst(
+                trigger: _celebrate ? widget.burst : 0,
+                enabled: motion.particles,
+              ),
             ),
           ),
       ],
@@ -566,76 +583,24 @@ class _ReactionFinishState extends ConsumerState<ReactionFinish> {
   }
 }
 
-class _ScenePainter extends CustomPainter {
-  _ScenePainter({
-    required this.pond,
-    required this.clock,
-    required this.animated,
-  }) : super(repaint: clock);
-  final bool pond, animated;
-  final Animation<double> clock;
+/// Halou cald în spatele licuriciului (lumina lui).
+class _Glow extends StatelessWidget {
+  const _Glow({required this.on, required this.child});
+
+  final bool on;
+  final Widget child;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final t = animated ? clock.value * math.pi * 2 : 0.0;
-    final rect = Offset.zero & size;
-    canvas.drawRect(
-      rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: pond
-              ? const [Color(0xFFD5ECE5), Color(0xFF85B9C3)]
-              : const [Color(0xFF454C75), Color(0xFF8D9BAA)],
-        ).createShader(rect),
-    );
-    if (pond) {
-      final paint = Paint()
-        ..color = const Color(0x5574A6AF)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
-      for (var row = 0; row < 5; row++) {
-        final path = Path();
-        for (var x = 0.0; x <= size.width; x += 8) {
-          final y =
-              size.height * (row + .5) / 5 + 4 * math.sin(x / 90 + t + row);
-          x == 0 ? path.moveTo(x, y) : path.lineTo(x, y);
-        }
-        canvas.drawPath(path, paint);
-      }
-      for (var i = 0; i < 7; i++) {
-        canvas.drawCircle(
-          Offset(
-            size.width * (i + .5) / 7 + 3 * math.sin(t + i),
-            size.height * (.78 + .07 * math.sin(t + i * 2)),
+  Widget build(BuildContext context) => !on
+      ? child
+      : DecoratedBox(
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [Color(0x99FFE9A0), Color(0x33F2CF6B), Color(0x00F2CF6B)],
+              stops: [0.2, 0.6, 1],
+            ),
           ),
-          4 + (i % 3).toDouble(),
-          paint,
+          child: child,
         );
-      }
-    } else {
-      canvas.drawCircle(
-        Offset(size.width * .85, size.height * .18),
-        22,
-        Paint()..color = const Color(0xFFF2E4AE),
-      );
-      final grass = Paint()
-        ..color = const Color(0xFF466D68)
-        ..strokeWidth = 3
-        ..strokeCap = StrokeCap.round;
-      for (var i = 0; i < 45; i++) {
-        final x = i * size.width / 44;
-        canvas.drawLine(
-          Offset(x, size.height),
-          Offset(x + 6 * math.sin(t + i), size.height - 18 - (i % 5) * 5),
-          grass,
-        );
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(_ScenePainter oldDelegate) =>
-      oldDelegate.pond != pond || oldDelegate.animated != animated;
 }

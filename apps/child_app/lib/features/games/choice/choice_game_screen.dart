@@ -10,14 +10,14 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../data/session.dart';
 import '../../../app/theme.dart';
-import '../../../shared/art_cache.dart';
 import '../../../shared/celebration.dart';
-import '../../../shared/emoji_art.dart';
+import '../../../shared/stimulus_art.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/mascot.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
-import '../../../shared/pressable.dart';
+import '../../../shared/reward_finish.dart';
+import '../../../shared/ui/candy.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
@@ -85,7 +85,10 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _ready = false;
     // Pre-încărcăm ilustrațiile ÎNAINTE de prima rundă: animațiile de intrare pornesc cu
     // imaginile deja în memorie (durează de obicei sub 100 ms).
-    precacheArt(_lesson.art).whenComplete(() {
+    // (după montare: ilustrațiile pictate au nevoie de context)
+    Future(
+      () => mounted ? precacheStimuli(context, _lesson.art) : null,
+    ).whenComplete(() {
       if (!mounted) return;
       setState(() {
         _ready = true;
@@ -215,7 +218,8 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
               TopBar(
                 title: widget.game.name,
                 trailing: BarButton(
-                  emoji: '🔁',
+                  icon: Icons.replay_rounded,
+                  color: Tokens.mint,
                   label: 'Ascultă din nou',
                   onTap: _finished || !_ready
                       ? null
@@ -245,11 +249,23 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
                         child: !_ready
                             ? const SizedBox.shrink(key: ValueKey('loading'))
                             : _finished
-                            ? _FinishView(
+                            ? RewardFinish(
                                 key: const ValueKey('finish'),
                                 stars: _stars,
-                                onAgain: () => setState(_start),
-                                onHome: () => context.go('/'),
+                                actions: [
+                                  FinishAction(
+                                    'Încă o dată',
+                                    Icons.replay_rounded,
+                                    Tokens.primary,
+                                    () => setState(_start),
+                                  ),
+                                  FinishAction(
+                                    'Acasă',
+                                    Icons.home_rounded,
+                                    Tokens.good,
+                                    () => context.go('/'),
+                                  ),
+                                ],
                               )
                             : _RoundView(
                                 key: ValueKey('round-$_index'),
@@ -259,23 +275,24 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
                               ),
                       ),
                     ),
-                    Positioned(
-                      left: 12,
-                      bottom: 6,
-                      // Cu două panouri, colțul rămâne sub panoul din stânga.
-                      width: layout.twoPane ? layout.size.width * 0.5 : null,
-                      right: layout.twoPane ? null : 12,
-                      child: _MascotCorner(
-                        size: layout.mascot,
-                        total: _lesson.rounds.length,
-                        index: _finished ? _lesson.rounds.length : _index,
-                        mood: _mood,
-                        reaction: _reaction,
-                        bubble: _finished
-                            ? 'Ai terminat! Bravo!'
-                            : (_ready ? _bubble : ''),
+                    if (!_finished)
+                      Positioned(
+                        left: 12,
+                        bottom: 6,
+                        // Cu două panouri, colțul rămâne sub panoul din stânga.
+                        width: layout.twoPane ? layout.size.width * 0.5 : null,
+                        right: layout.twoPane ? null : 12,
+                        child: _MascotCorner(
+                          size: layout.mascot,
+                          total: _lesson.rounds.length,
+                          index: _finished ? _lesson.rounds.length : _index,
+                          mood: _mood,
+                          reaction: _reaction,
+                          bubble: _finished
+                              ? 'Ai terminat! Bravo!'
+                              : (_ready ? _bubble : ''),
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -312,10 +329,15 @@ class _RoundView extends ConsumerWidget {
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     final text = Theme.of(context).textTheme;
-    final prompt = Text(
+    final stageColor = switch (catalogEntry(state.widget.game.id)) {
+      final e? => domainColor(e.domain),
+      null => Tokens.mint,
+    };
+    final prompt = OutlinedTitle(
       round.prompt,
       style: layout.compact ? text.headlineMedium : text.displaySmall,
       textAlign: TextAlign.center,
+      maxLines: 2,
     );
     final visuals = Stack(
       alignment: Alignment.center,
@@ -379,15 +401,26 @@ class _RoundView extends ConsumerWidget {
                     prompt,
                     SizedBox(height: layout.compact ? 4 : 12),
                     Expanded(
-                      child: LayoutBuilder(
-                        // Scara după înălțimea rămasă: ~280 dp = 1×; tabletă până la 1,5×.
-                        // FittedBox rămâne plasa de siguranță dacă tot nu încape.
-                        builder: (context, box) => VisualScale(
-                          scale: (box.maxHeight / 280).clamp(0.6, 1.5),
-                          child: Center(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: visuals,
+                      // „Scena” stimulului: un panou cald, ca o pagină de carte.
+                      child: CandyPanel(
+                        padding: EdgeInsets.all(layout.compact ? 8 : 16),
+                        // O nuanță foarte ușoară a ariei jocului, ca pagina să aibă „culoarea” lui.
+                        color: Color.lerp(
+                          const Color(0xFFFFFBF4),
+                          stageColor,
+                          0.12,
+                        )!,
+                        opacity: 0.92,
+                        child: LayoutBuilder(
+                          // Scara după înălțimea rămasă: ~280 dp = 1×; tabletă până la 1,5×.
+                          // FittedBox rămâne plasa de siguranță dacă tot nu încape.
+                          builder: (context, box) => VisualScale(
+                            scale: (box.maxHeight / 280).clamp(0.6, 1.5),
+                            child: Center(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: visuals,
+                              ),
                             ),
                           ),
                         ),
@@ -465,7 +498,8 @@ class _ChoiceCard extends ConsumerWidget {
     Widget content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (choice.art != null) EmojiArt(choice.art!, size: compact ? 44 : 64),
+        if (choice.art != null)
+          StimulusArt(choice.art!, size: compact ? 52 : 84),
         if (choice.objects case final g?)
           // Grupă de obiecte (ex. „Comparăm”): rânduri de câte 5, ca pe o numărătoare.
           SizedBox(
@@ -476,7 +510,7 @@ class _ChoiceCard extends ConsumerWidget {
               runSpacing: 3,
               children: [
                 for (var i = 0; i < g.count; i++)
-                  EmojiArt(
+                  StimulusArt(
                     g.emoji,
                     size: ((width - 28) / 5.6).clamp(
                       14.0,
@@ -504,29 +538,31 @@ class _ChoiceCard extends ConsumerWidget {
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
               fontSize: RegExp(r'^\d+$').hasMatch(choice.label!)
                   ? (compact ? 34 : 44)
-                  : (compact ? 20 : 24),
+                  : (compact ? 22 : 28),
             ),
           ),
         ],
       ],
     );
 
-    Widget card = AnimatedContainer(
-      duration: motion.d(260),
+    final border = solved ? Tokens.good : (guide ? Tokens.sun : null);
+    Widget card = CandyPressable(
+      color: solved ? Tokens.goodSoft : const Color(0xFFFFFDF8),
+      lipColor: solved
+          ? shade(Tokens.good, 0.05)
+          : (guide ? shade(Tokens.sun, 0.05) : const Color(0xFFE3D9C6)),
+      radius: Tokens.radius,
+      lip: compact ? 5 : 7,
+      border: border,
+      borderWidth: border == null ? 0 : 4,
+      semanticLabel: choice.spoken ?? choice.label,
+      onTap: faded ? null : onTap,
       width: width,
-      constraints: BoxConstraints(minHeight: compact ? 68 : 130),
       padding: EdgeInsets.all(compact ? 8 : 14),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: solved ? Tokens.goodSoft : Tokens.surface,
-        borderRadius: BorderRadius.circular(Tokens.radius),
-        border: Border.all(
-          color: solved ? Tokens.good : (guide ? Tokens.sun : Tokens.line),
-          width: solved || guide ? 4 : 2,
-        ),
-        boxShadow: faded ? null : Tokens.shadow,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: compact ? 56 : 112),
+        child: Center(child: content),
       ),
-      child: content,
     );
 
     card = AnimatedOpacity(
@@ -535,16 +571,12 @@ class _ChoiceCard extends ConsumerWidget {
       child: card,
     );
 
-    return Pressable(
-      semanticLabel: choice.spoken ?? choice.label,
-      onTap: faded ? null : onTap,
-      child: Juice(
-        enabled: motion.movement,
-        popTick: solved ? 1 : 0,
-        shakeTick: shakeTick,
-        pulse: guide,
-        child: card,
-      ),
+    return Juice(
+      enabled: motion.movement,
+      popTick: solved ? 1 : 0,
+      shakeTick: shakeTick,
+      pulse: guide,
+      child: card,
     );
   }
 }
@@ -590,17 +622,9 @@ class _MascotCorner extends StatelessWidget {
                       ?current,
                     ],
                   ),
-                  child: Container(
+                  child: SpeechBubble(
                     key: ValueKey(bubble),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Tokens.surface,
-                      borderRadius: BorderRadius.circular(Tokens.radiusS),
-                      boxShadow: Tokens.shadow,
-                    ),
+                    tail: BubbleTail.left,
                     child: Text(
                       bubble,
                       style: Theme.of(context).textTheme.titleMedium,
@@ -617,7 +641,8 @@ class _MascotCorner extends StatelessWidget {
   );
 }
 
-/// Bulinele de progres (stratul 6): cea curentă e mai mare, cele făcute se umplu animat.
+/// Progresul (stratul 6): câte o steluță pe rundă, într-o pastilă. Cele făcute se aprind
+/// aurii, cea curentă e mai mare și albastră, restul sunt pale.
 class ProgressDots extends ConsumerWidget {
   const ProgressDots({super.key, required this.total, required this.index});
 
@@ -627,144 +652,41 @@ class ProgressDots extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
-    return Row(
-      children: [
-        for (var i = 0; i < total; i++)
-          AnimatedContainer(
-            duration: motion.d(300),
-            curve: Curves.easeOutBack,
-            margin: const EdgeInsets.only(right: 8),
-            width: i == index ? 26 : 16,
-            height: 16,
-            decoration: BoxDecoration(
-              color: i < index
-                  ? Tokens.good
-                  : (i == index ? Tokens.primary : Tokens.line),
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-/// Finalul (stratul 7): stelele zboară una câte una, mascota se bucură.
-class _FinishView extends ConsumerWidget {
-  const _FinishView({
-    super.key,
-    required this.stars,
-    required this.onAgain,
-    required this.onHome,
-  });
-
-  final int stars;
-  final VoidCallback onAgain;
-  final VoidCallback onHome;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final motion = MotionPolicy.of(context, ref);
     final compact = AppLayout.of(context).compact;
-    return Center(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(compact ? 12 : 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Ai terminat! Bravo!',
-              style: Theme.of(context).textTheme.displaySmall,
-            ),
-            SizedBox(height: compact ? 10 : 24),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var i = 0; i < 3; i++)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Opacity(
-                      opacity: i < stars ? 1 : 0.25,
-                      child: EmojiArt('⭐', size: compact ? 64 : 96)
-                          .animate(delay: motion.d(250 + 350 * i))
-                          .fadeIn(duration: motion.d(200))
-                          .scaleXY(
-                            begin: motion.movement ? 0.2 : 1,
-                            end: 1,
-                            duration: motion.d(500),
-                            curve: Curves.elasticOut,
-                          )
-                          .rotate(begin: motion.movement ? -0.15 : 0, end: 0),
-                    ),
-                  ),
-              ],
-            ),
-            SizedBox(height: compact ? 16 : 36),
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              alignment: WrapAlignment.center,
-              children: [
-                _BigButton(
-                  emoji: '🔁',
-                  label: 'Încă o dată',
-                  color: Tokens.primary,
-                  onTap: onAgain,
-                ),
-                _BigButton(
-                  emoji: '🏠',
-                  label: 'Acasă',
-                  color: Tokens.mint,
-                  onTap: onHome,
-                ),
-              ],
-            ).animate(delay: motion.d(1300)).fadeIn(duration: motion.d(300)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BigButton extends StatelessWidget {
-  const _BigButton({
-    required this.emoji,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  final String emoji;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Pressable(
-    semanticLabel: label,
-    onTap: onTap,
-    child: Container(
-      constraints: const BoxConstraints(minHeight: Tokens.tap, minWidth: 220),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+    final base = compact ? 20.0 : 26.0;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(Tokens.radius),
+        color: const Color(0xE6FFFDF8),
+        borderRadius: BorderRadius.circular(999),
         boxShadow: Tokens.shadow,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          EmojiArt(emoji, size: 40),
-          const SizedBox(width: 12),
-          Text(
-            label,
-            style: Theme.of(
-              context,
-            ).textTheme.labelLarge!.copyWith(color: Colors.white),
-          ),
+          for (var i = 0; i < total; i++)
+            AnimatedScale(
+              scale: i == index ? 1.3 : 1,
+              duration: motion.d(300),
+              curve: Curves.easeOutBack,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Icon(
+                  Icons.star_rounded,
+                  size: base,
+                  color: i < index
+                      ? const Color(0xFFF2C14E)
+                      : (i == index ? Tokens.primary : const Color(0xFFDCD5C8)),
+                  shadows: i < index
+                      ? const [Shadow(color: Color(0x66F2C14E), blurRadius: 8)]
+                      : null,
+                ),
+              ),
+            ),
         ],
       ),
-    ),
-  );
+    );
+  }
 }
 
 /// Unghi mic aleator stabil pentru un index (folosit la dispunerea „jucăușă” a obiectelor).

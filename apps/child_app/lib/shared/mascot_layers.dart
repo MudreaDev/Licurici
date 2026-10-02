@@ -7,7 +7,19 @@ import 'fx/mesh_warp.dart';
 import 'illustration.dart';
 import 'motion.dart';
 
-enum MascotMood { idle, happy, encourage, think, wave }
+enum MascotMood {
+  idle,
+  happy,
+  encourage,
+  think,
+  wave,
+
+  /// Brațele sus — finalul unui joc.
+  celebrate,
+
+  /// Ochii închiși, aripile în repaus — pauză, „pe mâine”.
+  sleep,
+}
 
 /// Rig-ul ilustrației (coordonate normalizate pe pânza pătrată a cadrelor, vezi
 /// `packages/game_content/art/illustrations/README.md`).
@@ -78,7 +90,8 @@ class LayeredMascot extends StatelessWidget {
   /// 0..1 repetat (4,2 s): ochii se închid în ultimele ~180 ms.
   final Animation<double> blink;
 
-  bool get _happy => mood == MascotMood.happy;
+  bool get _happy => mood == MascotMood.happy || mood == MascotMood.celebrate;
+  bool get _asleep => mood == MascotMood.sleep;
   double get _t => idle.value * 2 * math.pi;
 
   double get _bump => motion.movement
@@ -87,12 +100,15 @@ class LayeredMascot extends StatelessWidget {
 
   /// Aripile bat de trei ori pe ciclu; mai repede și mai larg când se bucură.
   double get _flap => motion.ambient
-      ? math.sin(_t * (_happy ? 5 : 3)) * (0.16 + (_happy ? _bump * 0.12 : 0))
+      ? math.sin(_t * (_happy ? 5 : (_asleep ? 1 : 3))) *
+            (_asleep ? 0.04 : 0.16 + (_happy ? _bump * 0.12 : 0))
       : 0;
 
   /// Respirație + turtire la aterizarea după săritură.
   double get _squash {
-    final breath = motion.ambient ? math.sin(_t) * 0.012 : 0.0;
+    final breath = motion.ambient
+        ? math.sin(_t) * (_asleep ? 0.022 : 0.012)
+        : 0.0;
     final land = _happy && motion.movement
         ? math.min(0.0, math.sin(react.value * math.pi * 2)) * 0.06
         : 0.0;

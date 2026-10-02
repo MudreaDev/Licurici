@@ -7,7 +7,12 @@ import 'package:licurici_core/licurici_core.dart';
 
 import '../../../data/session.dart';
 import '../../../shared/celebration.dart';
-import '../../../shared/emoji_art.dart';
+import '../../../app/layout.dart';
+import '../../../app/theme.dart';
+import '../../../shared/illustration.dart';
+import '../../../shared/pause_view.dart';
+import '../../../shared/reward_finish.dart';
+import '../../../shared/ui/candy.dart';
 import '../../../shared/mascot.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
@@ -35,10 +40,6 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
   late Speaker _speaker;
   late int _sessionLevel;
   late int _nextSessionLevel;
-  late final _ambient = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 14),
-  );
   Timer? _timer;
   VoidCallback? _pending;
   final _taps = <int>[];
@@ -181,7 +182,6 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
     if (state == AppLifecycleState.resumed || _paused) return;
     _timer?.cancel();
     _speaker.stop();
-    _ambient.stop();
     setState(() {
       _paused = true;
       _lit = null;
@@ -193,25 +193,13 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _speaker.stop();
-    _ambient.dispose();
     super.dispose();
   }
-
-  Widget _button(String text, VoidCallback onPressed) => FilledButton(
-    style: FilledButton.styleFrom(minimumSize: const Size(160, 64)),
-    onPressed: onPressed,
-    child: Text(text),
-  );
 
   @override
   Widget build(BuildContext context) {
     _speaker = ref.watch(voiceProvider);
     final motion = MotionPolicy.of(context, ref);
-    if (motion.ambient && !_paused) {
-      if (!_ambient.isAnimating) _ambient.repeat();
-    } else {
-      _ambient.stop();
-    }
     final message = switch (_phase) {
       _Phase.introduction => _level.instruction,
       _Phase.watch => 'Privește',
@@ -222,10 +210,12 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
       _Phase.moving => 'Continuăm',
       _Phase.finished => 'Ai terminat! Bravo!',
     };
+    final compact = AppLayout.of(context).compact;
+    final stars = _wins >= 4 ? 3 : (_wins >= 2 ? 2 : 1);
     return Scaffold(
       body: SceneBackground(
         spec: SceneSpec.forLevel(widget.game.id, _level.level),
-        kind: SceneKind.meadow,
+        kind: SceneKind.evening,
         child: SafeArea(
           child: Column(
             children: [
@@ -234,34 +224,25 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
                 child: ClipRect(
                   child: Stack(
                     children: [
-                      Positioned.fill(
-                        child: RepaintBoundary(
-                          child: CustomPaint(
-                            painter: _EveningPainter(
-                              _ambient,
-                              motion.ambient && !_paused,
-                            ),
-                          ),
-                        ),
-                      ),
                       if (_paused)
-                        Center(
-                          child: _button('Continuăm', () {
-                            setState(() => _paused = false);
-                            if (_phase == _Phase.finished ||
-                                _phase == _Phase.introduction) {
-                              return;
-                            }
-                            if (_phase == _Phase.success ||
-                                _phase == _Phase.moving) {
-                              final pending = _pending;
-                              _pending = null;
-                              pending?.call();
-                              return;
-                            }
-                            // Replay after an interruption so no part of the sequence is missed.
-                            _watch();
-                          }),
+                        PauseView(label: 'Continuăm', onResume: _resume)
+                      else if (_phase == _Phase.finished)
+                        RewardFinish(
+                          stars: stars,
+                          actions: [
+                            FinishAction(
+                              'Încă o dată',
+                              Icons.replay_rounded,
+                              Tokens.primary,
+                              () => _restart(again: true),
+                            ),
+                            FinishAction(
+                              'Mai departe',
+                              Icons.arrow_forward_rounded,
+                              Tokens.good,
+                              () => _restart(again: false),
+                            ),
+                          ],
                         )
                       else
                         Column(
@@ -274,26 +255,31 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
                               child: Row(
                                 children: [
                                   Mascot(
-                                    size: 64,
-                                    mood:
-                                        _phase == _Phase.success ||
-                                            _phase == _Phase.finished
+                                    size: compact ? 64 : 110,
+                                    mood: _phase == _Phase.success
                                         ? MascotMood.happy
                                         : _phase == _Phase.retry
                                         ? MascotMood.encourage
+                                        : _phase == _Phase.watch
+                                        ? MascotMood.think
                                         : MascotMood.idle,
                                     reaction: _burst,
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
+                                  const SizedBox(width: 6),
+                                  Flexible(
                                     child: Semantics(
                                       liveRegion: true,
-                                      child: Text(
-                                        message,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700,
+                                      child: AnimatedSwitcher(
+                                        duration: motion.d(200),
+                                        child: SpeechBubble(
+                                          key: ValueKey(message),
+                                          tail: BubbleTail.left,
+                                          child: Text(
+                                            message,
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.titleLarge,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -302,148 +288,88 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
                               ),
                             ),
                             Expanded(
-                              child: _phase == _Phase.finished
-                                  ? SingleChildScrollView(
+                              // La început felinarele stau stinse, cu butonul dedesubt.
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final intro = _phase == _Phase.introduction;
+                                  final side = math.min(
+                                    210.0,
+                                    math.max(
+                                      // În joc ținta are mereu ≥ 96 dp; la prezentare felinarele pot fi mai mici.
+                                      intro ? 48.0 : 96.0,
+                                      math.min(
+                                        (constraints.maxWidth - 48) /
+                                                _level.pads.length -
+                                            12,
+                                        (constraints.maxHeight -
+                                                (intro ? 110 : 0)) *
+                                            0.8,
+                                      ),
+                                    ),
+                                  );
+                                  return Center(
+                                    child: SingleChildScrollView(
                                       child: Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              for (
-                                                var i = 0;
-                                                i <
-                                                    (_wins >= 4
-                                                        ? 3
-                                                        : _wins >= 2
-                                                        ? 2
-                                                        : 1);
-                                                i++
-                                              )
-                                                const EmojiArt('⭐', size: 64),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 12),
                                           Wrap(
-                                            spacing: 16,
+                                            alignment: WrapAlignment.center,
+                                            spacing: 12,
                                             runSpacing: 8,
                                             children: [
-                                              _button(
-                                                'Încă o dată',
-                                                () => _restart(again: true),
-                                              ),
-                                              _button(
-                                                'Mai departe',
-                                                () => _restart(again: false),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : _phase == _Phase.introduction
-                                  ? Center(child: _button('Începem', _watch))
-                                  : LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        final side = math.min(
-                                          128.0,
-                                          math.max(
-                                            96.0,
-                                            (constraints.maxWidth - 48) /
-                                                    _level.pads.length -
-                                                8,
-                                          ),
-                                        );
-                                        return Center(
-                                          child: SingleChildScrollView(
-                                            child: Wrap(
-                                              alignment: WrapAlignment.center,
-                                              spacing: 8,
-                                              runSpacing: 8,
-                                              children: [
-                                                for (final pad in _level.pads)
-                                                  Semantics(
-                                                    label:
-                                                        'Felinarul ${pad.index + 1}',
-                                                    button: true,
-                                                    enabled:
-                                                        _phase == _Phase.turn &&
-                                                        !_locked,
-                                                    value: _lit == pad.index
-                                                        ? 'aprins'
-                                                        : 'stins',
-                                                    child: GestureDetector(
-                                                      key: ValueKey(
-                                                        'simon-pad-${pad.index}',
-                                                      ),
-                                                      onTap: () =>
-                                                          _tap(pad.index),
-                                                      child: AnimatedContainer(
-                                                        duration: motion.d(120),
-                                                        width: side,
-                                                        height: side,
-                                                        decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color: Color.lerp(
-                                                            Color(pad.argb),
-                                                            const Color(
-                                                              0xFFFFF4CC,
-                                                            ),
-                                                            _lit == pad.index
-                                                                ? .65
-                                                                : 0,
-                                                          ),
-                                                          border: Border.all(
-                                                            color:
-                                                                _lit ==
-                                                                    pad.index
-                                                                ? const Color(
-                                                                    0xFFFFF3BE,
-                                                                  )
-                                                                : const Color(
-                                                                    0xFFCED4E0,
-                                                                  ),
-                                                            width: 4,
-                                                          ),
-                                                          boxShadow:
-                                                              _lit == pad.index
-                                                              ? const [
-                                                                  BoxShadow(
-                                                                    color: Color(
-                                                                      0x99FFE6A1,
-                                                                    ),
-                                                                    blurRadius:
-                                                                        22,
-                                                                    spreadRadius:
-                                                                        3,
-                                                                  ),
-                                                                ]
-                                                              : [],
-                                                        ),
-                                                        child: Icon(
+                                              for (final pad in _level.pads)
+                                                Semantics(
+                                                  label:
+                                                      'Felinarul ${pad.index + 1}',
+                                                  button: true,
+                                                  enabled:
+                                                      _phase == _Phase.turn &&
+                                                      !_locked,
+                                                  value: _lit == pad.index
+                                                      ? 'aprins'
+                                                      : 'stins',
+                                                  child: GestureDetector(
+                                                    key: ValueKey(
+                                                      'simon-pad-${pad.index}',
+                                                    ),
+                                                    onTap: () =>
+                                                        _tap(pad.index),
+                                                    child: _Lantern(
+                                                      pad: pad,
+                                                      side: side,
+                                                      lit: _lit == pad.index,
+                                                      motion: motion,
+                                                      symbol:
                                                           _symbols[pad.index],
-                                                          size: 36,
-                                                          color: const Color(
-                                                            0xFF37465B,
-                                                          ),
-                                                        ),
-                                                      ),
                                                     ),
                                                   ),
-                                              ],
-                                            ),
+                                                ),
+                                            ],
                                           ),
-                                        );
-                                      },
+                                          if (intro) ...[
+                                            const SizedBox(height: 18),
+                                            CandyButton(
+                                              label: 'Începem',
+                                              icon: Icons.play_arrow_rounded,
+                                              color: Tokens.good,
+                                              onTap: _watch,
+                                            ),
+                                          ],
+                                        ],
+                                      ),
                                     ),
+                                  );
+                                },
+                              ),
                             ),
                             const SizedBox(height: 8),
                           ],
                         ),
                       if (motion.particles && !_paused)
                         Positioned.fill(
-                          child: StarBurst(trigger: _burst, count: 8),
+                          child: IgnorePointer(
+                            child: StarBurst(trigger: _burst, count: 8),
+                          ),
                         ),
                     ],
                   ),
@@ -456,6 +382,21 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
     );
   }
 
+  void _resume() {
+    setState(() => _paused = false);
+    if (_phase == _Phase.finished || _phase == _Phase.introduction) {
+      return;
+    }
+    if (_phase == _Phase.success || _phase == _Phase.moving) {
+      final pending = _pending;
+      _pending = null;
+      pending?.call();
+      return;
+    }
+    // Replay after an interruption so no part of the sequence is missed.
+    _watch();
+  }
+
   static const _symbols = [
     Icons.star_rounded,
     Icons.nightlight_round,
@@ -466,43 +407,105 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
   ];
 }
 
-class _EveningPainter extends CustomPainter {
-  _EveningPainter(this.clock, this.animated) : super(repaint: clock);
-  final Animation<double> clock;
-  final bool animated;
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    canvas.drawRect(
-      rect,
-      Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF354362), Color(0xFF788697)],
-        ).createShader(rect),
-    );
-    final drift = animated ? math.sin(clock.value * math.pi * 2) * 8 : 0.0;
-    canvas.drawCircle(
-      Offset(size.width * .88 + drift, size.height * .2),
-      23,
-      Paint()..color = const Color(0xFFF5E8BA),
-    );
-    final hill = Path()
-      ..moveTo(0, size.height * .87)
-      ..quadraticBezierTo(
-        size.width * .35,
-        size.height * .58,
-        size.width,
-        size.height * .88,
-      )
-      ..lineTo(size.width, size.height)
-      ..lineTo(0, size.height)
-      ..close();
-    canvas.drawPath(hill, Paint()..color = const Color(0xFF426B65));
-  }
+/// Un felinar pictat (`sprites/lantern_<culoare>`): stins = hârtie mată; aprins = mai
+/// luminos, cu un halou cald și o mică creștere. Fără ilustrație — cercul colorat cu simbol.
+class _Lantern extends StatelessWidget {
+  const _Lantern({
+    required this.pad,
+    required this.side,
+    required this.lit,
+    required this.motion,
+    required this.symbol,
+  });
+
+  final SequencePad pad;
+  final double side;
+  final bool lit;
+  final MotionPolicy motion;
+  final IconData symbol;
+
+  static const _names = [
+    'yellow',
+    'blue',
+    'peach',
+    'green',
+    'lavender',
+    'pink',
+  ];
 
   @override
-  bool shouldRepaint(_EveningPainter oldDelegate) =>
-      oldDelegate.animated != animated;
+  Widget build(BuildContext context) {
+    final color = Color(pad.argb);
+    final fallback = Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color.lerp(color, const Color(0xFFFFF4CC), lit ? .65 : 0),
+        border: Border.all(
+          color: lit ? const Color(0xFFFFF3BE) : const Color(0xFFCED4E0),
+          width: 4,
+        ),
+      ),
+      child: Icon(symbol, size: side * 0.3, color: const Color(0xFF37465B)),
+    );
+    final image = Image(
+      image: illustration('sprites/lantern_${_names[pad.index % 6]}'),
+      fit: BoxFit.contain,
+      gaplessPlayback: true,
+      excludeFromSemantics: true,
+      errorBuilder: (_, _, _) => fallback,
+    );
+    return SizedBox.square(
+      dimension: side,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          // Haloul: lumina felinarului aprins se revarsă în jur.
+          AnimatedOpacity(
+            opacity: lit ? 1 : 0,
+            duration: motion.d(120),
+            child: Container(
+              width: side * 1.5,
+              height: side * 1.5,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    Color(0xCCFFF1B8),
+                    Color(0x55FFD772),
+                    Color(0x00FFD772),
+                  ],
+                  stops: [0.15, 0.5, 1],
+                ),
+              ),
+            ),
+          ),
+          AnimatedScale(
+            scale: lit && motion.feedback ? 1.08 : 1,
+            duration: motion.d(120),
+            curve: Curves.easeOut,
+            child: ColorFiltered(
+              // Aprins: mai luminos și mai cald. Stins: ușor estompat, ca în amurg.
+              colorFilter: ColorFilter.matrix(
+                lit
+                    ? const [
+                        1.1, 0, 0, 0, 55, //
+                        0, 1.1, 0, 0, 45,
+                        0, 0, 1.0, 0, 15,
+                        0, 0, 0, 1, 0,
+                      ]
+                    : const [
+                        0.86, 0, 0, 0, 0, //
+                        0, 0.86, 0, 0, 0,
+                        0, 0, 0.92, 0, 0,
+                        0, 0, 0, 1, 0,
+                      ],
+              ),
+              child: image,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

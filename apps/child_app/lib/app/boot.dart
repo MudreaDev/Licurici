@@ -10,6 +10,7 @@ import '../shared/art_cache.dart';
 import '../shared/emoji_art.dart';
 import '../shared/fx/scene_background.dart';
 import '../shared/mascot.dart';
+import '../shared/stimulus_art.dart';
 import '../shared/motion.dart';
 import '../shared/voice.dart';
 import 'layout.dart';
@@ -43,12 +44,10 @@ class BootNotifier extends Notifier<BootState> {
     final started = Stopwatch()..start();
     final steps = <Future<void> Function()>[
       () => ref.read(voiceManifestProvider.future),
+      IllustrationIndex.load,
       () => precacheArt(uiArt),
       () => precacheArt(allGames.map((g) => g.emoji)),
       () => precacheArt(reactionGames.map((g) => g.emoji)),
-      // Shaderele se compilează în fundal: nu țin copilul pe ecranul de încărcare
-      // (până sunt gata, scena e un degradeu cu aceeași paletă).
-      () async => unawaited(SceneShaders.warmUp()),
       // Sprint 2: deschiderea bazei locale Drift + migrările ei.
       // Mai târziu: verificarea pachetelor de conținut descărcate.
     ];
@@ -92,6 +91,10 @@ class _BootGateState extends ConsumerState<BootGate> {
     if (!_imagesRequested) {
       _imagesRequested = true;
       unawaited(MascotRig.precache(context));
+      // Scena ecranului principal: prima imagine pe care o vede copilul.
+      for (final image in sceneImages(SceneKind.meadow)) {
+        unawaited(precacheImage(image, context, onError: (_, _) {}));
+      }
     }
   }
 

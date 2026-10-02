@@ -43,14 +43,16 @@ class ParentScreen extends ConsumerWidget {
                 children: [
                   BarButton(
                     key: const ValueKey('sync-sessions'),
-                    emoji: '☁️',
+                    icon: Icons.cloud_upload_rounded,
+                    color: Tokens.primary,
                     label: 'Trimite sesiunile pe server',
                     onTap: () => showSyncDialog(context),
                   ),
                   const SizedBox(width: 8),
                   BarButton(
                     key: const ValueKey('export-sessions'),
-                    emoji: '📋',
+                    icon: Icons.content_copy_rounded,
+                    color: Tokens.mint,
                     label: 'Copiază sesiunile pentru specialist',
                     onTap: () => _export(context, ref),
                   ),

@@ -6,15 +6,9 @@ import 'package:licurici_core/licurici_core.dart';
 
 import '../../app/theme.dart';
 import '../../data/session.dart';
-import '../../shared/emoji_art.dart';
-import '../../shared/pressable.dart';
+import '../../shared/illustration.dart';
+import '../../shared/ui/candy.dart';
 import '../session/mood_check.dart';
-
-/// Jocurile care există în aplicație, cu ruta și ilustrația lor.
-({String route, String emoji, String name})? gameEntry(String id) {
-  final e = catalogEntry(id);
-  return e == null ? null : (route: e.route, emoji: e.emoji, name: e.name);
-}
 
 /// „Drumul de azi” (plan §3.4): încălzire → obiective → menținere → final pe succes, din
 /// progresul salvat. Aceeași zi → același drum (seed pe dată), ca orarul să fie previzibil.
@@ -45,44 +39,53 @@ class TodayPath extends ConsumerWidget {
     final played = {
       for (final t in session?.trials ?? const <Trial>[]) t.gameId,
     };
-    final size = compact ? 48.0 : 64.0;
+    final size = compact ? 52.0 : 72.0;
     final stops = <Widget>[];
     for (final (i, a) in plan.activities.indexed) {
-      final entry = gameEntry(a.gameId);
+      final entry = catalogEntry(a.gameId);
       if (entry == null) continue;
-      if (stops.isNotEmpty) stops.add(_Dots(done: played.contains(a.gameId)));
       final done = played.contains(a.gameId);
+      if (stops.isNotEmpty) stops.add(_Dots(done: done));
+      final color = domainColor(entry.domain);
       stops.add(
-        Pressable(
-          key: ValueKey('today-$i'),
-          semanticLabel: entry.name,
-          onTap: () => openGame(context, ref, entry.route),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: size + 16,
-                height: size + 16,
-                decoration: BoxDecoration(
-                  color: done ? Tokens.goodSoft : Tokens.surface,
-                  shape: BoxShape.circle,
-                  boxShadow: Tokens.shadow,
-                ),
-                alignment: Alignment.center,
-                child: EmojiArt(
-                  entry.emoji,
-                  size: size,
-                  semanticLabel: entry.name,
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            CandyPressable(
+              key: ValueKey('today-$i'),
+              color: done ? Tokens.goodSoft : tint(color, 0.2),
+              lipColor: shade(done ? Tokens.good : color, 0.04),
+              radius: 999,
+              lip: 5,
+              width: size + 12,
+              height: size + 12,
+              padding: const EdgeInsets.all(6),
+              semanticLabel: entry.name,
+              onTap: () => openGame(context, ref, entry.route),
+              child: Illustration(
+                gameIllustration(entry.id),
+                fallbackEmoji: entry.emoji,
+                semanticLabel: entry.name,
+              ),
+            ),
+            if (done)
+              Positioned(
+                right: -4,
+                top: -4,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Tokens.good,
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(3),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
-              if (done)
-                const Positioned(
-                  right: -4,
-                  top: -4,
-                  child: EmojiArt('✅', size: 26),
-                ),
-            ],
-          ),
+          ],
         ),
       );
     }
@@ -90,8 +93,20 @@ class TodayPath extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Drumul de azi', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.wb_sunny_rounded, color: Color(0xFFF2C14E)),
+            const SizedBox(width: 6),
+            Text(
+              'Drumul de azi',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge!.copyWith(color: const Color(0xFF3D5A80)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
         Row(mainAxisSize: MainAxisSize.min, children: stops),
       ],
     );
@@ -113,7 +128,7 @@ class _Dots extends StatelessWidget {
             height: 6,
             margin: const EdgeInsets.symmetric(horizontal: 2),
             decoration: BoxDecoration(
-              color: done ? Tokens.good : Tokens.surface,
+              color: done ? Tokens.good : const Color(0xFFE3D9C6),
               shape: BoxShape.circle,
             ),
           ),

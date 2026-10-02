@@ -254,3 +254,212 @@ Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0f788-1c74-7391-be2e-4f52
 Prompt exact:
 
 > Use case: illustration-story. One isolated production game-card illustration for a children's learning app. Subject: Two friendly invented small rabbits, one mint and one lavender, kindly sharing a single golden toy ball, paws gently passing it. Simple positive social situation. Square 1024x1024 RGBA PNG with actual transparent background. Center the complete object group with generous transparent margins, large readable shapes. Soft painted children's storybook style, softly rounded outlines, warm gentle lighting, lightly shaded tactile materials, consistent calm pastel mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0 and sunshine yellow #F2CF6B. One clear coherent subject/activity, minimal details, suitable for autistic children. NO scenery or background, no ground plane or drop shadow, no decorative scattered stars, no text, no letters, no numerals, no symbols, no watermark, no border, no aggressive red. No wizard mascot unless explicitly requested. Transparent means real alpha, not white or checkerboard.
+
+
+## games/pescarul.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-84edf5ab-1e8c-489e-9cbd-1975eb5d31f3.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create one production game-card illustration for Licurici, a therapy game app for young and autistic children. 1024x1024 RGBA PNG with real transparent alpha background. Subject: a small friendly wooden fishing rod with a soft round net and one happy round blue-and-yellow fish jumping out of a little splash of pale blue water. Fish has a round sky-blue body, yellow fins, big kind eyes and a small smile, facing right. Isolated coherent object group centered with generous transparent margins, all elements fully inside the frame. Match the existing Licurici game-card illustrations visible in context: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials. Calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. One clear subject, minimal detail. No mascot, no text, letters, numerals, watermark, border, harsh red, scary faces, busy scattered particles, ground plane or drop shadow. The background must be actual alpha transparency, never white, green or painted checkerboard pixels. Strict output correction: deliver exactly 1024 by 1024 pixels. Give the entire group a clear empty transparent margin of at least 100 pixels on every side. Include BOTH a slender wooden fishing rod with line AND a separate soft round landing net, together with the one fish and small splash. Keep the composition compact and calm.
+
+## games/prinde-licuriciul.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-65568116-b072-4c9f-858b-f1b1cd9024c8.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Licurici game card games/prinde-licuriciul. Square RGBA PNG, real transparent background, not white, green or checkerboard pixels. One cute glowing golden firefly with a round yellow glowing lantern belly, tiny translucent wings, big friendly eyes, hovering above a cupped pair of small open child hands seen from above, soft warm glow. Isolated coherent object group centered with generous transparent margins, entire subject inside frame, no mascot, no scenery, no ground or drop shadow. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## games/simon.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-1318a2e8-495c-4db2-9fd3-b6e40ed86893.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Licurici game card games/simon. Square RGBA PNG with actual alpha transparency. Three round paper lanterns in one row hanging from a short wooden stick: yellow, sky blue, lavender; the middle blue lantern glows warmly. All three have the same round softly ribbed paper form. Isolated object group centered with generous transparent margins and no cropping. No mascot, background scenery, ground or cast shadow. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/fish.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-ab469363-11b8-4d67-9ae0-2c31f95fd8ba.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create sprites/fish for Licurici. The reference image is for fish identity and painted style only. Draw its friendly round fish ALONE: blue body, yellow fins, big kind eyes, small smile, facing right. Preserve the reference fish's rounded silhouette and soft tactile painting. One isolated object, centered, filling approximately 80% of a square frame, full fins and tail within clear margins. Front-readable three-quarter side view facing right. Real transparent RGBA PNG background, no water, splash, rod, net, ground, shadow or other objects. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/octopus.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-73d4b52e-4f8d-4acb-affe-3db958a9d755.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Licurici in-game sprite sprites/octopus. One friendly lavender octopus, round head, big kind eyes, eight soft curly tentacles, gentle smile, facing the viewer. One object centered in a square RGBA PNG, filling approximately 80% of the frame, all tentacles fully visible within transparent margins. Real alpha transparency, no ground, no shadow, no water, no props. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/crab.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-b93c3cfd-8bbb-43f8-8f6e-d9200196d08e.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Licurici in-game sprite sprites/crab. One friendly peach-orange crab, NOT red, round body, big kind eyes on stalks, small smile, softly rounded relaxed claws and legs. Facing the viewer, one object centered, approximately 80% of square frame, full silhouette with clear transparent margins. RGBA PNG with true alpha transparency. No ground, no shadow, no water, no props. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/fish_colorful.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-f5c61144-f90d-48e0-a871-6596235f07ed.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici sprite sprites/fish_colorful using the reference fish for consistent silhouette, size, framing, angle and painted style. A different round tropical fish with broad alternating mint and lavender stripes, mint and lavender fins, big kind eyes and a small friendly smile, facing right. Clearly different colour pattern from the reference blue-and-yellow fish, but a similar round silhouette. One object centered, approximately 80% of square frame, entire silhouette visible. RGBA PNG with real alpha transparency, no ground, shadow, water, props or other objects. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/firefly.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-ba7a0eef-a4e7-409c-a51e-6bc749483d7b.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create sprites/firefly for Licurici using the reference image for the golden firefly's identity and painted style. The SAME cute golden firefly ALONE seen straight from the front, wings spread symmetrically, round glowing yellow lantern belly, big friendly brown eyes, gentle small smile and curved antennae. One object centered, about 80% of square frame, full antennae and wings inside clear transparent margins. Real transparent RGBA PNG, no hands, no other objects, no ground or shadow. Soft contained warm glow around belly fading to actual alpha. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/lantern_yellow.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-8737aa40-2b7f-4d20-b0f6-85d934671b03.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Licurici in-game sprite sprites/lantern_yellow, master design for a matched six-lantern set. ONE round paper lantern, straight-on front view, symmetrical spherical softly ribbed paper body, small wooden handle at top, simple light wood top and bottom collars. Yellow paper #F2CF6B with ONE simple embossed five-point star painted on its front in slightly darker yellow ochre. UNLIT: soft matte paper, absolutely no inner light, glow, halo or luminous highlight. Entire lantern including handle centered in a square frame, approximately 80% total frame height, generous clear margins, no cropping. Actual transparent RGBA PNG background, no ground, no shadow, no other objects. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/lantern_blue.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-f979ee8a-7d3a-4aa3-b3d3-c9e82e941a4b.png`
+
+Prompt exact:
+
+> Use case: precise-object-edit. Create sprites/lantern_blue by changing ONLY the reference lantern's paper colour to sky blue #5B9BB5 and replacing its star with ONE simple embossed crescent moon painted slightly darker blue. Keep IDENTICAL silhouette, wooden handle and collars, rib positions, size, framing, placement and straight-on angle. UNLIT matte paper, no glow or internal light. Preserve square RGBA canvas and real alpha transparency, no ground or shadow. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/lantern_peach.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-b6e6f25b-b181-4e5a-9c77-140c51d7699e.png`
+
+Prompt exact:
+
+> Use case: precise-object-edit. Create sprites/lantern_peach by changing ONLY the reference lantern's paper colour to peach #E79B86 and replacing its star with ONE simple embossed leaf painted slightly darker peach. Keep IDENTICAL silhouette, wooden handle and collars, rib positions, size, framing, placement and straight-on angle. UNLIT matte paper, no glow or internal light. Preserve square RGBA canvas and real alpha transparency, no ground or shadow. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/lantern_green.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-60a05de5-fae6-416c-9e65-0ed464fcca29.png`
+
+Prompt exact:
+
+> Use case: precise-object-edit. Create sprites/lantern_green by changing ONLY the reference lantern's paper colour to green #6BBF8A and replacing its star with ONE simple embossed water drop painted slightly darker green. Keep IDENTICAL silhouette, wooden handle and collars, rib positions, size, framing, placement and straight-on angle. UNLIT matte paper, no glow or internal light. Preserve square RGBA canvas and real alpha transparency, no ground or shadow. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/lantern_lavender.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-afeac8bb-8a5c-4c4a-9c9f-b71ab0d46bb3.png`
+
+Prompt exact:
+
+> Use case: precise-object-edit. Create sprites/lantern_lavender by changing ONLY the reference lantern's paper colour to lavender #A9A3D1 and replacing its star with ONE simple embossed rounded cloud painted slightly darker lavender. Keep IDENTICAL silhouette, wooden handle and collars, rib positions, size, framing, placement and straight-on angle. UNLIT matte paper, no glow or internal light. Preserve square RGBA canvas and real alpha transparency, no ground or shadow. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## sprites/lantern_pink.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-4ae5d014-1889-44ad-8fd3-dc45e85a0792.png`
+
+Prompt exact:
+
+> Use case: precise-object-edit. Create sprites/lantern_pink by changing ONLY the reference lantern's paper colour to pink #F0A9C0 and replacing its star with ONE simple embossed sun, a circle with short rounded rays, painted slightly darker pink. Keep IDENTICAL silhouette, wooden handle and collars, rib positions, size, framing, placement and straight-on angle. UNLIT matte paper, no glow or internal light. Preserve square RGBA canvas and real alpha transparency, no ground or shadow. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## rewards/star.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-9ce5e97b-ee42-4dfa-a8e1-94738be36a3d.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Licurici reward rewards/star. ONE big chunky glossy golden five-point star with very soft rounded points, a kind smiling face and small rosy cheeks. Centered in square RGBA PNG, full silhouette inside generous transparent margins. Soft painted tactile storybook material with restrained glossy highlights. True alpha transparent background, no ground, no cast shadow, no sparkles or additional objects. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## rewards/chest.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-e1f4fafc-2736-4386-8c42-719557979f50.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Licurici reward rewards/chest. One small OPEN wooden treasure chest with softly rounded corners, warm tactile wood, soft golden light inside and a few chunky round-pointed golden stars inside. No coins, no jewels. Simple friendly three-quarter front view, centered complete object group with clear margins in a square RGBA PNG. Real alpha transparent background, no ground or cast shadow, no scattered particles, no additional props. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles.
+
+## rewards/sticker_bunny.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-ef04be9b-3e8e-413e-80b9-944d6562ea4f.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Licurici reward rewards/sticker_bunny, master framing for a twelve-animal sticker set. One cute baby bunny with cream fur and pale peach inner ears, big kind eyes, small gentle smile, rounded seated body and soft paws. Round die-cut sticker style: a clean white sticker rim enclosing the bunny silhouette in a compact rounded composition, subtle soft shadow INSIDE the white rim only, absolutely no external shadow. Square RGBA PNG with actual transparent alpha outside the sticker. Sticker centered with approximately 10% clear margin on every side, all ears, paws and rim fully visible. One animal only, no props or scenery. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. The white die-cut sticker rim is required; no additional frame or border.
+
+## rewards/sticker_turtle.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-377237a3-10e9-4296-8c06-48e1ff0c1ff9.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_turtle. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby turtle with mint skin, a rounded sage-green shell with a few broad simple panels and soft little feet. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.
+
+## rewards/sticker_owl.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-ba773fda-17a6-4b12-8a57-9562129a16e5.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_owl. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby owl with soft lavender feathers, a cream round face and belly, tiny peach beak and little rounded wings folded at its sides. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.
+
+## rewards/sticker_fox.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-aa1a2a06-d9a0-4452-9d1c-8730c78cfd1f.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_fox. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby fox with soft peach-orange fur, cream cheeks and belly, rounded triangular ears, little paws and a fluffy cream-tipped tail curled beside its seated body. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.
+
+## rewards/sticker_bear.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-67b7280f-d1a1-4ba5-b046-7ed71ce4fb76.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_bear. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby bear with soft warm honey-brown fur, cream muzzle and belly, small round ears and plump paws, sitting comfortably. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.
+
+## rewards/sticker_elephant.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-3305e109-559f-45bf-9df9-00d125378e53.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_elephant. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby elephant with soft pale blue-lavender skin, large rounded ears with peach inner ears, a short gently curled trunk and round little feet, sitting comfortably. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.
+
+## rewards/sticker_hedgehog.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-a87beb0d-a452-4cce-8acf-49cf2adeeb44.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_hedgehog. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby hedgehog with a cream face and belly, warm taupe-brown softly rounded short spines, tiny rounded ears and little paws, sitting comfortably; spines soft and friendly, never sharp or threatening. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.
+
+## rewards/sticker_duck.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-38bbc6e6-7a64-4f60-a3a2-0b0caaf9a561.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_duck. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby duckling with fluffy sunshine-yellow down, a small peach bill, tiny folded wings and two soft peach webbed feet. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.
+
+## rewards/sticker_cat.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-a4858777-6178-4ac4-ab36-242f77fef178.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_cat. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby kitten with soft warm cream fur and a few pale peach tabby patches, rounded triangular ears, tiny peach nose, little paws and a curled tail beside its seated body. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.
+
+## rewards/sticker_frog.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a0fe6a-886d-7561-a9e6-f1d48a0a7715\exec-4db2777b-3773-4883-8481-b7dfc9a37fd7.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create Licurici reward rewards/sticker_frog. Reference image defines the exact painted style, sticker treatment, scale and centered framing of this matched animal set. Replace the bunny with ONE cute baby frog with soft mint-green skin, a cream belly, big friendly eyes above a rounded head, small rounded toes and folded hind legs. Compact rounded full-body composition, big kind eyes and a gentle smile. Match reference framing: sticker centered and about 80% of square canvas, entire animal and clean white die-cut rim visible with clear margins. Soft shadow INSIDE white rim only, no external shadow, no props or scenery. Real transparent RGBA PNG outside sticker, not a white background. Soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Match the existing Licurici illustrations closely as one coherent set. Minimal detail, suitable for young autistic children. NEVER text, letters, numerals, watermark, border, harsh red, scary faces or busy scattered particles. Required white sticker rim only, no additional border.

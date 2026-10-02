@@ -16,6 +16,15 @@ dependencies:
 flutter:
   assets:
     - art/openmoji/
+    - art/illustrations/mascot/
+    - art/illustrations/domains/
+    - art/illustrations/games/
+    - art/illustrations/sprites/
+    - art/illustrations/rewards/
+    - art/illustrations/moods/
+    - art/illustrations/scenes/
+    - art/illustrations/faces/
+    - art/illustrations/objects/
     - audio/ro/
   fonts:
     - family: Nunito

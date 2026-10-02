@@ -8,6 +8,7 @@ import '../../app/theme.dart';
 import '../../shared/fx/scene_background.dart';
 import '../../shared/motion.dart';
 import '../../shared/top_bar.dart';
+import '../../shared/ui/candy.dart';
 import '../../data/session.dart';
 import '../parent/parent_gate.dart';
 import '../session/mood_check.dart';
@@ -140,13 +141,8 @@ class _TodayPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compact = AppLayout.of(context).compact;
-    return Container(
+    return CandyPanel(
       padding: EdgeInsets.all(compact ? 12 : 18),
-      decoration: BoxDecoration(
-        color: Tokens.surface.withValues(alpha: 0.82),
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: Tokens.shadow,
-      ),
       child: TodayPath(compact: compact),
     );
   }
@@ -168,7 +164,8 @@ class _HomeBar extends ConsumerWidget {
           if (played) ...[
             BarButton(
               key: const ValueKey('finish-session'),
-              emoji: '👋',
+              icon: Icons.waving_hand_rounded,
+              color: Tokens.peach,
               label: 'Gata pe azi',
               onTap: () => finishSession(context, ref),
             ),
@@ -176,7 +173,8 @@ class _HomeBar extends ConsumerWidget {
           ],
           BarButton(
             key: const ValueKey('parent-corner'),
-            emoji: '📋',
+            icon: Icons.lock_rounded,
+            color: const Color(0xFF8A9BB0),
             label: 'Pentru părinți',
             onTap: () async {
               if (await askParentGate(context) && context.mounted) {

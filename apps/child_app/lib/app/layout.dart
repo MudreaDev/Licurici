@@ -22,5 +22,5 @@ class AppLayout {
   /// Latura butoanelor din bara de sus (≥ 48 dp chiar și pe telefon).
   double get barButton => compact ? 52 : 64;
 
-  double get mascot => compact ? 64 : 96;
+  double get mascot => compact ? 64 : (size.height >= 700 ? 128 : 96);
 }
