@@ -51,9 +51,9 @@ class _Sfx implements SoundEffects {
 
   AudioPlayer _player() {
     if (_pool.length < 4) {
-      final p = AudioPlayer()
-        ..audioCache = AudioCache(prefix: '')
-        ..setPlayerMode(PlayerMode.lowLatency);
+      final p = AudioPlayer()..audioCache = AudioCache(prefix: '');
+      // Latența mică există doar pe Android/iOS; pe web modul implicit e deja rapid.
+      if (!kIsWeb) p.setPlayerMode(PlayerMode.lowLatency).catchError((_) {});
       _pool.add(p);
       return p;
     }
@@ -68,9 +68,10 @@ class _Sfx implements SoundEffects {
             AssetSource('packages/$contentPackage/audio/sfx/$name.wav'),
             volume: volume,
           )
-          .catchError((Object _) {});
-    } on Object {
+          .catchError((Object e) => debugPrint('sunet $name: $e'));
+    } on Object catch (e) {
       // fără audio (ex. browser înainte de prima atingere) — jocul continuă în liniște
+      debugPrint('sunet $name: $e');
     }
   }
 
