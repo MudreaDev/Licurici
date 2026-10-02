@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -190,6 +191,11 @@ class LicuriciApp extends ConsumerWidget {
       title: 'Licurici',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(calm: calm),
+      // Listele se derulează și trăgând cu mouse-ul / trackpad-ul (web, Chromebook),
+      // nu doar cu degetul.
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: PointerDeviceKind.values.toSet(),
+      ),
       routerConfig: ref.watch(routerProvider),
       builder: (context, child) =>
           BootGate(child: child ?? const SizedBox.shrink()),
