@@ -11,6 +11,7 @@ import '../../shared/top_bar.dart';
 import '../../shared/ui/candy.dart';
 import '../../data/session.dart';
 import '../parent/parent_gate.dart';
+import '../settings/settings.dart';
 import '../session/mood_check.dart';
 import 'catalog_cards.dart';
 import 'today_path.dart';
@@ -171,12 +172,31 @@ class _HomeBar extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
           ],
-          BarButton(
-            key: const ValueKey('album'),
-            icon: Icons.collections_bookmark_rounded,
-            color: const Color(0xFFE79B86),
-            label: 'Albumul meu',
-            onTap: () => context.go('/album'),
+          // Un abțibild nou așteaptă în album: steluță pe buton.
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              BarButton(
+                key: const ValueKey('album'),
+                icon: Icons.collections_bookmark_rounded,
+                color: const Color(0xFFE79B86),
+                label: 'Albumul meu',
+                onTap: () => context.go('/album'),
+              ),
+              if (ref.watch(settingsProvider.select((s) => s.hasNewStickers)))
+                const Positioned(
+                  right: -4,
+                  top: -4,
+                  child: IgnorePointer(
+                    child: Icon(
+                      Icons.star_rounded,
+                      size: 26,
+                      color: Color(0xFFF2C14E),
+                      shadows: [Shadow(color: Colors.white, blurRadius: 4)],
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(width: 10),
           BarButton(

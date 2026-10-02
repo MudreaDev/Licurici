@@ -18,11 +18,27 @@ import '../settings/settings.dart';
 /// „Albumul meu” (`/album`): abțibildurile câștigate la finalul jocurilor. Locurile goale
 /// arată umbra abțibildului, ca copilul să vadă ce mai poate aduna (fără cifre, fără
 /// presiune: nu se pierde nimic, nu există „nivel ratat”).
-class AlbumScreen extends ConsumerWidget {
+class AlbumScreen extends ConsumerStatefulWidget {
   const AlbumScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AlbumScreen> createState() => _AlbumScreenState();
+}
+
+class _AlbumScreenState extends ConsumerState<AlbumScreen> {
+  /// Abțibildurile noi de la ultima vizită (strălucesc o dată la deschidere).
+  late final int _seenBefore = ref.read(settingsProvider).stickersSeen;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(settingsProvider.notifier).markStickersSeen();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     final earned = ref.watch(settingsProvider.select((s) => s.stickers));
@@ -31,6 +47,10 @@ class AlbumScreen extends ConsumerWidget {
       counts[id] = (counts[id] ?? 0) + 1;
     }
     final have = counts.length;
+    final fresh = {
+      for (var i = _seenBefore.clamp(0, earned.length); i < earned.length; i++)
+        earned[i],
+    };
 
     return Scaffold(
       body: SceneBackground(
@@ -89,6 +109,7 @@ class AlbumScreen extends ConsumerWidget {
                                                 id: id,
                                                 count: counts[id] ?? 0,
                                                 size: side,
+                                                isNew: fresh.contains(id),
                                               )
                                               .animate(delay: motion.d(40 * i))
                                               .fadeIn(duration: motion.d(250))
@@ -104,6 +125,7 @@ class AlbumScreen extends ConsumerWidget {
                                             id: id,
                                             count: counts[id] ?? 0,
                                             size: side,
+                                            isNew: fresh.contains(id),
                                           ),
                                     ],
                                   ),
@@ -127,11 +149,19 @@ class AlbumScreen extends ConsumerWidget {
 
 /// Un loc din album: abțibildul (cu numărul de dubluri) sau umbra lui.
 class _Slot extends ConsumerStatefulWidget {
-  const _Slot({required this.id, required this.count, required this.size});
+  const _Slot({
+    required this.id,
+    required this.count,
+    required this.size,
+    this.isNew = false,
+  });
 
   final String id;
   final int count;
   final double size;
+
+  /// Primit de la ultima vizită: inel auriu și o mică săritură la deschidere.
+  final bool isNew;
 
   @override
   ConsumerState<_Slot> createState() => _SlotState();
@@ -161,8 +191,13 @@ class _SlotState extends ConsumerState<_Slot> {
             shape: BoxShape.circle,
             color: has ? Colors.transparent : const Color(0xFFF3ECDF),
             border: has
-                ? null
+                ? (widget.isNew
+                      ? Border.all(color: const Color(0xFFF2C14E), width: 4)
+                      : null)
                 : Border.all(color: const Color(0xFFDCCDB3), width: 3),
+            boxShadow: widget.isNew
+                ? const [BoxShadow(color: Color(0x88F2C14E), blurRadius: 18)]
+                : null,
           ),
           child: Stack(
             clipBehavior: Clip.none,
@@ -172,6 +207,7 @@ class _SlotState extends ConsumerState<_Slot> {
                     ? Juice(
                         enabled: motion.movement,
                         hopTick: _hop,
+                        popTick: widget.isNew ? 1 : 0,
                         child: image,
                       )
                     // Umbra: aceeași formă, ștearsă — „aici va fi un abțibild”.

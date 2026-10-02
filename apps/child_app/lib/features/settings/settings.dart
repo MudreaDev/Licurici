@@ -10,6 +10,7 @@ class AppSettings {
     this.calm = false,
     this.voice = true,
     this.stickers = const [],
+    this.stickersSeen = 0,
   });
 
   final Grade grade;
@@ -23,12 +24,18 @@ class AppSettings {
   /// dispozitiv: sunt recompensa copilului, nu o măsurătoare (README §11).
   final List<String> stickers;
 
+  /// Câte abțibilduri a văzut deja în album (restul sunt „noi” — semn pe butonul albumului).
+  final int stickersSeen;
+
+  bool get hasNewStickers => stickers.length > stickersSeen;
+
   Map<String, Object> toJson() => {
     'grade': grade.name,
     'level': level.name,
     'calm': calm,
     'voice': voice,
     'stickers': stickers,
+    'stickersSeen': stickersSeen,
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -41,6 +48,7 @@ class AppSettings {
       for (final s in (j['stickers'] as List? ?? const []))
         if (s is String) s,
     ],
+    stickersSeen: (j['stickersSeen'] as num?)?.toInt() ?? 0,
   );
 
   AppSettings copyWith({
@@ -49,12 +57,14 @@ class AppSettings {
     bool? calm,
     bool? voice,
     List<String>? stickers,
+    int? stickersSeen,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
     calm: calm ?? this.calm,
     voice: voice ?? this.voice,
     stickers: stickers ?? this.stickers,
+    stickersSeen: stickersSeen ?? this.stickersSeen,
   );
 }
 
@@ -95,6 +105,13 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
   /// Un joc terminat = un abțibild. Întâi cele lipsă din album, în ordine; după ce albumul e
   /// plin, se adună dubluri (albumul arată câte are din fiecare).
+  /// Albumul a fost deschis: toate abțibildurile sunt văzute.
+  void markStickersSeen() {
+    if (state.hasNewStickers) {
+      _set(state.copyWith(stickersSeen: state.stickers.length));
+    }
+  }
+
   String awardSticker() {
     final id = stickerIds[state.stickers.length % stickerIds.length];
     _set(state.copyWith(stickers: [...state.stickers, id]));
