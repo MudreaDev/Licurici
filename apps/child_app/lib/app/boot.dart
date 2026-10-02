@@ -17,8 +17,8 @@ import '../shared/voice.dart';
 import 'layout.dart';
 import 'theme.dart';
 
-/// Ilustrațiile interfeței, vizibile imediat după pornire.
-const uiArt = ['🏠', '🔊', '⏸', '😌', '🔁', '⭐', '🧒', '📱'];
+/// Emoji-urile OpenMoji vizibile imediat după pornire (rotirea telefonului).
+const uiArt = ['📱'];
 
 class BootState {
   const BootState(this.progress, {this.done = false});
@@ -47,8 +47,9 @@ class BootNotifier extends Notifier<BootState> {
       () => ref.read(voiceManifestProvider.future),
       IllustrationIndex.load,
       () => precacheArt(uiArt),
-      () => precacheArt(allGames.map((g) => g.emoji)),
-      () => precacheArt(reactionGames.map((g) => g.emoji)),
+      // Rezervele OpenMoji ale cardurilor (ilustrațiile pictate le acoperă de obicei) se
+      // pregătesc în fundal: pe web compilarea SVG-urilor ar ține copilul pe ecranul de pornire.
+      () async => unawaited(precacheArt(catalog.map((g) => g.emoji))),
       // Sprint 2: deschiderea bazei locale Drift + migrările ei.
       // Mai târziu: verificarea pachetelor de conținut descărcate.
     ];

@@ -67,6 +67,14 @@ class TextVisual extends Visual {
   final bool isEquation;
 }
 
+/// Un șir de imagini cu un loc gol la capăt („ce urmează?”). [answer] apare în locul gol
+/// după răspunsul corect.
+class PatternVisual extends Visual {
+  const PatternVisual(this.items, {required this.answer});
+  final List<String> items;
+  final String answer;
+}
+
 /// O scenă scurtă descrisă în cuvinte („Un copil a primit un cadou.”).
 class SceneVisual extends Visual {
   const SceneVisual(this.text);
@@ -166,6 +174,7 @@ class Lesson {
             ...switch (v) {
               EmojiVisual(:final emoji) => [emoji],
               ObjectsVisual(:final groups) => groups.map((g) => g.emoji),
+              PatternVisual(:final items, :final answer) => [...items, answer],
               _ => const <String>[],
             },
         ],

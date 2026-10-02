@@ -86,6 +86,7 @@ const List<Ladder> ladders = [
   ]),
   Ladder(Domain.cog, [
     Step('COG3', 'Sortează obiecte după categorie', games: ['sortam']),
+    Step('COG5', 'Continuă un model (AB, AAB, ABC)', games: ['continua-sirul']),
   ]),
   Ladder(Domain.emo, [
     Step('EMO1', 'Deosebește bucuros de trist', games: ['emotii']),

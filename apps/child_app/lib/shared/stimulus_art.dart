@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:game_content/game_content.dart';
@@ -120,17 +122,30 @@ Iterable<AssetImage> spritesFor(Iterable<String> emojis) =>
     emojis.toSet().map(spriteFor).nonNulls;
 
 /// Pre-încarcă stimulii (ilustrații pictate + rezervele OpenMoji), ca animațiile de intrare
-/// să pornească cu imaginile deja în memorie.
+/// să pornească cu imaginile deja în memorie. Emoji-urile cu ilustrație pictată nu mai trec
+/// prin SVG. Așteptarea e plafonată la [patience]: pe web compilarea SVG-urilor poate dura
+/// secunde, iar copilul nu trebuie să stea în fața unui ecran gol — ce nu e gata apare imediat
+/// după.
 Future<void> precacheStimuli(
   BuildContext context,
-  Iterable<String> emojis,
-) async {
+  Iterable<String> emojis, {
+  Duration patience = const Duration(milliseconds: 1500),
+}) {
   final sprites = spritesFor(emojis).toList();
-  await Future.wait([
-    precacheArt(emojis),
+  final work = Future.wait([
+    precacheArt(emojis.where((e) => spriteFor(e) == null)),
     for (final image in sprites)
       precacheImage(image, context, onError: (_, _) {}),
   ]);
+  final done = Completer<void>();
+  final timer = Timer(patience, () {
+    if (!done.isCompleted) done.complete();
+  });
+  work.whenComplete(() {
+    timer.cancel();
+    if (!done.isCompleted) done.complete();
+  });
+  return done.future;
 }
 
 /// Un stimul: ilustrația pictată sau, în lipsa ei, emoji-ul OpenMoji.

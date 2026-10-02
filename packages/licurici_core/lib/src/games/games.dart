@@ -6,12 +6,14 @@ import '../game.dart';
 import '../grades.dart';
 import 'emotii.dart';
 import 'forme.dart';
+import 'logica.dart';
 import 'matematica.dart';
 import 'romana.dart';
 import 'social.dart';
 
 export 'emotii.dart';
 export 'forme.dart';
+export 'logica.dart';
 export 'matematica.dart';
 export 'romana.dart';
 export 'social.dart';
@@ -30,6 +32,7 @@ const List<GameSpec> allGames = [
   // Forme & logică
   CuloriGame(),
   FormeGame(),
+  SirulGame(),
   // Emoții & viață
   EmotiiGame(),
   DaNuGame(),

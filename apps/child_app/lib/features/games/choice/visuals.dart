@@ -44,6 +44,7 @@ class PromptVisuals extends StatelessWidget {
             ColorVisual() => _ColorBlob(Color(v.argb)),
             TextVisual() => _BigText(v),
             SceneVisual() => _Scene(v.text),
+            PatternVisual() => _Pattern(v, solved: solved),
           },
         ),
     ],
@@ -230,6 +231,88 @@ class _BigText extends ConsumerWidget {
     );
   }
 }
+
+/// Șirul „ce urmează?”: imaginile intră pe rând (ca un ritm), iar locul gol de la capăt
+/// pulsează; la răspunsul corect se umple cu imaginea care lipsea.
+class _Pattern extends ConsumerWidget {
+  const _Pattern(this.visual, {required this.solved});
+
+  final PatternVisual visual;
+  final bool solved;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final motion = MotionPolicy.of(context, ref);
+    final n = visual.items.length + 1;
+    final size =
+        (n <= 5 ? 92.0 : (n <= 7 ? 76.0 : 64.0)) * VisualScale.of(context);
+    Widget slot(Widget child, {bool empty = false}) => Container(
+      width: size,
+      height: size,
+      padding: EdgeInsets.all(size * 0.1),
+      decoration: BoxDecoration(
+        color: empty ? Tokens.sun.withValues(alpha: 0.18) : Tokens.surface2,
+        borderRadius: BorderRadius.circular(size * 0.28),
+        border: Border.all(
+          color: empty ? Tokens.sun : const Color(0xFFE6EEEC),
+          width: empty ? 3 : 2,
+        ),
+      ),
+      child: Center(child: child),
+    );
+    Widget enter(Widget w, int i) => !motion.feedback
+        ? w
+        : w
+              .animate(delay: motion.d(120 * i))
+              .fadeIn(duration: motion.d(200))
+              .moveY(
+                begin: motion.movement ? 12 : 0,
+                end: 0,
+                curve: Curves.easeOut,
+              );
+    final last = solved
+        ? Juice(
+            enabled: motion.movement,
+            popTick: 1,
+            child: slot(StimulusArt(visual.answer, size: size * 0.8)),
+          )
+        : slot(
+            Text(
+              '?',
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                fontSize: size * 0.5,
+                color: _questionInk,
+              ),
+            ),
+            empty: true,
+          );
+    // Un singur rând, ca ritmul să se citească; FittedBox-ul scenei îl micșorează la nevoie.
+    final gap = SizedBox(width: size * 0.12);
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final (i, e) in visual.items.indexed) ...[
+            enter(slot(StimulusArt(e, size: size * 0.8)), i),
+            gap,
+          ],
+          enter(
+            !motion.ambient || solved
+                ? last
+                : last
+                      .animate(onPlay: (c) => c.repeat(reverse: true))
+                      .scaleXY(begin: 1, end: 1.06, duration: 900.ms),
+            visual.items.length,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Galbenul mai închis al semnului întrebării (contrast pe fundal deschis).
+const _questionInk = Color(0xFFC79A1E);
 
 class _Scene extends StatelessWidget {
   const _Scene(this.text);
