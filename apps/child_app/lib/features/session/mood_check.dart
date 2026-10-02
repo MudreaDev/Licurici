@@ -7,6 +7,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../app/layout.dart';
 import '../../app/theme.dart';
 import '../../data/session.dart';
+import '../settings/settings.dart';
 import '../../shared/illustration.dart';
 import '../../shared/mascot.dart';
 import '../../shared/ui/candy.dart';
@@ -30,6 +31,10 @@ Future<void> openGame(BuildContext context, WidgetRef ref, String route) async {
   if (session.needsMoodBefore) {
     final mood = await askMood(context, ref);
     session.start(moodBefore: mood);
+    // De aici se numără abțibildurile „de azi” (pentru „La revedere”).
+    ref
+        .read(_stickersAtStart.notifier)
+        .mark(ref.read(settingsProvider).stickers.length);
   }
   if (context.mounted) context.go(route);
 }
@@ -39,6 +44,93 @@ Future<void> finishSession(BuildContext context, WidgetRef ref) async {
   final mood = await askMood(context, ref);
   await ref.read(sessionProvider.notifier).finish(moodAfter: mood);
   ref.read(voiceProvider).say(['Ne vedem data viitoare!']);
+  final all = ref.read(settingsProvider).stickers;
+  final from = ref.read(_stickersAtStart).clamp(0, all.length);
+  if (!context.mounted) return;
+  await showDialog<void>(
+    context: context,
+    builder: (context) => _Goodbye(stickers: all.sublist(from)),
+  );
+}
+
+/// Câte abțibilduri avea copilul când a început sesiunea.
+class _StickersAtStart extends Notifier<int> {
+  @override
+  int build() => 0;
+
+  void mark(int count) => state = count;
+}
+
+final _stickersAtStart = NotifierProvider<_StickersAtStart, int>(
+  _StickersAtStart.new,
+);
+
+/// „La revedere”: Licurici adoarme, iar copilul vede ce a adunat azi. Un singur buton.
+class _Goodbye extends ConsumerWidget {
+  const _Goodbye({required this.stickers});
+
+  final List<String> stickers;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final compact = AppLayout.of(context).compact;
+    final text = Theme.of(context).textTheme;
+    final size = compact ? 56.0 : 84.0;
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: const EdgeInsets.all(16),
+      constraints: const BoxConstraints(maxWidth: 640),
+      child: CandyPanel(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          compact ? 12 : 22,
+          24,
+          compact ? 12 : 22,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Mascot(size: compact ? 90 : 150, mood: MascotMood.sleep),
+              Text(
+                'Bravo pentru azi!',
+                style: (compact ? text.headlineMedium : text.displaySmall)!
+                    .copyWith(color: const Color(0xFF3D5A80)),
+                textAlign: TextAlign.center,
+              ),
+              if (stickers.isNotEmpty) ...[
+                SizedBox(height: compact ? 8 : 14),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (final id in stickers.take(8))
+                      SizedBox.square(
+                        dimension: size,
+                        child: Illustration(
+                          illustration('rewards/sticker_$id'),
+                          fallbackEmoji: '⭐',
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+              SizedBox(height: compact ? 10 : 18),
+              CandyButton(
+                key: const ValueKey('goodbye'),
+                label: 'Pe mâine!',
+                icon: Icons.nightlight_round,
+                color: Tokens.lavender,
+                onTap: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// Culoarea fiecărei dispoziții (calde pentru plăcut, reci pentru greu, niciodată roșu).
