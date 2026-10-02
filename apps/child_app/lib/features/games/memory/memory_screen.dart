@@ -10,6 +10,7 @@ import '../../../app/theme.dart';
 import '../../../data/session.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
+import '../../../shared/illustration.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/mascot.dart';
 import '../../../shared/motion.dart';
@@ -344,7 +345,14 @@ class _MemoryCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: radius,
-        child: CustomPaint(painter: _CardBackPainter()),
+        // Spatele pictat, dacă există; altfel cel desenat din cod.
+        child: IllustrationIndex.has('sprites/card_back')
+            ? Image(
+                image: illustration('sprites/card_back'),
+                fit: BoxFit.cover,
+                excludeFromSemantics: true,
+              )
+            : CustomPaint(painter: _CardBackPainter()),
       ),
     );
     return Semantics(

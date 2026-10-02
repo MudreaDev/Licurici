@@ -42,7 +42,8 @@ for m in re.finditer(r'## ([a-z_]+)/([a-z_\-]+)\.webp\s+Sursă PNG: `([^`]+)`', 
             im = im.crop((0, (ih - nh) // 2, iw, (ih - nh) // 2 + nh))
         im = im.resize((w, h), Image.LANCZOS)
     else:
-        im = im.resize((w, h), Image.LANCZOS)
+        # păstrăm proporțiile (ex. spatele cărților, 3:4), doar micșorăm
+        im.thumbnail((w, h), Image.LANCZOS)
     os.makedirs(os.path.join(root, folder), exist_ok=True)
     if im.getchannel('A').getextrema()[0] == 255:
         im = im.convert('RGB')  # fundal opac: fără canal alfa
