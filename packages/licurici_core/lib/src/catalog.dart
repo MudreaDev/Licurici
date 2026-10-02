@@ -6,10 +6,11 @@ library;
 import 'development.dart';
 import 'games/games.dart';
 import 'reaction.dart';
+import 'memory.dart';
 import 'sequence.dart';
 
 /// Mecanica de care depinde ruta ecranului.
-enum GameKind { choice, reaction, sequence }
+enum GameKind { choice, reaction, sequence, memory }
 
 /// Un joc din catalog, indiferent de mecanică.
 class CatalogEntry {
@@ -36,6 +37,7 @@ class CatalogEntry {
         GameKind.choice => '/joc/$id',
         GameKind.reaction => '/reactie/$id',
         GameKind.sequence => '/secventa/$id',
+        GameKind.memory => '/perechi',
       };
 
   @override
@@ -91,6 +93,15 @@ List<CatalogEntry> get catalog => [
           emoji: g.emoji,
           description: g.description,
           kind: GameKind.sequence,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [MemoryGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.memory,
           domain: _domainOf(g.id, g.steps),
         ),
     ];

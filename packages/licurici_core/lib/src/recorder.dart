@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'development.dart';
 import 'game.dart';
+import 'memory.dart';
 import 'reaction.dart';
 import 'report.dart';
 import 'sequence.dart';
@@ -113,6 +114,27 @@ class SessionRecorder {
         stimulusId: s.kind.name,
         targetId: s.isGo ? 'atinge' : 'nu-atinge',
         chosenId: tapped ? 'atinge' : 'nu-atinge',
+      ));
+    }
+  }
+
+  /// Un nivel `perechi`: câte o încercare pe mutare (două cărți). Corectă = pereche găsită;
+  /// la greșeală, ținta e prima carte și „alegerea” a doua (confuzii vizuale între imagini).
+  void memoryLevel(MemoryResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final m in result.moves) {
+      final match = result.isMatch(m);
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: match,
+        promptLevel: PromptLevel.p0,
+        latencyMs: m.ms,
+        at: _clock(),
+        seed: level.seed,
+        targetId: level.cards[m.first],
+        chosenId: match ? null : level.cards[m.second],
       ));
     }
   }

@@ -171,12 +171,12 @@ interpretate de specialist.
 |----------|--------|---------|
 | `choice` (alege răspunsul) | ~24 | ✅ |
 | `dragDrop` (trage, sortează, potrivește) | ~9 | ⬜ Sprint 4 |
-| `sequence` (ordonează / repetă) | ~7 | ⬜ Sprint 4 |
-| `reaction` (**nouă**: stimuli în timp — go/no-go, flanker, semafor, reacție) | 5 | ⬜ Sprint 4 |
+| `sequence` (ordonează / repetă) | ~7 | 🟨 `simon` (Felinarele) |
+| `reaction` (**nouă**: stimuli în timp — go/no-go, flanker, semafor, reacție) | 5 | 🟨 `pescarul`, `prinde-licuriciul` |
 | `scene` (**nouă**: căutare / diferențe / atingere în scenă) | 3 | ⬜ S2 |
 | `trace` | 1 | ⬜ |
 | `puzzle`, `maze` (🌀) | 2 | ⬜ S2 |
-| `memoryCards` | 1 | ⬜ |
+| `memoryCards` | 1 | ✅ `perechi` (`licurici_core/lib/src/memory.dart`, ecran `features/games/memory/`) |
 | `freePlay` (AAC, respirație, cauză–efect) | 3 | parțial |
 
 Mecanica `reaction` e cea care aduce jocurile „de funcții executive”, cu KPI-uri de timp de reacție la nivel de milisecunde:

@@ -69,9 +69,7 @@ Future<bool> askParentGate(BuildContext context, {Random? random}) async {
                       child: Center(
                         child: Text(
                           '$o',
-                          style: text.titleLarge!.copyWith(
-                            color: Tokens.ink,
-                          ),
+                          style: text.titleLarge!.copyWith(color: Tokens.ink),
                         ),
                       ),
                     ),
