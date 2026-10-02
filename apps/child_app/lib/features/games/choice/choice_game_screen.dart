@@ -422,11 +422,18 @@ class _RoundView extends ConsumerWidget {
                           // Scara după înălțimea rămasă: ~280 dp = 1×; tabletă până la 1,5×.
                           // FittedBox rămâne plasa de siguranță dacă tot nu încape.
                           builder: (context, box) => VisualScale(
-                            scale: (box.maxHeight / 280).clamp(0.6, 1.5),
+                            scale: (box.maxHeight / 240).clamp(0.75, 1.5),
                             child: Center(
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
-                                child: visuals,
+                                // Lățimea panoului rămâne limita: grupurile de obiecte trec pe
+                                // rândul următor în loc să se micșoreze toate pe un singur rând.
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: box.maxWidth,
+                                  ),
+                                  child: visuals,
+                                ),
                               ),
                             ),
                           ),
@@ -576,6 +583,37 @@ class _ChoiceCard extends ConsumerWidget {
       opacity: faded ? 0.35 : 1,
       duration: motion.d(300),
       child: card,
+    );
+
+    // Răspunsul corect primește o bifă verde care „sare” în colț (semn clar, fără text).
+    card = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        card,
+        Positioned(
+          right: -8,
+          top: -8,
+          child: AnimatedScale(
+            scale: solved ? 1 : 0,
+            duration: motion.d(350),
+            curve: Curves.elasticOut,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Tokens.good,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 3),
+                boxShadow: Tokens.shadow,
+              ),
+              child: Icon(
+                Icons.check_rounded,
+                color: Colors.white,
+                size: compact ? 22 : 30,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
 
     return Juice(
