@@ -172,7 +172,6 @@ class _ColorBlob extends ConsumerWidget {
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(90 * VisualScale.of(context)),
-            boxShadow: Tokens.shadowLg,
           ),
         ).animate().scaleXY(
           begin: motion.movement ? 0.2 : 1,
@@ -186,8 +185,11 @@ class _ColorBlob extends ConsumerWidget {
           .custom(
             duration: 1800.ms,
             curve: Curves.easeInOut,
+            // Pata „respiră” între cerc și pătrat rotunjit (raza scalată ca pata).
             builder: (context, v, child) => ClipRRect(
-              borderRadius: BorderRadius.circular(90 - v * 30),
+              borderRadius: BorderRadius.circular(
+                (90 - v * 30) * VisualScale.of(context),
+              ),
               child: child,
             ),
           );

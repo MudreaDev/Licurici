@@ -59,6 +59,13 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   bool _guide = false;
   Timer? _guideTimer;
 
+  /// Steluța care zboară de la răspunsul corect în bara de progres.
+  final _stackKey = GlobalKey();
+  final _progressKey = GlobalKey();
+  final _cardKeys = List.generate(6, (_) => GlobalKey());
+  ({Offset from, Offset to, int tick})? _flight;
+  int _flights = 0;
+
   /// Mânuța care arată răspunsul (P4).
   bool _hand = false;
   bool _handShown = false;
@@ -170,6 +177,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
               chosenKey: _firstWrongKey,
             ),
           );
+      _launchStar(i);
       setState(() {
         _solved = true;
         _mood = MascotMood.happy;
@@ -208,6 +216,23 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
         _armHand();
       }
     }
+  }
+
+  /// Pornește zborul steluței (centrele, în coordonatele stivei ecranului).
+  void _launchStar(int card) {
+    final motion = MotionPolicy.of(context, ref);
+    if (!motion.movement) return;
+    final stack = _stackKey.currentContext?.findRenderObject() as RenderBox?;
+    Offset? centerOf(GlobalKey key) {
+      final box = key.currentContext?.findRenderObject() as RenderBox?;
+      if (box == null || stack == null || !box.hasSize) return null;
+      return box.localToGlobal(box.size.center(Offset.zero), ancestor: stack);
+    }
+
+    final from = card < _cardKeys.length ? centerOf(_cardKeys[card]) : null;
+    final to = centerOf(_progressKey);
+    if (from == null || to == null) return;
+    _flight = (from: from, to: to, tick: ++_flights);
   }
 
   void _next() {
@@ -261,6 +286,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
               ),
               Expanded(
                 child: Stack(
+                  key: _stackKey,
                   children: [
                     Positioned.fill(
                       child: AnimatedSwitcher(
@@ -325,7 +351,15 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
                           bubble: _finished
                               ? 'Ai terminat! Bravo!'
                               : (_ready ? _bubble : ''),
+                          progressKey: _progressKey,
                         ),
+                      ),
+                    if (_flight case final f? when !_finished)
+                      _FlyingStar(
+                        key: ValueKey('flight-${f.tick}'),
+                        from: f.from,
+                        to: f.to,
+                        onDone: () => setState(() => _flight = null),
                       ),
                   ],
                 ),
@@ -397,26 +431,31 @@ class _RoundView extends ConsumerWidget {
         runSpacing: gap,
         children: [
           for (final (i, c) in round.choices.indexed)
-            _ChoiceCard(
-                  key: ValueKey('choice-$i'),
-                  choice: c,
-                  width: width,
-                  compact: layout.compact,
-                  faded:
-                      state._wrong.contains(i) || (state._solved && !c.correct),
-                  solved: state._solved && c.correct,
-                  guide: state._guide && c.correct,
-                  hand: state._hand && c.correct,
-                  shakeTick: state._lastWrong == i ? state._wrongTick : 0,
-                  onTap: () => state._pick(i),
-                )
-                .animate(delay: motion.d(60 * i))
-                .fadeIn(duration: motion.d(280))
-                .slideX(
-                  begin: motion.movement ? 0.2 : 0,
-                  end: 0,
-                  curve: Curves.easeOutBack,
-                ),
+            KeyedSubtree(
+              key: i < state._cardKeys.length ? state._cardKeys[i] : null,
+              child:
+                  _ChoiceCard(
+                        key: ValueKey('choice-$i'),
+                        choice: c,
+                        width: width,
+                        compact: layout.compact,
+                        faded:
+                            state._wrong.contains(i) ||
+                            (state._solved && !c.correct),
+                        solved: state._solved && c.correct,
+                        guide: state._guide && c.correct,
+                        hand: state._hand && c.correct,
+                        shakeTick: state._lastWrong == i ? state._wrongTick : 0,
+                        onTap: () => state._pick(i),
+                      )
+                      .animate(delay: motion.d(60 * i))
+                      .fadeIn(duration: motion.d(280))
+                      .slideX(
+                        begin: motion.movement ? 0.2 : 0,
+                        end: 0,
+                        curve: Curves.easeOutBack,
+                      ),
+            ),
         ],
       );
     }
@@ -672,7 +711,10 @@ class _MascotCorner extends StatelessWidget {
     required this.mood,
     required this.reaction,
     required this.bubble,
+    this.progressKey,
   });
+
+  final Key? progressKey;
 
   final double size;
   final int total;
@@ -713,7 +755,7 @@ class _MascotCorner extends StatelessWidget {
                   ),
                 ),
               const SizedBox(height: 8),
-              ProgressDots(total: total, index: index),
+              ProgressDots(key: progressKey, total: total, index: index),
             ],
           ),
         ),
@@ -819,4 +861,51 @@ class PointingHand extends ConsumerWidget {
         )
         .scaleXY(begin: 1, end: 0.92, duration: 700.ms);
   }
+}
+
+/// Steluța aurie care zboară în arc de la răspunsul corect până în bara de progres.
+class _FlyingStar extends StatelessWidget {
+  const _FlyingStar({
+    super.key,
+    required this.from,
+    required this.to,
+    required this.onDone,
+  });
+
+  final Offset from;
+  final Offset to;
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+    tween: Tween(begin: 0, end: 1),
+    duration: const Duration(milliseconds: 750),
+    curve: Curves.easeInOutCubic,
+    onEnd: onDone,
+    builder: (context, t, _) {
+      // Arc: punctul de control e deasupra mijlocului drumului.
+      final mid = Offset((from.dx + to.dx) / 2, math.min(from.dy, to.dy) - 120);
+      final p = Offset.lerp(
+        Offset.lerp(from, mid, t)!,
+        Offset.lerp(mid, to, t)!,
+        t,
+      )!;
+      final size = 64 - 34 * t;
+      return Positioned(
+        left: p.dx - size / 2,
+        top: p.dy - size / 2,
+        child: IgnorePointer(
+          child: Transform.rotate(
+            angle: t * math.pi,
+            child: Icon(
+              Icons.star_rounded,
+              size: size,
+              color: const Color(0xFFF2C14E),
+              shadows: const [Shadow(color: Color(0x99F2C14E), blurRadius: 14)],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }
