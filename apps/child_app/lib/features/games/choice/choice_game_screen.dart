@@ -19,6 +19,7 @@ import '../../../shared/motion.dart';
 import '../../../shared/reward_finish.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/top_bar.dart';
+import '../../../shared/sfx.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 import 'visuals.dart';
@@ -136,6 +137,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     final voice = ref.read(voiceProvider);
     _latencyMs ??= _roundClock.elapsedMilliseconds;
     if (choice.correct) {
+      ref.read(sfxProvider).play(Sfx.correct);
       if (_attempts == 0) _firstTry++;
       final round = _round;
       ref

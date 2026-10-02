@@ -71,43 +71,90 @@ Domain? _domainOf(String code) {
   return null;
 }
 
+/// Trecerea între ecrane: o estompare scurtă cu o mică apropiere, fără glisări bruște.
+/// Fără animații (reduce motion) — schimbare instantanee.
+Page<void> _fade(BuildContext context, GoRouterState state, Widget child) {
+  final off = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: off ? Duration.zero : const Duration(milliseconds: 320),
+    reverseTransitionDuration: off
+        ? Duration.zero
+        : const Duration(milliseconds: 200),
+    transitionsBuilder: (context, animation, _, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween(begin: 0.97, end: 1.0).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
 /// Routerul aparține instanței aplicației (nu e global): fiecare ProviderScope are
 /// propria stare de navigare — important în teste și la repornirea aplicației.
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-      GoRoute(path: '/album', builder: (context, state) => const AlbumScreen()),
+      GoRoute(
+        path: '/',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const HomeScreen()),
+      ),
+      GoRoute(
+        path: '/album',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const AlbumScreen()),
+      ),
       GoRoute(
         path: '/arie/:code',
         redirect: (context, state) =>
             _domainOf(state.pathParameters['code']!) == null ? '/' : null,
-        builder: (context, state) =>
-            DomainScreen(domain: _domainOf(state.pathParameters['code']!)!),
+        pageBuilder: (context, state) => _fade(
+          context,
+          state,
+          DomainScreen(domain: _domainOf(state.pathParameters['code']!)!),
+        ),
       ),
       GoRoute(
         path: '/secventa/simon',
-        builder: (context, state) => const SimonScreen(),
+        pageBuilder: (context, state) =>
+            _fade(context, state, const SimonScreen()),
       ),
       GoRoute(
         path: '/reactie/:id',
         redirect: (context, state) =>
             reactionGameById(state.pathParameters['id']!) == null ? '/' : null,
-        builder: (context, state) => ReactionGameScreen(
-          key: ValueKey(state.pathParameters['id']),
-          game: reactionGameById(state.pathParameters['id']!)!,
+        pageBuilder: (context, state) => _fade(
+          context,
+          state,
+          ReactionGameScreen(
+            key: ValueKey(state.pathParameters['id']),
+            game: reactionGameById(state.pathParameters['id']!)!,
+          ),
         ),
       ),
       GoRoute(
         path: '/parinte',
-        builder: (context, state) => const ParentScreen(),
+        pageBuilder: (context, state) =>
+            _fade(context, state, const ParentScreen()),
       ),
       GoRoute(
         path: '/joc/:id',
         redirect: (context, state) =>
             gameById(state.pathParameters['id']!) == null ? '/' : null,
-        builder: (context, state) =>
-            ChoiceGameScreen(game: gameById(state.pathParameters['id']!)!),
+        pageBuilder: (context, state) => _fade(
+          context,
+          state,
+          ChoiceGameScreen(game: gameById(state.pathParameters['id']!)!),
+        ),
       ),
     ],
   );

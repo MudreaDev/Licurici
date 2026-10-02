@@ -17,6 +17,7 @@ import '../../../shared/mascot.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/top_bar.dart';
+import '../../../shared/sfx.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
@@ -90,6 +91,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
 
   void _lightNext() {
     setState(() => _lit = _level.sequence[_position]);
+    ref.read(sfxProvider).note(_lit!);
     _after(_level.axes.onMs, () {
       setState(() => _lit = null);
       _after(_level.axes.gapMs, () {
@@ -114,6 +116,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
       _lit = index;
       _taps.add(index);
     });
+    ref.read(sfxProvider).note(index);
     final result = SequenceResult(_level, List.of(_taps));
     // One onset per 450 ms at most, including repeated taps on the same pad.
     _after(250, () {

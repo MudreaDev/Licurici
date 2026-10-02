@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +8,7 @@ import '../app/layout.dart';
 import 'illustration.dart';
 import 'mascot.dart';
 import 'motion.dart';
+import 'sfx.dart';
 import 'ui/candy.dart';
 
 /// O acțiune de la finalul unui joc.
@@ -87,6 +90,7 @@ class RewardFinish extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          _FinishSounds(stars: stars, sticker: sticker != null),
           Text(
             title,
             style: (compact ? text.headlineMedium : text.displaySmall)!
@@ -179,6 +183,44 @@ class RewardFinish extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Sunetele finalului, sincronizate cu animațiile: câte un clinchet pe stea, apoi abțibildul.
+class _FinishSounds extends ConsumerStatefulWidget {
+  const _FinishSounds({required this.stars, required this.sticker});
+
+  final int stars;
+  final bool sticker;
+
+  @override
+  ConsumerState<_FinishSounds> createState() => _FinishSoundsState();
+}
+
+class _FinishSoundsState extends ConsumerState<_FinishSounds> {
+  final _timers = <Timer>[];
+
+  @override
+  void initState() {
+    super.initState();
+    final sfx = ref.read(sfxProvider);
+    void at(int ms, Sfx s) =>
+        _timers.add(Timer(Duration(milliseconds: ms), () => sfx.play(s)));
+    for (var i = 0; i < widget.stars; i++) {
+      at(450 + 320 * i, Sfx.star);
+    }
+    if (widget.sticker) at(1450, Sfx.sticker);
+  }
+
+  @override
+  void dispose() {
+    for (final t in _timers) {
+      t.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 /// Abțibildul nou: „lipit” ușor înclinat, cu o etichetă mică dedesubt.

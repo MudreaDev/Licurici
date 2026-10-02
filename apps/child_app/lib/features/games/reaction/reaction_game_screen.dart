@@ -17,6 +17,7 @@ import '../../../shared/mascot.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/top_bar.dart';
+import '../../../shared/sfx.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
@@ -201,7 +202,10 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     _reactionClock.stop();
     setState(() {
       _tapped = true;
-      if (_stimulus.isGo) _burst++;
+      if (_stimulus.isGo) {
+        _burst++;
+        ref.read(sfxProvider).play(Sfx.correct);
+      }
     });
     if (_motion.feedback) _effect.forward(from: 0);
   }

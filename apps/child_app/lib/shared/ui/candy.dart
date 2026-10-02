@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/layout.dart';
 import '../../app/theme.dart';
 import '../motion.dart';
+import '../sfx.dart';
 
 /// Kitul vizual al aplicației copilului: suprafețe „de jucărie” cu o buză 3D jos, lumină
 /// de sus și colțuri mari (README §14). Copilul vede imediat ce se poate apăsa: tot ce are buză
@@ -70,8 +71,11 @@ class CandyPressable extends ConsumerStatefulWidget {
     this.borderWidth = 0,
     this.width,
     this.height,
+    this.sound = true,
   });
 
+  /// „Pop” scurt la atingere (tăcut în modul calm).
+  final bool sound;
   final Color color;
   final Color? lipColor;
   final Widget child;
@@ -113,7 +117,12 @@ class _CandyPressableState extends ConsumerState<CandyPressable> {
           onTapDown: enabled ? (_) => _set(true) : null,
           onTapCancel: () => _set(false),
           onTapUp: (_) => _set(false),
-          onTap: widget.onTap,
+          onTap: widget.onTap == null
+              ? null
+              : () {
+                  if (widget.sound) ref.read(sfxProvider).play(Sfx.tap);
+                  widget.onTap!();
+                },
           child: Padding(
             // Rezervăm mereu spațiul buzei, ca apăsarea să nu miște vecinii.
             padding: EdgeInsets.only(bottom: widget.lip),
