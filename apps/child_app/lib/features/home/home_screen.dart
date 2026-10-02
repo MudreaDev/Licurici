@@ -172,6 +172,14 @@ class _HomeBar extends ConsumerWidget {
             const SizedBox(width: 8),
           ],
           BarButton(
+            key: const ValueKey('album'),
+            icon: Icons.collections_bookmark_rounded,
+            color: const Color(0xFFE79B86),
+            label: 'Albumul meu',
+            onTap: () => context.go('/album'),
+          ),
+          const SizedBox(width: 10),
+          BarButton(
             key: const ValueKey('parent-corner'),
             icon: Icons.lock_rounded,
             color: const Color(0xFF8A9BB0),

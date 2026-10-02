@@ -6,7 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:game_content/game_content.dart';
+import 'package:go_router/go_router.dart';
+import 'package:licurici/app/theme.dart';
+import 'package:licurici/features/album/album_screen.dart';
+import 'package:licurici/features/settings/settings.dart';
 import 'package:licurici/main.dart';
+import 'package:licurici/shared/reward_finish.dart';
 import 'package:licurici/shared/voice.dart';
 
 /// Dimensiuni reale în LANDSCAPE (dp). Orice depășire de layout (RenderFlex overflow)
@@ -146,6 +151,86 @@ void main() {
         await tester.pump(const Duration(seconds: 10));
       },
     );
+
+    // Finalul comun (stele + abțibild + butoane) și albumul trebuie să încapă oriunde.
+    testWidgets('final și album: $name', (tester) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      Future<void> show(Widget child) => tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            voiceProvider.overrideWithValue(const SilentSpeaker()),
+            settingsProvider.overrideWith(
+              () => SettingsNotifier(
+                const AppSettings(stickers: ['bunny', 'owl', 'owl', 'fox']),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: buildTheme(calm: false),
+            home: Scaffold(body: child),
+          ),
+        ),
+      );
+      await show(
+        RewardFinish(
+          stars: 2,
+          sticker: 'owl',
+          actions: [
+            FinishAction(
+              'Încă o dată',
+              Icons.replay_rounded,
+              Tokens.primary,
+              () {},
+            ),
+            FinishAction(
+              'Mai departe',
+              Icons.arrow_forward_rounded,
+              Tokens.good,
+              () {},
+            ),
+          ],
+        ),
+      );
+      await settle(tester, 12);
+      expect(find.text('Nou!'), findsOneWidget);
+      if (shots) {
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile('shots/$name-4-final.png'),
+        );
+      }
+      final router = GoRouter(
+        routes: [GoRoute(path: '/', builder: (_, _) => const AlbumScreen())],
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            voiceProvider.overrideWithValue(const SilentSpeaker()),
+            settingsProvider.overrideWith(
+              () => SettingsNotifier(
+                const AppSettings(stickers: ['bunny', 'owl', 'owl', 'fox']),
+              ),
+            ),
+          ],
+          child: MaterialApp.router(
+            theme: buildTheme(calm: false),
+            routerConfig: router,
+          ),
+        ),
+      );
+      await settle(tester, 8);
+      expect(find.text('×2'), findsOneWidget);
+      if (shots) {
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile('shots/$name-5-album.png'),
+        );
+      }
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump(const Duration(seconds: 10));
+    });
   }
 
   // Nativ, aplicația e blocată în landscape; pe web un telefon poate fi ținut în portret.

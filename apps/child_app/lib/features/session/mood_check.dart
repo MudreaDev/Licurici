@@ -50,6 +50,15 @@ Color _moodColor(Mood m) => switch (m) {
   Mood.suparat => Tokens.peach,
 };
 
+/// Fața copilului pictat pentru fiecare dispoziție (aceeași ca în jocurile cu emoții).
+String _moodFace(Mood m) => switch (m) {
+  Mood.bucuros => 'fericit',
+  Mood.linistit => 'calm',
+  Mood.obosit => 'obosit',
+  Mood.trist => 'trist',
+  Mood.suparat => 'suparat',
+};
+
 class _MoodDialog extends ConsumerWidget {
   const _MoodDialog();
 
@@ -125,7 +134,7 @@ class _MoodDialog extends ConsumerWidget {
                                 SizedBox.square(
                                   dimension: face,
                                   child: Illustration(
-                                    illustration('moods/${m.name}'),
+                                    illustration('faces/${_moodFace(m)}'),
                                     fallbackEmoji: m.emoji,
                                     semanticLabel: m.label,
                                   ),

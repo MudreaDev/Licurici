@@ -28,6 +28,7 @@ class RewardFinish extends ConsumerWidget {
     required this.actions,
     this.title = 'Ai terminat! Bravo!',
     this.subtitle,
+    this.sticker,
   });
 
   /// 1..3
@@ -35,6 +36,9 @@ class RewardFinish extends ConsumerWidget {
   final String title;
   final String? subtitle;
   final List<FinishAction> actions;
+
+  /// Abțibildul câștigat (id din `stickerIds`): se lipește lângă stele, după ele.
+  final String? sticker;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,7 +98,29 @@ class RewardFinish extends ConsumerWidget {
             Text(subtitle!, style: text.bodyLarge, textAlign: TextAlign.center),
           ],
           SizedBox(height: compact ? 8 : 18),
-          starsRow,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              starsRow,
+              if (sticker case final id?) ...[
+                SizedBox(width: compact ? 14 : 28),
+                _NewSticker(id: id, size: starSize * 1.2).animateIf(
+                  motion.feedback,
+                  (w) => w
+                      .animate(delay: motion.d(1350))
+                      .fadeIn(duration: motion.d(200))
+                      .scaleXY(
+                        begin: motion.movement ? 1.8 : 1,
+                        end: 1,
+                        duration: motion.d(450),
+                        curve: Curves.easeOutBack,
+                      )
+                      .rotate(begin: motion.movement ? 0.2 : 0, end: -0.05),
+                ),
+              ],
+            ],
+          ),
           SizedBox(height: compact ? 12 : 26),
           Wrap(
             spacing: 14,
@@ -114,7 +140,7 @@ class RewardFinish extends ConsumerWidget {
           ).animateIf(
             motion.feedback,
             (w) => w
-                .animate(delay: motion.d(1300))
+                .animate(delay: motion.d(sticker == null ? 1300 : 1800))
                 .fadeIn(duration: motion.d(300)),
           ),
         ],
@@ -153,6 +179,42 @@ class RewardFinish extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Abțibildul nou: „lipit” ușor înclinat, cu o etichetă mică dedesubt.
+class _NewSticker extends StatelessWidget {
+  const _NewSticker({required this.id, required this.size});
+
+  final String id;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      SizedBox.square(
+        dimension: size,
+        child: Illustration(
+          illustration('rewards/sticker_$id'),
+          fallbackEmoji: '🎁',
+          semanticLabel: 'Abțibild nou',
+        ),
+      ),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF0B9A0),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Text(
+          'Nou!',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium!.copyWith(color: Colors.white),
+        ),
+      ),
+    ],
+  );
 }
 
 /// Steaua de recompensă: ilustrația pictată (sau ⭐), ștearsă dacă nu e câștigată.

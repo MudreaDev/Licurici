@@ -189,7 +189,10 @@ void main() {
       expect(find.text(SessionReport.from(demo).parentSummary), findsOneWidget);
       expect(find.text('Detalii pentru specialist'), findsOneWidget);
       // Clasa a devenit „nivel de pornire”, doar aici.
-      expect(find.byKey(const ValueKey('start-level-gradinita')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('start-level-gradinita')),
+        findsOneWidget,
+      );
       await closeApp(tester);
     },
   );

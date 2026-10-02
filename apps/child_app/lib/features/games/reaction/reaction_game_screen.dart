@@ -18,6 +18,7 @@ import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
+import '../../settings/settings.dart';
 
 class ReactionProgress extends Notifier<int> {
   @override
@@ -60,6 +61,9 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
   int _index = 0, _offTargetTaps = 0, _generation = 0, _burst = 0;
   bool _ready = false, _paused = false, _tapped = false, _painted = false;
   ReactionSummary? _summary;
+
+  /// Abțibildul primit la final.
+  String? _sticker;
   MotionPolicy _motion = const MotionPolicy(MotionLevel.off);
   ReactionStimulus get _stimulus => _level.stimuli[_index];
 
@@ -174,6 +178,7 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
           offTargetTaps: _offTargetTaps,
         );
         _phase = _Phase.finished;
+        _sticker = ref.read(settingsProvider.notifier).awardSticker();
         _burst++;
       });
       final session = ref.read(sessionProvider.notifier);
@@ -284,6 +289,7 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
                     : _phase == _Phase.finished
                     ? ReactionFinish(
                         summary: _summary!,
+                        sticker: _sticker,
                         onAgain: () => setState(_start),
                         onNext: () {
                           ref
@@ -458,6 +464,20 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
+                        // Un cerc de apă se lărgește unde apare peștele (o singură dată).
+                        if (widget.game.id == 'pescarul' && motion.feedback)
+                          Positioned.fill(
+                            child: IgnorePointer(
+                              child: TweenAnimationBuilder<double>(
+                                key: ValueKey('ripple-${s.index}'),
+                                tween: Tween(begin: 0, end: 1),
+                                duration: const Duration(milliseconds: 900),
+                                curve: Curves.easeOut,
+                                builder: (context, t, _) =>
+                                    CustomPaint(painter: _RipplePainter(t)),
+                              ),
+                            ),
+                          ),
                         if (!gone)
                           Positioned.fill(
                             child: Semantics(
@@ -527,8 +547,10 @@ class ReactionFinish extends ConsumerStatefulWidget {
     required this.onAgain,
     required this.onNext,
     required this.burst,
+    this.sticker,
   });
   final ReactionSummary summary;
+  final String? sticker;
   final VoidCallback onAgain, onNext;
   final int burst;
 
@@ -554,6 +576,7 @@ class _ReactionFinishState extends ConsumerState<ReactionFinish> {
       children: [
         RewardFinish(
           stars: widget.summary.stars,
+          sticker: widget.sticker,
           actions: [
             FinishAction(
               'Încă o dată',
@@ -581,6 +604,33 @@ class _ReactionFinishState extends ConsumerState<ReactionFinish> {
       ],
     );
   }
+}
+
+/// Cercuri pe apă care se lărgesc și se sting.
+class _RipplePainter extends CustomPainter {
+  _RipplePainter(this.t);
+
+  final double t;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero);
+    for (final (i, delay) in const [0.0, 0.25].indexed) {
+      final p = ((t - delay) / (1 - delay)).clamp(0.0, 1.0);
+      if (p <= 0) continue;
+      final r = size.width * (0.35 + 0.5 * p);
+      canvas.drawOval(
+        Rect.fromCenter(center: c, width: r * 2, height: r * 0.9),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3.0 - i
+          ..color = Color.fromRGBO(255, 255, 255, 0.6 * (1 - p)),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_RipplePainter old) => old.t != t;
 }
 
 /// Halou cald în spatele licuriciului (lumina lui).

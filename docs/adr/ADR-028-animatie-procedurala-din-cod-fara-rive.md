@@ -45,3 +45,10 @@ Platforma are ~50 de jocuri (catalogul pe arii), cu niveluri **generate algoritm
 - Personajele au mișcări mai simple decât o animație cu oase lucrată manual. Compensăm cu expresii desenate, easing bun, squash & stretch și sunet.
 - De construit: `CutoutRig` + `rig.json`, biblioteca de efecte pe roluri, mișcări procedurale pentru Flame, teste de widget cu `MotionPolicy.off` (nicio animație nu rulează în modul calm).
 - Pachetul `rive` nu se adaugă în proiect.
+
+## Actualizare 03.10.2026 — fundaluri pictate în loc de shadere
+- Scenele generate cu shadere GLSL (`meadow.frag`, `water.frag`) au fost **scoase**: pe web (CanvasKit) ieșeau negre, iar calitatea „pictată” a ilustrațiilor nu se poate atinge cu zgomot fractal.
+- **Fundalurile sunt acum ilustrații pictate pe straturi** (`art/illustrations/scenes/`: cer, dealuri, iarbă în față; iaz; seară; amurg), animate tot **din cod** (`shared/fx/scene_background.dart`): norii alunecă, dealurile și iarba au paralaxă la derulare, iarba se leagănă, apa are sclipiri, cerul de seară are stele care sclipesc lent (< 0,5 Hz). Seed-ul scenei (`SceneSpec`) alege faza mișcărilor și numărul de licurici; paleta lui rămâne degradeul de rezervă.
+- Totul trece în continuare prin `MotionPolicy` (modul calm = scenă statică, fără particule).
+- Stimulii din `licurici_core` rămân identificați prin emoji; aplicația îi desenează cu ilustrația pictată când există (`shared/stimulus_art.dart`, verificat în manifestul de resurse), altfel cu OpenMoji. Logica jocurilor nu depinde de grafică.
+

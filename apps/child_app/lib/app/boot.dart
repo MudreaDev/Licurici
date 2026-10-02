@@ -12,6 +12,7 @@ import '../shared/fx/scene_background.dart';
 import '../shared/mascot.dart';
 import '../shared/stimulus_art.dart';
 import '../shared/motion.dart';
+import '../shared/ui/candy.dart';
 import '../shared/voice.dart';
 import 'layout.dart';
 import 'theme.dart';
@@ -135,19 +136,36 @@ class BootScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
-    return ColoredBox(
-      color: Tokens.bg,
+    // Amurgul — ora licuricilor; aceleași culori ca scena de seară din jocuri.
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF46507E), Color(0xFF9C93C6), Color(0xFFF2C6A8)],
+          stops: [0, 0.6, 1],
+        ),
+      ),
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Mascot(size: layout.compact ? 110 : 150, mood: MascotMood.idle),
-            SizedBox(height: layout.compact ? 8 : 16),
-            Text('Licurici', style: Theme.of(context).textTheme.displaySmall),
+            Mascot(size: layout.compact ? 120 : 190, mood: MascotMood.wave),
+            SizedBox(height: layout.compact ? 6 : 12),
+            OutlinedTitle(
+              'Licurici',
+              color: const Color(0xFF3D5A80),
+              stroke: 10,
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                fontSize: layout.compact ? 40 : 56,
+              ),
+            ),
             const SizedBox(height: 6),
             Text(
                   'Se pregătesc jocurile…',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge!.copyWith(color: Colors.white),
                 )
                 .animate(
                   onPlay: (c) =>
@@ -181,9 +199,9 @@ class _GlowBar extends ConsumerWidget {
         height: 18,
         padding: const EdgeInsets.all(3),
         decoration: BoxDecoration(
-          color: Tokens.surface,
+          color: const Color(0x55FFFFFF),
           borderRadius: BorderRadius.circular(9),
-          boxShadow: Tokens.shadow,
+          border: Border.all(color: const Color(0x88FFFFFF), width: 1.5),
         ),
         alignment: Alignment.centerLeft,
         child: TweenAnimationBuilder<double>(

@@ -42,6 +42,9 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   bool _solved = false;
   bool _finished = false;
 
+  /// Abțibildul primit la final.
+  String? _sticker;
+
   /// Ilustrațiile lecției sunt pre-încărcate (vezi [_start]).
   bool _ready = false;
   final Set<int> _wrong = {};
@@ -184,6 +187,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     setState(() {
       if (_index + 1 >= _lesson.rounds.length) {
         _finished = true;
+        _sticker = ref.read(settingsProvider.notifier).awardSticker();
         ref.read(sessionProvider.notifier).checkpoint();
         _mood = MascotMood.happy;
         _reaction++;
@@ -252,6 +256,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
                             ? RewardFinish(
                                 key: const ValueKey('finish'),
                                 stars: _stars,
+                                sticker: _sticker,
                                 actions: [
                                   FinishAction(
                                     'Încă o dată',

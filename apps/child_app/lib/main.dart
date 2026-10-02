@@ -14,6 +14,7 @@ import 'data/session.dart';
 import 'features/domain/domain_screen.dart';
 import 'features/games/choice/choice_game_screen.dart';
 import 'features/games/reaction/reaction_game_screen.dart';
+import 'features/album/album_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/parent/parent_screen.dart';
 import 'features/games/sequence/simon_screen.dart';
@@ -76,6 +77,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     routes: [
       GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+      GoRoute(path: '/album', builder: (context, state) => const AlbumScreen()),
       GoRoute(
         path: '/arie/:code',
         redirect: (context, state) =>

@@ -509,6 +509,7 @@ erDiagram
 ```
 
 - `CHILD` **nu** are nume real, dată de naștere completă, fotografie, școală sau diagnostic (vezi §13).
+- Pe tabletă, setările locale (`AppSettings` în Drift, cheia `settings` din `Meta`) țin și **abțibildurile câștigate** (`stickers`: lista id-urilor, ex. `bunny`). Sunt doar recompensa copilului — nu intră în sesiuni, rapoarte sau sincronizare.
 - `GAME_EVENT.payload` = ce s-a întrebat, ce a ales, câte încercări, timp de răspuns — **fără text liber**.
 - `game_events` partiționat lunar; retenție 24 luni (job de curățare).
 
@@ -578,6 +579,7 @@ Puncte-cheie din Legea 195/2024 relevante pentru noi:
 | Consimțăminte (scop, versiune politică, dată, hash IP) | Părinte | Dovada consimțământului | Obligație legală | Durata contului + 3 ani |
 | Poreclă, avatar, anul nașterii, clasa | Copil | Adaptarea conținutului | Consimțământ parental | Cât există profilul |
 | Setări senzoriale, volum, modul calm | Copil | Personalizare | Consimțământ parental | Cât există profilul |
+| Abțibildurile câștigate (album) | Copil | Recompensă în joc | Consimțământ parental | Doar pe dispozitiv, nu se sincronizează; cât există profilul local |
 | Evenimente de joc, progres | Copil | Progres, dificultate adaptivă, raport pentru părinte | Consimțământ parental | 24 luni rulant |
 | Token dispozitiv FCM | Părinte | Notificări | Consimțământ (opțional) | Până la dezactivare |
 | Loguri tehnice (fără PII, IP trunchiat) | — | Securitate | Interes legitim | 30 zile |
@@ -637,7 +639,9 @@ culori vesele dar calme), **fără a copia** grafica, numele sau brandul lor —
 - **Teme:** Normal · Calm (saturație redusă, fără animații de fundal) · Contrast ridicat · Întunecat.
 - **Animații:** implicite (AnimatedScale, Hero), 200–400 ms, curbe `easeOutBack` blânde; totul oprit la `reduceMotion`.
 - **Accesibilitate:** `Semantics` pe fiecare țintă, contrast AA, ținte ≥ 64 dp, suport TalkBack/VoiceOver în zona părintelui, niciodată doar culoarea ca informație (icon + text + voce).
-- **Ilustrații:** OpenMoji (CC BY-SA 4.0, atribuire în „Despre”) + scene desenate în cod; mascota Licurici = decupaj pe straturi animat din cod.
+- **Ilustrații:** pictate (generate cu Codex, același stil pastel) pentru mascotă, arii, jocuri, fundaluri, stimuli, fețe de emoții și recompense; OpenMoji (CC BY-SA 4.0, atribuire în „Despre”) rămâne rezerva pentru stimulii fără ilustrație. Mascota Licurici = decupaj pe straturi animat din cod.
+- **Kitul vizual „candy”** (`apps/child_app/lib/shared/ui/candy.dart`): tot ce se apasă are o buză 3D și „coboară” la atingere (`CandyPressable`, `CandyButton`, `CandyIconButton`); panouri crem (`CandyPanel`), titluri cu contur alb peste scene (`OutlinedTitle`), baloane de vorbire (`SpeechBubble`). Butoanele din bară au câte o culoare cu sens fix (acasă albastru, vocea galben, calm lavandă, album piersică, părinți gri).
+- **Recompense:** 1–3 stele pictate + **un abțibild** la fiecare joc terminat (`shared/reward_finish.dart`, finalul comun al tuturor jocurilor); abțibildurile se adună în **„Albumul meu”** (`/album`, 12 animale; locurile goale arată umbra abțibildului). Fără pierderi, fără „nivel ratat”.
 - **Responsiv:** **landscape** pe telefon (≥ 640×360) și tabletă; două panouri (stimul | variante) când lățimea ≥ 1,2 × înălțimea; stimulii se scalează după înălțime (0,6×–1,5×). Verificat automat de `test/layout_test.dart` la 4 dimensiuni (ADR-023).
 
 ### 14.1 Pipeline-ul de grafică și animație (ADR-024 + ADR-028)
@@ -655,7 +659,8 @@ ChatGPT (ilustrații, stil fix, personaj pe fundal verde uniform + foaie de expr
 - **Personaje**: decupaje pe straturi + `CutoutRig` (stări în Dart), expresiile = cadre desenate cu tranziție. Rive/Spine doar dacă apare un animator (ADR-028).
 - **Sărbătorile** (baloane, stele) sunt mai blânde decât în AutiSpark: fără fundal întunecat, fără sute de particule. Intensitatea vine din `MotionPolicy`.
 - **Ce face fiecare:** ilustrațiile le generează **Codex** (generare de imagini, același model ca ChatGPT) după identitatea fixată a lui Licurici (`assets-src/licurici/ref_sheet.jpg`); Claude scrie logica, verifică și integrează; animația e din cod. Claude nu generează ilustrații pictate.
-- Ilustrațiile stau în `packages/game_content/art/illustrations/` (`mascot/`, `domains/`, `games/`, `scenes/`, WebP); lista și prompturile pentru regenerare — în `README.md` din acel folder.
+- Ilustrațiile stau în `packages/game_content/art/illustrations/` (`mascot/`, `domains/`, `games/`, `scenes/`, `sprites/`, `faces/`, `objects/`, `rewards/`, WebP); lista și prompturile pentru regenerare — în `README*.md` din acel folder (câte un fișier per lot de generare). Conversia PNG → WebP (doar ce s-a schimbat): `python tools/art/convert_codex.py`.
+- **Fundalurile** sunt ilustrații pictate pe straturi (cer / dealuri / iarbă în față; iaz; seară; amurg), animate din cod: nori care alunecă, paralaxă la derulare, iarbă care se leagănă, sclipiri pe apă, stele (ADR-028, actualizarea din 03.10). Shaderele au fost scoase.
 - **Ecranul principal e pe arii de dezvoltare** (`catalogByDomain()` din `licurici_core/lib/src/catalog.dart`, ADR-026): un card ilustrat pe arie → ecranul ariei (`/arie/:code`) cu jocurile ei. Clasa nu mai apare pe ecranul copilului; rămâne doar ca „nivel de pornire” în Colțul părintelui.
 
 ---

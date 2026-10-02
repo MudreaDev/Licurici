@@ -18,6 +18,7 @@ import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
+import '../../settings/settings.dart';
 
 enum _Phase { introduction, watch, turn, retry, success, moving, finished }
 
@@ -42,6 +43,9 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
   late int _nextSessionLevel;
   Timer? _timer;
   VoidCallback? _pending;
+
+  /// Abțibildul primit la final.
+  String? _sticker;
   final _taps = <int>[];
   _Phase _phase = _Phase.introduction;
   int _round = 0, _wins = 0, _attempt = 0, _position = 0, _burst = 0;
@@ -152,6 +156,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
         if (_round == 5) {
           _nextSessionLevel = next;
           _phase = _Phase.finished;
+          _sticker = ref.read(settingsProvider.notifier).awardSticker();
         } else {
           _level = widget.game.generate(next);
           _attempt = 0;
@@ -229,6 +234,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
                       else if (_phase == _Phase.finished)
                         RewardFinish(
                           stars: stars,
+                          sticker: _sticker,
                           actions: [
                             FinishAction(
                               'Încă o dată',
