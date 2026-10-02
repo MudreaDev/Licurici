@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../app/layout.dart';
 import '../app/theme.dart';
@@ -31,11 +32,26 @@ class PauseView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              CandyButton(
-                label: label,
-                icon: Icons.play_arrow_rounded,
-                color: Tokens.good,
-                onTap: onResume,
+              Wrap(
+                spacing: 12,
+                runSpacing: 10,
+                alignment: WrapAlignment.center,
+                children: [
+                  CandyButton(
+                    label: label,
+                    icon: Icons.play_arrow_rounded,
+                    color: Tokens.good,
+                    onTap: onResume,
+                  ),
+                  // Autoreglare la îndemână: din pauză, un minut de respirație (FEX6).
+                  CandyButton(
+                    key: const ValueKey('pause-breathe'),
+                    label: 'Respiră',
+                    icon: Icons.spa_rounded,
+                    color: Tokens.lavender,
+                    onTap: () => context.go('/respira'),
+                  ),
+                ],
               ),
             ],
           ),
