@@ -111,8 +111,8 @@ Codex se rulează din `%LOCALAPPDATA%\OpenAI\Codex\bin\<versiune>\codex.exe exec
 6. ⬜ `SessionPlanner` (încălzire, 70/30, menținere), orar vizual, pauză; ecranul „Drumul de azi”.
 
 **Ce trebuie să facă utilizatorul (nu se poate automatiza):**
-- ⬜ Windows **Developer Mode** pornit (necesar pentru build-urile Flutter cu plugin-uri: APK, Windows).
-- ⬜ `flutter doctor --android-licenses` (acceptarea licențelor Android SDK). Apoi: `flutter build apk --release --split-per-abi` → `app-arm64-v8a-release.apk`.
+- ✅ ~~Windows Developer Mode~~ — nu a fost necesar pentru APK (03.10).
+- ✅ Licențele Android SDK acceptate; `flutter build apk --release --split-per-abi` merge (03.10) → `apps/child_app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` (~42 MB). ⬜ De testat pe o tabletă reală (sau emulator).
 - ⬜ **Docker Desktop** instalat → `docker compose -f infra/docker-compose.yml up -d --build`.
 - ⬜ Ilustrațiile cu ChatGPT (după ghidul de ilustrații), gândite pentru decupare pe straturi. Animațiile le face codul (ADR-028).
 - ⬜ Opțional: conectorul **Figma** trebuie autorizat din setările conectorilor claude.ai ca să poată fi folosit.
