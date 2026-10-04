@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'development.dart';
 import 'game.dart';
+import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
 import 'memory.dart';
@@ -194,6 +195,30 @@ class SessionRecorder {
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `hraneste-pestii`: câte o încercare pe pește hrănit. Corectă = din prima, la
+  /// peștele flămând; încercările = trageri ratate + 1; dificultatea = viteza peștilor.
+  void feedLevel(FeedResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final f in result.feeds) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: f.clean,
+        promptLevel: PromptLevel.p0,
+        attempts: f.misses + f.wrongFish + 1,
+        latencyMs: f.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: 'precizie-${(f.precision * 100).round()}',
+        difficulty: level.axes.speed,
+        targetId: f.wrongFish > 0 ? 'pestele-flamand' : null,
+        chosenId: f.wrongFish > 0 ? 'alt-peste' : null,
+        offTargetTaps: f.misses,
       ));
     }
   }
