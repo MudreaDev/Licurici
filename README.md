@@ -63,7 +63,16 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 04.10.2026.** **Sesiunea a șasea — aspect profesionist pentru copil (Claude cod + Codex doar imagini):**
+**Ultima actualizare: 05.10.2026.** **Sesiunea a șaptea — jocuri noi pe ariile goale (Claude; Codex doar imagini):**
+- ✅ **Prinde licuriciul**: licuricii apar de ~2× mai des și **zboară** de la primul nivel (bucle, aripi, halou care pulsează; dacă nu e prins, zboară în sus și se stinge). Axe noi în `ReactionAxes`: `driftRange`, `flies`, `firstGapMs`; `ReactionStimulus.driftY`.
+- ✅ **Potrivește** (POT1–2), **Arată-mi** (LRC1–2, „Arată mingea”, doar cuvinte cunoscute la început, apoi distractori din aceeași grupă), **Corpul meu** (LRC3), **Intrusul** (POT6) — `licurici_core/lib/src/games/vocabular.dart` (banca `objectWords`, 51 de obiecte pictate cu nume articulat și grupă).
+- ✅ Ecranul `choice`: variantele care sunt doar imagine au imaginea cât încape (mult mai mare); rundele fără stimul (Intrusul) nu mai au panou gol. Test nou: fiecare joc `choice` pe telefonul mic și pe tabletă (`test/choice_games_test.dart`).
+- ✅ **Trasează** (MOT1–3, mecanică nouă): albina pe drum până la floare; drumuri generate (linie → diagonală → arc → val → zig-zag → buclă), drumul se îngustează, ghidajul (puncte, săgeată) dispare; `TraceTracker` (pur, testat): personajul înaintează doar cât degetul e pe drum, ieșirile se numără, KPI abaterea medie. `lib/src/trace.dart`, `features/games/trace/`.
+- ✅ **Pune în ordine** (mecanică nouă): **Pașii rutinei** (AUT1–2: mâini, îmbrăcat, culcare, masă, afară) și **Ce urmează?** (COG6: oul → puiul, sămânța → floarea, omul de zăpadă…); 2 pași („întâi … apoi …”) → 5; după două greșeli poza bună pulsează (P3). `lib/src/ordering.dart`, `features/games/order/`.
+- ✅ **Fă ca Licurici** (IMI1–3, mecanică nouă): un licurici zboară la obiect și îl face să sară sau îl duce în coș; copilul repetă; după două greșeli modelul se reia (P4). `lib/src/imitation.dart`, `features/games/imitation/`.
+- Ariile **IMI, AUT, MOT** au acum jocuri. Vocea generată local cu edge-tts (100%). OpenMoji lipsă se iau din `cdn.jsdelivr.net/npm/openmoji@15.1.0/color/svg/`.
+
+**Sesiunea a șasea — aspect profesionist pentru copil (Claude cod + Codex doar imagini):**
 - ✅ **Kitul vizual „candy”** (`apps/child_app/lib/shared/ui/candy.dart`): butoane/carduri cu buză 3D care „coboară” la atingere, panouri crem, titluri cu contur alb, baloane de vorbire; bara de sus cu butoane rotunde colorate (sens fix pe culoare). Folosit pe toate ecranele copilului.
 - ✅ **Fundaluri pictate pe straturi**, animate din cod (`shared/fx/scene_background.dart`): pajiște (cer + dealuri + iarbă, paralaxă la derulare, nori, iarbă care se leagănă), iaz (sclipiri), seară (stele), amurg. Shaderele au fost scoase (pe web ieșeau negre) — ADR-028, actualizarea din 03.10.
 - ✅ **Stimuli pictați** (`shared/stimulus_art.dart`): emoji → ilustrație dacă există în manifestul de resurse, altfel OpenMoji. Gata: peștii/caracatița/crabul/licuriciul (reacție), felinarele (6 culori), **fețele de emoții** (același copil, 8 emoții — și în „Cum te simți?”), măr verde/roșu. Restul obiectelor (60) — în generare.
