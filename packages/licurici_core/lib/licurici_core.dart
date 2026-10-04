@@ -12,6 +12,7 @@ export 'src/catalog.dart';
 export 'src/scene.dart';
 export 'src/trial.dart';
 export 'src/sequence.dart';
+export 'src/imitation.dart';
 export 'src/memory.dart';
 export 'src/ordering.dart';
 export 'src/sorting.dart';

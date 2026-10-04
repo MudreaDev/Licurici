@@ -6,6 +6,7 @@ library;
 import 'development.dart';
 import 'games/games.dart';
 import 'reaction.dart';
+import 'imitation.dart';
 import 'memory.dart';
 import 'ordering.dart';
 import 'sequence.dart';
@@ -15,7 +16,7 @@ import 'sorting.dart';
 import 'trace.dart';
 
 /// Mecanica de care depinde ruta ecranului.
-enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order }
+enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation }
 
 /// Un joc din catalog, indiferent de mecanică.
 class CatalogEntry {
@@ -48,6 +49,7 @@ class CatalogEntry {
         GameKind.shell => '/cucu-bau',
         GameKind.trace => '/traseaza',
         GameKind.order => '/ordine/$id',
+        GameKind.imitation => '/fa-ca-licuriciul',
       };
 
   @override
@@ -130,6 +132,15 @@ List<CatalogEntry> get catalog => [
           emoji: g.emoji,
           description: g.description,
           kind: GameKind.calm,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [ImitationGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.imitation,
           domain: _domainOf(g.id, g.steps),
         ),
       for (final g in orderGames)

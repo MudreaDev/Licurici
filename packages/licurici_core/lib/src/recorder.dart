@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'development.dart';
 import 'game.dart';
+import 'imitation.dart';
 import 'memory.dart';
 import 'ordering.dart';
 import 'reaction.dart';
@@ -185,6 +186,29 @@ class SessionRecorder {
         stimulusSet: level.gameId,
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
+        chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `fa-ca-licuriciul`: câte o încercare pe rundă. Corectă = repetat fără greșeli;
+  /// modelul arătat din nou = ajutor P4; latența = cât a așteptat până la prima acțiune.
+  void imitationLevel(ImitationResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final a in result.attempts) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: a.clean,
+        promptLevel: a.modelRepeated ? PromptLevel.p4 : (a.clean ? PromptLevel.p0 : PromptLevel.p2),
+        attempts: a.wrong + 1,
+        latencyMs: a.startMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: a.round.actions.map((x) => x.kind.name).join('+'),
+        difficulty: a.round.actions.length.toDouble(),
+        targetId: a.firstWrong == null ? null : a.round.actions.map((x) => x.id).join(','),
         chosenId: a.firstWrong,
       ));
     }

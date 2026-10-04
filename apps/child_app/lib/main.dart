@@ -17,6 +17,7 @@ import 'features/games/calm/breathing_screen.dart';
 import 'features/games/choice/choice_game_screen.dart';
 import 'features/games/memory/memory_screen.dart';
 import 'features/games/shell/shell_screen.dart';
+import 'features/games/imitation/imitation_screen.dart';
 import 'features/games/order/order_screen.dart';
 import 'features/games/sort/sort_screen.dart';
 import 'features/games/trace/trace_screen.dart';
@@ -175,6 +176,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             game: orderGameById(state.pathParameters['id']!)!,
           ),
         ),
+      ),
+      GoRoute(
+        path: '/fa-ca-licuriciul',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const ImitationScreen()),
       ),
       GoRoute(
         path: '/traseaza',

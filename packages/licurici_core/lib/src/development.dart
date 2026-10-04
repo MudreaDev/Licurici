@@ -75,6 +75,12 @@ const List<Ladder> ladders = [
     Step('ATN3', 'Urmărește privirea și gestul cuiva spre un obiect'),
     Step('ATN4', 'Urmărește doar privirea (fără gest)'),
   ]),
+  Ladder(Domain.imi, [
+    Step('IMI1', 'Imită o acțiune simplă pe ecran (atinge ce a atins Licurici)',
+        games: ['fa-ca-licuriciul']),
+    Step('IMI2', 'Imită două acțiuni în ordine', games: ['fa-ca-licuriciul']),
+    Step('IMI3', 'Imită trei acțiuni, inclusiv tragerea unui obiect', games: ['fa-ca-licuriciul']),
+  ]),
   Ladder(Domain.pot, [
     Step('POT1', 'Potrivește un obiect identic, din două variante', games: ['potriveste']),
     Step('POT2', 'Potrivește un obiect identic, din 3–5 variante', games: ['potriveste']),

@@ -21,6 +21,10 @@ const uiPhrases = [
   'Atinge-le invers, de la ultimul.',
   'Mai privim o dată',
   'Continuăm',
+  'Privește',
+  // Fă ca Licurici
+  'Privește ce face Licurici.',
+  'Acum tu!',
   // Check-in-ul de dispoziție și finalul sesiunii
   'Cum te simți?',
   'Ne vedem data viitoare!',
