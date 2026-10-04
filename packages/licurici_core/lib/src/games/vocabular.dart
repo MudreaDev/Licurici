@@ -606,3 +606,69 @@ class CeImbracGame extends ChoiceGame {
     );
   }
 }
+
+
+/// Sunetul de început al unui cuvânt (litera mare), sau null când nu e un sunet simplu
+/// (ce/ci, ge/gi, che/chi, ghe/ghi — se citesc altfel decât litera).
+String? firstSound(String word) {
+  final w = word.toLowerCase();
+  if (RegExp(r'^(c|g)h?[ei]').hasMatch(w)) return null;
+  return w[0].toUpperCase();
+}
+
+/// Perechi de sunete apropiate (se confundă ușor) — distractorii grei.
+const _closeSounds = {
+  'M': 'N', 'N': 'M', 'B': 'P', 'P': 'B', 'D': 'T', 'T': 'D',
+  'F': 'V', 'V': 'F', 'S': 'Ș', 'Ș': 'S', 'C': 'G', 'G': 'C',
+};
+
+/// Primul sunet (COM4, catalog #23): „Ce începe cu M?” — copilul alege poza al cărei nume
+/// începe cu sunetul cerut. Conștiința fonologică, pregătirea citirii. Tier 1–2: două poze;
+/// de la tier 4 un distractor începe cu un sunet apropiat (m/n, b/p, d/t…).
+class PrimulSunetGame extends ChoiceGame {
+  const PrimulSunetGame()
+      : super(
+          id: 'primul-sunet',
+          name: 'Primul sunet',
+          emoji: '🅰️',
+          description: 'Cu ce sunet începe?',
+          subject: Subject.romana,
+          gradeCodes: 'G1',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final pool = objectWords.where((o) => firstSound(o.word) != null).toList();
+    final close = ctx.difficulty.tier >= 4;
+    return Lesson(
+      title: name,
+      instruction: 'Alege ce începe cu sunetul.',
+      rounds: [for (final t in _targets(ctx, pool, 8)) _round(ctx, t, pool, close: close)],
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, ObjectWord t, List<ObjectWord> pool, {required bool close}) {
+    final sound = firstSound(t.word)!;
+    final others = pool.where((o) => firstSound(o.word) != sound).toList()..shuffle(ctx.random);
+    final near = close
+        ? others.where((o) => firstSound(o.word) == _closeSounds[sound]).take(1).toList()
+        : <ObjectWord>[];
+    // Distractori cu sunete diferite între ei (fără două poze cu același început).
+    final seen = {sound, ...near.map((o) => firstSound(o.word)!)};
+    final rest = <ObjectWord>[];
+    for (final o in others) {
+      if (rest.length + near.length >= 4) break;
+      if (seen.add(firstSound(o.word)!)) rest.add(o);
+    }
+    return ChoiceRound(
+      prompt: 'Ce începe cu $sound?',
+      speak: ['Ce începe cu $sound?'],
+      visuals: [TextVisual(sound)],
+      hint: '${_cap(t.word)} începe cu $sound.',
+      choices: [
+        for (final o in [t, ...near, ...rest]..shuffle(ctx.random))
+          Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
+      ],
+    );
+  }
+}

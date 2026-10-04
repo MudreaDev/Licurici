@@ -143,6 +143,25 @@ void main() {
     expect(catalogEntry('peste-in-mijloc')!.domain, Domain.fex);
   });
 
+  test('primul sunet: doar corectul începe cu sunetul cerut; fără ce/ci, ge/gi', () {
+    expect(firstSound('cireșele'), isNull);
+    expect(firstSound('girafa'), isNull);
+    expect(firstSound('mărul'), 'M');
+    expect(firstSound('șosetele'), 'Ș');
+    for (var seed = 0; seed < 40; seed++) {
+      for (final tier in [1, 6]) {
+        for (final r in _build(const PrimulSunetGame(), tier, seed).rounds) {
+          final sound = (r.visuals.single as TextVisual).text;
+          for (final c in r.choices) {
+            expect(firstSound(c.key) == sound, c.correct, reason: '${c.key} / $sound');
+          }
+          expect(r.choices.map((c) => firstSound(c.key)).toSet(), hasLength(r.choices.length));
+        }
+      }
+    }
+    expect(catalogEntry('primul-sunet')!.domain, Domain.com);
+  });
+
   test('jocurile noi au trepte în trasee', () {
     for (final id in ['potriveste', 'arata-mi', 'corpul', 'intrusul']) {
       expect(stepsForGame(id), isNotEmpty, reason: id);
