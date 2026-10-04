@@ -87,6 +87,10 @@ void main(List<String> args) {
       }
     }
   }
+  for (final r in SortRule.values) {
+    add(SwitchGame.announce(r), 'regula-se-schimba');
+  }
+  add('Uită-te la semn: culoare sau formă.', 'regula-se-schimba');
   add(const SortGame().generate(1, seed: 1).instruction, 'sortam');
   add(const MemoryGame().generate(1, seed: 1).instruction, 'perechi');
 

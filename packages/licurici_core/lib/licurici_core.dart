@@ -16,6 +16,7 @@ export 'src/imitation.dart';
 export 'src/memory.dart';
 export 'src/ordering.dart';
 export 'src/sorting.dart';
+export 'src/switching.dart';
 export 'src/trace.dart';
 export 'src/waiting.dart';
 export 'src/breathing.dart';

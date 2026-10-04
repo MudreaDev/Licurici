@@ -15,6 +15,7 @@ import 'report.dart';
 import 'sequence.dart';
 import 'shell.dart';
 import 'sorting.dart';
+import 'switching.dart';
 import 'trace.dart';
 import 'waiting.dart';
 import 'trial.dart';
@@ -211,6 +212,30 @@ class SessionRecorder {
         difficulty: a.round.actions.length.toDouble(),
         targetId: a.firstWrong == null ? null : a.round.actions.map((x) => x.id).join(','),
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `regula-se-schimba`: câte o încercare pe cartonaș. Ținta = regula; la greșeală,
+  /// alegerea = cealaltă regulă (perseverare). Dificultatea: 1 = bloc, 2 = imediat după o
+  /// schimbare (costul schimbării se calculează din latențe).
+  void switchLevel(SwitchResult result) {
+    final level = result.level;
+    final step = level.axes.blocks > 1 || level.axes.mixed ? 'FEX4' : stepFor(level.gameId);
+    final switches = level.switches.toSet();
+    for (final r in result.responses) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: r.correct,
+        promptLevel: PromptLevel.p0,
+        latencyMs: r.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: r.item.card.id,
+        difficulty: switches.contains(r.item.index) ? 2 : 1,
+        targetId: r.item.rule.name,
+        chosenId: r.correct ? null : (r.item.rule == SortRule.color ? SortRule.shape : SortRule.color).name,
       ));
     }
   }
