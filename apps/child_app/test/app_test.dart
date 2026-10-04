@@ -30,7 +30,7 @@ Future<void> pumpApp(WidgetTester tester, {SessionStore? store}) async {
   );
   // Ecranul de pornire pre-încarcă resursele, apoi dispare.
   expect(find.text('Se pregătesc jocurile…'), findsOneWidget);
-  await pumpUntil(tester, find.text('Potrivim'));
+  await pumpUntil(tester, find.text('Atenție'));
   await tester.pump(
     const Duration(milliseconds: 600),
   ); // estomparea ecranului de pornire
@@ -46,6 +46,20 @@ Future<void> pumpUntil(WidgetTester tester, Finder finder) async {
     await tester.pump(const Duration(milliseconds: 100));
   }
   expect(finder, findsWidgets, reason: 'nu a apărut: $finder');
+}
+
+/// Derulează lista ariilor până la [code] și o deschide (lista e leneșă și orizontală).
+Future<void> openDomain(WidgetTester tester, String code) async {
+  final card = find.byKey(ValueKey('domain-$code'));
+  await tester.scrollUntilVisible(
+    card,
+    200,
+    scrollable: find
+        .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
+        .first,
+  );
+  await tester.pump(const Duration(milliseconds: 300));
+  await tester.tap(card);
 }
 
 /// Închide aplicația și lasă timerele rămase (animații cu întârziere) să expire.
@@ -68,10 +82,10 @@ void main() {
     await pumpApp(tester);
     expect(find.text('Grădiniță'), findsNothing); // clasa e doar la părinte
     expect(find.byKey(const ValueKey('domain-ATN')), findsOneWidget);
-    expect(find.byKey(const ValueKey('domain-POT')), findsOneWidget);
+    expect(find.byKey(const ValueKey('domain-ATN')), findsOneWidget);
 
     // Atingerea unei arii deschide doar jocurile ei.
-    await tester.tap(find.byKey(const ValueKey('domain-POT')));
+    await openDomain(tester, 'POT');
     await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
     expect(find.byKey(const ValueKey('game-forme')), findsOneWidget);
     expect(find.byKey(const ValueKey('game-adunam')), findsNothing);
@@ -83,7 +97,7 @@ void main() {
   ) async {
     final store = MemorySessionStore();
     await pumpApp(tester, store: store);
-    await tester.tap(find.byKey(const ValueKey('domain-POT')));
+    await openDomain(tester, 'POT');
     await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
     await tester.tap(find.byKey(const ValueKey('game-culori')));
     await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
@@ -118,7 +132,7 @@ void main() {
 
     expect(find.text('Încă o dată'), findsOneWidget);
     await tester.tap(find.text('Acasă').last);
-    await pumpUntil(tester, find.text('Potrivim'));
+    await pumpUntil(tester, find.text('Atenție'));
 
     // „Gata pe azi” → dispoziția de final → sesiunea se salvează cu toate rundele jucate.
     await tester.tap(find.byKey(const ValueKey('finish-session')));
@@ -150,7 +164,7 @@ void main() {
   ) async {
     final store = MemorySessionStore();
     await pumpApp(tester, store: store);
-    await tester.tap(find.byKey(const ValueKey('domain-POT')));
+    await openDomain(tester, 'POT');
     await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
     await tester.tap(find.byKey(const ValueKey('game-culori')));
     await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
@@ -213,7 +227,7 @@ void main() {
       );
       await tester.tap(wrong.first);
       await tester.pump(const Duration(milliseconds: 400));
-      expect(find.text('Potrivim'), findsOneWidget);
+      expect(find.text('Atenție'), findsOneWidget);
 
       // Răspuns corect → rezumatul pentru părinte.
       await tester.tap(find.byKey(const ValueKey('parent-corner')));
