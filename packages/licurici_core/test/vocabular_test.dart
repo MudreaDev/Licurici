@@ -80,6 +80,28 @@ void main() {
     expect(stepsForGame('umbre').single.id, 'POT3');
   });
 
+  test('atribute: corectul are ambele atribute; distractorii doar unul', () {
+    for (var seed = 0; seed < 40; seed++) {
+      for (final tier in [1, 3, 6]) {
+        for (final r in _build(const AtributeGame(), tier, seed).rounds) {
+          final correct = r.choices.singleWhere((c) => c.correct);
+          expect(r.speak.single, 'Arată ${correct.spoken}');
+          expect(r.choices.map((c) => c.key).toSet(), hasLength(r.choices.length));
+          if (tier == 1) expect(r.choices, hasLength(2));
+          final sizeRound = r.choices.any((c) => c.scale != 1);
+          for (final c in r.choices.where((c) => !c.correct)) {
+            if (sizeRound) {
+              // Același obiect cu altă mărime, sau alt obiect cu aceeași mărime (ori ambele diferite).
+              expect(c.art != correct.art || c.scale != correct.scale, isTrue);
+            } else {
+              expect(c.art, isNot(correct.art));
+            }
+          }
+        }
+      }
+    }
+  });
+
   test('jocurile noi au trepte în trasee', () {
     for (final id in ['potriveste', 'arata-mi', 'corpul', 'intrusul']) {
       expect(stepsForGame(id), isNotEmpty, reason: id);

@@ -338,3 +338,133 @@ class UmbreGame extends ChoiceGame {
     );
   }
 }
+
+class _Sized {
+  const _Sized(this.emoji, this.word, {this.feminine = false});
+  final String emoji;
+  final String word;
+  final bool feminine;
+
+  String adjective(bool big) => big ? 'mare' : (feminine ? 'mică' : 'mic');
+}
+
+const _sizedObjects = [
+  _Sized('🍎', 'mărul'),
+  _Sized('⚽', 'mingea', feminine: true),
+  _Sized('🧸', 'ursulețul'),
+  _Sized('🎈', 'balonul'),
+  _Sized('🐶', 'câinele'),
+  _Sized('🐱', 'pisica', feminine: true),
+  _Sized('🚗', 'mașina', feminine: true),
+  _Sized('🏠', 'casa', feminine: true),
+  _Sized('⭐', 'steaua', feminine: true),
+  _Sized('🐘', 'elefantul'),
+];
+
+class _Colored {
+  const _Colored(this.emoji, this.word, this.color);
+  final String emoji;
+  final String word;
+
+  /// Culoarea, acordată cu obiectul („cartea verde”, „cercul roșu”).
+  final String color;
+
+  String get phrase => '$word $color';
+}
+
+const _coloredObjects = [
+  _Colored('📕', 'cartea', 'roșie'),
+  _Colored('📗', 'cartea', 'verde'),
+  _Colored('📘', 'cartea', 'albastră'),
+  _Colored('📙', 'cartea', 'portocalie'),
+  _Colored('🔴', 'cercul', 'roșu'),
+  _Colored('🔵', 'cercul', 'albastru'),
+  _Colored('🟢', 'cercul', 'verde'),
+  _Colored('🟡', 'cercul', 'galben'),
+  _Colored('🟥', 'pătratul', 'roșu'),
+  _Colored('🟦', 'pătratul', 'albastru'),
+  _Colored('🟩', 'pătratul', 'verde'),
+  _Colored('🟨', 'pătratul', 'galben'),
+];
+
+/// Culoarea fără acord (pentru a găsi „același roșu” la alt obiect).
+String _colorRoot(String c) => switch (c) {
+      'roșie' || 'roșu' => 'rosu',
+      'albastră' || 'albastru' => 'albastru',
+      'galbenă' || 'galben' => 'galben',
+      _ => c,
+    };
+
+/// Mare, mic, roșu (LRC4, catalog #16 `mingea-rosie`): instrucțiuni cu un atribut —
+/// „Arată mărul mic”, „Arată cartea verde”. Tier 1–3: doar mărimea, același obiect mare / mic.
+/// De la tier 4 și culoarea, iar distractorii au **doar unul** dintre atribute corect
+/// (alt obiect cu aceeași mărime / culoare, același obiect cu altă mărime / culoare).
+class AtributeGame extends ChoiceGame {
+  const AtributeGame()
+      : super(
+          id: 'mingea-rosie',
+          name: 'Mare, mic, roșu',
+          emoji: '📕',
+          description: 'Ascultă cum e și arată',
+          subject: Subject.romana,
+          gradeCodes: 'G1',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final tier = ctx.difficulty.tier;
+    return Lesson(
+      title: name,
+      instruction: 'Ascultă bine cum este și arată.',
+      rounds: [
+        for (var i = 0; i < 8; i++)
+          if (tier < 4 || i.isEven) _sizeRound(ctx, tier) else _colorRound(ctx),
+      ],
+    );
+  }
+
+  ChoiceRound _sizeRound(GameContext ctx, int tier) {
+    final t = ctx.pick(_sizedObjects);
+    final big = ctx.random.nextBool();
+    final other = ctx.pick(_sizedObjects.where((o) => o != t).toList());
+    Choice option(_Sized o, bool isBig, {bool correct = false}) {
+      final phrase = '${o.word} ${o.adjective(isBig)}';
+      return Choice(art: o.emoji, scale: isBig ? 1 : 0.5, id: phrase, speak: phrase, correct: correct);
+    }
+
+    final phrase = '${t.word} ${t.adjective(big)}';
+    return ChoiceRound(
+      prompt: 'Arată $phrase',
+      speak: ['Arată $phrase'],
+      visuals: [TextVisual(phrase)],
+      hint: 'Acesta este $phrase.',
+      fixedChoices: true,
+      choices: [
+        option(t, big, correct: true),
+        option(t, !big),
+        if (tier >= 2) option(other, big),
+        if (tier >= 3) option(other, !big),
+      ]..shuffle(ctx.random),
+    );
+  }
+
+  ChoiceRound _colorRound(GameContext ctx) {
+    final t = ctx.pick(_coloredObjects);
+    final sameFamily = _coloredObjects.where((o) => o.word == t.word && o != t).toList();
+    final sameColor = _coloredObjects
+        .where((o) => o.word != t.word && _colorRoot(o.color) == _colorRoot(t.color))
+        .toList();
+    final options = [t, ...ctx.sample(sameFamily, 2), ...ctx.sample(sameColor, 1)]
+      ..shuffle(ctx.random);
+    return ChoiceRound(
+      prompt: 'Arată ${t.phrase}',
+      speak: ['Arată ${t.phrase}'],
+      visuals: [TextVisual(t.phrase)],
+      hint: 'Aceasta este ${t.phrase}.',
+      fixedChoices: true,
+      choices: [
+        for (final o in options) Choice(art: o.emoji, id: o.phrase, speak: o.phrase, correct: o == t),
+      ],
+    );
+  }
+}

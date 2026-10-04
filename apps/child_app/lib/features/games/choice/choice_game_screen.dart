@@ -643,15 +643,24 @@ class _ChoiceCard extends ConsumerWidget {
     Widget content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (choice.art != null)
-          choice.silhouette && !solved
-              ? Silhouette(
-                  child: StimulusArt(
-                    choice.art!,
-                    size: artSize ?? (compact ? 52 : 84),
-                  ),
-                )
-              : StimulusArt(choice.art!, size: artSize ?? (compact ? 52 : 84)),
+        if (choice.art case final art?)
+          // Locul imaginii rămâne cât una întreagă: „mic” se vede mic în aceeași cartelă.
+          SizedBox.square(
+            dimension: artSize ?? (compact ? 52 : 84),
+            child: Center(
+              child: choice.silhouette && !solved
+                  ? Silhouette(
+                      child: StimulusArt(
+                        art,
+                        size: (artSize ?? (compact ? 52 : 84)) * choice.scale,
+                      ),
+                    )
+                  : StimulusArt(
+                      art,
+                      size: (artSize ?? (compact ? 52 : 84)) * choice.scale,
+                    ),
+            ),
+          ),
         if (choice.objects case final g?)
           // Grupă de obiecte (ex. „Comparăm”): rânduri de câte 5, ca pe o numărătoare.
           SizedBox(

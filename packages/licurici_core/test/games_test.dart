@@ -26,7 +26,7 @@ void main() {
               expect(r.choices.length, greaterThanOrEqualTo(2));
               final keys = r.choices
                   .map(
-                    (c) => '${c.label}|${c.art}|${c.color}|${c.objects?.count}',
+                    (c) => '${c.label}|${c.art}|${c.color}|${c.objects?.count}|${c.scale}',
                   )
                   .toSet();
               expect(

@@ -93,6 +93,8 @@ const List<Ladder> ladders = [
         games: ['arata-mi']),
     Step('LRC2', 'Arată obiectul numit, din 3–5 variante, peste 20 de obiecte', games: ['arata-mi']),
     Step('LRC3', 'Arată părțile corpului', games: ['corpul']),
+    Step('LRC4', 'Înțelege un atribut: mare / mic, culoare („cartea verde”)',
+        games: ['mingea-rosie']),
     Step('LRC7', 'Răspunde la întrebări despre o poveste ascultată', games: ['povesti']),
   ]),
   Ladder(Domain.com, [

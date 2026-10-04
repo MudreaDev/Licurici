@@ -100,6 +100,7 @@ class Choice {
     this.speak,
     this.id,
     this.silhouette = false,
+    this.scale = 1,
   })
       : assert(label != null || art != null || color != null || objects != null, 'variantă goală');
 
@@ -113,6 +114,9 @@ class Choice {
 
   /// Imaginea se arată ca umbră (siluetă), nu colorată.
   final bool silhouette;
+
+  /// Mărimea imaginii față de cartelă (mare / mic: 1 / 0.5).
+  final double scale;
 
   /// Ce se rostește la atingere (implicit [label]).
   final String? speak;
