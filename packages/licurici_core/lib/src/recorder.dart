@@ -12,6 +12,7 @@ import 'memory.dart';
 import 'ordering.dart';
 import 'reaction.dart';
 import 'report.dart';
+import 'search.dart';
 import 'sequence.dart';
 import 'shell.dart';
 import 'sorting.dart';
@@ -236,6 +237,31 @@ class SessionRecorder {
         difficulty: switches.contains(r.item.index) ? 2 : 1,
         targetId: r.item.rule.name,
         chosenId: r.correct ? null : (r.item.rule == SortRule.color ? SortRule.shape : SortRule.color).name,
+      ));
+    }
+  }
+
+  /// Un nivel `cauta`: câte o încercare pe obiect căutat. Latența = timpul de căutare;
+  /// dificultatea = câte obiecte erau pe ecran (din ele: panta căutării vizuale).
+  void searchLevel(SearchResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final f in result.finds) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: f.clean,
+        promptLevel: PromptLevel.p0,
+        attempts: f.wrongTaps + 1,
+        latencyMs: f.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: f.round.target.word,
+        stimulusSet: level.axes.similar ? 'asemanatoare' : 'diferite',
+        difficulty: level.axes.items.toDouble(),
+        targetId: f.round.target.word,
+        chosenId: f.firstWrong,
+        offTargetTaps: f.wrongTaps,
       ));
     }
   }

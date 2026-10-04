@@ -16,7 +16,7 @@ void main() {
     ]);
     expect(byDomain.values.every((l) => l.isNotEmpty), isTrue);
     expect(byDomain[Domain.fex]!.map((e) => e.id), containsAll(['simon', 'pescarul']));
-    expect(byDomain[Domain.atn]!.map((e) => e.id), ['prinde-licuriciul']);
+    expect(byDomain[Domain.atn]!.map((e) => e.id), ['prinde-licuriciul', 'cauta']);
     expect(byDomain[Domain.pac]!.map((e) => e.id), contains('numaram'));
   });
 

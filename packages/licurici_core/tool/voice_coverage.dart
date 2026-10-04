@@ -91,6 +91,10 @@ void main(List<String> args) {
     add(SwitchGame.announce(r), 'regula-se-schimba');
   }
   add('Uită-te la semn: culoare sau formă.', 'regula-se-schimba');
+  for (final o in objectWords) {
+    add('Găsește ${o.word}.', 'cauta');
+    add(o.word, 'cauta');
+  }
   add(const SortGame().generate(1, seed: 1).instruction, 'sortam');
   add(const MemoryGame().generate(1, seed: 1).instruction, 'perechi');
 

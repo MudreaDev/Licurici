@@ -20,6 +20,7 @@ import 'features/games/shell/shell_screen.dart';
 import 'features/games/imitation/imitation_screen.dart';
 import 'features/games/order/order_screen.dart';
 import 'features/games/rules/switch_screen.dart';
+import 'features/games/search/search_screen.dart';
 import 'features/games/sort/sort_screen.dart';
 import 'features/games/trace/trace_screen.dart';
 import 'features/games/wait/wait_screen.dart';
@@ -188,6 +189,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/regula-se-schimba',
         pageBuilder: (context, state) =>
             _fade(context, state, const SwitchScreen()),
+      ),
+      GoRoute(
+        path: '/cauta',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const SearchScreen()),
       ),
       GoRoute(
         path: '/semaforul',
