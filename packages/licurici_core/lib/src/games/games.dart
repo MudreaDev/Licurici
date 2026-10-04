@@ -10,6 +10,7 @@ import 'logica.dart';
 import 'matematica.dart';
 import 'romana.dart';
 import 'social.dart';
+import 'vocabular.dart';
 
 export 'emotii.dart';
 export 'forme.dart';
@@ -17,8 +18,14 @@ export 'logica.dart';
 export 'matematica.dart';
 export 'romana.dart';
 export 'social.dart';
+export 'vocabular.dart';
 
 const List<GameSpec> allGames = [
+  // Potrivire și limbaj receptiv
+  PotrivesteGame(),
+  ArataMiGame(),
+  CorpulGame(),
+  IntrusulGame(),
   // Limba română
   AlfabetulGame(),
   OpuseGame(),
