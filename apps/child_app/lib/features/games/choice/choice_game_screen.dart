@@ -417,14 +417,34 @@ class _RoundView extends ConsumerWidget {
       ],
     );
 
-    Widget choices(double maxWidth) {
+    // Variantele care sunt doar o imagine (ex. „Arată mingea”) au imaginea cât mai mare:
+    // cât permite celula, nu o mărime fixă.
+    final artOnly = round.choices.every(
+      (c) => c.art != null && c.label == null && c.objects == null,
+    );
+
+    Widget choices(double maxWidth, {double? maxHeight, int? fixedColumns}) {
       final n = round.choices.length;
-      final columns = layout.twoPane ? (n <= 1 ? 1 : 2) : n;
+      final columns = fixedColumns ?? (layout.twoPane ? (n <= 1 ? 1 : 2) : n);
       const gap = 12.0;
       final width = ((maxWidth - gap * (columns - 1)) / columns).clamp(
         96.0,
         layout.compact ? 200.0 : 260.0,
       );
+      double? artSize;
+      if (artOnly) {
+        final rows = (n / columns).ceil();
+        final pad = layout.compact ? 16.0 : 28.0;
+        final cellHeight = maxHeight == null
+            ? double.infinity
+            : (maxHeight - gap * (rows - 1)) / rows - pad - 10;
+        artSize = math
+            .min(width - pad, cellHeight)
+            .clamp(
+              layout.compact ? 52.0 : 84.0,
+              layout.compact ? 120.0 : 190.0,
+            );
+      }
       return Wrap(
         alignment: WrapAlignment.center,
         spacing: gap,
@@ -438,6 +458,7 @@ class _RoundView extends ConsumerWidget {
                         key: ValueKey('choice-$i'),
                         choice: c,
                         width: width,
+                        artSize: artSize,
                         compact: layout.compact,
                         faded:
                             state._wrong.contains(i) ||
@@ -457,6 +478,41 @@ class _RoundView extends ConsumerWidget {
                       ),
             ),
         ],
+      );
+    }
+
+    // Fără stimul (ex. „Intrusul”: chiar variantele sunt întrebarea) — fără panou gol:
+    // variantele ocupă toată scena, pe un rând sau două.
+    if (layout.twoPane && round.visuals.isEmpty) {
+      final n = round.choices.length;
+      return Padding(
+        // Variantele trec pe toată lățimea, deci și peste colțul mascotei: lăsăm loc și
+        // pentru balonul de text (pe telefon are două rânduri).
+        padding: EdgeInsets.fromLTRB(
+          16,
+          0,
+          16,
+          8 + reserveBottom + (layout.compact ? 44 : 24),
+        ),
+        child: Column(
+          children: [
+            prompt,
+            SizedBox(height: layout.compact ? 4 : 12),
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, box) => Center(
+                  child: SingleChildScrollView(
+                    child: choices(
+                      math.min(box.maxWidth, n <= 4 ? 4 * 230.0 : 3 * 230.0),
+                      maxHeight: box.maxHeight,
+                      fixedColumns: n <= 4 ? n : (n / 2).ceil(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -516,7 +572,9 @@ class _RoundView extends ConsumerWidget {
               flex: 9,
               child: LayoutBuilder(
                 builder: (context, box) => Center(
-                  child: SingleChildScrollView(child: choices(box.maxWidth)),
+                  child: SingleChildScrollView(
+                    child: choices(box.maxWidth, maxHeight: box.maxHeight),
+                  ),
                 ),
               ),
             ),
@@ -555,6 +613,7 @@ class _ChoiceCard extends ConsumerWidget {
     super.key,
     required this.choice,
     required this.width,
+    this.artSize,
     required this.compact,
     required this.faded,
     required this.solved,
@@ -566,6 +625,9 @@ class _ChoiceCard extends ConsumerWidget {
 
   final Choice choice;
   final double width;
+
+  /// Mărimea imaginii când varianta e doar o imagine (altfel mărimea implicită).
+  final double? artSize;
   final bool compact;
   final bool faded;
   final bool solved;
@@ -582,7 +644,7 @@ class _ChoiceCard extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (choice.art != null)
-          StimulusArt(choice.art!, size: compact ? 52 : 84),
+          StimulusArt(choice.art!, size: artSize ?? (compact ? 52 : 84)),
         if (choice.objects case final g?)
           // Grupă de obiecte (ex. „Comparăm”): rânduri de câte 5, ca pe o numărătoare.
           SizedBox(
