@@ -14,6 +14,7 @@ import 'gaze.dart';
 import 'imitation.dart';
 import 'memory.dart';
 import 'ordering.dart';
+import 'puzzle.dart';
 import 'reaction.dart';
 import 'report.dart';
 import 'rhythm.dart';
@@ -198,6 +199,27 @@ class SessionRecorder {
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `puzzle`: câte o încercare pe imagine; încercările = mutări greșite + 1;
+  /// dificultatea = numărul de piese.
+  void puzzleLevel(PuzzleResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final s in result.solves) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: s.clean,
+        promptLevel: level.axes.model ? PromptLevel.p2 : PromptLevel.p0,
+        attempts: s.wrongMoves + 1,
+        latencyMs: s.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: s.round.image,
+        difficulty: s.round.pieces.toDouble(),
       ));
     }
   }
