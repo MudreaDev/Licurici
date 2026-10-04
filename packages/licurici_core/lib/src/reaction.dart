@@ -30,6 +30,9 @@ class ReactionAxes {
     required this.sizeFactor,
     required this.edgeBias,
     required this.moving,
+    this.driftRange = 0.2,
+    this.flies = false,
+    this.firstGapMs = 1200,
   });
 
   /// Câți stimuli are nivelul.
@@ -56,6 +59,15 @@ class ReactionAxes {
   /// Stimulii înoată / plutesc în timp ce sunt vizibili.
   final bool moving;
 
+  /// Cât de departe se poate deplasa un stimul cât e vizibil (relativ la zona de joc).
+  final double driftRange;
+
+  /// Zboară în orice direcție (licuriciul), nu doar orizontal (peștele).
+  final bool flies;
+
+  /// Așteptarea dinaintea primului stimul, ms.
+  final int firstGapMs;
+
   Map<String, num> toJson() => {
         'count': count,
         'gapMs': gapMs,
@@ -65,6 +77,9 @@ class ReactionAxes {
         'sizeFactor': sizeFactor,
         'edgeBias': edgeBias,
         'moving': moving ? 1 : 0,
+        'driftRange': driftRange,
+        'flies': flies ? 1 : 0,
+        'firstGapMs': firstGapMs,
       };
 }
 
@@ -81,6 +96,7 @@ class ReactionStimulus {
     required this.gapBeforeMs,
     required this.visibleMs,
     this.driftX = 0,
+    this.driftY = 0,
   });
 
   final int index;
@@ -96,8 +112,9 @@ class ReactionStimulus {
   final int gapBeforeMs;
   final int visibleMs;
 
-  /// Deplasare orizontală relativă pe durata afișării (−0.25…0.25); 0 = stă pe loc.
+  /// Deplasare relativă pe durata afișării (|x| ≤ `driftRange`); 0 = stă pe loc.
   final double driftX;
+  final double driftY;
 
   bool get isGo => kind == ReactionKind.go;
 }
@@ -261,21 +278,29 @@ abstract class ReactionGame {
     final stimuli = <ReactionStimulus>[];
     for (var i = 0; i < kinds.length; i++) {
       final margin = 0.12 + 0.18 * (1 - axes.edgeBias);
-      final drift = axes.moving ? (random.nextBool() ? 1 : -1) * (0.08 + random.nextDouble() * 0.12) : 0.0;
-      // Ținta nu trebuie să iasă din ecran nici după ce înoată.
-      final lo = margin + (drift < 0 ? -drift : 0);
-      final hi = 1 - margin - (drift > 0 ? drift : 0);
+      double sign() => random.nextBool() ? 1 : -1;
+      final range = axes.driftRange;
+      final drift = axes.moving ? sign() * range * (0.4 + random.nextDouble() * 0.6) : 0.0;
+      final driftY = axes.moving && axes.flies ? sign() * range * random.nextDouble() * 0.5 : 0.0;
+      // Ținta nu trebuie să iasă din ecran nici după ce înoată / zboară.
+      double place(double d) {
+        final lo = margin + (d < 0 ? -d : 0);
+        final hi = 1 - margin - (d > 0 ? d : 0);
+        return lo + random.nextDouble() * (hi - lo);
+      }
+
       stimuli.add(ReactionStimulus(
         index: i,
         kind: kinds[i],
         art: kinds[i] == ReactionKind.go ? goArt : noGoArt!,
-        x: lo + random.nextDouble() * (hi - lo),
-        y: margin + random.nextDouble() * (1 - 2 * margin),
+        x: place(drift),
+        y: place(driftY),
         size: axes.sizeFactor,
         // Puțină variație în ritm, ca momentul apariției să nu fie previzibil.
-        gapBeforeMs: i == 0 ? 1200 : (axes.gapMs * (0.8 + random.nextDouble() * 0.4)).round(),
+        gapBeforeMs: i == 0 ? axes.firstGapMs : (axes.gapMs * (0.8 + random.nextDouble() * 0.4)).round(),
         visibleMs: axes.visibleMs,
         driftX: drift,
+        driftY: driftY,
       ));
     }
     return ReactionLevel(
@@ -375,7 +400,9 @@ class PescarulGame extends ReactionGame {
 }
 
 /// Prinde licuriciul — reacție simplă (ATN1–2): licuriciul apare, copilul îl atinge.
-/// Axe: poziție (centru → margini), mărime (mare → mai mică), timp de afișare, apoi mișcare.
+/// Axe: poziție (centru → margini), mărime (mare → mai mică), timp de afișare, cât de departe
+/// zboară. Licuriciul zboară mereu (e viu), dar la început doar puțin; apare des, ca jocul să
+/// aibă ritm.
 class PrindeLicuriciulGame extends ReactionGame {
   const PrindeLicuriciulGame();
 
@@ -396,14 +423,17 @@ class PrindeLicuriciulGame extends ReactionGame {
 
   @override
   ReactionAxes axesFor(int level) => ReactionAxes(
-        count: ramp(level, 8, 15, 8).round(),
-        gapMs: ramp(level, 1400, 800, 12).round(),
-        visibleMs: ramp(level, 4000, 1200, 14).round(),
+        count: ramp(level, 10, 18, 8).round(),
+        gapMs: ramp(level, 700, 450, 12).round(),
+        visibleMs: ramp(level, 4000, 1500, 14).round(),
         noGoRatio: 0,
         similarity: 0,
         sizeFactor: ramp(level, 1.4, 0.85, 12),
         edgeBias: ramp(level, 0, 1, 8),
-        moving: level >= 6,
+        moving: true,
+        driftRange: ramp(level, 0.06, 0.3, 10),
+        flies: true,
+        firstGapMs: 700,
       );
 
   @override

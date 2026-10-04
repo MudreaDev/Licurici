@@ -241,6 +241,34 @@ void main() {
     await closeApp(tester);
   });
 
+  testWidgets('licuriciul zboară de la primul nivel, apoi se stinge dacă nu e prins', (
+    tester,
+  ) async {
+    const game = _SeededFirefly();
+    await _open(tester, game, off: false);
+    await _begin(tester);
+    await tester.pump(const Duration(milliseconds: 700));
+    final target = find.byKey(const ValueKey('reaction-stimulus-0'));
+    await tester.pump(const Duration(milliseconds: 16));
+    final start = tester.getCenter(target);
+    await tester.pump(const Duration(milliseconds: 400));
+    final later = tester.getCenter(target);
+    expect(later.dx, isNot(start.dx));
+    expect(later.dy, isNot(start.dy));
+    // Spre final zboară în sus și se estompează.
+    final visible = game.generate(1).stimuli.first.visibleMs;
+    await tester.pump(Duration(milliseconds: visible - 16 - 400 - 100));
+    final fading = tester
+        .widgetList<Opacity>(
+          find.descendant(of: target, matching: find.byType(Opacity)),
+        )
+        .map((o) => o.opacity)
+        .reduce((a, b) => a * b);
+    expect(fading, lessThan(0.5));
+    expect(tester.takeException(), isNull);
+    await closeApp(tester);
+  });
+
   testWidgets('drift și particule în modul complet; modul calm le oprește', (
     tester,
   ) async {

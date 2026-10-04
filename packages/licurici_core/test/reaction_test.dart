@@ -36,6 +36,8 @@ void main() {
               expect(s.x, inInclusiveRange(0.1, 0.9));
               expect(s.x + s.driftX, inInclusiveRange(0.1, 0.9));
               expect(s.y, inInclusiveRange(0.1, 0.9));
+              expect(s.y + s.driftY, inInclusiveRange(0.1, 0.9));
+              expect(s.driftX.abs(), lessThanOrEqualTo(ax.driftRange + 1e-9));
               // Siguranță: fără apariții mai rapide decât ~3/s, ținte nu prea mici.
               expect(s.gapBeforeMs + s.visibleMs, greaterThanOrEqualTo(1000));
               expect(s.size, greaterThanOrEqualTo(0.85));
@@ -103,6 +105,20 @@ void main() {
     expect(play((s) => false).suggestedNextLevel(1), 1);
     // Atinge tot: acuratețe mare pe hârtie, dar impulsiv → nu urcă.
     expect(play((s) => true).suggestedNextLevel(5), lessThanOrEqualTo(5));
+  });
+
+  test('licuriciul apare des și zboară, puțin la început, mai mult apoi', () {
+    const g = PrindeLicuriciulGame();
+    final first = g.generate(1, seed: 5), later = g.generate(12, seed: 5);
+    expect(first.stimuli.first.gapBeforeMs, 700);
+    expect(first.stimuli.skip(1).every((s) => s.gapBeforeMs <= 840), isTrue);
+    expect(first.stimuli.every((s) => s.driftX != 0), isTrue);
+    double travel(ReactionLevel l) =>
+        l.stimuli.map((s) => s.driftX.abs() + s.driftY.abs()).reduce((a, b) => a + b);
+    expect(travel(later), greaterThan(travel(first) * 2));
+    expect(later.stimuli.any((s) => s.driftY != 0), isTrue);
+    // Peștele înoată doar orizontal.
+    expect(const PescarulGame().generate(8, seed: 5).stimuli.every((s) => s.driftY == 0), isTrue);
   });
 
   test('registrul găsește jocurile după id', () {

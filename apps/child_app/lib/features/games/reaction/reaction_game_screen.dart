@@ -448,16 +448,18 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
                   final feedback = motion.movement && _tapped
                       ? math.sin(_effect.value * math.pi)
                       : 0.0;
-                  final x =
-                      s.x + (motion.movement ? s.driftX * _drift.value : 0);
-                  final left = (x * box.maxWidth - side / 2).clamp(
-                    0.0,
-                    math.max(0.0, box.maxWidth - side),
-                  );
-                  final top = (s.y * box.maxHeight - side / 2).clamp(
-                    0.0,
-                    math.max(0.0, box.maxHeight - side),
-                  );
+                  final flight = _level.axes.flies && motion.movement
+                      ? _Flight(elapsed, s, side)
+                      : null;
+                  final t = flight == null
+                      ? _drift.value
+                      : Curves.easeInOut.transform(_drift.value);
+                  final x = s.x + (motion.movement ? s.driftX * t : 0);
+                  final y = s.y + (motion.movement ? s.driftY * t : 0);
+                  final left = (x * box.maxWidth - side / 2 + (flight?.dx ?? 0))
+                      .clamp(0.0, math.max(0.0, box.maxWidth - side));
+                  final top = (y * box.maxHeight - side / 2 + (flight?.dy ?? 0))
+                      .clamp(0.0, math.max(0.0, box.maxHeight - side));
                   final gone =
                       _tapped && (!motion.feedback || _effect.isCompleted);
                   return Positioned(
@@ -511,11 +513,16 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
                                           : 1,
                                       child: _Glow(
                                         on: s.art == '✨',
-                                        child: StimulusArt(
-                                          s.art,
-                                          size: side,
-                                          // Peștii privesc în direcția în care înoată.
-                                          flip: motion.movement && s.driftX < 0,
+                                        pulse: flight?.glow ?? 1,
+                                        child: _flutter(
+                                          flight,
+                                          StimulusArt(
+                                            s.art,
+                                            size: side,
+                                            // Privesc în direcția în care înoată / zboară.
+                                            flip:
+                                                motion.movement && s.driftX < 0,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -543,6 +550,19 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     },
   );
 }
+
+/// Zborul licuriciului: aripile bat (o ușoară turtire rapidă), corpul se înclină și
+/// plutește în bucle mici. Fără mișcare redusă: stă pe loc (`flight == null`).
+Widget _flutter(_Flight? flight, Widget child) => flight == null
+    ? child
+    : Transform.rotate(
+        angle: flight.tilt,
+        child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.diagonal3Values(flight.wingX, flight.wingY, 1),
+          child: Opacity(opacity: flight.fade, child: child),
+        ),
+      );
 
 class ReactionFinish extends ConsumerStatefulWidget {
   const ReactionFinish({
@@ -637,22 +657,68 @@ class _RipplePainter extends CustomPainter {
   bool shouldRepaint(_RipplePainter old) => old.t != t;
 }
 
-/// Halou cald în spatele licuriciului (lumina lui).
+/// Poziția și postura licuriciului la [elapsed] ms de la apariție. Totul e derivat din
+/// timp (fără stare), ca pauza să înghețe zborul exact unde era.
+class _Flight {
+  factory _Flight(double elapsed, ReactionStimulus s, double side) {
+    // Fiecare licurici are faza lui, ca să nu zboare toți la fel.
+    final phase = s.index * 1.7;
+    const tau = 2 * math.pi;
+    final remaining = s.visibleMs - elapsed;
+    // Se aprinde repede (150 ms, de la 40% — momentul apariției rămâne clar pentru timpul
+    // de reacție), iar dacă nu e prins, zboară în sus și se stinge la final (350 ms).
+    final fadeIn = 0.4 + 0.6 * (elapsed / 150).clamp(0.0, 1.0);
+    final fadeOut = (remaining / 350).clamp(0.0, 1.0);
+    final beat = math.sin(tau * elapsed / 140);
+    return _Flight._(
+      dx: side * 0.14 * math.sin(tau * elapsed / 1500 + phase),
+      dy:
+          side * 0.18 * math.sin(tau * elapsed / 950 + phase) -
+          side * 0.25 * (1 - fadeOut),
+      tilt:
+          0.14 * math.sin(tau * elapsed / 1500 + phase + math.pi / 2) +
+          (s.driftX.sign * 0.08),
+      wingX: 1 + 0.05 * beat,
+      wingY: 1 - 0.04 * beat,
+      glow: 0.75 + 0.25 * math.sin(tau * elapsed / 800 + phase),
+      fade: math.min(fadeIn, fadeOut),
+    );
+  }
+
+  const _Flight._({
+    required this.dx,
+    required this.dy,
+    required this.tilt,
+    required this.wingX,
+    required this.wingY,
+    required this.glow,
+    required this.fade,
+  });
+
+  final double dx, dy, tilt, wingX, wingY, glow, fade;
+}
+
+/// Halou cald în spatele licuriciului (lumina lui), care pulsează cât zboară.
 class _Glow extends StatelessWidget {
-  const _Glow({required this.on, required this.child});
+  const _Glow({required this.on, required this.child, this.pulse = 1});
 
   final bool on;
+  final double pulse;
   final Widget child;
 
   @override
   Widget build(BuildContext context) => !on
       ? child
       : DecoratedBox(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: RadialGradient(
-              colors: [Color(0x99FFE9A0), Color(0x33F2CF6B), Color(0x00F2CF6B)],
-              stops: [0.2, 0.6, 1],
+              colors: [
+                const Color(0xFFFFE9A0).withValues(alpha: 0.6 * pulse),
+                const Color(0xFFF2CF6B).withValues(alpha: 0.2 * pulse),
+                const Color(0x00F2CF6B),
+              ],
+              stops: const [0.2, 0.6, 1],
             ),
           ),
           child: child,
