@@ -644,7 +644,14 @@ class _ChoiceCard extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (choice.art != null)
-          StimulusArt(choice.art!, size: artSize ?? (compact ? 52 : 84)),
+          choice.silhouette && !solved
+              ? Silhouette(
+                  child: StimulusArt(
+                    choice.art!,
+                    size: artSize ?? (compact ? 52 : 84),
+                  ),
+                )
+              : StimulusArt(choice.art!, size: artSize ?? (compact ? 52 : 84)),
         if (choice.objects case final g?)
           // Grupă de obiecte (ex. „Comparăm”): rânduri de câte 5, ca pe o numărătoare.
           SizedBox(

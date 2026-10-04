@@ -26,6 +26,7 @@ const List<GameSpec> allGames = [
   ArataMiGame(),
   CorpulGame(),
   IntrusulGame(),
+  UmbreGame(),
   // Limba română
   AlfabetulGame(),
   OpuseGame(),

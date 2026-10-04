@@ -67,6 +67,12 @@ class TextVisual extends Visual {
   final bool isEquation;
 }
 
+/// Silueta (umbra) unui obiect; la răspunsul corect se colorează.
+class SilhouetteVisual extends Visual {
+  const SilhouetteVisual(this.emoji);
+  final String emoji;
+}
+
 /// Un șir de imagini cu un loc gol la capăt („ce urmează?”). [answer] apare în locul gol
 /// după răspunsul corect.
 class PatternVisual extends Visual {
@@ -93,6 +99,7 @@ class Choice {
     this.correct = false,
     this.speak,
     this.id,
+    this.silhouette = false,
   })
       : assert(label != null || art != null || color != null || objects != null, 'variantă goală');
 
@@ -103,6 +110,9 @@ class Choice {
   /// Un grup de obiecte numărabile (ex. „Comparăm”: varianta ESTE grupa de mere).
   final ObjectGroup? objects;
   final bool correct;
+
+  /// Imaginea se arată ca umbră (siluetă), nu colorată.
+  final bool silhouette;
 
   /// Ce se rostește la atingere (implicit [label]).
   final String? speak;
@@ -173,6 +183,7 @@ class Lesson {
           for (final v in r.visuals)
             ...switch (v) {
               EmojiVisual(:final emoji) => [emoji],
+              SilhouetteVisual(:final emoji) => [emoji],
               ObjectsVisual(:final groups) => groups.map((g) => g.emoji),
               PatternVisual(:final items, :final answer) => [...items, answer],
               _ => const <String>[],

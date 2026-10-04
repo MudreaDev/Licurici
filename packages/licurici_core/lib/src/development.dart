@@ -84,6 +84,7 @@ const List<Ladder> ladders = [
   Ladder(Domain.pot, [
     Step('POT1', 'Potrivește un obiect identic, din două variante', games: ['potriveste']),
     Step('POT2', 'Potrivește un obiect identic, din 3–5 variante', games: ['potriveste']),
+    Step('POT3', 'Potrivește obiectul cu umbra lui (siluetă)', games: ['umbre']),
     Step('POT5', 'Potrivește culori și forme pe obiecte diferite', games: ['culori', 'forme']),
     Step('POT6', 'Găsește ce nu se potrivește într-o categorie', games: ['intrusul']),
   ]),

@@ -40,6 +40,11 @@ class PromptVisuals extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: switch (v) {
             EmojiVisual() => _BigEmoji(v.emoji, solved: solved),
+            SilhouetteVisual() => _BigEmoji(
+              v.emoji,
+              solved: solved,
+              silhouette: !solved,
+            ),
             ObjectsVisual() => _Objects(v, solved: solved),
             ColorVisual() => _ColorBlob(Color(v.argb)),
             TextVisual() => _BigText(v),
@@ -52,15 +57,27 @@ class PromptVisuals extends StatelessWidget {
 }
 
 class _BigEmoji extends ConsumerWidget {
-  const _BigEmoji(this.emoji, {required this.solved});
+  const _BigEmoji(this.emoji, {required this.solved, this.silhouette = false});
 
   final String emoji;
   final bool solved;
 
+  /// Arătat ca umbră; la răspunsul corect se colorează (estompare încrucișată).
+  final bool silhouette;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
-    Widget w = StimulusArt(emoji, size: 170 * VisualScale.of(context));
+    final size = 170 * VisualScale.of(context);
+    Widget w = AnimatedSwitcher(
+      duration: motion.d(450),
+      child: silhouette
+          ? Silhouette(
+              key: const ValueKey('umbra'),
+              child: StimulusArt(emoji, size: size),
+            )
+          : StimulusArt(emoji, key: const ValueKey('color'), size: size),
+    );
     if (motion.ambient) {
       w = w
           .animate(onPlay: (c) => c.repeat(reverse: true))
@@ -344,5 +361,18 @@ class _Scene extends StatelessWidget {
         ),
       ],
     ),
+  );
+}
+
+/// Umbra unui obiect: aceeași formă, plină, gri-albăstrui închis.
+class Silhouette extends StatelessWidget {
+  const Silhouette({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => ColorFiltered(
+    colorFilter: const ColorFilter.mode(Color(0xFF3E4A63), BlendMode.srcIn),
+    child: child,
   );
 }

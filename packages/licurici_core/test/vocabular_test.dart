@@ -63,6 +63,23 @@ void main() {
     }
   });
 
+  test('umbre: alternează „găsește umbra” (variante siluete) cu „al cui e umbra?”', () {
+    for (var seed = 0; seed < 30; seed++) {
+      final rounds = _build(const UmbreGame(), 5, seed).rounds;
+      for (final (i, r) in rounds.indexed) {
+        final correct = r.choices.singleWhere((c) => c.correct);
+        if (i.isEven) {
+          expect(r.choices.every((c) => c.silhouette), isTrue);
+          expect((r.visuals.single as EmojiVisual).emoji, correct.art);
+        } else {
+          expect(r.choices.any((c) => c.silhouette), isFalse);
+          expect((r.visuals.single as SilhouetteVisual).emoji, correct.art);
+        }
+      }
+    }
+    expect(stepsForGame('umbre').single.id, 'POT3');
+  });
+
   test('jocurile noi au trepte în trasee', () {
     for (final id in ['potriveste', 'arata-mi', 'corpul', 'intrusul']) {
       expect(stepsForGame(id), isNotEmpty, reason: id);

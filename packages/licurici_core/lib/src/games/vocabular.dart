@@ -287,3 +287,54 @@ class IntrusulGame extends ChoiceGame {
 }
 
 String _cap(String s) => s[0].toUpperCase() + s.substring(1);
+
+/// Umbre (POT3, catalog #10): obiect ↔ umbra lui, alternat. „Găsește umbra” (variantele sunt
+/// siluete) și „Al cui e umbra?” (stimulul e o siluetă, variantele colorate). De la tier 4,
+/// distractorii sunt din aceeași grupă — siluete mai asemănătoare (figură–fond).
+class UmbreGame extends ChoiceGame {
+  const UmbreGame()
+      : super(
+          id: 'umbre',
+          name: 'Umbre',
+          emoji: '👤',
+          description: 'Găsește umbra potrivită',
+          subject: Subject.forme,
+          gradeCodes: 'G1',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final similar = ctx.difficulty.tier >= 4;
+    return Lesson(
+      title: name,
+      instruction: 'Potrivește obiectul cu umbra lui.',
+      rounds: [
+        for (final (i, t) in _targets(ctx, objectWords, 8).indexed)
+          if (i.isEven)
+            ChoiceRound(
+              prompt: 'Găsește umbra',
+              speak: ['Găsește umbra.'],
+              visuals: [EmojiVisual(t.emoji)],
+              hint: 'Umbra are aceeași formă ca ${t.word}.',
+              choices: [
+                for (final o in [t, ..._distractors(ctx, t, objectWords, similar: similar)]
+                  ..shuffle(ctx.random))
+                  Choice(art: o.emoji, id: o.word, silhouette: true, speak: o.word, correct: o == t),
+              ],
+            )
+          else
+            ChoiceRound(
+              prompt: 'Al cui e umbra?',
+              speak: ['Al cui e umbra?'],
+              visuals: [SilhouetteVisual(t.emoji)],
+              hint: 'Este umbra: ${t.word}.',
+              choices: [
+                for (final o in [t, ..._distractors(ctx, t, objectWords, similar: similar)]
+                  ..shuffle(ctx.random))
+                  Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
+              ],
+            ),
+      ],
+    );
+  }
+}
