@@ -326,7 +326,12 @@ class _RhythmScreenState extends ConsumerState<RhythmScreen>
                       key: ValueKey('rhythm-drum-$d'),
                       behavior: HitTestBehavior.opaque,
                       onTapDown: (_) => _tap(d),
-                      child: _Drum(side: side, tint: d == 1, dim: listening),
+                      // Toba mare sună jos, cea mică sus: se deosebesc și ca formă.
+                      child: _Drum(
+                        side: d == 0 ? side : side * 0.78,
+                        tint: d == 1,
+                        dim: listening,
+                      ),
                     ),
                   ),
                 ],
@@ -377,7 +382,7 @@ class _RhythmScreenState extends ConsumerState<RhythmScreen>
   );
 }
 
-/// Toba pictată; a doua tobă e lavandă (aceeași ilustrație, nuanțată). Cât ascultă copilul,
+/// Toba pictată; a doua tobă e mai mică și lavandă (aceeași ilustrație, nuanțată). Cât ascultă copilul,
 /// tobele sunt ușor estompate — semn că acum nu e rândul lui.
 class _Drum extends StatelessWidget {
   const _Drum({required this.side, required this.tint, required this.dim});
