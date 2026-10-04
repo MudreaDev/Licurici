@@ -45,6 +45,7 @@ const List<GameSpec> allGames = [
   // Emoții & viață
   EmotiiGame(),
   DaNuGame(),
+  CeSeAudeGame(),
   CeSimteGame(),
   CeMaAjutaGame(),
   CineStieGame(),

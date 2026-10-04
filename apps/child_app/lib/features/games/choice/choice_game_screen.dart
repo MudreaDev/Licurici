@@ -525,7 +525,10 @@ class _RoundView extends ConsumerWidget {
             Expanded(
               flex: 11,
               child: Padding(
-                padding: EdgeInsets.only(bottom: reserveBottom),
+                // Pe telefon, balonul mascotei are adesea două rânduri: îi lăsăm loc.
+                padding: EdgeInsets.only(
+                  bottom: reserveBottom + (layout.compact ? 30 : 0),
+                ),
                 child: Column(
                   children: [
                     prompt,

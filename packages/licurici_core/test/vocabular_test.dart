@@ -102,6 +102,16 @@ void main() {
     }
   });
 
+  test('ce se aude: corectul face sunetul rostit; la tier mare, distractori de la fermă', () {
+    for (var seed = 0; seed < 40; seed++) {
+      for (final r in _build(const CeSeAudeGame(), 6, seed).rounds) {
+        final correct = r.choices.singleWhere((c) => c.correct);
+        expect(r.speak.single, 'Cine face ${correct.spoken}?');
+      }
+    }
+    expect(catalogEntry('ce-se-aude')!.domain, Domain.com);
+  });
+
   test('jocurile noi au trepte în trasee', () {
     for (final id in ['potriveste', 'arata-mi', 'corpul', 'intrusul']) {
       expect(stepsForGame(id), isNotEmpty, reason: id);

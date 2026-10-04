@@ -468,3 +468,79 @@ class AtributeGame extends ChoiceGame {
     );
   }
 }
+
+class _Sound {
+  const _Sound(this.emoji, this.who, this.sound, {this.farm = false});
+  final String emoji;
+
+  /// Cine face sunetul (articulat).
+  final String who;
+
+  /// Sunetul, cum îl spune vocea („miau”).
+  final String sound;
+
+  /// Animal de la fermă (distractorii asemănători vin tot de aici).
+  final bool farm;
+}
+
+const _sounds = [
+  _Sound('🐶', 'câinele', 'ham, ham', farm: true),
+  _Sound('🐱', 'pisica', 'miau', farm: true),
+  _Sound('🐄', 'vaca', 'muuu', farm: true),
+  _Sound('🐑', 'oaia', 'beee', farm: true),
+  _Sound('🦆', 'rața', 'mac, mac', farm: true),
+  _Sound('🐓', 'cocoșul', 'cucurigu', farm: true),
+  _Sound('🐖', 'porcul', 'guiț, guiț', farm: true),
+  _Sound('🐥', 'puiul', 'piu, piu', farm: true),
+  _Sound('🐎', 'calul', 'ihahaha', farm: true),
+  _Sound('🐝', 'albina', 'bzzz'),
+  _Sound('🦉', 'bufnița', 'uhu, uhu'),
+  _Sound('🐍', 'șarpele', 'sss'),
+  _Sound('🚗', 'mașina', 'tuuut, tuuut'),
+  _Sound('🥁', 'toba', 'bum, bum'),
+];
+
+/// Ce se aude? (COM1, catalog #22): vocea spune un sunet („Cine face miau?”), copilul alege
+/// cine îl face. Asocierea sunet → sursă, înaintea discriminării sunetelor reale. Tier 1–3:
+/// distractori din alte categorii; de la tier 4, tot animale de la fermă (mai apropiate).
+class CeSeAudeGame extends ChoiceGame {
+  const CeSeAudeGame()
+      : super(
+          id: 'ce-se-aude',
+          name: 'Ce se aude?',
+          emoji: '👂',
+          description: 'Cine face sunetul?',
+          subject: Subject.stiinte,
+          gradeCodes: 'G1',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final similar = ctx.difficulty.tier >= 4;
+    return Lesson(
+      title: name,
+      instruction: 'Ascultă sunetul și arată cine îl face.',
+      rounds: [
+        for (final t in _targets(ctx, _sounds, 8))
+          ChoiceRound(
+            prompt: 'Cine face „${t.sound}”?',
+            speak: ['Cine face ${t.sound}?'],
+            visuals: const [EmojiVisual('👂')],
+            hint: '${_cap(t.who)} face ${t.sound}.',
+            choices: [
+              for (final o in [
+                t,
+                ...ctx.sample(
+                  _sounds
+                      .where((o) => o != t && (!similar || !t.farm || o.farm))
+                      .toList(),
+                  4,
+                ),
+              ]..shuffle(ctx.random))
+                Choice(art: o.emoji, id: o.who, speak: o.sound, correct: o == t),
+            ],
+          ),
+      ],
+    );
+  }
+}
