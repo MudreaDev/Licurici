@@ -1,6 +1,7 @@
 /// Logica pură a aplicației Licurici — fără Flutter, testată complet.
 library;
 
+export 'src/aac.dart';
 export 'src/adaptive.dart';
 export 'src/difficulty.dart';
 export 'src/game.dart';

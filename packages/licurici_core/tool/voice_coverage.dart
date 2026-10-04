@@ -98,6 +98,12 @@ void main(List<String> args) {
     add('Găsește ${o.word}.', 'cauta');
     add(o.word, 'cauta');
   }
+  for (final c in aacBoard) {
+    add(c.starter, 'vorbeste');
+    for (final w in c.words) {
+      add(aacSentence(c, w), 'vorbeste');
+    }
+  }
   add(const SortGame().generate(1, seed: 1).instruction, 'sortam');
   add(const MemoryGame().generate(1, seed: 1).instruction, 'perechi');
 

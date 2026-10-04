@@ -45,6 +45,9 @@ enum SessionEventKind {
 
   /// A ales singur o activitate (când i s-au oferit două).
   choiceMade,
+
+  /// A cerut ceva cu tabla de comunicare („Vreau apă”) — cerere spontană.
+  request,
 }
 
 class SessionEvent {
@@ -269,6 +272,12 @@ class SessionReport {
     }
     if (count(SessionEventKind.pause) + count(SessionEventKind.breathing) > 0) {
       b.write('A cerut o pauză când a avut nevoie — e un lucru bun. ');
+    }
+    final requests = count(SessionEventKind.request);
+    if (requests > 0) {
+      b.write(requests == 1
+          ? 'A spus ce vrea cu pozele o dată. '
+          : 'A spus ce vrea cu pozele de $requests ori. ');
     }
     if ((fatigue ?? 0) >= 0.4) {
       b.write('Spre final a apărut puțină oboseală; sesiunile ceva mai scurte pot ajuta. ');

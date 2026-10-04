@@ -17,6 +17,7 @@ import 'features/games/calm/breathing_screen.dart';
 import 'features/games/choice/choice_game_screen.dart';
 import 'features/games/memory/memory_screen.dart';
 import 'features/games/shell/shell_screen.dart';
+import 'features/games/aac/aac_screen.dart';
 import 'features/games/gaze/gaze_screen.dart';
 import 'features/games/imitation/imitation_screen.dart';
 import 'features/games/order/order_screen.dart';
@@ -195,6 +196,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/unde-se-uita',
         pageBuilder: (context, state) =>
             _fade(context, state, const GazeScreen()),
+      ),
+      GoRoute(
+        path: '/vorbeste',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const AacScreen()),
       ),
       GoRoute(
         path: '/cauta',

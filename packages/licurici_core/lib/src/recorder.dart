@@ -62,7 +62,9 @@ class SessionRecorder {
 
   List<Trial> get trials => List.unmodifiable(_trials);
   List<SessionEvent> get events => List.unmodifiable(_events);
-  bool get isEmpty => _trials.isEmpty;
+  /// Nimic de păstrat: nicio încercare și nicio cerere cu tabla de comunicare.
+  bool get isEmpty =>
+      _trials.isEmpty && !_events.any((e) => e.kind == SessionEventKind.request);
   bool get closed => _closed;
 
   void add(Trial t) {
@@ -376,7 +378,7 @@ class SessionRecorder {
   SessionRecord? close() {
     if (_closed) return null;
     _closed = true;
-    if (_trials.isEmpty) return null;
+    if (isEmpty) return null;
     return SessionRecord(
       id: id,
       childId: childId,

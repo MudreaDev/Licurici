@@ -42,7 +42,7 @@ export const sessionRecordSchema = z
       .array(
         z
           .object({
-            kind: z.enum(['pause', 'breathing', 'abandoned', 'choiceMade']),
+            kind: z.enum(['pause', 'breathing', 'abandoned', 'choiceMade', 'request']),
             at: iso,
             gameId: z.string().max(40).nullable(),
           })
