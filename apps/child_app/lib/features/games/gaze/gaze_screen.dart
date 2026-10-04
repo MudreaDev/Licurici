@@ -247,11 +247,18 @@ class _GazeScreenState extends ConsumerState<GazeScreen> {
         children: [
           Align(
             alignment: Alignment.bottomCenter,
-            child: Mascot(
-              key: const ValueKey('gaze-mascot'),
-              size: mascot,
-              mood: _mood,
-              reaction: _round,
+            // Se apleacă puțin spre obiect: privirea se vede și de la distanță.
+            child: AnimatedRotation(
+              turns: _cueOn && !_solved ? (_r.side == 0 ? -0.012 : 0.012) : 0,
+              duration: motion.d(350),
+              curve: Curves.easeOut,
+              alignment: Alignment.bottomCenter,
+              child: Mascot(
+                key: const ValueKey('gaze-mascot'),
+                size: mascot,
+                mood: _mood,
+                reaction: _round,
+              ),
             ),
           ),
           if (!framesReady && _cueOn && !_solved)
