@@ -162,6 +162,28 @@ void main() {
     expect(catalogEntry('primul-sunet')!.domain, Domain.com);
   });
 
+  test('unde e ursulețul: o singură scenă potrivită, fără „în masă” sau „sub cutie”', () {
+    for (var seed = 0; seed < 40; seed++) {
+      for (final tier in [1, 3, 6]) {
+        for (final r in _build(const UndeEUrsulGame(), tier, seed).rounds) {
+          final correct = r.choices.singleWhere((c) => c.correct);
+          expect(r.stimulusId, correct.placement!.relation.name);
+          expect(r.choices.map((c) => c.placement!.relation).toSet(), hasLength(r.choices.length));
+          for (final c in r.choices) {
+            final p = c.placement!;
+            expect(p.landmark == Landmark.masa && p.relation == Relation.inauntru, isFalse);
+            expect(p.landmark == Landmark.cutie && p.relation == Relation.sub, isFalse);
+            expect(p.landmark, correct.placement!.landmark);
+          }
+          if (tier == 1) {
+            expect(r.choices.every((c) => [Relation.pe, Relation.sub].contains(c.placement!.relation)), isTrue);
+          }
+        }
+      }
+    }
+    expect(catalogEntry('unde-e-ursul')!.domain, Domain.lrc);
+  });
+
   test('jocurile noi au trepte în trasee', () {
     for (final id in ['potriveste', 'arata-mi', 'corpul', 'intrusul']) {
       expect(stepsForGame(id), isNotEmpty, reason: id);

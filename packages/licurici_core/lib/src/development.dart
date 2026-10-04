@@ -99,6 +99,7 @@ const List<Ladder> ladders = [
     Step('LRC3', 'Arată părțile corpului', games: ['corpul']),
     Step('LRC4', 'Înțelege un atribut: mare / mic, culoare („cartea verde”)',
         games: ['mingea-rosie']),
+    Step('LRC6', 'Înțelege pozițiile: pe, sub, în, lângă, deasupra', games: ['unde-e-ursul']),
     Step('LRC7', 'Răspunde la întrebări despre o poveste ascultată', games: ['povesti']),
   ]),
   Ladder(Domain.com, [

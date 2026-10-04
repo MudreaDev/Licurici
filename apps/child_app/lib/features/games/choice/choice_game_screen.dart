@@ -22,6 +22,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/sfx.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/placement_art.dart';
 import 'visuals.dart';
 
 /// Mecanica „alege răspunsul” (port din `engine.js`), cu învățare fără eroare și
@@ -420,7 +421,10 @@ class _RoundView extends ConsumerWidget {
     // Variantele care sunt doar o imagine (ex. „Arată mingea”) au imaginea cât mai mare:
     // cât permite celula, nu o mărime fixă.
     final artOnly = round.choices.every(
-      (c) => c.art != null && c.label == null && c.objects == null,
+      (c) =>
+          (c.art != null || c.placement != null) &&
+          c.label == null &&
+          c.objects == null,
     );
 
     Widget choices(double maxWidth, {double? maxHeight, int? fixedColumns}) {
@@ -664,6 +668,8 @@ class _ChoiceCard extends ConsumerWidget {
                     ),
             ),
           ),
+        if (choice.placement case final p?)
+          PlacementArt(p, size: (artSize ?? (compact ? 84 : 130)) * 1.1),
         if (choice.objects case final g?)
           // Grupă de obiecte (ex. „Comparăm”): rânduri de câte 5, ca pe o numărătoare.
           SizedBox(

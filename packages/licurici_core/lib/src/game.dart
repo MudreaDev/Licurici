@@ -67,6 +67,38 @@ class TextVisual extends Visual {
   final bool isEquation;
 }
 
+/// Relațiile spațiale (LRC6): unde e obiectul față de un reper (masă, cutie).
+enum Relation {
+  pe('pe'),
+  sub('sub'),
+  inauntru('în'),
+  langa('lângă'),
+  deasupra('deasupra');
+
+  const Relation(this.word);
+
+  /// Prepoziția rostită („sub”).
+  final String word;
+}
+
+/// Reperul unei scene spațiale, desenat din cod.
+enum Landmark {
+  masa('masă', 'masa'),
+  cutie('cutie', 'cutia');
+
+  const Landmark(this.word, this.articulated);
+  final String word;
+  final String articulated;
+}
+
+/// O mică scenă: [emoji] așezat față de un [landmark] după [relation] („ursulețul sub masă”).
+class Placement {
+  const Placement(this.emoji, this.relation, this.landmark);
+  final String emoji;
+  final Relation relation;
+  final Landmark landmark;
+}
+
 /// Un rând de imagini, fiecare orientată spre stânga (−1) sau dreapta (+1); [center] e cea
 /// care contează (ex. peștele din mijloc, sarcina Flanker). [highlight] o încercuiește.
 class FlankerVisual extends Visual {
@@ -111,8 +143,10 @@ class Choice {
     this.id,
     this.silhouette = false,
     this.scale = 1,
+    this.placement,
   })
-      : assert(label != null || art != null || color != null || objects != null, 'variantă goală');
+      : assert(label != null || art != null || color != null || objects != null || placement != null,
+            'variantă goală');
 
   final String? label;
   final String? art;
@@ -127,6 +161,9 @@ class Choice {
 
   /// Mărimea imaginii față de cartelă (mare / mic: 1 / 0.5).
   final double scale;
+
+  /// Varianta e o mică scenă spațială (ex. ursulețul sub masă).
+  final Placement? placement;
 
   /// Ce se rostește la atingere (implicit [label]).
   final String? speak;
@@ -197,6 +234,7 @@ class Lesson {
         for (final r in rounds) ...[
           for (final c in r.choices) ...[
             if (c.art != null) c.art!,
+            if (c.placement != null) c.placement!.emoji,
             if (c.objects != null) c.objects!.emoji,
           ],
           for (final v in r.visuals)

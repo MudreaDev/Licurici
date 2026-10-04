@@ -2,6 +2,8 @@
 /// Toate folosesc aceeași bancă de obiecte, cele mai multe cu ilustrații pictate.
 library;
 
+import 'dart:math';
+
 import '../game.dart';
 import '../grades.dart';
 
@@ -668,6 +670,76 @@ class PrimulSunetGame extends ChoiceGame {
       choices: [
         for (final o in [t, ...near, ...rest]..shuffle(ctx.random))
           Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
+      ],
+    );
+  }
+}
+
+
+/// Unde e ursulețul? (LRC6, catalog #17 `unde-e-ursul`): „Arată ursulețul sub masă.” Variantele
+/// sunt mici scene cu același obiect în locuri diferite față de același reper. Tier 1–2: pe / sub
+/// (două variante); tier 3–4: + în, lângă; de la tier 5: + deasupra (pe vs deasupra — apropiate).
+class UndeEUrsulGame extends ChoiceGame {
+  const UndeEUrsulGame()
+      : super(
+          id: 'unde-e-ursul',
+          name: 'Unde e ursulețul?',
+          emoji: '🧸',
+          description: 'Pe, sub, în, lângă',
+          subject: Subject.romana,
+          gradeCodes: 'G1',
+        );
+
+  static const _things = [('🧸', 'ursulețul'), ('⚽', 'mingea'), ('🐱', 'pisica'), ('🐶', 'cățelul'), ('🍎', 'mărul')];
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final tier = ctx.difficulty.tier;
+    final relations = tier <= 2
+        ? const [Relation.pe, Relation.sub]
+        : (tier <= 4
+            ? const [Relation.pe, Relation.sub, Relation.inauntru, Relation.langa]
+            : Relation.values);
+    return Lesson(
+      title: name,
+      instruction: 'Ascultă unde e și arată.',
+      rounds: [for (var i = 0; i < 8; i++) _round(ctx, relations)],
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, List<Relation> relations) {
+    final (emoji, word) = ctx.pick(_things);
+    final target = ctx.pick(relations);
+    // „În” doar la cutie (în masă nu se poate); „sub cutie” sună ciudat, deci la cutie fără „sub”.
+    bool fits(Relation r, Landmark l) =>
+        l == Landmark.cutie ? r != Relation.sub : r != Relation.inauntru;
+    // Reperul la care ținta are sens și rămân cel puțin două variante.
+    final landmarks = [
+      for (final l in Landmark.values)
+        if (fits(target, l) && relations.where((r) => fits(r, l)).length >= 2) l,
+    ];
+    final landmark = ctx.pick(landmarks);
+    // Câte variante: 2 (tier mic) → 4, cât permite reperul.
+    final want = min(relations.length, 4);
+    final options = [
+      target,
+      ...ctx.sample(relations.where((r) => r != target && fits(r, landmark)).toList(), want - 1),
+    ]..shuffle(ctx.random);
+    final phrase = '$word ${target.word} ${landmark.word}';
+    return ChoiceRound(
+      prompt: 'Arată $phrase',
+      speak: ['Arată $phrase'],
+      hint: 'Uite: $phrase.',
+      stimulusId: target.name,
+      fixedChoices: true,
+      choices: [
+        for (final r in options)
+          Choice(
+            placement: Placement(emoji, r, landmark),
+            id: r.name,
+            speak: '${r.word} ${landmark.word}',
+            correct: r == target,
+          ),
       ],
     );
   }

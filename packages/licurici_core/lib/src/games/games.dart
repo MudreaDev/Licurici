@@ -26,6 +26,7 @@ const List<GameSpec> allGames = [
   ArataMiGame(),
   CorpulGame(),
   AtributeGame(),
+  UndeEUrsulGame(),
   PrimulSunetGame(),
   IntrusulGame(),
   UmbreGame(),
