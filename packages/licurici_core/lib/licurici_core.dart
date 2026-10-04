@@ -11,6 +11,7 @@ export 'src/reaction.dart';
 export 'src/development.dart';
 export 'src/catalog.dart';
 export 'src/cause_effect.dart';
+export 'src/change.dart';
 export 'src/scene.dart';
 export 'src/trial.dart';
 export 'src/search.dart';

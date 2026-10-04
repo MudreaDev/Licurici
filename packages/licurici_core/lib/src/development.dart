@@ -74,6 +74,8 @@ const List<Ladder> ladders = [
         games: ['prinde-licuriciul', 'cauta']),
     Step('ATN3', 'Urmărește privirea și gestul cuiva spre un obiect', games: ['unde-se-uita']),
     Step('ATN4', 'Urmărește doar privirea (fără gest)', games: ['unde-se-uita']),
+    Step('ATN5', 'Observă ce s-a schimbat într-o scenă (a apărut, s-a înlocuit, a dispărut)',
+        games: ['ce-s-a-schimbat']),
   ]),
   Ladder(Domain.imi, [
     Step('IMI1', 'Imită o acțiune simplă pe ecran (atinge ce a atins Licurici)',

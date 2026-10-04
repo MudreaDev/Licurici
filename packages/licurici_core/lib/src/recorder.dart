@@ -8,6 +8,7 @@ import 'dart:math';
 import 'development.dart';
 import 'game.dart';
 import 'cause_effect.dart';
+import 'change.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -197,6 +198,29 @@ class SessionRecorder {
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `ce-s-a-schimbat`: câte o încercare pe rundă; tipul schimbării în `stimulusSet`
+  /// (acuratețea pe tip de schimbare), numărul de obiecte ca dificultate.
+  void changeLevel(ChangeResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final a in result.answers) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: a.correct,
+        promptLevel: PromptLevel.p0,
+        latencyMs: a.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: a.round.target.word,
+        stimulusSet: a.round.kind.name,
+        difficulty: level.axes.items.toDouble(),
+        targetId: a.correct ? null : a.round.target.word,
+        chosenId: a.correct ? null : a.chosen,
       ));
     }
   }
