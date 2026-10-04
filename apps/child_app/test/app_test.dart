@@ -86,8 +86,8 @@ void main() {
 
     // Atingerea unei arii deschide doar jocurile ei.
     await openDomain(tester, 'POT');
-    await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
-    expect(find.byKey(const ValueKey('game-forme')), findsOneWidget);
+    await pumpUntil(tester, find.byKey(const ValueKey('game-potriveste')));
+    expect(find.byKey(const ValueKey('game-intrusul')), findsOneWidget);
     expect(find.byKey(const ValueKey('game-adunam')), findsNothing);
     await closeApp(tester);
   });
@@ -98,8 +98,8 @@ void main() {
     final store = MemorySessionStore();
     await pumpApp(tester, store: store);
     await openDomain(tester, 'POT');
-    await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
-    await tester.tap(find.byKey(const ValueKey('game-culori')));
+    await pumpUntil(tester, find.byKey(const ValueKey('game-potriveste')));
+    await tester.tap(find.byKey(const ValueKey('game-potriveste')));
     await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
     await tester.tap(find.byKey(const ValueKey('mood-skip')));
     await pumpUntil(tester, find.byKey(const ValueKey('choice-0')));
@@ -146,7 +146,7 @@ void main() {
     expect(session.moodAfter, Mood.linistit);
     expect(session.trials, isNotEmpty);
     expect(
-      session.trials.every((t) => t.gameId == 'culori' && t.stepId == 'POT5'),
+      session.trials.every((t) => t.gameId == 'potriveste' && t.stepId == 'POT1'),
       isTrue,
     );
     expect(
@@ -165,8 +165,8 @@ void main() {
     final store = MemorySessionStore();
     await pumpApp(tester, store: store);
     await openDomain(tester, 'POT');
-    await pumpUntil(tester, find.byKey(const ValueKey('game-culori')));
-    await tester.tap(find.byKey(const ValueKey('game-culori')));
+    await pumpUntil(tester, find.byKey(const ValueKey('game-potriveste')));
+    await tester.tap(find.byKey(const ValueKey('game-potriveste')));
     await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
     await tester.tap(find.byKey(const ValueKey('mood-skip')));
     await pumpUntil(tester, find.byKey(const ValueKey('choice-0')));
