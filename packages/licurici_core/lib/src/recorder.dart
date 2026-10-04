@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'development.dart';
 import 'game.dart';
+import 'gaze.dart';
 import 'imitation.dart';
 import 'memory.dart';
 import 'ordering.dart';
@@ -237,6 +238,28 @@ class SessionRecorder {
         difficulty: switches.contains(r.item.index) ? 2 : 1,
         targetId: r.item.rule.name,
         chosenId: r.correct ? null : (r.item.rule == SortRule.color ? SortRule.shape : SortRule.color).name,
+      ));
+    }
+  }
+
+  /// Un nivel `unde-se-uita`: câte o încercare pe rundă; corectă = prima atingere pe obiectul
+  /// privit. Gestul adăugat după greșeală (când cerința era doar privirea) = ajutor P3.
+  void gazeLevel(GazeResult result) {
+    final level = result.level;
+    final step = level.axes.cue == GazeCue.point ? 'ATN3' : 'ATN4';
+    for (final a in result.answers) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: a.correct,
+        promptLevel: a.extraCue ? PromptLevel.p3 : PromptLevel.p0,
+        latencyMs: a.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: level.axes.cue.name,
+        stimulusSet: level.axes.similar ? 'asemanatoare' : 'diferite',
+        targetId: a.round.side == 0 ? 'stanga' : 'dreapta',
+        chosenId: a.correct ? null : (a.firstChoice == 0 ? 'stanga' : 'dreapta'),
       ));
     }
   }

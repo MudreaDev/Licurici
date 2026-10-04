@@ -13,6 +13,7 @@ export 'src/scene.dart';
 export 'src/trial.dart';
 export 'src/search.dart';
 export 'src/sequence.dart';
+export 'src/gaze.dart';
 export 'src/imitation.dart';
 export 'src/memory.dart';
 export 'src/ordering.dart';

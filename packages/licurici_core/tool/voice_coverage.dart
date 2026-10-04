@@ -29,6 +29,9 @@ const uiPhrases = [
   'Atinge felinarul doar când se face verde.',
   'Așteaptă verde.',
   'Acum!',
+  // Unde se uită?
+  'Ce arată Licurici?',
+  'Unde se uită Licurici?',
   // Check-in-ul de dispoziție și finalul sesiunii
   'Cum te simți?',
   'Ne vedem data viitoare!',

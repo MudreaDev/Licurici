@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'fx/mesh_warp.dart';
 import 'illustration.dart';
 import 'motion.dart';
+import 'stimulus_art.dart' show IllustrationIndex;
 
 enum MascotMood {
   idle,
@@ -19,6 +20,19 @@ enum MascotMood {
 
   /// Ochii închiși, aripile în repaus — pauză, „pe mâine”.
   sleep,
+
+  /// Privește / arată spre stânga sau dreapta (atenție comună, „Unde se uită?”).
+  lookLeft('look_left'),
+  lookRight('look_right'),
+  pointLeft('point_left'),
+  pointRight('point_right');
+
+  const MascotMood([this._file]);
+
+  final String? _file;
+
+  /// Numele cadrului din `mascot/`.
+  String get file => _file ?? name;
 }
 
 /// Rig-ul ilustrației (coordonate normalizate pe pânza pătrată a cadrelor, vezi
@@ -34,7 +48,12 @@ abstract final class MascotRig {
   static final wingRight = frame('wing_right');
   static final blink = frame('blink');
 
-  static AssetImage forMood(MascotMood mood) => frame(mood.name);
+  /// Cadrul stării; cadrele adăugate mai târziu (privirea) cad pe `idle` cât lipsesc.
+  static AssetImage forMood(MascotMood mood) =>
+      IllustrationIndex.has('mascot/${mood.file}') ||
+          mood.index <= MascotMood.sleep.index
+      ? frame(mood.file)
+      : frame('idle');
 
   static Iterable<AssetImage> get all => [
     for (final m in MascotMood.values) forMood(m),
