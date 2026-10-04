@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -388,8 +390,18 @@ class _Flanker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final n = visual.directions.length;
-    final size =
+    final base =
         (n == 1 ? 150.0 : (n == 3 ? 110.0 : 86.0)) * VisualScale.of(context);
+    // Încap toți peștii pe lățimea panoului (margini, spațiu, chenarul încercuirii: ~26 dp pe pește).
+    return LayoutBuilder(
+      builder: (context, box) => _row(
+        box.maxWidth.isFinite ? math.min(base, box.maxWidth / n - 26) : base,
+      ),
+    );
+  }
+
+  Widget _row(double size) {
+    final n = visual.directions.length;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

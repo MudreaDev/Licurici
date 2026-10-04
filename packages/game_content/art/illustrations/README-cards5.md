@@ -1,0 +1,41 @@
+# Ilustrații — cards5
+
+## games/ce-se-aude.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a1092f-e492-77e0-953a-fed59af499f1\exec-75cc5dda-6af3-4f9e-af51-8d66e0ff8aca.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create one Licurici game-card illustration. Subject: One large simplified friendly peach-colored human ear on the LEFT and one small fluffy cream-and-peach kitten sitting on the RIGHT, its little mouth gently open as if meowing. Exactly three soft rounded pastel musical notes float just above the kitten toward the ear. Ear is a clear stylized listening symbol, softly modeled and non-medical. Kitten has kind warm brown eyes, complete ears, paws and curled tail. No scenery or mascot. Square 1024x1024 RGBA PNG with real transparent alpha background, not white or a checkerboard. Isolated coherent group centered within the central 80% of the canvas; every part fully visible with generous transparent margins on ALL sides. Match the existing Licurici games/semaforul.webp, games/traseaza.webp, games/cauta.webp and games/umbre.webp seen in context as STYLE REFERENCES: soft painted children's storybook illustration, softly rounded outlines, warm gentle lighting, lightly shaded tactile materials, fine polished brushwork, readable large simple shapes. Calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Minimal detail. No text, letters, numerals, labels, watermark, frightening faces, harsh colors, border, sticker rim, external cast shadow or scattered decorations.
+
+## games/ce-imbrac.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a1092f-e492-77e0-953a-fed59af499f1\exec-3a8f636f-5e26-4430-9a74-1dd4735214d9.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create one Licurici game-card illustration. Subject: One mint rain jacket with both sleeves visible, one open sky-blue and lavender umbrella with complete curved handle, and a pair of sunshine-yellow rubber boots, arranged as a compact readable group. Beside and above the rainwear is one small soft cream-and-blue cloud with exactly three sky-blue raindrops. Objects clearly separated, clothing empty, no person, no faces on objects, no scenery. Square 1024x1024 RGBA PNG with real transparent alpha background, not white or a checkerboard. Isolated coherent group centered within the central 80% of the canvas; every part fully visible with generous transparent margins on ALL sides. Match the existing Licurici games/semaforul.webp, games/traseaza.webp, games/cauta.webp and games/umbre.webp seen in context as STYLE REFERENCES: soft painted children's storybook illustration, softly rounded outlines, warm gentle lighting, lightly shaded tactile materials, fine polished brushwork, readable large simple shapes. Calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Minimal detail. No text, letters, numerals, labels, watermark, frightening faces, harsh colors, border, sticker rim, external cast shadow or scattered decorations.
+
+## games/vorbeste.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a1092f-e492-77e0-953a-fed59af499f1\exec-3efb0035-1fb4-4c60-af1a-91b81506799c.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create one Licurici game-card illustration. Subject: One friendly invented preschool child with chestnut hair, peach skin, mint shirt and sky-blue trousers, seated with complete body and feet visible behind exactly two cream picture cards angled toward the viewer. The child's index finger clearly touches the first card showing ONLY a large glass of water; the second card shows ONLY one mint-green apple. Both pictures unobscured and readable. One empty cream speech bubble with a soft lavender rim floats beside the child's head, its tail directed toward the child; bubble contains absolutely nothing. Gentle small smile, anatomically clear hands. No furniture, scenery or mascot. Square 1024x1024 RGBA PNG with real transparent alpha background, not white or a checkerboard. Isolated coherent group centered within the central 80% of the canvas; every part fully visible with generous transparent margins on ALL sides. Match the existing Licurici games/semaforul.webp, games/traseaza.webp, games/cauta.webp and games/umbre.webp seen in context as STYLE REFERENCES: soft painted children's storybook illustration, softly rounded outlines, warm gentle lighting, lightly shaded tactile materials, fine polished brushwork, readable large simple shapes. Calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Minimal detail. No text, letters, numerals, labels, watermark, frightening faces, harsh colors, border, sticker rim, external cast shadow or scattered decorations.
+
+## games/toba-magica.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a1092f-e492-77e0-953a-fed59af499f1\exec-de6301e2-a6cc-4a1a-bd63-8e726846505f.png`
+
+Prompt exact:
+
+> Use case: identity-preserve. Transform the supplied mascot/idle.webp into a Licurici game-card scene. The supplied image is the edit target and exact character identity reference. Preserve its facial design, violet eyes, head-to-body proportions, short mint antennae WITHOUT glowing yellow balls, navy wizard hat with gold stars and lavender band, navy cape, mint limbs and golden segmented belly ON THE FRONT OF THE TORSO. Do not make a round baby insect or add a tail. NO WINGS. Remove the wand and change only the arms and pose to let Licurici play a toy drum with exactly two wooden drumsticks, one in each hand, one touching the drumhead and the other raised slightly. Place a small cream-headed sky-blue drum with lavender rims and sunshine-yellow cords in front beside the character so the face, front belly and both feet remain visible. Exactly three small soft pastel musical notes above the drum. Keep the original fine painted storybook rendering, gentle friendly smile and recognizable silhouette. Square RGBA PNG with real transparent alpha background. Entire scene centered within the central 80 percent of the canvas with generous clear margins; full hat, antennae, cape, both feet, both sticks and entire drum visible. Palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC, with original navy costume retained. No scenery, ground, cast shadow, border, sticker rim, text, letters, numerals, watermark, harsh colors or frightening faces.
+
+## games/hraneste-pestii.webp
+
+Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a1092f-e492-77e0-953a-fed59af499f1\exec-1b42a154-5f21-4c14-ad27-0514401a0e5d.png`
+
+Prompt exact:
+
+> Use case: illustration-story. Create one Licurici game-card illustration. Subject: Exactly two small friendly fish, one sunshine-yellow and one peach, swimming visibly in one compact oval patch of pale sky-blue pond water with a softly painted mint edge and two gentle ripples. A small child's hand with a short lavender sleeve cuff hovers above the pond, holding ONE little bread crumb between thumb and index finger toward the fish. Fish face the offered crumb with kind simple eyes, complete fins and tails, no teeth. Entire hand and sleeve cuff end INSIDE the canvas, no arm extending off-frame. Pond is one self-contained isolated vignette, transparent everywhere outside it; no landscape or extra scenery. Square 1024x1024 RGBA PNG with real transparent alpha background, not white or a checkerboard. Isolated coherent group centered within the central 80% of the canvas; every part fully visible with generous transparent margins on ALL sides. Match the existing Licurici games/semaforul.webp, games/traseaza.webp, games/cauta.webp and games/umbre.webp seen in context as STYLE REFERENCES: soft painted children's storybook illustration, softly rounded outlines, warm gentle lighting, lightly shaded tactile materials, fine polished brushwork, readable large simple shapes. Calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. Minimal detail. No text, letters, numerals, labels, watermark, frightening faces, harsh colors, border, sticker rim, external cast shadow or scattered decorations.
