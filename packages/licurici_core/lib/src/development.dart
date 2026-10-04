@@ -111,6 +111,11 @@ const List<Ladder> ladders = [
     Step('FEX5', 'Ține minte și repetă o secvență (memorie de lucru)', games: ['simon', 'perechi']),
     Step('FEX6', 'Se liniștește cu respirația ghidată', games: ['respira']),
   ]),
+  Ladder(Domain.mot, [
+    Step('MOT1', 'Duce degetul pe un drum lat, drept, de la start la țintă', games: ['traseaza']),
+    Step('MOT2', 'Urmărește curbe și valuri fără să iasă de pe drum', games: ['traseaza']),
+    Step('MOT3', 'Urmărește zig-zag și bucle pe un drum îngust, fără ajutor', games: ['traseaza']),
+  ]),
   Ladder(Domain.pac, [
     Step('PAC-N2', 'Numără până la 5', games: ['numaram']),
     Step('PAC-N4', 'Compară cantități (mai mult / mai puțin)', games: ['comparam']),

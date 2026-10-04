@@ -66,6 +66,13 @@ void main(List<String> args) {
     add(const SimonGame().generate(level, seed: level).instruction, 'simon');
   }
 
+  // Jocurile cu ecran propriu (fără runde `choice`).
+  for (final t in traceTrips) {
+    add(t.says, 'traseaza');
+  }
+  add(const SortGame().generate(1, seed: 1).instruction, 'sortam');
+  add(const MemoryGame().generate(1, seed: 1).instruction, 'perechi');
+
   final missing = phrases.keys.where((p) => !clips.contains(p)).toList()..sort();
   final covered = phrases.length - missing.length;
   stdout.writeln('Fraze rostite: ${phrases.length} · cu voce: $covered · lipsă: ${missing.length}');

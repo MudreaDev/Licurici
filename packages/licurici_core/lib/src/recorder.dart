@@ -13,6 +13,7 @@ import 'report.dart';
 import 'sequence.dart';
 import 'shell.dart';
 import 'sorting.dart';
+import 'trace.dart';
 import 'trial.dart';
 
 /// Treapta pe care o exersează un joc (prima din trasee) — încercările se leagă de ea.
@@ -160,6 +161,27 @@ class SessionRecorder {
         stimulusId: p.item.emoji,
         targetId: p.item.binId,
         chosenId: p.firstWrongBin,
+      ));
+    }
+  }
+
+  /// Un nivel `traseaza`: câte o încercare pe drum. Corectă = dus până la capăt fără ieșiri;
+  /// încercările = ieșiri + 1; dificultatea = cât de îngust e drumul (1 / lățime).
+  void traceLevel(TraceResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final r in result.runs) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: r.clean,
+        promptLevel: level.axes.guide == TraceGuide.dots ? PromptLevel.p3 : PromptLevel.p0,
+        attempts: r.exits + 1,
+        latencyMs: r.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: r.path.shape.name,
+        difficulty: 1 / level.axes.width,
       ));
     }
   }
