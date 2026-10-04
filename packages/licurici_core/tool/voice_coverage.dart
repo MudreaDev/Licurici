@@ -70,6 +70,15 @@ void main(List<String> args) {
   for (final t in traceTrips) {
     add(t.says, 'traseaza');
   }
+  for (final g in orderGames) {
+    add(g.instruction, g.id);
+    for (final story in g.stories) {
+      add(story.title, g.id);
+      for (final step in story.steps) {
+        add(step.caption, g.id);
+      }
+    }
+  }
   add(const SortGame().generate(1, seed: 1).instruction, 'sortam');
   add(const MemoryGame().generate(1, seed: 1).instruction, 'perechi');
 

@@ -96,6 +96,7 @@ const List<Ladder> ladders = [
         games: ['cucu-bau']),
     Step('COG3', 'Sortează obiecte după categorie', games: ['sortam']),
     Step('COG5', 'Continuă un model (AB, AAB, ABC)', games: ['continua-sirul']),
+    Step('COG6', 'Pune în ordine imaginile unei întâmplări', games: ['ce-urmeaza']),
   ]),
   Ladder(Domain.emo, [
     Step('EMO1', 'Deosebește bucuros de trist', games: ['emotii']),
@@ -110,6 +111,11 @@ const List<Ladder> ladders = [
         games: ['pescarul']),
     Step('FEX5', 'Ține minte și repetă o secvență (memorie de lucru)', games: ['simon', 'perechi']),
     Step('FEX6', 'Se liniștește cu respirația ghidată', games: ['respira']),
+  ]),
+  Ladder(Domain.aut, [
+    Step('AUT1', 'Pune în ordine pașii unei rutine: întâi … apoi … (2–3 pași)',
+        games: ['pasii-rutinei']),
+    Step('AUT2', 'Pune în ordine o rutină întreagă (4–5 pași)', games: ['pasii-rutinei']),
   ]),
   Ladder(Domain.mot, [
     Step('MOT1', 'Duce degetul pe un drum lat, drept, de la start la țintă', games: ['traseaza']),

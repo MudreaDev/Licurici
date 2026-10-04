@@ -8,6 +8,7 @@ import 'dart:math';
 import 'development.dart';
 import 'game.dart';
 import 'memory.dart';
+import 'ordering.dart';
 import 'reaction.dart';
 import 'report.dart';
 import 'sequence.dart';
@@ -161,6 +162,30 @@ class SessionRecorder {
         stimulusId: p.item.emoji,
         targetId: p.item.binId,
         chosenId: p.firstWrongBin,
+      ));
+    }
+  }
+
+  /// Un nivel „pune în ordine” (`pasii-rutinei`, `ce-urmeaza`): câte o încercare pe poveste.
+  /// Corectă = toți pașii puși din prima; ținta / alegerea = primul pas greșit (erori de ordine).
+  void orderLevel(OrderResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final a in result.attempts) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: a.clean,
+        promptLevel: a.hinted ? PromptLevel.p3 : (a.clean ? PromptLevel.p0 : PromptLevel.p2),
+        attempts: a.wrongTaps + 1,
+        latencyMs: a.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: a.round.story.id,
+        stimulusSet: level.gameId,
+        difficulty: a.round.steps.length.toDouble(),
+        targetId: a.expected,
+        chosenId: a.firstWrong,
       ));
     }
   }

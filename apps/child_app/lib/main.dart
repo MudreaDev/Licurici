@@ -17,6 +17,7 @@ import 'features/games/calm/breathing_screen.dart';
 import 'features/games/choice/choice_game_screen.dart';
 import 'features/games/memory/memory_screen.dart';
 import 'features/games/shell/shell_screen.dart';
+import 'features/games/order/order_screen.dart';
 import 'features/games/sort/sort_screen.dart';
 import 'features/games/trace/trace_screen.dart';
 import 'features/games/reaction/reaction_game_screen.dart';
@@ -161,6 +162,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/sortam',
         pageBuilder: (context, state) =>
             _fade(context, state, const SortScreen()),
+      ),
+      GoRoute(
+        path: '/ordine/:id',
+        redirect: (context, state) =>
+            orderGameById(state.pathParameters['id']!) == null ? '/' : null,
+        pageBuilder: (context, state) => _fade(
+          context,
+          state,
+          OrderScreen(
+            key: ValueKey(state.pathParameters['id']),
+            game: orderGameById(state.pathParameters['id']!)!,
+          ),
+        ),
       ),
       GoRoute(
         path: '/traseaza',
