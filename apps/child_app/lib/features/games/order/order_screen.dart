@@ -279,6 +279,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     number: i + 1,
                     side: side,
                     step: i < _placed ? _r.steps[i] : null,
+                    sized: _r.story.sized,
                     next: i == _placed && !_roundDone,
                     compact: layout.compact,
                     burst: i == _placed - 1 ? _burst : 0,
@@ -323,7 +324,11 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                               child: Center(
                                 child: StimulusArt(
                                   _r.steps[i].emoji,
-                                  size: side * 0.68,
+                                  size: _artSize(
+                                    side,
+                                    _r.steps[i],
+                                    sized: _r.story.sized,
+                                  ),
                                 ),
                               ),
                             ),
@@ -348,6 +353,7 @@ class _Slot extends StatelessWidget {
     required this.number,
     required this.side,
     required this.step,
+    required this.sized,
     required this.next,
     required this.compact,
     required this.burst,
@@ -357,6 +363,7 @@ class _Slot extends StatelessWidget {
   final int number;
   final double side;
   final OrderStep? step;
+  final bool sized;
   final bool next;
   final bool compact;
   final int burst;
@@ -393,7 +400,7 @@ class _Slot extends StatelessWidget {
                   child: filled
                       ? StimulusArt(
                           step!.emoji,
-                          size: side * 0.68,
+                          size: _artSize(side, step!, sized: sized),
                         ).land(key: ValueKey(step!.emoji))
                       : Text(
                           '$number',
@@ -450,6 +457,11 @@ class _Slot extends StatelessWidget {
     );
   }
 }
+
+/// Mărimea pozei pe cartelă. La „Mare și mic” diferențele rămân vizibile, dar nici cea mai
+/// mică poză nu devine prea mică pe telefon.
+double _artSize(double side, OrderStep step, {required bool sized}) =>
+    sized ? side * (0.22 + 0.62 * step.scale) : side * 0.68;
 
 extension on Widget {
   /// Poza „aterizează” în loc (mică apropiere).

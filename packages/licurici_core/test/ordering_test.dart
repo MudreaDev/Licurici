@@ -25,7 +25,7 @@ void main() {
               expect(r.shuffled.toSet(), {for (var i = 0; i < r.steps.length; i++) i});
               expect(r.shuffled, isNot(orderedEquals([for (var i = 0; i < r.steps.length; i++) i])));
               // Fără două poze la fel în aceeași rundă (ar fi ambiguu).
-              expect(r.steps.map((s) => s.emoji).toSet(), hasLength(r.steps.length));
+              expect(r.steps.map((s) => '${s.emoji}${s.scale}').toSet(), hasLength(r.steps.length));
             }
           }
         }
@@ -50,6 +50,18 @@ void main() {
       });
     });
   }
+
+  test('mare și mic: același obiect, mărimi crescătoare', () {
+    for (var seed = 0; seed < 30; seed++) {
+      for (final r in OrderGame.sizes.generate(7, seed: seed).rounds) {
+        expect(r.steps.map((s) => s.emoji).toSet(), hasLength(1));
+        for (var i = 1; i < r.steps.length; i++) {
+          expect(r.steps[i].scale, greaterThan(r.steps[i - 1].scale));
+        }
+      }
+    }
+    expect(catalogEntry('mare-mic')!.domain, Domain.cog);
+  });
 
   test('înregistrarea și catalogul', () {
     final level = OrderGame.routine.generate(1, seed: 1);

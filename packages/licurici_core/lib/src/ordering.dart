@@ -11,9 +11,12 @@ import 'dart:math';
 import 'grades.dart';
 
 class OrderStep {
-  const OrderStep(this.emoji, this.caption);
+  const OrderStep(this.emoji, this.caption, {this.scale = 1});
 
   final String emoji;
+
+  /// Mărimea pozei (1 = toată cartela); la „Mare–mijlociu–mic” aceeași poză în mărimi diferite.
+  final double scale;
 
   /// Rostit când pasul e pus la locul lui („Pun săpun.”).
   final String caption;
@@ -27,6 +30,9 @@ class OrderStory {
   /// Rostit la început („Spălatul pe mâini”).
   final String title;
   final List<OrderStep> steps;
+
+  /// Pozele diferă doar ca mărime (Mare și mic).
+  bool get sized => steps.any((s) => s.scale != 1);
 }
 
 const routineStories = [
@@ -102,6 +108,67 @@ const storyStories = [
     OrderStep('🌳', 'Mărul crește în pom.'),
     OrderStep('🍎', 'Culegem mărul.'),
     OrderStep('😋', 'Mâncăm mărul.'),
+  ]),
+];
+
+/// Mare–mijlociu–mic: același obiect în 5 mărimi (de la mic la mare). Rundele iau 2 → 5
+/// dintre ele: cu cât sunt mai multe, cu atât diferențele dintre vecini sunt mai mici.
+const sizeStories = [
+  OrderStory('marime-ursulețul', 'De la mic la mare', [
+    OrderStep('🧸', 'Cel mai mic.', scale: 0.32),
+    OrderStep('🧸', 'Mai mare.', scale: 0.48),
+    OrderStep('🧸', 'Mai mare.', scale: 0.64),
+    OrderStep('🧸', 'Mai mare.', scale: 0.82),
+    OrderStep('🧸', 'Cel mai mare.', scale: 1.0),
+  ]),
+  OrderStory('marime-balonul', 'De la mic la mare', [
+    OrderStep('🎈', 'Cel mai mic.', scale: 0.32),
+    OrderStep('🎈', 'Mai mare.', scale: 0.48),
+    OrderStep('🎈', 'Mai mare.', scale: 0.64),
+    OrderStep('🎈', 'Mai mare.', scale: 0.82),
+    OrderStep('🎈', 'Cel mai mare.', scale: 1.0),
+  ]),
+  OrderStory('marime-mărul', 'De la mic la mare', [
+    OrderStep('🍎', 'Cel mai mic.', scale: 0.32),
+    OrderStep('🍎', 'Mai mare.', scale: 0.48),
+    OrderStep('🍎', 'Mai mare.', scale: 0.64),
+    OrderStep('🍎', 'Mai mare.', scale: 0.82),
+    OrderStep('🍎', 'Cel mai mare.', scale: 1.0),
+  ]),
+  OrderStory('marime-steaua', 'De la mic la mare', [
+    OrderStep('⭐', 'Cel mai mic.', scale: 0.32),
+    OrderStep('⭐', 'Mai mare.', scale: 0.48),
+    OrderStep('⭐', 'Mai mare.', scale: 0.64),
+    OrderStep('⭐', 'Mai mare.', scale: 0.82),
+    OrderStep('⭐', 'Cel mai mare.', scale: 1.0),
+  ]),
+  OrderStory('marime-câinele', 'De la mic la mare', [
+    OrderStep('🐶', 'Cel mai mic.', scale: 0.32),
+    OrderStep('🐶', 'Mai mare.', scale: 0.48),
+    OrderStep('🐶', 'Mai mare.', scale: 0.64),
+    OrderStep('🐶', 'Mai mare.', scale: 0.82),
+    OrderStep('🐶', 'Cel mai mare.', scale: 1.0),
+  ]),
+  OrderStory('marime-copacul', 'De la mic la mare', [
+    OrderStep('🌳', 'Cel mai mic.', scale: 0.32),
+    OrderStep('🌳', 'Mai mare.', scale: 0.48),
+    OrderStep('🌳', 'Mai mare.', scale: 0.64),
+    OrderStep('🌳', 'Mai mare.', scale: 0.82),
+    OrderStep('🌳', 'Cel mai mare.', scale: 1.0),
+  ]),
+  OrderStory('marime-mașina', 'De la mic la mare', [
+    OrderStep('🚗', 'Cel mai mic.', scale: 0.32),
+    OrderStep('🚗', 'Mai mare.', scale: 0.48),
+    OrderStep('🚗', 'Mai mare.', scale: 0.64),
+    OrderStep('🚗', 'Mai mare.', scale: 0.82),
+    OrderStep('🚗', 'Cel mai mare.', scale: 1.0),
+  ]),
+  OrderStory('marime-elefantul', 'De la mic la mare', [
+    OrderStep('🐘', 'Cel mai mic.', scale: 0.32),
+    OrderStep('🐘', 'Mai mare.', scale: 0.48),
+    OrderStep('🐘', 'Mai mare.', scale: 0.64),
+    OrderStep('🐘', 'Mai mare.', scale: 0.82),
+    OrderStep('🐘', 'Cel mai mare.', scale: 1.0),
   ]),
 ];
 
@@ -199,6 +266,17 @@ class OrderGame {
     'Ce s-a întâmplat întâi? Atinge pozele în ordine.',
   );
 
+  /// Mare–mijlociu–mic (COG4).
+  static const sizes = OrderGame._(
+    'mare-mic',
+    'Mare și mic',
+    '🧸',
+    'Pune de la mic la mare',
+    ['COG4'],
+    sizeStories,
+    'Pune de la cel mai mic la cel mai mare.',
+  );
+
   final String id;
   final String name;
   final String emoji;
@@ -254,7 +332,7 @@ class OrderGame {
   }
 }
 
-const orderGames = [OrderGame.routine, OrderGame.story];
+const orderGames = [OrderGame.routine, OrderGame.story, OrderGame.sizes];
 
 OrderGame? orderGameById(String id) {
   for (final g in orderGames) {
