@@ -31,6 +31,8 @@ const uiPhrases = [
   'Acum!',
   // Unde se uită?
   'Ce arată Licurici?',
+  // Atinge și vezi
+  'Atinge și vezi ce se întâmplă!',
   // Hrănește peștii
   'Du mâncarea la peștele flămând.',
   'Mmm, mulțumesc!',

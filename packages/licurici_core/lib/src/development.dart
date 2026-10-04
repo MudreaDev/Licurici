@@ -104,6 +104,8 @@ const List<Ladder> ladders = [
     Step('COM3', 'Cere ce vrea cu pictograme („Vreau apă”)', games: ['vorbeste']),
   ]),
   Ladder(Domain.cog, [
+    Step('COG1', 'Înțelege cauză–efect: atinge intenționat ca să se întâmple ceva',
+        games: ['atinge-si-vezi']),
     Step('COG2', 'Găsește un obiect ascuns, chiar dacă s-a mutat (permanența obiectului)',
         games: ['cucu-bau']),
     Step('COG3', 'Sortează obiecte după categorie', games: ['sortam']),

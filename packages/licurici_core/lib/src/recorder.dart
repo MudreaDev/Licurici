@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'development.dart';
 import 'game.dart';
+import 'cause_effect.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -196,6 +197,33 @@ class SessionRecorder {
         targetId: a.expected,
         chosenId: a.firstWrong,
       ));
+    }
+  }
+
+  /// Un nivel `atinge-si-vezi`: câte o încercare pe atingerea unui obiect (intenționată);
+  /// atingerile pe lângă de dinainte se adună în `offTargetTaps` (KPI: proporția celor țintite).
+  void causeLevel(CauseResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    var misses = 0;
+    for (final t in result.touches) {
+      if (!t.onObject) {
+        misses++;
+        continue;
+      }
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: true,
+        promptLevel: PromptLevel.p0,
+        latencyMs: t.sinceLastMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: t.object,
+        difficulty: level.objects.length.toDouble(),
+        offTargetTaps: misses,
+      ));
+      misses = 0;
     }
   }
 
