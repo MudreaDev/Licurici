@@ -70,7 +70,16 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - ✅ **Trasează** (MOT1–3, mecanică nouă): albina pe drum până la floare; drumuri generate (linie → diagonală → arc → val → zig-zag → buclă), drumul se îngustează, ghidajul (puncte, săgeată) dispare; `TraceTracker` (pur, testat): personajul înaintează doar cât degetul e pe drum, ieșirile se numără, KPI abaterea medie. `lib/src/trace.dart`, `features/games/trace/`.
 - ✅ **Pune în ordine** (mecanică nouă): **Pașii rutinei** (AUT1–2: mâini, îmbrăcat, culcare, masă, afară) și **Ce urmează?** (COG6: oul → puiul, sămânța → floarea, omul de zăpadă…); 2 pași („întâi … apoi …”) → 5; după două greșeli poza bună pulsează (P3). `lib/src/ordering.dart`, `features/games/order/`.
 - ✅ **Fă ca Licurici** (IMI1–3, mecanică nouă): un licurici zboară la obiect și îl face să sară sau îl duce în coș; copilul repetă; după două greșeli modelul se reia (P4). `lib/src/imitation.dart`, `features/games/imitation/`.
-- Ariile **IMI, AUT, MOT** au acum jocuri. Vocea generată local cu edge-tts (100%). OpenMoji lipsă se iau din `cdn.jsdelivr.net/npm/openmoji@15.1.0/color/svg/`.
+- ✅ **Semaforul** (FEX1): felinarul mare se face verde după 1 → 6 s; de la nivelul 4 licărește galben (tentații); KPI atingeri anticipate + cea mai lungă așteptare reușită. `lib/src/waiting.dart`, `features/games/wait/`.
+- ✅ **Regula se schimbă** (FEX3–4, paradigma DCCS): cartonașe cu forme colorate desenate din cod, sortate după culoare, apoi după formă (anunțat), apoi regula amestecată arătată pe cartonaș; KPI erori de perseverare + costul schimbării. `lib/src/switching.dart`, `features/games/rules/`.
+- ✅ **Caută** (ATN2): 4 → 25 de obiecte pictate împrăștiate, țintă în colț; de la nivelul 5 distractori din aceeași grupă; după 8 s ținta pulsează; KPI timp de căutare vs număr de obiecte. `lib/src/search.dart`, `features/games/search/`.
+- ✅ **Unde se uită?** (ATN3–4, atenție comună): Licurici (cadre pictate noi: `look_left/right`, `point_left/right`) arată și se uită, apoi doar se uită spre unul din două obiecte; după greșeală adaugă gestul (P3). `lib/src/gaze.dart`, `features/games/gaze/`, `MascotMood.lookLeft…`.
+- ✅ **Umbre** (POT3): obiect ↔ silueta lui, alternat; silueta se colorează la răspunsul corect (`SilhouetteVisual`, `Choice.silhouette`).
+- ✅ **Mare și mic** (COG4): seriere după mărime, pe mecanica „pune în ordine” (`OrderStep.scale`).
+- ✅ **Mare, mic, roșu** (LRC4): „Arată mărul mic / cartea verde”; distractori cu un singur atribut corect (`Choice.scale`).
+- ✅ **Ce se aude?** (COM1): vocea spune sunetul („Cine face miau?”), copilul alege cine îl face.
+- ✅ Toate cele 62 de obiecte sunt pictate (inclusiv elefantul); carduri pictate pentru toate jocurile noi.
+- Ariile **IMI, AUT, MOT** au acum jocuri; în total **18 jocuri noi** în această sesiune (37 în aplicație). Vocea generată local cu edge-tts (100%). OpenMoji lipsă se iau din `cdn.jsdelivr.net/npm/openmoji@15.1.0/color/svg/`.
 
 **Sesiunea a șasea — aspect profesionist pentru copil (Claude cod + Codex doar imagini):**
 - ✅ **Kitul vizual „candy”** (`apps/child_app/lib/shared/ui/candy.dart`): butoane/carduri cu buză 3D care „coboară” la atingere, panouri crem, titluri cu contur alb, baloane de vorbire; bara de sus cu butoane rotunde colorate (sens fix pe culoare). Folosit pe toate ecranele copilului.
@@ -890,9 +899,14 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (19):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
-🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`).
-🆕 simon / Felinarele (`sequence`).
+**Gata în Flutter (37):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
+🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
+🆕 simon / Felinarele (`sequence`), perechi (`memoryCards`), sortam (`dragDrop`), cucu-bau, respira, continua-sirul,
+🆕 **sesiunea a șaptea:** potriveste, arata-mi, corpul, intrusul, umbre, mingea-rosie, ce-se-aude (`choice`), traseaza (`trace`),
+pasii-rutinei, ce-urmeaza, mare-mic (`order` — „pune în ordine”), fa-ca-licuriciul (imitație), semaforul (așteptare),
+regula-se-schimba (DCCS), cauta (căutare vizuală), unde-se-uita (atenție comună).
+Fiecare mecanică nouă are fișierul ei în `licurici_core/lib/src/` (logică pură, testată) și ecranul în
+`apps/child_app/lib/features/games/<mecanică>/`; catalogul (`catalog.dart`, `GameKind`) dă ruta.
 Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii,social}.dart` + registrul `games.dart`;
 `reaction.dart` (`reactionGames`), `sequence.dart`. Legătura joc → trepte: `development.dart` (testul cere ca fiecare joc să aibă o treaptă).
 **Urmează** (pasul 1 din §0.1): câte un folder per joc — `games/<materie>/<id>/`.
