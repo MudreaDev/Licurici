@@ -31,6 +31,10 @@ const uiPhrases = [
   'Acum!',
   // Unde se uită?
   'Ce arată Licurici?',
+  // Toba magică
+  'Ascultă ritmul lui Licurici.',
+  'Bate și tu la fel.',
+  'Mai ascultăm o dată.',
   'Unde se uită Licurici?',
   // Check-in-ul de dispoziție și finalul sesiunii
   'Cum te simți?',

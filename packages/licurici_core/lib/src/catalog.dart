@@ -6,6 +6,7 @@ library;
 import 'development.dart';
 import 'games/games.dart';
 import 'reaction.dart';
+import 'rhythm.dart';
 import 'gaze.dart';
 import 'imitation.dart';
 import 'memory.dart';
@@ -21,7 +22,7 @@ import 'trace.dart';
 import 'waiting.dart';
 
 /// Mecanica de care depinde ruta ecranului.
-enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac }
+enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm }
 
 /// Un joc din catalog, indiferent de mecanică.
 class CatalogEntry {
@@ -60,6 +61,7 @@ class CatalogEntry {
         GameKind.search => '/cauta',
         GameKind.gaze => '/unde-se-uita',
         GameKind.aac => '/vorbeste',
+        GameKind.rhythm => '/toba-magica',
       };
 
   @override
@@ -142,6 +144,15 @@ List<CatalogEntry> get catalog => [
           emoji: g.emoji,
           description: g.description,
           kind: GameKind.calm,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [RhythmGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.rhythm,
           domain: _domainOf(g.id, g.steps),
         ),
       for (final g in const [AacGame()])

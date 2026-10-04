@@ -83,3 +83,19 @@ save('correct', mix((0, mallet(hz(7), 0.5, 7)), (0.09, mallet(hz(12), 0.7, 5))),
 save('star', mix(*[(k * 0.05, mallet(hz(12 + s), 0.35, 10, 0.2)) for k, s in enumerate([0, 4, 7, 12])]), gain=0.4)
 # Abțibild: „plop” + clinchet.
 save('sticker', mix((0, pop(0.12)), (0.07, mallet(hz(16), 0.6, 6, 0.25))), gain=0.45)
+
+
+def drum(freq, dur=0.45, drop=0.35, noise=0.12):
+    """Tobă moale: ton care coboară puțin (corp) + un strop de zgomot la atac (piele)."""
+    n = int(dur * RATE)
+    t = np.arange(n) / RATE
+    f = freq * (1 + drop * np.exp(-30 * t))
+    body = np.sin(2 * np.pi * np.cumsum(f) / RATE) * env(n, attack=0.002, decay=9)
+    rng = np.random.default_rng(7)
+    hit = rng.standard_normal(n) * np.exp(-60 * t) * noise
+    return body + hit
+
+
+# Toba magică: două tobe, una joasă și una mai sus (bongo), blânde.
+save('drum_0', drum(150), gain=0.6)
+save('drum_1', drum(260, dur=0.35), gain=0.55)

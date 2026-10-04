@@ -30,6 +30,10 @@ abstract interface class SoundEffects {
   /// Nota felinarului cu indexul dat (0..5 → do re mi sol la do', pentatonica: orice
   /// secvență sună armonios). Face parte din joc, deci se aude și în modul calm, mai încet.
   void note(int degree);
+
+  /// Toba [which] (0 = joasă, 1 = înaltă) — sunetul jocului „Toba magică”; ca notele, se
+  /// aude și în modul calm, mai încet.
+  void drum(int which);
 }
 
 class SilentSfx implements SoundEffects {
@@ -38,6 +42,8 @@ class SilentSfx implements SoundEffects {
   void play(Sfx sfx) {}
   @override
   void note(int degree) {}
+  @override
+  void drum(int which) {}
 }
 
 /// Câteva playere refolosite pe rând, în modul cu latență mică: sunetele scurte se pot
@@ -85,6 +91,12 @@ class _Sfx implements SoundEffects {
   void note(int degree) => _play(
     'note_${degree % 6}',
     _ref.read(settingsProvider).calm ? 0.45 : 0.8,
+  );
+
+  @override
+  void drum(int which) => _play(
+    'drum_${which % 2}',
+    _ref.read(settingsProvider).calm ? 0.45 : 0.85,
   );
 
   void dispose() {

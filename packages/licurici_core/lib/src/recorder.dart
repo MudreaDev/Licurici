@@ -13,6 +13,7 @@ import 'memory.dart';
 import 'ordering.dart';
 import 'reaction.dart';
 import 'report.dart';
+import 'rhythm.dart';
 import 'search.dart';
 import 'sequence.dart';
 import 'shell.dart';
@@ -193,6 +194,29 @@ class SessionRecorder {
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `toba-magica`: câte o încercare pe ritm. Corectă = aceleași bătăi și tobe, în
+  /// ritm; dificultatea = numărul de bătăi; modelul ascultat din nou = ajutor P4.
+  void rhythmLevel(RhythmResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final p in result.plays) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: p.correct,
+        promptLevel: p.replays > 0 ? PromptLevel.p4 : PromptLevel.p0,
+        attempts: p.replays + 1,
+        latencyMs: p.startMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: p.pattern.code,
+        difficulty: p.pattern.beats.length.toDouble(),
+        targetId: p.correct ? null : '${p.pattern.beats.length} bătăi',
+        chosenId: p.correct ? null : '${p.taps.length} bătăi',
       ));
     }
   }

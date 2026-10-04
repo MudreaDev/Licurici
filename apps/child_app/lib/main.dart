@@ -21,6 +21,7 @@ import 'features/games/aac/aac_screen.dart';
 import 'features/games/gaze/gaze_screen.dart';
 import 'features/games/imitation/imitation_screen.dart';
 import 'features/games/order/order_screen.dart';
+import 'features/games/rhythm/rhythm_screen.dart';
 import 'features/games/rules/switch_screen.dart';
 import 'features/games/search/search_screen.dart';
 import 'features/games/sort/sort_screen.dart';
@@ -196,6 +197,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/unde-se-uita',
         pageBuilder: (context, state) =>
             _fade(context, state, const GazeScreen()),
+      ),
+      GoRoute(
+        path: '/toba-magica',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const RhythmScreen()),
       ),
       GoRoute(
         path: '/vorbeste',

@@ -26,6 +26,7 @@ export 'src/breathing.dart';
 export 'src/shell.dart';
 export 'src/session.dart';
 export 'src/report.dart';
+export 'src/rhythm.dart';
 export 'src/demo.dart';
 export 'src/recorder.dart';
 export 'src/progress.dart';
