@@ -112,6 +112,16 @@ void main() {
     expect(catalogEntry('ce-se-aude')!.domain, Domain.com);
   });
 
+  test('ce îmbrac: distractorii nu se potrivesc niciodată vremii', () {
+    for (var seed = 0; seed < 40; seed++) {
+      for (final r in _build(const CeImbracGame(), 6, seed).rounds) {
+        expect(r.choices.where((c) => c.correct), hasLength(1));
+        expect(r.choices.map((c) => c.art).toSet(), hasLength(r.choices.length));
+      }
+    }
+    expect(catalogEntry('ce-imbrac')!.domain, Domain.aut);
+  });
+
   test('jocurile noi au trepte în trasee', () {
     for (final id in ['potriveste', 'arata-mi', 'corpul', 'intrusul']) {
       expect(stepsForGame(id), isNotEmpty, reason: id);

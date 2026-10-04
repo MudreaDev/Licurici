@@ -544,3 +544,65 @@ class CeSeAudeGame extends ChoiceGame {
     );
   }
 }
+
+class _Weather {
+  const _Weather(this.id, this.emoji, this.when, this.wear);
+  final String id;
+  final String emoji;
+
+  /// „Afară plouă.”
+  final String when;
+
+  /// Ce se potrivește (emoji → nume articulat).
+  final Map<String, String> wear;
+}
+
+const _weathers = [
+  _Weather('ploaie', '🌧️', 'Afară plouă.', {'☂️': 'umbrela', '🥾': 'cizmele', '🧥': 'geaca'}),
+  _Weather('zapada', '❄️', 'Afară ninge.', {'🧤': 'mănușile', '🧣': 'fularul', '🧥': 'geaca', '🥾': 'cizmele'}),
+  _Weather('soare', '☀️', 'Afară e cald și soare.', {'🩳': 'pantalonii scurți', '🕶️': 'ochelarii de soare', '👒': 'pălăria'}),
+];
+
+/// Ce îmbrac? (AUT3, catalog #45 `ne-imbracam`, varianta „alege”): vremea de afară → ce haină
+/// se potrivește. Distractorii sunt haine pentru altă vreme (ex. fular când e cald). Tier 1–2:
+/// două variante, apoi trei-patru.
+class CeImbracGame extends ChoiceGame {
+  const CeImbracGame()
+      : super(
+          id: 'ce-imbrac',
+          name: 'Ce îmbrac?',
+          emoji: '🧥',
+          description: 'Alege haina potrivită vremii',
+          subject: Subject.stiinte,
+          gradeCodes: 'G12',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) => Lesson(
+        title: name,
+        instruction: 'Uită-te ce vreme e și alege ce îmbraci.',
+        rounds: [
+          for (final w in _targets(ctx, _weathers, 8)) _round(ctx, w),
+        ],
+      );
+
+  ChoiceRound _round(GameContext ctx, _Weather w) {
+    final good = ctx.pick(w.wear.entries.toList());
+    // Distractori: haine potrivite DOAR pentru altă vreme.
+    final wrong = {
+      for (final o in _weathers.where((x) => x != w))
+        for (final e in o.wear.entries)
+          if (!w.wear.containsKey(e.key)) e.key: e.value,
+    }.entries.toList();
+    final options = [good, ...ctx.sample(wrong, 4)]..shuffle(ctx.random);
+    return ChoiceRound(
+      prompt: 'Ce îmbraci?',
+      speak: [w.when, 'Ce îmbraci?'],
+      visuals: [EmojiVisual(w.emoji), SceneVisual(w.when)],
+      hint: 'Când ${w.when.substring(6).replaceAll('.', '')}, iei ${good.value}.',
+      choices: [
+        for (final o in options) Choice(art: o.key, id: o.value, speak: o.value, correct: o == good),
+      ],
+    );
+  }
+}

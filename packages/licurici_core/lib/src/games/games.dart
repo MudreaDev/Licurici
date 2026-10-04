@@ -46,6 +46,7 @@ const List<GameSpec> allGames = [
   EmotiiGame(),
   DaNuGame(),
   CeSeAudeGame(),
+  CeImbracGame(),
   CeSimteGame(),
   CeMaAjutaGame(),
   CineStieGame(),
