@@ -105,6 +105,7 @@ class SessionRecorder {
       latencyMs: latencyMs,
       at: _clock(),
       seed: seed,
+      stimulusId: round.stimulusId,
       targetId: round.choices.firstWhere((c) => c.correct).key,
       chosenId: chosenKey,
     ));

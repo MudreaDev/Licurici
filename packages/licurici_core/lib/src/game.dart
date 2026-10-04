@@ -67,6 +67,16 @@ class TextVisual extends Visual {
   final bool isEquation;
 }
 
+/// Un rând de imagini, fiecare orientată spre stânga (−1) sau dreapta (+1); [center] e cea
+/// care contează (ex. peștele din mijloc, sarcina Flanker). [highlight] o încercuiește.
+class FlankerVisual extends Visual {
+  const FlankerVisual(this.emoji, this.directions, {required this.center, this.highlight = true});
+  final String emoji;
+  final List<int> directions;
+  final int center;
+  final bool highlight;
+}
+
 /// Silueta (umbra) unui obiect; la răspunsul corect se colorează.
 class SilhouetteVisual extends Visual {
   const SilhouetteVisual(this.emoji);
@@ -143,6 +153,7 @@ class ChoiceRound {
     List<String>? speak,
     this.hint,
     this.fixedChoices = false,
+    this.stimulusId,
   })  : speak = speak ?? [prompt],
         assert(choices.any((c) => c.correct), 'o rundă are cel puțin un răspuns corect');
 
@@ -159,6 +170,9 @@ class ChoiceRound {
   /// Jocurile al căror text presupune un număr fix de variante nu sunt tăiate.
   final bool fixedChoices;
 
+  /// Tipul încercării, pentru rapoarte (ex. `congruent` / `incongruent` la Flanker).
+  final String? stimulusId;
+
   ChoiceRound copyWith({List<Choice>? choices}) => ChoiceRound(
         prompt: prompt,
         visuals: visuals,
@@ -166,6 +180,7 @@ class ChoiceRound {
         speak: speak,
         hint: hint,
         fixedChoices: fixedChoices,
+        stimulusId: stimulusId,
       );
 }
 
@@ -188,6 +203,7 @@ class Lesson {
             ...switch (v) {
               EmojiVisual(:final emoji) => [emoji],
               SilhouetteVisual(:final emoji) => [emoji],
+              FlankerVisual(:final emoji) => [emoji],
               ObjectsVisual(:final groups) => groups.map((g) => g.emoji),
               PatternVisual(:final items, :final answer) => [...items, answer],
               _ => const <String>[],

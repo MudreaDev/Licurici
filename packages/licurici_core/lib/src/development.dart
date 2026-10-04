@@ -125,6 +125,8 @@ const List<Ladder> ladders = [
     Step('FEX1', 'Așteaptă semnalul (verde) înainte să atingă', games: ['semaforul']),
     Step('FEX2', 'Atinge doar ținta cerută și se abține la celelalte (go/no-go)',
         games: ['pescarul']),
+    Step('FEX2b', 'Ignoră vecinii care distrag și răspunde doar la țintă (Flanker)',
+        games: ['peste-in-mijloc']),
     Step('FEX3', 'Sortează după o regulă (culoare)', games: ['regula-se-schimba']),
     Step('FEX4', 'Schimbă regula când i se cere (acum după formă) — flexibilitate',
         games: ['regula-se-schimba']),

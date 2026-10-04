@@ -40,6 +40,7 @@ class PromptVisuals extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: switch (v) {
             EmojiVisual() => _BigEmoji(v.emoji, solved: solved),
+            FlankerVisual() => _Flanker(v),
             SilhouetteVisual() => _BigEmoji(
               v.emoji,
               solved: solved,
@@ -375,4 +376,38 @@ class Silhouette extends StatelessWidget {
     colorFilter: const ColorFilter.mode(Color(0xFF3E4A63), BlendMode.srcIn),
     child: child,
   );
+}
+
+/// Rândul de pești (Flanker): fiecare privește în direcția în care înoată; cel din mijloc e
+/// încercuit la nivelurile mici, ca să fie clar care contează.
+class _Flanker extends StatelessWidget {
+  const _Flanker(this.visual);
+
+  final FlankerVisual visual;
+
+  @override
+  Widget build(BuildContext context) {
+    final n = visual.directions.length;
+    final size =
+        (n == 1 ? 150.0 : (n == 3 ? 110.0 : 86.0)) * VisualScale.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (final (i, d) in visual.directions.indexed)
+          Container(
+            key: ValueKey('flanker-$i'),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.all(6),
+            decoration: i == visual.center && visual.highlight && n > 1
+                ? BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Tokens.sun.withValues(alpha: 0.25),
+                    border: Border.all(color: Tokens.sun, width: 3),
+                  )
+                : null,
+            child: StimulusArt(visual.emoji, size: size, flip: d < 0),
+          ),
+      ],
+    );
+  }
 }

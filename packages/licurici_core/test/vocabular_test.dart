@@ -122,6 +122,27 @@ void main() {
     expect(catalogEntry('ce-imbrac')!.domain, Domain.aut);
   });
 
+  test('peștele din mijloc: răspunsul = direcția peștelui din mijloc; congruent/incongruent', () {
+    for (var seed = 0; seed < 40; seed++) {
+      for (final tier in [1, 3, 6]) {
+        final rounds = _build(const PesteInMijlocGame(), tier, seed).rounds;
+        for (final r in rounds) {
+          final v = r.visuals.single as FlankerVisual;
+          final dir = v.directions[v.center];
+          expect(r.choices.singleWhere((c) => c.correct).key, dir < 0 ? 'stanga' : 'dreapta');
+          final others = [for (final (i, d) in v.directions.indexed) if (i != v.center) d];
+          if (r.stimulusId == 'incongruent') expect(others.every((d) => d == -dir), isTrue);
+          if (r.stimulusId == 'congruent') expect(others.every((d) => d == dir), isTrue);
+          if (tier == 1) expect(r.stimulusId, 'singur');
+        }
+        if (tier == 6) {
+          expect(rounds.where((r) => r.stimulusId == 'incongruent').length, (rounds.length * 0.5).round());
+        }
+      }
+    }
+    expect(catalogEntry('peste-in-mijloc')!.domain, Domain.fex);
+  });
+
   test('jocurile noi au trepte în trasee', () {
     for (final id in ['potriveste', 'arata-mi', 'corpul', 'intrusul']) {
       expect(stepsForGame(id), isNotEmpty, reason: id);

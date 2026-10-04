@@ -88,3 +88,57 @@ class SirulGame extends ChoiceGame {
     );
   }
 }
+
+
+/// Peștele din mijloc (FEX2–3, catalog #37): încotro înoată peștele din mijloc, când vecinii
+/// înoată (sau nu) în aceeași parte? Sarcina Flanker — controlul interferenței. Tier 1: un
+/// singur pește; tier 2–3: trei pești, mai ales congruenți; de la tier 4: cinci pești, jumătate
+/// incongruenți; de la tier 6 peștele din mijloc nu mai e încercuit.
+/// KPI: **efectul de interferență** = TR incongruent − TR congruent (din `stimulusId`).
+class PesteInMijlocGame extends ChoiceGame {
+  const PesteInMijlocGame()
+      : super(
+          id: 'peste-in-mijloc',
+          name: 'Peștele din mijloc',
+          emoji: '🐠',
+          description: 'Încotro înoată peștele din mijloc?',
+          subject: Subject.forme,
+          gradeCodes: 'G1234',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final tier = ctx.difficulty.tier;
+    final n = tier <= 1 ? 1 : (tier <= 3 ? 3 : 5);
+    final incongruentShare = tier <= 1 ? 0.0 : (tier <= 3 ? 0.25 : 0.5);
+    // Exact câte runde cere tier-ul, ca tăierea să nu strice proporția congruent / incongruent.
+    final rounds = ctx.difficulty.roundCount;
+    final incongruent = (rounds * incongruentShare).round();
+    final kinds = [for (var i = 0; i < rounds; i++) i < incongruent]..shuffle(ctx.random);
+    return Lesson(
+      title: name,
+      instruction: 'Uită-te doar la peștele din mijloc.',
+      rounds: [
+        for (final inc in kinds) _round(ctx, n, inc, highlight: tier < 6),
+      ],
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, int n, bool incongruent, {required bool highlight}) {
+    final dir = ctx.random.nextBool() ? 1 : -1;
+    final center = n ~/ 2;
+    final dirs = [for (var i = 0; i < n; i++) i == center ? dir : (incongruent ? -dir : dir)];
+    return ChoiceRound(
+      prompt: 'Încotro înoată peștele din mijloc?',
+      speak: ['Încotro înoată peștele din mijloc?'],
+      visuals: [FlankerVisual('🐟', dirs, center: center, highlight: highlight)],
+      hint: 'Peștele din mijloc înoată spre ${dir < 0 ? 'stânga' : 'dreapta'}.',
+      fixedChoices: true,
+      stimulusId: n == 1 ? 'singur' : (incongruent ? 'incongruent' : 'congruent'),
+      choices: [
+        Choice(label: 'Stânga', art: '⬅️', id: 'stanga', speak: 'stânga', correct: dir < 0),
+        Choice(label: 'Dreapta', art: '➡️', id: 'dreapta', speak: 'dreapta', correct: dir > 0),
+      ],
+    );
+  }
+}

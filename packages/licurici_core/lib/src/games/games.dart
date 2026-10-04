@@ -42,6 +42,7 @@ const List<GameSpec> allGames = [
   CuloriGame(),
   FormeGame(),
   SirulGame(),
+  PesteInMijlocGame(),
   // Emoții & viață
   EmotiiGame(),
   DaNuGame(),
