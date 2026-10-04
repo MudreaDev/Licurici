@@ -21,6 +21,7 @@ import 'features/games/imitation/imitation_screen.dart';
 import 'features/games/order/order_screen.dart';
 import 'features/games/sort/sort_screen.dart';
 import 'features/games/trace/trace_screen.dart';
+import 'features/games/wait/wait_screen.dart';
 import 'features/games/reaction/reaction_game_screen.dart';
 import 'features/album/album_screen.dart';
 import 'features/home/home_screen.dart';
@@ -181,6 +182,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/fa-ca-licuriciul',
         pageBuilder: (context, state) =>
             _fade(context, state, const ImitationScreen()),
+      ),
+      GoRoute(
+        path: '/semaforul',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const WaitScreen()),
       ),
       GoRoute(
         path: '/traseaza',

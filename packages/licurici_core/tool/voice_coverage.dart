@@ -25,6 +25,10 @@ const uiPhrases = [
   // Fă ca Licurici
   'Privește ce face Licurici.',
   'Acum tu!',
+  // Semaforul
+  'Atinge felinarul doar când se face verde.',
+  'Așteaptă verde.',
+  'Acum!',
   // Check-in-ul de dispoziție și finalul sesiunii
   'Cum te simți?',
   'Ne vedem data viitoare!',

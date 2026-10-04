@@ -16,6 +16,7 @@ import 'sequence.dart';
 import 'shell.dart';
 import 'sorting.dart';
 import 'trace.dart';
+import 'waiting.dart';
 import 'trial.dart';
 
 /// Treapta pe care o exersează un joc (prima din trasee) — încercările se leagă de ea.
@@ -210,6 +211,29 @@ class SessionRecorder {
         difficulty: a.round.actions.length.toDouble(),
         targetId: a.firstWrong == null ? null : a.round.actions.map((x) => x.id).join(','),
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `semaforul`: câte o încercare pe așteptare. Corectă = n-a atins înainte de verde
+  /// și a atins la verde; atingerile anticipate = `offTargetTaps`; dificultatea = secundele de
+  /// așteptare (KPI: cât poate aștepta).
+  void waitLevel(WaitResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final r in result.responses) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: r.clean,
+        promptLevel: PromptLevel.p0,
+        attempts: r.anticipations + 1,
+        latencyMs: r.rtMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: 'verde',
+        difficulty: r.trial.waitMs / 1000,
+        offTargetTaps: r.anticipations,
       ));
     }
   }
