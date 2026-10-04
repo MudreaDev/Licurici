@@ -79,7 +79,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - ✅ **Mare, mic, roșu** (LRC4): „Arată mărul mic / cartea verde”; distractori cu un singur atribut corect (`Choice.scale`).
 - ✅ **Ce se aude?** (COM1): vocea spune sunetul („Cine face miau?”), copilul alege cine îl face.
 - ✅ Toate cele 62 de obiecte sunt pictate (inclusiv elefantul); carduri pictate pentru toate jocurile noi.
-- Ariile **IMI, AUT, MOT** au acum jocuri; în total **18 jocuri noi** în această sesiune (37 în aplicație). Vocea generată local cu edge-tts (100%). OpenMoji lipsă se iau din `cdn.jsdelivr.net/npm/openmoji@15.1.0/color/svg/`.
+- Ariile **IMI, AUT, MOT** au acum jocuri; în total **16 jocuri noi** în această sesiune (**40** în aplicație). Vocea generată local cu edge-tts (100%). OpenMoji lipsă se iau din `cdn.jsdelivr.net/npm/openmoji@15.1.0/color/svg/`.
 
 **Sesiunea a șasea — aspect profesionist pentru copil (Claude cod + Codex doar imagini):**
 - ✅ **Kitul vizual „candy”** (`apps/child_app/lib/shared/ui/candy.dart`): butoane/carduri cu buză 3D care „coboară” la atingere, panouri crem, titluri cu contur alb, baloane de vorbire; bara de sus cu butoane rotunde colorate (sens fix pe culoare). Folosit pe toate ecranele copilului.
@@ -899,7 +899,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (37):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
+**Gata în Flutter (40):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
 🆕 simon / Felinarele (`sequence`), perechi (`memoryCards`), sortam (`dragDrop`), cucu-bau, respira, continua-sirul,
 🆕 **sesiunea a șaptea:** potriveste, arata-mi, corpul, intrusul, umbre, mingea-rosie, ce-se-aude (`choice`), traseaza (`trace`),
