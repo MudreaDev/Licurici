@@ -111,6 +111,37 @@ const storyStories = [
   ]),
 ];
 
+/// Orarul meu: momentele unei zile, în ordine (suport vizual pentru rutina zilnică).
+const scheduleStories = [
+  OrderStory('ziua', 'Ziua mea', [
+    OrderStep('🌅', 'Mă trezesc.'),
+    OrderStep('🥣', 'Mănânc micul dejun.'),
+    OrderStep('🏫', 'Merg la grădiniță.'),
+    OrderStep('🏃', 'Mă joc afară.'),
+    OrderStep('🛌', 'Mă culc.'),
+  ]),
+  OrderStory('dimineata', 'Dimineața', [
+    OrderStep('🌅', 'Mă trezesc.'),
+    OrderStep('🪥', 'Mă spăl pe dinți.'),
+    OrderStep('👕', 'Mă îmbrac.'),
+    OrderStep('🥣', 'Mănânc micul dejun.'),
+    OrderStep('🚪', 'Plec de acasă.'),
+  ]),
+  OrderStory('dupa-amiaza', 'După-amiaza', [
+    OrderStep('🍽️', 'Mănânc la prânz.'),
+    OrderStep('🛌', 'Dorm puțin.'),
+    OrderStep('📚', 'Citim o carte.'),
+    OrderStep('🖍️', 'Desenez.'),
+  ]),
+  OrderStory('seara', 'Seara', [
+    OrderStep('🍽️', 'Mâncăm la cină.'),
+    OrderStep('🛁', 'Fac baie.'),
+    OrderStep('🪥', 'Mă spăl pe dinți.'),
+    OrderStep('📖', 'Ascult o poveste.'),
+    OrderStep('🌙', 'Noapte bună.'),
+  ]),
+];
+
 /// Mare–mijlociu–mic: același obiect în 5 mărimi (de la mic la mare). Rundele iau 2 → 5
 /// dintre ele: cu cât sunt mai multe, cu atât diferențele dintre vecini sunt mai mici.
 const sizeStories = [
@@ -266,6 +297,17 @@ class OrderGame {
     'Ce s-a întâmplat întâi? Atinge pozele în ordine.',
   );
 
+  /// Orarul meu (AUT4).
+  static const schedule = OrderGame._(
+    'orarul-meu',
+    'Orarul meu',
+    '🗓️',
+    'Ce facem azi, pe rând?',
+    ['AUT4'],
+    scheduleStories,
+    'Ce facem întâi? Pune ziua în ordine.',
+  );
+
   /// Mare–mijlociu–mic (COG4).
   static const sizes = OrderGame._(
     'mare-mic',
@@ -332,7 +374,7 @@ class OrderGame {
   }
 }
 
-const orderGames = [OrderGame.routine, OrderGame.story, OrderGame.sizes];
+const orderGames = [OrderGame.routine, OrderGame.story, OrderGame.sizes, OrderGame.schedule];
 
 OrderGame? orderGameById(String id) {
   for (final g in orderGames) {
