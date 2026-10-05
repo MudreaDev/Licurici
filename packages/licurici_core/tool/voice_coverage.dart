@@ -31,6 +31,9 @@ const uiPhrases = [
   'Acum!',
   // Unde se uită?
   'Ce arată Licurici?',
+  // Construiește la fel
+  'Fă la fel ca modelul.',
+  'Ține minte modelul!',
   // Găsește diferențele
   'Ce e altfel în poza a doua?',
   'Ai găsit toate diferențele!',

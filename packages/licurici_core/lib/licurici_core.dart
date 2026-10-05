@@ -9,6 +9,7 @@ export 'src/games/games.dart';
 export 'src/grades.dart';
 export 'src/reaction.dart';
 export 'src/development.dart';
+export 'src/build_copy.dart';
 export 'src/catalog.dart';
 export 'src/cause_effect.dart';
 export 'src/change.dart';

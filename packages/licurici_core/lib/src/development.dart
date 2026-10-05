@@ -83,6 +83,7 @@ const List<Ladder> ladders = [
     Step('IMI2', 'Imită două acțiuni în ordine', games: ['fa-ca-licuriciul']),
     Step('IMI3', 'Imită trei acțiuni, inclusiv tragerea unui obiect', games: ['fa-ca-licuriciul']),
     Step('IMI4', 'Repetă un ritm bătut la tobă', games: ['toba-magica']),
+    Step('IMI5', 'Copiază un model din piese (construiește la fel)', games: ['construieste']),
   ]),
   Ladder(Domain.pot, [
     Step('POT1', 'Potrivește un obiect identic, din două variante', games: ['potriveste']),

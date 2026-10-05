@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'development.dart';
 import 'game.dart';
+import 'build_copy.dart';
 import 'cause_effect.dart';
 import 'change.dart';
 import 'feeding.dart';
@@ -201,6 +202,27 @@ class SessionRecorder {
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `construieste`: câte o încercare pe model; mutările greșite ca încercări;
+  /// modelul revăzut = ajutor P3; dificultatea = numărul de piese.
+  void buildLevel(BuildResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final s in result.solves) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: s.clean,
+        promptLevel: s.peeked ? PromptLevel.p3 : PromptLevel.p0,
+        attempts: s.wrongMoves + 1,
+        latencyMs: s.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusSet: level.axes.hideModelMs == null ? 'model-vizibil' : 'din-memorie',
+        difficulty: s.round.model.length.toDouble(),
       ));
     }
   }
