@@ -20,7 +20,7 @@ void main() {
               final positions = [for (final s in r.steps) r.story.steps.indexOf(s)];
               expect(positions, orderedEquals([...positions]..sort()));
               expect(r.steps.first, r.story.steps.first);
-              expect(r.steps.last, r.story.steps.last);
+              if (!game.sentence) expect(r.steps.last, r.story.steps.last);
               expect(r.steps.length, lessThanOrEqualTo(game.stepsFor(level)));
               expect(r.shuffled.toSet(), {for (var i = 0; i < r.steps.length; i++) i});
               expect(r.shuffled, isNot(orderedEquals([for (var i = 0; i < r.steps.length; i++) i])));
@@ -34,7 +34,7 @@ void main() {
       test('nivelul 1 = „întâi … apoi …”; crește până la 5 pași', () {
         expect(game.stepsFor(1), 2);
         expect(game.stepsFor(3), 3);
-        expect(game.stepsFor(40), 5);
+        expect(game.stepsFor(40), game.sentence ? 3 : 5);
       });
 
       test('toate pozele au SVG OpenMoji', () {
@@ -50,6 +50,24 @@ void main() {
       });
     });
   }
+
+  test('spune propoziția: cuvintele în ordinea propoziției; capcanele nu sunt în șir', () {
+    const g = OrderGame.sentences;
+    for (var level = 1; level <= 9; level++) {
+      for (var seed = 0; seed < 30; seed++) {
+        for (final r in g.generate(level, seed: seed).rounds) {
+          expect(r.steps, r.story.steps.take(r.steps.length).toList());
+          expect(r.distractors, hasLength(g.distractorsFor(level)));
+          for (final d in r.distractors) {
+            expect(r.steps.contains(d), isFalse);
+          }
+          expect(r.tray.toSet(), {for (var i = 0; i < r.steps.length + r.distractors.length; i++) i});
+        }
+      }
+    }
+    expect(orderSentence(sentenceStories[1].steps), 'Fetița mănâncă cu lingura.');
+    expect(catalogEntry('spune-propozitia')!.domain, Domain.com);
+  });
 
   test('mare și mic: același obiect, mărimi crescătoare', () {
     for (var seed = 0; seed < 30; seed++) {

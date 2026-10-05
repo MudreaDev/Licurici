@@ -105,8 +105,12 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     _roundDone = false;
   }
 
+  OrderStep _card(int i) =>
+      i < _r.steps.length ? _r.steps[i] : _r.distractors[i - _r.steps.length];
+
   void _tap(int stepIndex) {
-    if (_roundDone || _result != null || stepIndex < _placed) return;
+    if (_roundDone || _result != null) return;
+    if (stepIndex < _r.steps.length && stepIndex < _placed) return;
     final voice = ref.read(voiceProvider);
     if (stepIndex == _placed) {
       ref.read(sfxProvider).play(Sfx.correct);
@@ -118,7 +122,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
       });
       if (_placed == _r.steps.length) _completeRound();
     } else {
-      _firstWrong ??= _r.steps[stepIndex].caption;
+      _firstWrong ??= _card(stepIndex).caption;
       _expected ??= _r.steps[_placed].caption;
       voice.say(['Mai încearcă']);
       setState(() {
@@ -133,6 +137,10 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
 
   void _completeRound() {
     _roundDone = true;
+    // Propoziția întreagă, ca model de vorbire.
+    if (widget.game.sentence) {
+      ref.read(voiceProvider).say([orderSentence(_r.steps)]);
+    }
     _attempts.add(
       OrderAttempt(
         _r,
@@ -242,7 +250,10 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
       const gap = 14.0;
       final arrow = layout.compact ? 18.0 : 28.0;
       // Locurile (sus) și pozele (jos) au aceeași mărime; încap pe lățime și pe jumătate din înălțime.
-      final byWidth = (box.maxWidth - 32 - (n - 1) * (gap + arrow)) / n;
+      final picture = _r.story.picture;
+      // Tava poate avea și capcane; poza (dacă e) stă în stânga locurilor.
+      final units = math.max(n + (picture == null ? 0 : 1), _r.tray.length);
+      final byWidth = (box.maxWidth - 32 - (units - 1) * (gap + arrow)) / units;
       final byHeight = (box.maxHeight - 60) / 2 - (layout.compact ? 34 : 48);
       final side = math.min(byWidth, byHeight).clamp(64.0, 200.0);
       final title = Theme.of(context).textTheme;
@@ -260,6 +271,21 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (picture != null) ...[
+                  Container(
+                    key: const ValueKey('order-picture'),
+                    width: side,
+                    height: side,
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFDF8),
+                      borderRadius: BorderRadius.circular(Tokens.radius),
+                      border: Border.all(color: Tokens.lavender, width: 4),
+                    ),
+                    child: StimulusArt(picture, size: side - 20),
+                  ),
+                  SizedBox(width: gap * 1.5),
+                ],
                 for (var i = 0; i < n; i++) ...[
                   if (i > 0)
                     Padding(
@@ -296,14 +322,14 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  for (final i in _r.shuffled)
+                  for (final i in _r.tray)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: gap / 2),
                       child: AnimatedOpacity(
                         duration: motion.d(250),
-                        opacity: i < _placed ? 0 : 1,
+                        opacity: i < n && i < _placed ? 0 : 1,
                         child: IgnorePointer(
-                          ignoring: i < _placed,
+                          ignoring: i < n && i < _placed,
                           child: Juice(
                             enabled: motion.movement,
                             shakeTick: _shaking == i ? _shake : 0,
@@ -319,18 +345,41 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                               width: side,
                               height: side,
                               padding: const EdgeInsets.all(10),
-                              semanticLabel: _r.steps[i].caption,
+                              semanticLabel: _card(i).caption,
                               onTap: () => _tap(i),
-                              child: Center(
-                                child: StimulusArt(
-                                  _r.steps[i].emoji,
-                                  size: _artSize(
-                                    side,
-                                    _r.steps[i],
-                                    sized: _r.story.sized,
-                                  ),
-                                ),
-                              ),
+                              child: !widget.game.sentence
+                                  ? Center(
+                                      child: StimulusArt(
+                                        _card(i).emoji,
+                                        size: _artSize(
+                                          side,
+                                          _card(i),
+                                          sized: _r.story.sized,
+                                        ),
+                                      ),
+                                    )
+                                  // La propoziții, cuvântul e scris sub poză.
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Flexible(
+                                          child: StimulusArt(
+                                            _card(i).emoji,
+                                            size: side * 0.5,
+                                          ),
+                                        ),
+                                        Text(
+                                          _card(i).caption,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelMedium!
+                                              .copyWith(color: Tokens.ink),
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ),
                         ),

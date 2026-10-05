@@ -23,9 +23,12 @@ class OrderStep {
 }
 
 class OrderStory {
-  const OrderStory(this.id, this.title, this.steps);
+  const OrderStory(this.id, this.title, this.steps, {this.picture});
 
   final String id;
+
+  /// Poza care se descrie (Spune propoziția): ilustrația arătată deasupra locurilor.
+  final String? picture;
 
   /// Rostit la început („Spălatul pe mâini”).
   final String title;
@@ -142,6 +145,55 @@ const scheduleStories = [
   ]),
 ];
 
+/// Spune propoziția: poza unei acțiuni și cuvintele-pictogramă, în ordinea propoziției
+/// (cine — ce face — cu ce / unde). Nivelurile mici iau doar „cine + ce face”.
+const sentenceStories = [
+  OrderStory('doarme', 'Ce face fetița?', [
+    OrderStep('👧', 'Fetița'),
+    OrderStep('🛌', 'doarme'),
+    OrderStep('🛏️', 'în pat'),
+  ], picture: '🛌'),
+  OrderStory('mananca', 'Ce face fetița?', [
+    OrderStep('👧', 'Fetița'),
+    OrderStep('🥣', 'mănâncă'),
+    OrderStep('🥄', 'cu lingura'),
+  ], picture: '🥣'),
+  OrderStory('bea', 'Ce face fetița?', [
+    OrderStep('👧', 'Fetița'),
+    OrderStep('🥤', 'bea'),
+    OrderStep('💧', 'apă'),
+  ], picture: '🥤'),
+  OrderStory('citeste', 'Ce face fetița?', [
+    OrderStep('👧', 'Fetița'),
+    OrderStep('📚', 'citește'),
+    OrderStep('📖', 'o carte'),
+  ], picture: '📚'),
+  OrderStory('deseneaza', 'Ce face fetița?', [
+    OrderStep('👧', 'Fetița'),
+    OrderStep('🖍️', 'desenează'),
+    OrderStep('📄', 'pe o foaie'),
+  ], picture: '🖍️'),
+  OrderStory('canta', 'Ce face fetița?', [
+    OrderStep('👧', 'Fetița'),
+    OrderStep('🎤', 'cântă'),
+    OrderStep('🎵', 'o melodie'),
+  ], picture: '🎤'),
+  OrderStory('alearga', 'Ce face fetița?', [
+    OrderStep('👧', 'Fetița'),
+    OrderStep('🏃', 'aleargă'),
+    OrderStep('🌳', 'în parc'),
+  ], picture: '🏃'),
+  OrderStory('se-spala', 'Ce face fetița?', [
+    OrderStep('👧', 'Fetița'),
+    OrderStep('👐', 'se spală'),
+    OrderStep('🧼', 'cu săpun'),
+  ], picture: '👐'),
+];
+
+/// Propoziția întreagă, rostită la final („Fetița mănâncă cu lingura.”).
+String orderSentence(List<OrderStep> steps) =>
+    '${steps.map((s) => s.caption).join(' ')}.';
+
 /// Mare–mijlociu–mic: același obiect în 5 mărimi (de la mic la mare). Rundele iau 2 → 5
 /// dintre ele: cu cât sunt mai multe, cu atât diferențele dintre vecini sunt mai mici.
 const sizeStories = [
@@ -205,7 +257,20 @@ const sizeStories = [
 
 /// O rundă: povestea, pașii aleși (în ordinea corectă) și cum apar amestecați pe ecran.
 class OrderRound {
-  const OrderRound({required this.story, required this.steps, required this.shuffled});
+  const OrderRound({
+    required this.story,
+    required this.steps,
+    required this.shuffled,
+    this.distractors = const [],
+    List<int>? tray,
+  }) : tray = tray ?? shuffled;
+
+  /// Cartonașe-capcană (nu fac parte din șir) — la Spune propoziția, nivelurile mari.
+  final List<OrderStep> distractors;
+
+  /// Ordinea cartonașelor în tavă: indice < steps.length = pas, altfel capcana
+  /// `distractors[i - steps.length]`.
+  final List<int> tray;
 
   final OrderStory story;
 
@@ -233,12 +298,21 @@ class OrderLevel {
   final List<OrderRound> rounds;
   final String instruction;
 
-  Set<String> get art => {for (final r in rounds) ...r.steps.map((s) => s.emoji)};
+  Set<String> get art => {
+    for (final r in rounds) ...r.steps.map((s) => s.emoji),
+  };
 }
 
 /// Cum a pus copilul o poveste: câte atingeri greșite și primul pas greșit ales.
 class OrderAttempt {
-  const OrderAttempt(this.round, {this.wrongTaps = 0, this.firstWrong, this.expected, this.hinted = false, this.ms});
+  const OrderAttempt(
+    this.round, {
+    this.wrongTaps = 0,
+    this.firstWrong,
+    this.expected,
+    this.hinted = false,
+    this.ms,
+  });
 
   final OrderRound round;
   final int wrongTaps;
@@ -255,12 +329,15 @@ class OrderAttempt {
 }
 
 class OrderResult {
-  OrderResult(this.level, List<OrderAttempt> attempts) : attempts = List.unmodifiable(attempts);
+  OrderResult(this.level, List<OrderAttempt> attempts)
+    : attempts = List.unmodifiable(attempts);
 
   final OrderLevel level;
   final List<OrderAttempt> attempts;
 
-  double get accuracy => attempts.isEmpty ? 0 : attempts.where((a) => a.clean).length / attempts.length;
+  double get accuracy => attempts.isEmpty
+      ? 0
+      : attempts.where((a) => a.clean).length / attempts.length;
 
   int get stars => accuracy >= 0.85 ? 3 : (accuracy >= 0.6 ? 2 : 1);
 
@@ -272,8 +349,20 @@ class OrderResult {
 }
 
 class OrderGame {
-  const OrderGame._(this.id, this.name, this.emoji, this.description, this.steps, this.stories,
-      this.instruction);
+  const OrderGame._(
+    this.id,
+    this.name,
+    this.emoji,
+    this.description,
+    this.steps,
+    this.stories,
+    this.instruction, {
+    this.sentence = false,
+  });
+
+  /// Spune propoziția: se iau primele cuvinte (nu începutul și sfârșitul), apar capcane, iar
+  /// la final se rostește propoziția întreagă.
+  final bool sentence;
 
   /// Pașii rutinei (AUT1–3).
   static const routine = OrderGame._(
@@ -308,6 +397,18 @@ class OrderGame {
     'Ce facem întâi? Pune ziua în ordine.',
   );
 
+  /// Spune propoziția (COM5).
+  static const sentences = OrderGame._(
+    'spune-propozitia',
+    'Spune propoziția',
+    '💬',
+    'Alcătuiește propoziția din poze',
+    ['COM5'],
+    sentenceStories,
+    'Uită-te la poză și spune ce face, pe rând.',
+    sentence: true,
+  );
+
   /// Mare–mijlociu–mic (COG4).
   static const sizes = OrderGame._(
     'mare-mic',
@@ -330,7 +431,12 @@ class OrderGame {
   Set<Grade> get grades => Grade.parseCodes('G12');
 
   /// Câți pași are o rundă: 2 („întâi … apoi …”) → 5.
-  int stepsFor(int level) => min(5, 2 + (level - 1) ~/ 2);
+  int stepsFor(int level) =>
+      sentence ? (level <= 2 ? 2 : 3) : min(5, 2 + (level - 1) ~/ 2);
+
+  /// Câte cartonașe-capcană (doar la propoziții): 0 → 2.
+  int distractorsFor(int level) =>
+      !sentence ? 0 : (level <= 4 ? 0 : (level <= 6 ? 1 : 2));
 
   /// Câte povești pe nivel.
   int roundsFor(int level) => level <= 2 ? 3 : 4;
@@ -348,13 +454,42 @@ class OrderGame {
       final n = story.steps.length;
       final take = min(k, n);
       final middle = [for (var j = 1; j < n - 1; j++) j]..shuffle(random);
-      final idx = take == 1 ? [0] : ([0, ...middle.take(take - 2), n - 1]..sort());
+      final idx = sentence
+          ? [for (var j = 0; j < take; j++) j]
+          : (take == 1 ? [0] : ([0, ...middle.take(take - 2), n - 1]..sort()));
       final steps = [for (final j in idx) story.steps[j]];
       List<int> order;
       do {
         order = [for (var j = 0; j < steps.length; j++) j]..shuffle(random);
       } while (_sorted(order));
-      rounds.add(OrderRound(story: story, steps: steps, shuffled: order));
+      // Capcane: un cuvânt de pe aceeași poziție din altă poveste (alt verb, alt obiect).
+      final distractors = <OrderStep>[];
+      for (var d = 0; d < distractorsFor(level); d++) {
+        final pos = 1 + d % (steps.length - 1);
+        final others = [
+          for (final o in stories)
+            if (o != story &&
+                o.steps.length > pos &&
+                !distractors.contains(o.steps[pos]))
+              o.steps[pos],
+        ];
+        distractors.add(others[random.nextInt(others.length)]);
+      }
+      final tray = [
+        for (var j = 0; j < steps.length + distractors.length; j++) j,
+      ];
+      do {
+        tray.shuffle(random);
+      } while (_sorted(tray.where((j) => j < steps.length).toList()));
+      rounds.add(
+        OrderRound(
+          story: story,
+          steps: steps,
+          shuffled: tray.where((j) => j < steps.length).toList(),
+          distractors: distractors,
+          tray: tray,
+        ),
+      );
     }
     return OrderLevel(
       gameId: id,
@@ -374,7 +509,13 @@ class OrderGame {
   }
 }
 
-const orderGames = [OrderGame.routine, OrderGame.story, OrderGame.sizes, OrderGame.schedule];
+const orderGames = [
+  OrderGame.routine,
+  OrderGame.story,
+  OrderGame.sizes,
+  OrderGame.schedule,
+  OrderGame.sentences,
+];
 
 OrderGame? orderGameById(String id) {
   for (final g in orderGames) {

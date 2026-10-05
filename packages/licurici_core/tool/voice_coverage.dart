@@ -115,6 +115,11 @@ void main(List<String> args) {
       for (final step in story.steps) {
         add(step.caption, g.id);
       }
+      if (g.sentence) {
+        for (var k = 2; k <= story.steps.length; k++) {
+          add(orderSentence(story.steps.take(k).toList()), g.id);
+        }
+      }
     }
   }
   for (final r in SortRule.values) {
