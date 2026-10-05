@@ -41,6 +41,8 @@ const List<GameSpec> allGames = [
   ComparamGame(),
   AdunamGame(),
   ScademGame(),
+  SemneGame(),
+  LipsaGame(),
   // Forme & logică
   CuloriGame(),
   FormeGame(),

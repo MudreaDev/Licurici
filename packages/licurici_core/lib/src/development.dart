@@ -163,6 +163,8 @@ const List<Ladder> ladders = [
     Step('PAC-N4', 'Compară cantități (mai mult / mai puțin)', games: ['comparam']),
     Step('PAC-N6', 'Adună cu obiecte', games: ['adunam']),
     Step('PAC-N7', 'Scade cu obiecte', games: ['scadem']),
+    Step('PAC-N8', 'Compară numere cu semnele < > =', games: ['semne']),
+    Step('PAC-N9', 'Găsește numărul care lipsește dintr-o adunare', games: ['numarul-lipsa']),
     Step('PAC-L1', 'Recunoaște literele', games: ['alfabetul']),
     Step('PAC-L5', 'Vocabular: opuse', games: ['opuse']),
     Step('PAC-L8', 'Scrie corect ortogramele', games: ['ortografie']),

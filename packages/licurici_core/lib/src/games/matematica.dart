@@ -175,3 +175,95 @@ class ComparamGame extends ChoiceGame {
     );
   }
 }
+
+
+/// Semnele < > = (port din `semne.js`): ce semn se potrivește între două numere. Numerele
+/// cresc cu tier-ul; cât sunt mici, apar și obiectele (concret → abstract). O rundă din trei
+/// are numere egale. Cele trei variante au mereu aceeași ordine (<, =, >) — predictibil.
+class SemneGame extends ChoiceGame {
+  const SemneGame()
+      : super(
+          id: 'semne',
+          name: 'Semnele',
+          emoji: '⚖️',
+          description: 'Mai mic, egal sau mai mare?',
+          subject: Subject.matematica,
+          gradeCodes: '123',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final maxN = min(5 + ctx.difficulty.tier * 12, 1000);
+    final n = ctx.difficulty.roundCount;
+    return Lesson(
+      title: name,
+      instruction: 'Alege semnul potrivit.',
+      rounds: [for (var i = 0; i < n; i++) _round(ctx, maxN, equal: i % 3 == 2)],
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, int maxN, {required bool equal}) {
+    final a = ctx.intBetween(1, maxN);
+    var b = equal ? a : ctx.intBetween(1, maxN);
+    if (!equal && b == a) b = a == maxN ? a - 1 : a + 1;
+    final sign = a < b ? '<' : (a > b ? '>' : '=');
+    final item = ctx.pick(content.mathItems);
+    return ChoiceRound(
+      prompt: 'Ce semn se potrivește?',
+      speak: ['Ce semn se potrivește?'],
+      visuals: [
+        if (a <= 10 && b <= 10) ObjectsVisual([ObjectGroup(item, a), ObjectGroup(item, b)]),
+        TextVisual('$a  ?  $b', isEquation: true),
+      ],
+      hint: '$a $sign $b',
+      fixedChoices: true,
+      stimulusId: sign == '=' ? 'egal' : 'diferit',
+      choices: [
+        Choice(label: '<', id: 'mai-mic', speak: 'mai mic', correct: sign == '<'),
+        Choice(label: '=', id: 'egal', speak: 'egal', correct: sign == '='),
+        Choice(label: '>', id: 'mai-mare', speak: 'mai mare', correct: sign == '>'),
+      ],
+    );
+  }
+}
+
+/// Numărul lipsă (port din `lipsa.js`): completează egalitatea (3 + ? = 7). Cu obiecte cât
+/// suma e mică; locul gol e uneori primul termen, alteori al doilea.
+class LipsaGame extends ChoiceGame {
+  const LipsaGame()
+      : super(
+          id: 'numarul-lipsa',
+          name: 'Numărul lipsă',
+          emoji: '❓',
+          description: 'Ce număr lipsește?',
+          subject: Subject.matematica,
+          gradeCodes: '123',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final maxSum = min(6 + ctx.difficulty.tier * 6, 50);
+    return Lesson(
+      title: name,
+      instruction: 'Ce număr lipsește?',
+      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxSum)],
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, int maxSum) {
+    final sum = ctx.intBetween(3, maxSum);
+    final a = ctx.intBetween(1, sum - 1);
+    final b = sum - a;
+    final first = ctx.random.nextBool();
+    final missing = first ? a : b;
+    return ChoiceRound(
+      prompt: 'Ce număr lipsește?',
+      speak: ['Ce număr lipsește?'],
+      visuals: [TextVisual(first ? '? + $b = $sum' : '$a + ? = $sum', isEquation: true)],
+      hint: 'Numărul care lipsește este $missing.',
+      choices: [
+        for (final n in numberChoices(ctx, missing, 1, maxSum)) Choice(label: '$n', correct: n == missing),
+      ],
+    );
+  }
+}
