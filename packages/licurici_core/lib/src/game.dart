@@ -109,6 +109,13 @@ class FlankerVisual extends Visual {
   final bool highlight;
 }
 
+/// Un ceas cu limbi, desenat din cod (ora 1–12, minutele 0 / 15 / 30 / 45).
+class ClockVisual extends Visual {
+  const ClockVisual(this.hour, this.minute);
+  final int hour;
+  final int minute;
+}
+
 /// Silueta (umbra) unui obiect; la răspunsul corect se colorează.
 class SilhouetteVisual extends Visual {
   const SilhouetteVisual(this.emoji);

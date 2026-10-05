@@ -50,6 +50,8 @@ const List<GameSpec> allGames = [
   LipsaGame(),
   ZeciGame(),
   InmultimGame(),
+  ImpartimGame(),
+  CeasulGame(),
   // Forme & logică
   CuloriGame(),
   FormeGame(),

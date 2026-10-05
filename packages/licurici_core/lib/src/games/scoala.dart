@@ -379,3 +379,105 @@ class InmultimGame extends ChoiceGame {
 }
 
 String _cap(String s) => s[0].toUpperCase() + s.substring(1);
+
+
+/// Ora citită pe înțelesul copilului: „ora trei”, „trei și jumătate”, „trei și un sfert”,
+/// „patru fără un sfert”.
+String clockLabel(int h, int m) {
+  const names = ['douăsprezece', 'unu', 'două', 'trei', 'patru', 'cinci', 'șase', 'șapte', 'opt',
+    'nouă', 'zece', 'unsprezece', 'douăsprezece'];
+  final next = h % 12 + 1;
+  return switch (m) {
+    0 => h == 1 ? 'ora unu' : 'ora ${names[h]}',
+    15 => '${names[h]} și un sfert',
+    30 => '${names[h]} și jumătate',
+    _ => '${names[next]} fără un sfert',
+  };
+}
+
+/// Ceasul (port din `ceasul.js`): cât e ceasul? Tier 1–2: ore fixe; tier 3–4: și jumătăți;
+/// de la tier 5: și sferturi. Distractorii sunt alte ore, scrise la fel.
+class CeasulGame extends ChoiceGame {
+  const CeasulGame()
+      : super(
+          id: 'ceasul',
+          name: 'Ceasul',
+          emoji: '🕒',
+          description: 'Cât e ceasul?',
+          subject: Subject.timpBani,
+          gradeCodes: '1234',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final tier = ctx.difficulty.tier;
+    final minutes = tier <= 2 ? const [0] : (tier <= 4 ? const [0, 30] : const [0, 15, 30, 45]);
+    return Lesson(
+      title: name,
+      instruction: 'Acul mic arată ora.',
+      rounds: [for (var i = 0; i < 8; i++) _round(ctx, minutes)],
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, List<int> minutes) {
+    final h = ctx.intBetween(1, 12);
+    final m = ctx.pick(minutes);
+    final correct = clockLabel(h, m);
+    final options = <String>{correct};
+    while (options.length < 5) {
+      options.add(clockLabel(ctx.intBetween(1, 12), ctx.pick(minutes)));
+    }
+    return ChoiceRound(
+      prompt: 'Cât e ceasul?',
+      speak: ['Cât e ceasul?'],
+      visuals: [ClockVisual(h, m)],
+      hint: 'Acul mic arată ora. Este $correct.',
+      choices: [
+        for (final o in options.toList()..shuffle(ctx.random)) Choice(label: _cap(o), id: o, speak: o, correct: o == correct),
+      ],
+    );
+  }
+}
+
+/// Împărțim (port din `impartim.js`): împarte obiectele egal în grupe. Cu obiecte cât sunt
+/// puține; răspunsul = câte primește fiecare.
+class ImpartimGame extends ChoiceGame {
+  const ImpartimGame()
+      : super(
+          id: 'impartim',
+          name: 'Împărțim',
+          emoji: '➗',
+          description: 'Împarte frățește',
+          subject: Subject.matematica,
+          gradeCodes: '34',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final maxQ = min(2 + ctx.difficulty.tier, 10);
+    return Lesson(
+      title: name,
+      instruction: 'Împarte frățește.',
+      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxQ)],
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, int maxQ) {
+    final groups = ctx.intBetween(2, 5);
+    final each = ctx.intBetween(1, maxQ);
+    final total = groups * each;
+    final item = ctx.pick(content.mathItems);
+    return ChoiceRound(
+      prompt: 'Cât face $total : $groups?',
+      speak: ['Cât face', '$total', 'împărțit la', '$groups'],
+      visuals: [
+        if (total <= 20) ObjectsVisual([ObjectGroup(item, total)]),
+        TextVisual('$total : $groups = ?', isEquation: true),
+      ],
+      hint: 'Dacă împărțim $total la $groups, fiecare primește $each.',
+      choices: [
+        for (final n in numberChoices(ctx, each, 1, maxQ + 3)) Choice(label: '$n', correct: n == each),
+      ],
+    );
+  }
+}

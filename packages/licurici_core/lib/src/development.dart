@@ -169,6 +169,8 @@ const List<Ladder> ladders = [
     Step('PAC-N9', 'Găsește numărul care lipsește dintr-o adunare', games: ['numarul-lipsa']),
     Step('PAC-N10', 'Zeci și unități (valoarea poziției)', games: ['zeci']),
     Step('PAC-N11', 'Înmulțirea ca grupe egale', games: ['inmultim']),
+    Step('PAC-N12', 'Împărțirea în grupe egale', games: ['impartim']),
+    Step('PAC-T1', 'Citește ceasul (ore, jumătăți, sferturi)', games: ['ceasul']),
     Step('PAC-L1', 'Recunoaște literele', games: ['alfabetul']),
     Step('PAC-L2', 'Desparte cuvintele în silabe', games: ['silabe']),
     Step('PAC-L3', 'Citește cuvinte simple', games: ['cuvinte']),

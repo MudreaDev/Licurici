@@ -43,6 +43,7 @@ class PromptVisuals extends StatelessWidget {
           child: switch (v) {
             EmojiVisual() => _BigEmoji(v.emoji, solved: solved),
             FlankerVisual() => _Flanker(v),
+            ClockVisual() => _Clock(v),
             SilhouetteVisual() => _BigEmoji(
               v.emoji,
               solved: solved,
@@ -422,4 +423,91 @@ class _Flanker extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Ceasul: cadran crem cu cifre, acul mic (ora) gros și scurt, acul mare (minutele) subțire.
+class _Clock extends StatelessWidget {
+  const _Clock(this.visual);
+
+  final ClockVisual visual;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = 190 * VisualScale.of(context);
+    return SizedBox.square(
+      dimension: size,
+      child: CustomPaint(
+        painter: _ClockPainter(
+          visual.hour,
+          visual.minute,
+          Theme.of(context).textTheme.titleLarge!,
+        ),
+      ),
+    );
+  }
+}
+
+class _ClockPainter extends CustomPainter {
+  _ClockPainter(this.hour, this.minute, this.style);
+
+  final int hour;
+  final int minute;
+  final TextStyle style;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero);
+    final r = size.width / 2;
+    canvas.drawCircle(c, r, Paint()..color = const Color(0xFFFFFBF0));
+    canvas.drawCircle(
+      c,
+      r - 4,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 8
+        ..color = Tokens.primary,
+    );
+    for (var i = 1; i <= 12; i++) {
+      final a = i / 12 * 2 * math.pi - math.pi / 2;
+      final tp = TextPainter(
+        text: TextSpan(
+          text: '$i',
+          style: style.copyWith(fontSize: r * 0.2, color: Tokens.ink),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      final p = c + Offset(math.cos(a), math.sin(a)) * r * 0.74;
+      tp.paint(canvas, p - Offset(tp.width / 2, tp.height / 2));
+    }
+    void hand(double angle, double len, double width, Color color) {
+      final a = angle - math.pi / 2;
+      canvas.drawLine(
+        c,
+        c + Offset(math.cos(a), math.sin(a)) * len,
+        Paint()
+          ..color = color
+          ..strokeWidth = width
+          ..strokeCap = StrokeCap.round,
+      );
+    }
+
+    // Acul mic merge și el puțin între ore (la și jumătate e la mijloc).
+    hand(
+      (hour % 12 + minute / 60) / 12 * 2 * math.pi,
+      r * 0.45,
+      r * 0.09,
+      Tokens.ink,
+    );
+    hand(
+      minute / 60 * 2 * math.pi,
+      r * 0.68,
+      r * 0.045,
+      const Color(0xFFE06B6B),
+    );
+    canvas.drawCircle(c, r * 0.06, Paint()..color = Tokens.ink);
+  }
+
+  @override
+  bool shouldRepaint(_ClockPainter old) =>
+      old.hour != hour || old.minute != minute;
 }
