@@ -31,6 +31,8 @@ const uiPhrases = [
   'Acum!',
   // Unde se uită?
   'Ce arată Licurici?',
+  // Labirint
+  'Du peștișorul acasă.',
   // Puzzle
   'Pune piesele la locul lor.',
   // Ce s-a schimbat?

@@ -19,6 +19,7 @@ export 'src/sequence.dart';
 export 'src/feeding.dart';
 export 'src/gaze.dart';
 export 'src/imitation.dart';
+export 'src/maze.dart';
 export 'src/memory.dart';
 export 'src/ordering.dart';
 export 'src/sorting.dart';

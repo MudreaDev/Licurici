@@ -12,6 +12,7 @@ import 'change.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
+import 'maze.dart';
 import 'memory.dart';
 import 'ordering.dart';
 import 'puzzle.dart';
@@ -199,6 +200,27 @@ class SessionRecorder {
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `labirint`: câte o încercare pe labirint. Corectă = drum eficient (≥ 75% din cel
+  /// mai scurt); lovirile de pereți = `offTargetTaps`; latența = timpul de gândire.
+  void mazeLevel(MazeResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final r in result.runs) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: r.clean,
+        promptLevel: PromptLevel.p0,
+        latencyMs: r.planMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: 'eficienta-${(r.efficiency * 100).round()}',
+        difficulty: (r.maze.cols * r.maze.rows).toDouble(),
+        offTargetTaps: r.bumps,
       ));
     }
   }

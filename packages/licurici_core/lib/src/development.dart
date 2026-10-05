@@ -136,6 +136,7 @@ const List<Ladder> ladders = [
     Step('FEX4', 'Schimbă regula când i se cere (acum după formă) — flexibilitate',
         games: ['regula-se-schimba']),
     Step('FEX5', 'Ține minte și repetă o secvență (memorie de lucru)', games: ['simon', 'perechi']),
+    Step('FEX7', 'Planifică un drum printr-un labirint', games: ['labirint']),
     Step('FEX6', 'Se liniștește cu respirația ghidată', games: ['respira']),
   ]),
   Ladder(Domain.aut, [
