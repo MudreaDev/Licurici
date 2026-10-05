@@ -706,7 +706,7 @@ class _ChoiceCard extends ConsumerWidget {
             choice.label!,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              fontSize: RegExp(r'^\d+$').hasMatch(choice.label!)
+              fontSize: RegExp(r'^(\d+|[<>=])$').hasMatch(choice.label!)
                   ? (compact ? 34 : 44)
                   : (compact ? 22 : 28),
             ),
