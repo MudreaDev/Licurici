@@ -30,6 +30,15 @@ const _paths = {
   '😌': 'faces/calm',
   '😄': 'faces/mandru',
   '🧒': 'faces/calm',
+  // Acțiunile (același copil): „Ce face?”, rutine, tabla de comunicare
+  '🛌': 'actions/doarme',
+  '🥣': 'actions/mananca',
+  '🥤': 'actions/bea',
+  '🏃': 'actions/alearga',
+  '📚': 'actions/citeste',
+  '🖍️': 'actions/deseneaza',
+  '🎤': 'actions/canta',
+  '👐': 'actions/se-spala',
   // Obiecte
   '🍎': 'objects/apple',
   '🍏': 'objects/green_apple',

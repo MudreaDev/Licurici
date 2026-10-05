@@ -18,6 +18,7 @@ sizes = {
     'scenes': (1536, 1024),
     'faces': (320, 320),
     'objects': (256, 256),
+    'actions': (384, 384),
 }
 for m in re.finditer(r'## ([a-z_]+)/([a-z_\-]+)\.webp\s+Sursă PNG: `([^`]+)`', readme):
     folder, name, src = m.groups()

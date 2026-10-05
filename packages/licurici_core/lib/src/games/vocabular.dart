@@ -744,3 +744,52 @@ class UndeEUrsulGame extends ChoiceGame {
     );
   }
 }
+
+
+/// Acțiunile pentru „Ce face?”: iconița (ilustrația pictată `actions/…` în aplicație) și
+/// verbul („doarme”).
+const actions = [
+  ('🛌', 'doarme'),
+  ('🥣', 'mănâncă'),
+  ('🥤', 'bea'),
+  ('🏃', 'aleargă'),
+  ('📚', 'citește'),
+  ('🖍️', 'desenează'),
+  ('🎤', 'cântă'),
+  ('👐', 'se spală pe mâini'),
+];
+
+/// Ce face? (LRC3b, catalog #15 `ce-face`): „Cine doarme?” — copilul arată imaginea cu
+/// acțiunea. Verbe receptive. Tier 1–2: două variante, apoi până la cinci.
+class CeFaceGame extends ChoiceGame {
+  const CeFaceGame()
+      : super(
+          id: 'ce-face',
+          name: 'Ce face?',
+          emoji: '🏃',
+          description: 'Arată cine doarme, cine mănâncă',
+          subject: Subject.romana,
+          gradeCodes: 'G1',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) => Lesson(
+        title: name,
+        instruction: 'Ascultă și arată.',
+        rounds: [
+          for (final (emoji, verb) in _targets(ctx, actions, 8))
+            ChoiceRound(
+              prompt: 'Cine $verb?',
+              speak: ['Cine $verb?'],
+              hint: 'Copilul acesta $verb.',
+              choices: [
+                for (final (e, v) in [
+                  (emoji, verb),
+                  ...ctx.sample(actions.where((a) => a.$1 != emoji).toList(), 4),
+                ]..shuffle(ctx.random))
+                  Choice(art: e, id: v, speak: v, correct: e == emoji),
+              ],
+            ),
+        ],
+      );
+}

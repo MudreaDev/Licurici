@@ -184,6 +184,16 @@ void main() {
     expect(catalogEntry('unde-e-ursul')!.domain, Domain.lrc);
   });
 
+  test('ce face: corectul e acțiunea din întrebare', () {
+    for (var seed = 0; seed < 30; seed++) {
+      for (final r in _build(const CeFaceGame(), 4, seed).rounds) {
+        final c = r.choices.singleWhere((c) => c.correct);
+        expect(r.prompt, 'Cine ${c.key}?');
+      }
+    }
+    expect(catalogEntry('ce-face')!.domain, Domain.lrc);
+  });
+
   test('jocurile noi au trepte în trasee', () {
     for (final id in ['potriveste', 'arata-mi', 'corpul', 'intrusul']) {
       expect(stepsForGame(id), isNotEmpty, reason: id);

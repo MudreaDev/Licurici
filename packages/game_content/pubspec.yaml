@@ -24,6 +24,7 @@ flutter:
     - art/illustrations/scenes/
     - art/illustrations/faces/
     - art/illustrations/objects/
+    - art/illustrations/actions/
     - audio/ro/
     - audio/sfx/
   fonts:
