@@ -22,12 +22,13 @@ import 'aac.dart';
 import 'breathing.dart';
 import 'shell.dart';
 import 'sorting.dart';
+import 'spot_diff.dart';
 import 'switching.dart';
 import 'trace.dart';
 import 'waiting.dart';
 
 /// Mecanica de care depinde ruta ecranului.
-enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze }
+enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff }
 
 /// Un joc din catalog, indiferent de mecanică.
 class CatalogEntry {
@@ -72,6 +73,7 @@ class CatalogEntry {
         GameKind.change => '/ce-s-a-schimbat',
         GameKind.puzzle => '/puzzle',
         GameKind.maze => '/labirint',
+        GameKind.diff => '/diferente',
       };
 
   @override
@@ -154,6 +156,15 @@ List<CatalogEntry> get catalog => [
           emoji: g.emoji,
           description: g.description,
           kind: GameKind.calm,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [SpotDiffGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.diff,
           domain: _domainOf(g.id, g.steps),
         ),
       for (final g in const [MazeGame()])

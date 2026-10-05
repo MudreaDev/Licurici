@@ -23,6 +23,7 @@ import 'search.dart';
 import 'sequence.dart';
 import 'shell.dart';
 import 'sorting.dart';
+import 'spot_diff.dart';
 import 'switching.dart';
 import 'trace.dart';
 import 'waiting.dart';
@@ -200,6 +201,27 @@ class SessionRecorder {
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `diferente`: câte o încercare pe pereche de scene; atingerile greșite =
+  /// `offTargetTaps`; dificultatea = numărul de diferențe.
+  void diffLevel(DiffResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final s in result.solves) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: s.clean,
+        promptLevel: PromptLevel.p0,
+        latencyMs: s.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: '${s.scene.differences.length}-diferente',
+        difficulty: s.scene.differences.length.toDouble(),
+        offTargetTaps: s.wrongTaps,
       ));
     }
   }

@@ -91,6 +91,7 @@ const List<Ladder> ladders = [
     Step('POT5', 'Potrivește culori și forme pe obiecte diferite', games: ['culori', 'forme']),
     Step('POT6', 'Găsește ce nu se potrivește într-o categorie', games: ['intrusul']),
     Step('POT7', 'Reface o imagine din piese (puzzle 2 → 9 piese)', games: ['puzzle']),
+    Step('POT8', 'Găsește diferențele dintre două scene', games: ['diferente']),
   ]),
   Ladder(Domain.lrc, [
     Step('LRC1', 'Arată obiectul numit, din două variante (obiecte foarte cunoscute)',
