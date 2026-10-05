@@ -31,6 +31,7 @@ import 'features/games/puzzle/puzzle_screen.dart';
 import 'features/games/rhythm/rhythm_screen.dart';
 import 'features/games/rules/switch_screen.dart';
 import 'features/games/search/search_screen.dart';
+import 'features/games/shop/shop_screen.dart';
 import 'features/games/sort/sort_screen.dart';
 import 'features/games/trace/trace_screen.dart';
 import 'features/games/wait/wait_screen.dart';
@@ -204,6 +205,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/unde-se-uita',
         pageBuilder: (context, state) =>
             _fade(context, state, const GazeScreen()),
+      ),
+      GoRoute(
+        path: '/la-magazin',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const ShopScreen()),
       ),
       GoRoute(
         path: '/construieste',

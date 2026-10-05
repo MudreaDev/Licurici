@@ -148,6 +148,7 @@ const List<Ladder> ladders = [
     Step('AUT2', 'Pune în ordine o rutină întreagă (4–5 pași)', games: ['pasii-rutinei']),
     Step('AUT3', 'Alege hainele potrivite vremii', games: ['ce-imbrac']),
     Step('AUT4', 'Pune în ordine momentele zilei (orarul vizual)', games: ['orarul-meu']),
+    Step('AUT5', 'Cumpără după o listă cu poze', games: ['la-magazin']),
   ]),
   Ladder(Domain.mot, [
     Step('MOT1', 'Duce degetul pe un drum lat, drept, de la start la țintă', games: ['traseaza']),

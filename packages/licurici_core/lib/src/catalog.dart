@@ -19,6 +19,7 @@ import 'memory.dart';
 import 'ordering.dart';
 import 'search.dart';
 import 'sequence.dart';
+import 'shop.dart';
 import 'aac.dart';
 import 'breathing.dart';
 import 'shell.dart';
@@ -29,7 +30,7 @@ import 'trace.dart';
 import 'waiting.dart';
 
 /// Mecanica de care depinde ruta ecranului.
-enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff, build }
+enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff, build, shop }
 
 /// Un joc din catalog, indiferent de mecanică.
 class CatalogEntry {
@@ -76,6 +77,7 @@ class CatalogEntry {
         GameKind.maze => '/labirint',
         GameKind.diff => '/diferente',
         GameKind.build => '/construieste',
+        GameKind.shop => '/la-magazin',
       };
 
   @override
@@ -158,6 +160,15 @@ List<CatalogEntry> get catalog => [
           emoji: g.emoji,
           description: g.description,
           kind: GameKind.calm,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [ShopGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.shop,
           domain: _domainOf(g.id, g.steps),
         ),
       for (final g in const [BuildGame()])

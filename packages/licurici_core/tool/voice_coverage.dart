@@ -31,6 +31,10 @@ const uiPhrases = [
   'Acum!',
   // Unde se uită?
   'Ce arată Licurici?',
+  // La magazin
+  'Cumpără ce e pe listă.',
+  'Asta nu e pe listă.',
+  'Ai cumpărat tot!',
   // Construiește la fel
   'Fă la fel ca modelul.',
   'Ține minte modelul!',

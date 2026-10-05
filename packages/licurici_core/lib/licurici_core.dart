@@ -17,6 +17,7 @@ export 'src/scene.dart';
 export 'src/trial.dart';
 export 'src/search.dart';
 export 'src/sequence.dart';
+export 'src/shop.dart';
 export 'src/feeding.dart';
 export 'src/gaze.dart';
 export 'src/imitation.dart';

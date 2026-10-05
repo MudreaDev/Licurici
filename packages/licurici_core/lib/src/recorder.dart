@@ -22,6 +22,7 @@ import 'report.dart';
 import 'rhythm.dart';
 import 'search.dart';
 import 'sequence.dart';
+import 'shop.dart';
 import 'shell.dart';
 import 'sorting.dart';
 import 'spot_diff.dart';
@@ -202,6 +203,27 @@ class SessionRecorder {
         difficulty: a.round.steps.length.toDouble(),
         targetId: a.expected,
         chosenId: a.firstWrong,
+      ));
+    }
+  }
+
+  /// Un nivel `la-magazin`: câte o încercare pe listă; produsele luate în plus =
+  /// `offTargetTaps` (impulsivitate); dificultatea = lungimea listei.
+  void shopLevel(ShopResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final t in result.trips) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: t.clean,
+        promptLevel: PromptLevel.p0,
+        latencyMs: t.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: 'lista-${t.round.list.length}',
+        difficulty: t.round.list.length.toDouble(),
+        offTargetTaps: t.extra,
       ));
     }
   }
