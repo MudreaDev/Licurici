@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../app/layout.dart';
+import '../features/settings/settings.dart';
 import 'illustration.dart';
 import 'mascot.dart';
 import 'motion.dart';
@@ -186,6 +187,7 @@ class RewardFinish extends ConsumerWidget {
 }
 
 /// Sunetele finalului, sincronizate cu animațiile: câte un clinchet pe stea, apoi abțibildul.
+/// Tot aici stelele intră o dată în „pușculiță” (se creează o singură dată pe final).
 class _FinishSounds extends ConsumerStatefulWidget {
   const _FinishSounds({required this.stars, required this.sticker});
 
@@ -209,6 +211,9 @@ class _FinishSoundsState extends ConsumerState<_FinishSounds> {
       at(450 + 320 * i, Sfx.star);
     }
     if (widget.sticker) at(1450, Sfx.sticker);
+    final stars = widget.stars;
+    final wallet = ref.read(settingsProvider.notifier);
+    Future.microtask(() => wallet.addStars(stars));
   }
 
   @override

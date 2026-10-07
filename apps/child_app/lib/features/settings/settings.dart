@@ -11,6 +11,7 @@ class AppSettings {
     this.voice = true,
     this.stickers = const [],
     this.stickersSeen = 0,
+    this.stars = startStars,
   });
 
   final Grade grade;
@@ -29,6 +30,13 @@ class AppSettings {
 
   bool get hasNewStickers => stickers.length > stickersSeen;
 
+  /// Stelele din „pușculiță”: se adună la finalul jocurilor (exact cele arătate copilului)
+  /// și se dau pe mâncare în acvariu. Ca abțibildurile, rămân doar pe dispozitiv.
+  final int stars;
+
+  /// Cu câte stele pornește copilul, ca să poată hrăni peștii de la prima vizită.
+  static const startStars = 3;
+
   Map<String, Object> toJson() => {
     'grade': grade.name,
     'level': level.name,
@@ -36,6 +44,7 @@ class AppSettings {
     'voice': voice,
     'stickers': stickers,
     'stickersSeen': stickersSeen,
+    'stars': stars,
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -49,6 +58,7 @@ class AppSettings {
         if (s is String) s,
     ],
     stickersSeen: (j['stickersSeen'] as num?)?.toInt() ?? 0,
+    stars: (j['stars'] as num?)?.toInt() ?? startStars,
   );
 
   AppSettings copyWith({
@@ -58,6 +68,7 @@ class AppSettings {
     bool? voice,
     List<String>? stickers,
     int? stickersSeen,
+    int? stars,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -65,6 +76,7 @@ class AppSettings {
     voice: voice ?? this.voice,
     stickers: stickers ?? this.stickers,
     stickersSeen: stickersSeen ?? this.stickersSeen,
+    stars: stars ?? this.stars,
   );
 }
 
@@ -110,6 +122,15 @@ class SettingsNotifier extends Notifier<AppSettings> {
     if (state.hasNewStickers) {
       _set(state.copyWith(stickersSeen: state.stickers.length));
     }
+  }
+
+  void addStars(int n) => _set(state.copyWith(stars: state.stars + n));
+
+  /// Plătește [n] stele, dacă are destule.
+  bool spendStars(int n) {
+    if (state.stars < n) return false;
+    _set(state.copyWith(stars: state.stars - n));
+    return true;
   }
 
   String awardSticker() {

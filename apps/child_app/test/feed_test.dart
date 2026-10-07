@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:licurici/app/theme.dart';
 import 'package:licurici/data/session.dart';
 import 'package:licurici/features/games/feed/feed_screen.dart';
+import 'package:licurici/features/settings/settings.dart';
 import 'package:licurici/shared/reward_finish.dart';
 import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
@@ -83,6 +84,9 @@ void main() {
       expect(trials, hasLength(l.rounds.length));
       expect(trials.first.correct, isFalse);
       expect(trials.skip(1).every((t) => t.correct), isTrue);
+      // Stelele arătate la final intră în pușculiță (pentru mâncarea din acvariu).
+      final shown = tester.widget<RewardFinish>(find.byType(RewardFinish)).stars;
+      expect(container.read(settingsProvider).stars, AppSettings.startStars + shown);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 5));
