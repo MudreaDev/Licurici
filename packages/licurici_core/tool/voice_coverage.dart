@@ -12,6 +12,13 @@ import 'package:licurici_core/licurici_core.dart';
 
 /// Fraze rostite de interfață (în afara jocurilor).
 const uiPhrases = [
+  // Acvariul
+  'Ți-am adus un pește!',
+  'Colorează și tu unul.',
+  'Uite! Peștele tău înoată în acvariu!',
+  'Alege un pește.',
+  'Colorează peștele cum vrei tu.',
+  'Joacă un joc și câștigi stele pentru mâncare.',
   'Bravo',
   'Bravo!',
   'Mai încearcă',
