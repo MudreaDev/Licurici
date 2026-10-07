@@ -37,6 +37,8 @@ import 'features/games/trace/trace_screen.dart';
 import 'features/games/wait/wait_screen.dart';
 import 'features/games/reaction/reaction_game_screen.dart';
 import 'features/album/album_screen.dart';
+import 'features/aquarium/aquarium_screen.dart';
+import 'features/aquarium/coloring_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/parent/parent_screen.dart';
 import 'features/games/sequence/simon_screen.dart';
@@ -134,6 +136,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/album',
         pageBuilder: (context, state) =>
             _fade(context, state, const AlbumScreen()),
+      ),
+      GoRoute(
+        path: '/acvariu',
+        pageBuilder: (context, state) => _fade(
+          context,
+          state,
+          AquariumScreen(newFishId: state.uri.queryParameters['nou']),
+        ),
+      ),
+      GoRoute(
+        path: '/acvariu/coloreaza',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const ColoringScreen()),
       ),
       GoRoute(
         path: '/arie/:code',

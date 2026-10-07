@@ -172,6 +172,14 @@ class _HomeBar extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
           ],
+          BarButton(
+            key: const ValueKey('aquarium'),
+            icon: Icons.water_rounded,
+            color: const Color(0xFF3FA7C4),
+            label: 'Acvariul meu',
+            onTap: () => context.go('/acvariu'),
+          ),
+          const SizedBox(width: 10),
           // Un abțibild nou așteaptă în album: steluță pe buton.
           Stack(
             clipBehavior: Clip.none,
