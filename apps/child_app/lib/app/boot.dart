@@ -107,7 +107,12 @@ class _BootGateState extends ConsumerState<BootGate> {
     final layout = AppLayout.of(context);
     return Stack(
       children: [
-        if (boot.done) Positioned.fill(child: widget.child),
+        // Ținut în portret, aplicația rămâne așezată ca în landscape, ascunsă sub
+        // „Întoarce telefonul” (fără depășiri; aceeași structură, deci starea se păstrează).
+        if (boot.done)
+          Positioned.fill(
+            child: _Landscape(portrait: layout.phonePortrait, child: widget.child),
+          ),
         // Cu „reduce motion” durata e zero și AnimatedOpacity nu mai apelează onEnd,
         // deci scoatem ecranul direct (altfel ar rămâne peste aplicație).
         if (!_overlayGone && !(boot.done && !motion.feedback))
@@ -222,6 +227,29 @@ class _GlowBar extends ConsumerWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _Landscape extends StatelessWidget {
+  const _Landscape({required this.portrait, required this.child});
+
+  final bool portrait;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final size = portrait ? mq.size.flipped : mq.size;
+    return ClipRect(
+      child: OverflowBox(
+        alignment: Alignment.topLeft,
+        minWidth: size.width,
+        maxWidth: size.width,
+        minHeight: size.height,
+        maxHeight: size.height,
+        child: MediaQuery(data: mq.copyWith(size: size), child: child),
       ),
     );
   }
