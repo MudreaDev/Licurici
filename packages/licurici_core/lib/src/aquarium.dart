@@ -47,6 +47,12 @@ class SwimmingFish {
   /// 0…1: cât de bucuros e (a mâncat); face coada să bată mai tare câteva secunde.
   double joy = 0;
 
+  /// 0…1: cât e de umflat (doar peștele-balon, când se sperie); scade încet.
+  double puff = 0;
+
+  /// Se umflă când se sperie (ca peștele-balon adevărat).
+  bool get puffs => species == 'balon';
+
   double _timer = 0;
   Point<double> _offset = const Point(0, 0);
 
@@ -125,7 +131,9 @@ class Aquarium {
       final strength = 1 - dist / fleeRadius;
       f.mode = FishMode.flee;
       f._timer = 0.8 + strength * 0.6;
-      f.vel = away * (f.cruise * (2.5 + 2.5 * strength));
+      // Peștele-balon nu fuge repede: se umflă pe loc (și se îndepărtează încet).
+      f.vel = away * (f.cruise * (f.puffs ? 0.8 : 2.5 + 2.5 * strength));
+      if (f.puffs) f.puff = 1;
       f.target = _clamp(at + away * (fleeRadius * 1.6));
     }
   }
@@ -203,6 +211,8 @@ class Aquarium {
   void _think(SwimmingFish f, double dt) {
     f._timer -= dt;
     f.joy = max(0, f.joy - dt * 0.4);
+    // Rămâne umflat ~1,5 s, apoi se dezumflă lin în ~2 s.
+    f.puff = max(0, f.puff - dt * (f.puff > 0.75 ? 0.15 : 0.45));
     final g = _gather;
     if (g != null) {
       if (f.mode != FishMode.flee || f._timer <= 0) f.mode = FishMode.gather;

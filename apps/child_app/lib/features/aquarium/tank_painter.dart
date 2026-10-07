@@ -137,6 +137,9 @@ class TankPainter extends CustomPainter {
     canvas.translate(f.pos.x * h, f.pos.y * h + bob);
     canvas.scale(turn * k, k * (1 + (1 - f.facing.abs()) * 0.06));
     canvas.rotate(tilt);
+    // Peștele-balon umflat: mai rotund (mai mult pe înălțime), cu țepi.
+    final p = f.puff * f.puff * (3 - 2 * f.puff);
+    if (p > 0) canvas.scale(1 + 0.16 * p, 1 + 0.42 * p);
     canvas.translate(-frame.center.dx, -frame.center.dy);
 
     final sweep = math.sin(f.phase) * (0.42 * (0.55 + 0.35 * f.effort + 0.5 * f.joy)).clamp(0.0, 0.75);
@@ -186,7 +189,30 @@ class TankPainter extends CustomPainter {
         ..shader = ui.ImageShader(img, TileMode.decal, TileMode.decal, Matrix4Identity.storage),
     );
     v.dispose();
+    if (p > 0.02) _spikes(canvas, owned.species, p);
     canvas.restore();
+  }
+
+  /// Țepii peștelui-balon: triunghiuri mici pe conturul corpului (unități de desen).
+  void _spikes(Canvas canvas, FishSpecies s, double p) {
+    final body = sampleCurve(s.body, steps: 3);
+    final c = body.fold(Offset.zero, (a, q) => a + Offset(q.x, q.y)) / body.length.toDouble();
+    final paint = Paint()..color = Color.fromRGBO(70, 60, 40, 0.85 * p);
+    for (var i = 0; i < body.length; i += 2) {
+      final q = Offset(body[i].x, body[i].y);
+      final out = q - c;
+      final n = out / out.distance;
+      final side = Offset(-n.dy, n.dx) * 7;
+      final tip = q + n * (16 * p);
+      canvas.drawPath(
+        Path()
+          ..moveTo(q.dx + side.dx, q.dy + side.dy)
+          ..lineTo(tip.dx, tip.dy)
+          ..lineTo(q.dx - side.dx, q.dy - side.dy)
+          ..close(),
+        paint,
+      );
+    }
   }
 
   @override

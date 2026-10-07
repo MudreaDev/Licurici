@@ -128,6 +128,26 @@ void main() {
       expect(f.mouth.x, lessThan(f.pos.x));
     });
 
+    test('peștele-balon se umflă când e atins, apoi se dezumflă; ceilalți nu', () {
+      final a = Aquarium(width: 1.6, seed: 4);
+      final balon = SwimmingFish(id: 'b', species: 'balon', length: 0.2, cruise: 0.1, at: const Point(0.8, 0.5));
+      final clovn = _fish('c', const Point(0.9, 0.5));
+      a
+        ..add(balon)
+        ..add(clovn)
+        ..tap(const Point(0.85, 0.5));
+      expect(balon.puff, 1);
+      expect(clovn.puff, 0);
+      for (var t = 0; t < 60; t++) {
+        a.step(1 / 60);
+      }
+      expect(balon.puff, greaterThan(0.6)); // încă umflat după 1 s
+      for (var t = 0; t < 60 * 5; t++) {
+        a.step(1 / 60);
+      }
+      expect(balon.puff, 0);
+    });
+
     test('peștele nou intră de sus, în apă', () {
       final a = Aquarium(width: 1.6);
       final f = _fish('nou', const Point(0.8, 0.5));
