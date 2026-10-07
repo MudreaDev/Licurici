@@ -1,11 +1,14 @@
 import 'dart:math' as math;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
+import 'package:printing/printing.dart';
 
 import '../../app/layout.dart';
 import '../../app/theme.dart';
@@ -16,8 +19,11 @@ import '../../shared/sfx.dart';
 import '../../shared/top_bar.dart';
 import '../../shared/ui/candy.dart';
 import '../../shared/voice.dart';
+import '../parent/parent_gate.dart';
 import '../settings/settings.dart';
 import 'aquarium_store.dart';
+import 'paper_scan_flow.dart';
+import 'paper_sheet.dart';
 import 'reef.dart';
 import 'tank_painter.dart';
 
@@ -48,6 +54,10 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   double _height = 1;
   bool _greeted = false;
   int _broke = 0;
+  bool _scanning = false;
+
+  /// Peștele adus de pe hârtie chiar acum (intră de sus, ca cel colorat pe ecran).
+  String? _diveId;
 
   @override
   void initState() {
@@ -95,7 +105,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     final rnd = math.Random(sim.fish.length + 7);
     for (final o in fish) {
       if (sim.fish.any((f) => f.id == o.entry.id)) continue;
-      final dive = o.entry.id == widget.newFishId;
+      final dive = o.entry.id == widget.newFishId || o.entry.id == _diveId;
       sim.add(
         SwimmingFish(
           id: o.entry.id,
@@ -127,6 +137,100 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     final rnd = math.Random();
     sim.feed(sim.width * (0.25 + rnd.nextDouble() * 0.5));
     ref.read(sfxProvider).play(Sfx.tap);
+  }
+
+  /// Fișele A4 de colorat — pentru părinte (printarea cere poarta pentru adulți).
+  Future<void> _printSheets() async {
+    if (!await askParentGate(context) || !mounted) return;
+    await Printing.layoutPdf(name: 'licurici-pesti-de-colorat', onLayout: (_) => buildSheetsPdf(fishSpecies));
+  }
+
+  /// Peștele colorat pe hârtie: o poză cu fișa, apoi peștele intră în acvariu.
+  Future<void> _scanPaper() async {
+    final photo = await ref.read(photoSourceProvider)();
+    if (photo == null || !mounted) return;
+    setState(() => _scanning = true);
+    ref.read(voiceProvider).say(['Îl caut pe peștele tău.']);
+    final (found, problem) = await scanPhoto(photo);
+    if (!mounted) return;
+    if (found == null) {
+      setState(() => _scanning = false);
+      final retry = await _showScanProblem(problem ?? ScanProblem.noSheet);
+      if (retry && mounted) unawaited(_scanPaper());
+      return;
+    }
+    final id = 'p${DateTime.now().microsecondsSinceEpoch}';
+    _diveId = id;
+    await ref.read(aquariumProvider.notifier).add(found.species, found.drawing, id: id);
+    found.drawing.dispose();
+    if (!mounted) return;
+    setState(() => _scanning = false);
+    ref.read(sfxProvider).play(Sfx.correct);
+    ref.read(voiceProvider).say(['Uite! Peștele tău înoată în acvariu!']);
+  }
+
+  /// Ce n-a mers, spus blând de Licurici. Întoarce true dacă vrea să mai încerce.
+  Future<bool> _showScanProblem(ScanProblem problem) async {
+    ref.read(voiceProvider).say([
+      switch (problem) {
+        ScanProblem.noSheet => 'Nu văd fișa. Fă poza de sus, cu toată foaia.',
+        ScanProblem.unknownFish => 'Încearcă o poză mai clară.',
+      },
+    ]);
+    final retry = await showDialog<bool>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: CandyPanel(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Mascot(size: 110, mood: MascotMood.encourage),
+              const SizedBox(width: 12),
+              Flexible(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      problem == ScanProblem.noSheet
+                          ? 'Nu văd fișa.\nFă poza de sus, să se vadă toată foaia și cele patru pătrate negre.'
+                          : 'Văd fișa, dar nu știu ce pește e.\nÎncearcă o poză mai clară, cu mai multă lumină.',
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Tokens.ink),
+                    ),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        CandyButton(
+                          key: const ValueKey('scan-retry'),
+                          label: 'Mai încerc',
+                          icon: Icons.photo_camera_rounded,
+                          color: Tokens.good,
+                          minWidth: 160,
+                          onTap: () => Navigator.of(context).pop(true),
+                        ),
+                        CandyButton(
+                          key: const ValueKey('scan-close'),
+                          label: 'Închide',
+                          icon: Icons.close_rounded,
+                          color: const Color(0xFF8A9BB0),
+                          minWidth: 140,
+                          onTap: () => Navigator.of(context).pop(false),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    return retry ?? false;
   }
 
   void _greet(List<OwnedFish> fish) {
@@ -222,7 +326,20 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                   children: [
                     TopBar(
                       title: 'Acvariul meu',
-                      trailing: _StarPurse(stars: stars, shake: _broke),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          BarButton(
+                            key: const ValueKey('print-sheets'),
+                            icon: Icons.print_rounded,
+                            color: const Color(0xFF8A9BB0),
+                            label: 'Fișe de printat (pentru părinți)',
+                            onTap: _printSheets,
+                          ),
+                          const SizedBox(width: 10),
+                          _StarPurse(stars: stars, shake: _broke),
+                        ],
+                      ),
                     ),
                     const Spacer(),
                     Padding(
@@ -256,6 +373,15 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                             minWidth: layout.compact ? 120 : 200,
                             onTap: () => context.go('/acvariu/coloreaza'),
                           ),
+                          const SizedBox(width: 12),
+                          CandyIconButton(
+                            key: const ValueKey('scan-paper'),
+                            icon: Icons.photo_camera_rounded,
+                            label: 'Peștele colorat pe hârtie',
+                            color: const Color(0xFF7FC0A3),
+                            size: layout.compact ? 56 : 72,
+                            onTap: _scanning ? null : _scanPaper,
+                          ),
                         ],
                       ),
                     ),
@@ -263,6 +389,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                 ),
               ),
               if (fish.isLoading) const Center(child: CircularProgressIndicator(color: Colors.white)),
+              if (_scanning) const _Searching(),
             ],
           );
         },
@@ -328,4 +455,27 @@ class _StarPurse extends StatelessWidget {
       ),
     ).animate(key: ValueKey(shake), target: shake == 0 ? 0 : 1).shake(hz: 4, rotation: 0.04, duration: 450.ms);
   }
+}
+
+/// În timp ce caută peștele în poză: Licurici se gândește.
+class _Searching extends StatelessWidget {
+  const _Searching();
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+    color: const Color(0x66062A40),
+    child: Center(
+      child: CandyPanel(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Mascot(size: 100, mood: MascotMood.think),
+            const SizedBox(width: 12),
+            Text('Îl caut pe peștele tău…', style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Tokens.ink)),
+          ],
+        ),
+      ),
+    ),
+  );
 }

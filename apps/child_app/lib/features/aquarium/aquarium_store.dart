@@ -137,9 +137,9 @@ class AquariumNotifier extends AsyncNotifier<List<OwnedFish>> {
   }
 
   /// Peștele colorat de copil intră în acvariu. Întoarce id-ul lui.
-  Future<String> add(FishSpecies s, ui.Image drawing) async {
+  Future<String> add(FishSpecies s, ui.Image drawing, {String? id}) async {
     final current = await future;
-    final e = AquariumEntry(id: 'p${DateTime.now().microsecondsSinceEpoch}', species: s.id, created: DateTime.now());
+    final e = AquariumEntry(id: id ?? 'p${DateTime.now().microsecondsSinceEpoch}', species: s.id, created: DateTime.now());
     final art = await buildFishImage(s, drawing);
     var next = [...current, OwnedFish(e, s, art)];
     String? removed;
