@@ -1,7 +1,7 @@
 /// Restul jocurilor „școlare” portate din prototip (`legacy/electron/src/games/*.js`,
 /// conținutul din `data/school.js`, `data/romana.js`, `data/istorie.js`), mecanica `choice`:
 /// banii, tabla înmulțirii, problemele cu text, felul cuvântului, simbolurile țării, trecut
-/// și prezent, engleza.
+/// și prezent, personalitățile, engleza.
 library;
 
 import 'dart:math';
@@ -326,6 +326,49 @@ class TrecutGame extends ChoiceGame {
       choices: [
         for (final (o, isOld) in [(old, true), (now, false)]..shuffle(ctx.random))
           Choice(label: _cap(o.$1), art: o.$2, id: o.$1, speak: o.$1, correct: isOld),
+      ],
+    );
+  }
+}
+
+const _people = [
+  ('Cine a scris poezia „Luceafărul”?', 'Mihai Eminescu'),
+  ('Cine a fost domnitorul care a apărat Moldova timp de aproape 50 de ani?', 'Ștefan cel Mare'),
+  ('Cine a scris „Amintiri din copilărie”?', 'Ion Creangă'),
+  ('Cine a unit prima dată cele trei Țări Române?', 'Mihai Viteazul'),
+  ('Cine a fost domnitor și mare cărturar, autorul „Descrierii Moldovei”?', 'Dimitrie Cantemir'),
+];
+
+/// Personalități (port din `personalitati.js`): cine a fost? Întrebarea se citește; numele
+/// mari ale istoriei și literaturii.
+class PersonalitatiGame extends ChoiceGame {
+  const PersonalitatiGame()
+      : super(
+          id: 'personalitati',
+          name: 'Personalități',
+          emoji: '👑',
+          description: 'Oameni mari din istorie',
+          subject: Subject.istorie,
+          gradeCodes: '34',
+        );
+
+  @override
+  Lesson generate(GameContext ctx) => Lesson(
+        title: name,
+        instruction: 'Cine a fost?',
+        rounds: [for (var i = 0; i < 8; i++) _round(ctx)],
+      );
+
+  ChoiceRound _round(GameContext ctx) {
+    final (q, a) = ctx.pick(_people);
+    return ChoiceRound(
+      prompt: 'Cine a fost?',
+      speak: [q],
+      visuals: [SceneVisual(q)],
+      hint: 'Răspunsul este $a.',
+      stimulusId: a,
+      choices: [
+        for (final (_, name) in [..._people]..shuffle(ctx.random)) Choice(label: name, id: name, speak: name, correct: name == a),
       ],
     );
   }

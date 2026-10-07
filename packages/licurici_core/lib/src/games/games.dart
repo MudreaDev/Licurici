@@ -70,6 +70,7 @@ const List<GameSpec> allGames = [
   HabitateGame(),
   TrecutGame(),
   SimboluriGame(),
+  PersonalitatiGame(),
   EnglezaGame(),
   CeSeAudeGame(),
   CeImbracGame(),

@@ -78,7 +78,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - Teste: 6 în core cu **fotografii sintetice** (perspectivă, lumină inegală, nuanță galbenă, zgomot, rotire 180°, poză fără fișă) — toate modelele găsite, marcaje la < 3 px, culorile corecte și în partea întunecată; 3 în aplicație (PDF-ul se construiește; poză fără fișă → „Mai încerc” → poză bună → peștele intră în acvariu, pe telefon mic și tabletă).
 - **De verificat pe dispozitiv real:** fotografii adevărate (lumină slabă, foaie îndoită, blitz). Dacă eșuează des: ghidaj în timp real cu `camera` (vezi ADR-030, „Când am alege altfel”).
 - **Urmează (acvariu):** rularea Codex pe brief (fundalul pictat); poate un preț în stele și pentru peștii noi (de discutat — acum colorarea e liberă).
-- ✅ **Ultimele jocuri școlare din prototip** (`licurici_core/lib/src/games/scoala2.dart`, total **75** în aplicație): **Banii** (PAC-T2, bancnote desenate din cod — `MoneyVisual`, câte o culoare pe valoare; 1/2/5 lei → +10 → +20/50), **Tabla înmulțirii** (PAC-N13, până la 10 × 10, distractori din „tabla vecină”), **Probleme** (PAC-N14, adunare/scădere, de la nivelul 3 și înmulțire), **Ce fel de cuvânt?** (PAC-L9), **Trecut și prezent** (PAC-I1), **Simbolurile țării** (PAC-I2), **Engleză** (PAC-E1, cu **voce englezească** — frazele `en:…` se generează cu `en-US-AnaNeural`, voce de copil; `tools/gen-voice`). Teste: `scoala2_test.dart` + toate jocurile pe telefon mic și tabletă. Vocea: 1961/1961.
+- ✅ **Ultimele jocuri școlare din prototip** (`licurici_core/lib/src/games/scoala2.dart`, total **76** în aplicație): **Banii** (PAC-T2, bancnote desenate din cod — `MoneyVisual`, câte o culoare pe valoare; 1/2/5 lei → +10 → +20/50), **Tabla înmulțirii** (PAC-N13, până la 10 × 10, distractori din „tabla vecină”), **Probleme** (PAC-N14, adunare/scădere, de la nivelul 3 și înmulțire), **Ce fel de cuvânt?** (PAC-L9), **Trecut și prezent** (PAC-I1), **Simbolurile țării** (PAC-I2), **Personalități** (PAC-I3), **Engleză** (PAC-E1, cu **voce englezească** — frazele `en:…` se generează cu `en-US-AnaNeural`, voce de copil; `tools/gen-voice`). Teste: `scoala2_test.dart` + toate jocurile pe telefon mic și tabletă. Vocea: 100%. Din prototip au rămas neportate doar cele trei „Explorări” (hartă cu opriri + povești); „Grupăm” e acoperit de „Sortăm”.
 - Brief pentru cardurile lor: [docs/brief-codex-carduri-scolare.md](docs/brief-codex-carduri-scolare.md) (până atunci, emoji).
 - ✅ **Ștergerea contului** (GDPR art. 17; backend `POST /me/delete` + panoul „Contul meu”): cere **parola din nou**; imediat: copiii marcați șterși, partajările tăiate (și cele în care contul e specialistul), e-mailul anonimizat (poate fi refolosit), parola ștearsă; **reîmprospătarea sesiunii e refuzată** pentru un cont șters (`AuthService.refresh`); job-ul `purge-account` (coada `gdpr`) șterge definitiv după 7 zile, în cascadă. Administratorii nu se șterg din aplicație. Lista de partajări arată acum **e-mailul specialistului**. Teste: backend 41, panou 14.
 - ✅ **„Șterge datele de pe tabletă”** (Pentru părinți, după poarta pentru adulți, cu confirmare): sesiunile + setările (Drift `wipe()`), abțibildurile, stelele, peștii din acvariu; sesiunea în curs se abandonează.
@@ -934,7 +934,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (75):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
+**Gata în Flutter (76):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
 🆕 simon / Felinarele (`sequence`), perechi (`memoryCards`), sortam (`dragDrop`), cucu-bau, respira, continua-sirul,
 🆕 **sesiunea a șaptea:** potriveste, arata-mi, corpul, intrusul, umbre, mingea-rosie, ce-se-aude, ce-imbrac, primul-sunet,
@@ -942,7 +942,7 @@ peste-in-mijloc (`choice`), traseaza (`trace`), pasii-rutinei, ce-urmeaza, mare-
 fa-ca-licuriciul (imitație), semaforul (așteptare), regula-se-schimba (DCCS), cauta (căutare vizuală), unde-se-uita
 (atenție comună), vorbeste (AAC), toba-magica (ritm), hraneste-pestii (tragere), atinge-si-vezi (cauză–efect),
 ce-s-a-schimbat, puzzle, unde-e-ursul, labirint, diferente, ce-face, orarul-meu, construieste, la-magazin, spune-propozitia, semne, numarul-lipsa, anotimpuri, habitate, silabe, cuvinte, plural, zeci, inmultim, impartim, ceasul,
-🆕 **sesiunea a opta:** bani, tabla, probleme, gramatica, simboluri, trecut, engleza (`games/scoala2.dart`).
+🆕 **sesiunea a opta:** bani, tabla, probleme, gramatica, simboluri, trecut, personalitati, engleza (`games/scoala2.dart`).
 Fiecare mecanică nouă are fișierul ei în `licurici_core/lib/src/` (logică pură, testată) și ecranul în
 `apps/child_app/lib/features/games/<mecanică>/`; catalogul (`catalog.dart`, `GameKind`) dă ruta.
 Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii,social}.dart` + registrul `games.dart`;

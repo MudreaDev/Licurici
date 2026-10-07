@@ -183,6 +183,7 @@ const List<Ladder> ladders = [
     Step('PAC-L9', 'Recunoaște substantivul, verbul și adjectivul', games: ['gramatica']),
     Step('PAC-I1', 'Deosebește lucrurile de demult de cele de acum', games: ['trecut']),
     Step('PAC-I2', 'Recunoaște simbolurile țării (drapel, stemă, imn)', games: ['simboluri']),
+    Step('PAC-I3', 'Știe oameni importanți din istorie și literatură', games: ['personalitati']),
     Step('PAC-E1', 'Primele cuvinte în engleză (culori, animale, lucruri)', games: ['engleza']),
   ]),
 ];
