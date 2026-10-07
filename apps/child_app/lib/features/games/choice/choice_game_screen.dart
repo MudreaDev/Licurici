@@ -338,10 +338,11 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
                     ),
                     if (!_finished)
                       Positioned(
-                        left: 12,
+                        // Cu două panouri, colțul stă sub panoul din stânga; pe telefon (scund) stă
+                        // sub variante, ca stimulul să aibă toată înălțimea.
+                        left: layout.twoPane && layout.compact ? layout.size.width * 0.56 : 12,
                         bottom: 6,
-                        // Cu două panouri, colțul rămâne sub panoul din stânga.
-                        width: layout.twoPane ? layout.size.width * 0.5 : null,
+                        width: layout.twoPane ? layout.size.width * (layout.compact ? 0.42 : 0.5) : null,
                         right: layout.twoPane ? null : 12,
                         child: _MascotCorner(
                           size: layout.mascot,
@@ -349,9 +350,11 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
                           index: _finished ? _lesson.rounds.length : _index,
                           mood: _mood,
                           reaction: _reaction,
+                          // Pe telefon balonul n-are loc lângă variante; vocea spune oricum
+                          // instrucțiunea.
                           bubble: _finished
                               ? 'Ai terminat! Bravo!'
-                              : (_ready ? _bubble : ''),
+                              : (_ready && !(layout.twoPane && layout.compact) ? _bubble : ''),
                           progressKey: _progressKey,
                         ),
                       ),
@@ -531,7 +534,7 @@ class _RoundView extends ConsumerWidget {
               child: Padding(
                 // Pe telefon, balonul mascotei are adesea două rânduri: îi lăsăm loc.
                 padding: EdgeInsets.only(
-                  bottom: reserveBottom + (layout.compact ? 30 : 0),
+                  bottom: layout.compact ? 4 : reserveBottom,
                 ),
                 child: Column(
                   children: [
@@ -553,6 +556,7 @@ class _RoundView extends ConsumerWidget {
                           // FittedBox rămâne plasa de siguranță dacă tot nu încape.
                           builder: (context, box) => VisualScale(
                             scale: (box.maxHeight / 240).clamp(0.75, 1.5),
+                            box: box.biggest,
                             child: Center(
                               child: FittedBox(
                                 fit: BoxFit.scaleDown,
@@ -577,10 +581,14 @@ class _RoundView extends ConsumerWidget {
             const SizedBox(width: 16),
             Expanded(
               flex: 9,
-              child: LayoutBuilder(
-                builder: (context, box) => Center(
-                  child: SingleChildScrollView(
-                    child: choices(box.maxWidth, maxHeight: box.maxHeight),
+              child: Padding(
+                // Pe telefon, Licurici și balonul lui stau sub variante.
+                padding: EdgeInsets.only(bottom: layout.compact ? reserveBottom - 8 : 0),
+                child: LayoutBuilder(
+                  builder: (context, box) => Center(
+                    child: SingleChildScrollView(
+                      child: choices(box.maxWidth, maxHeight: box.maxHeight),
+                    ),
                   ),
                 ),
               ),
@@ -702,9 +710,8 @@ class _ChoiceCard extends ConsumerWidget {
         if (choice.label != null) ...[
           if (choice.art != null || choice.objects != null)
             const SizedBox(height: 6),
-          Text(
+          _FitLabel(
             choice.label!,
-            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
               fontSize: RegExp(r'^(\d+|[<>=])$').hasMatch(choice.label!)
                   ? (compact ? 34 : 44)
@@ -993,6 +1000,32 @@ class _FlyingStar extends StatelessWidget {
           ),
         ),
       );
+    },
+  );
+}
+
+/// Eticheta unei variante: se poate rupe între cuvinte, niciodată în mijlocul unui cuvânt —
+/// dacă cel mai lung cuvânt nu încape, litera se micșorează.
+class _FitLabel extends StatelessWidget {
+  const _FitLabel(this.text, {required this.style});
+
+  final String text;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, c) {
+      var size = style.fontSize ?? 22;
+      final longest = text.split(RegExp(r'\s+')).reduce((a, b) => a.length >= b.length ? a : b);
+      double widthAt(double s) => (TextPainter(
+        text: TextSpan(text: longest, style: style.copyWith(fontSize: s)),
+        textDirection: TextDirection.ltr,
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout()).width;
+      while (c.maxWidth.isFinite && size > 12 && widthAt(size) > c.maxWidth) {
+        size -= 1;
+      }
+      return Text(text, textAlign: TextAlign.center, style: style.copyWith(fontSize: size));
     },
   );
 }

@@ -18,15 +18,22 @@ import 'choice_game_screen.dart' show wobble;
 /// Factorul de scară al stimulilor, calculat din spațiul disponibil: pe tabletă ilustrațiile
 /// cresc (până la 1,5×), pe telefon scad. Stimulii îl citesc cu [VisualScale.of].
 class VisualScale extends InheritedWidget {
-  const VisualScale({super.key, required this.scale, required super.child});
+  const VisualScale({super.key, required this.scale, this.box, required super.child});
 
   final double scale;
+
+  /// Spațiul panoului stimulului (dacă se știe): obiectele de numărat își aleg mărimea
+  /// și așezarea după el, în loc să fie micșorate la final.
+  final Size? box;
 
   static double of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<VisualScale>()?.scale ?? 1;
 
+  static Size? boxOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<VisualScale>()?.box;
+
   @override
-  bool updateShouldNotify(VisualScale old) => old.scale != scale;
+  bool updateShouldNotify(VisualScale old) => old.scale != scale || old.box != box;
 }
 
 class PromptVisuals extends StatelessWidget {
@@ -51,7 +58,7 @@ class PromptVisuals extends StatelessWidget {
               solved: solved,
               silhouette: !solved,
             ),
-            ObjectsVisual() => _Objects(v, solved: solved),
+            ObjectsVisual() => _Objects(v, solved: solved, others: visuals.length - 1),
             ColorVisual() => _ColorBlob(Color(v.argb)),
             TextVisual() => _BigText(v),
             SceneVisual() => _Scene(v.text),
@@ -102,21 +109,56 @@ class _BigEmoji extends ConsumerWidget {
 /// Fiecare grup stă în „cutia” lui, pe rânduri de câte 5 (ca pe o numărătoare).
 /// La răspunsul corect sar toate, pe rând, ca un val.
 class _Objects extends ConsumerWidget {
-  const _Objects(this.visual, {required this.solved});
+  const _Objects(this.visual, {required this.solved, this.others = 0});
 
   final ObjectsVisual visual;
   final bool solved;
 
-  static const _perRow = 5;
-  static const _gap = 6.0;
+  /// Câți alți stimuli mai stau în panou (de obicei ecuația dedesubt).
+  final int others;
+
+  static const _gap = 6.0, _pad = 12.0, _between = 18.0;
+
+  /// Cea mai mare mărime a obiectelor (și câte pe rând) la care toate grupurile încap în
+  /// [w]×[h]: întâi grupurile unul lângă altul, apoi unul sub altul.
+  static ({double size, int perRow, bool inRow}) fit(List<int> counts, double w, double h, {required double operator}) {
+    for (var size = 92.0; size >= 18; size -= 2) {
+      for (final inRow in const [true, false]) {
+        for (var perRow = 2; perRow <= 10; perRow++) {
+          double gw(int c) => math.min(c, perRow) * (size + _gap) + 2 * _pad;
+          double gh(int c) => (c / perRow).ceil() * (size + _gap) + 2 * _pad;
+          final n = counts.length;
+          final W = inRow
+              ? counts.map(gw).reduce((a, b) => a + b) + (n - 1) * (_between + operator)
+              : counts.map(gw).reduce(math.max);
+          final H = inRow
+              ? counts.map(gh).reduce(math.max)
+              : counts.map(gh).reduce((a, b) => a + b) + (n - 1) * (12 + operator);
+          if (W <= w && H <= h) return (size: size, perRow: perRow, inRow: inRow);
+        }
+      }
+    }
+    return (size: 18, perRow: 5, inRow: false);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
     final total = visual.total;
-    final size =
-        (total <= 6 ? 72.0 : (total <= 12 ? 56.0 : 44.0)) *
-        VisualScale.of(context);
+    final box = VisualScale.boxOf(context);
+    final scale = VisualScale.of(context);
+    final opWidth = visual.operator == null ? 0.0 : 40 * scale;
+    // Fără cutie cunoscută: mărimile vechi, după câte obiecte sunt.
+    final layout = box == null
+        ? (size: (total <= 6 ? 72.0 : (total <= 12 ? 56.0 : 44.0)) * scale, perRow: 5, inRow: false)
+        : fit(
+            [for (final g in visual.groups) g.count],
+            box.width,
+            // Loc pentru ceilalți stimuli (ecuația are ~70 dp la scara 1).
+            box.height - others * (86 * scale) - 8,
+            operator: opWidth,
+          );
+    final size = math.min(layout.size, 96 * scale);
     var k = 0;
 
     Widget item(String emoji) {
@@ -143,13 +185,13 @@ class _Objects extends ConsumerWidget {
     }
 
     Widget group(ObjectGroup g) => Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(_pad),
       decoration: BoxDecoration(
         color: Tokens.surface2,
         borderRadius: BorderRadius.circular(Tokens.radius),
       ),
       child: SizedBox(
-        width: (size + _gap) * (g.count < _perRow ? g.count : _perRow),
+        width: (size + _gap) * math.min(g.count, layout.perRow),
         child: Wrap(
           spacing: _gap,
           runSpacing: _gap,
@@ -159,24 +201,24 @@ class _Objects extends ConsumerWidget {
       ),
     );
 
-    return Wrap(
-      alignment: WrapAlignment.center,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 18,
-      runSpacing: 12,
-      children: [
-        for (final (gi, g) in visual.groups.indexed) ...[
-          if (gi > 0 && visual.operator != null)
-            Text(
+    final children = <Widget>[
+      for (final (gi, g) in visual.groups.indexed) ...[
+        if (gi > 0 && visual.operator != null)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: layout.inRow ? _between / 2 : 0, vertical: layout.inRow ? 0 : 6),
+            child: Text(
               visual.operator!,
-              style: Theme.of(
-                context,
-              ).textTheme.displaySmall!.copyWith(color: Tokens.primary),
+              style: Theme.of(context).textTheme.displaySmall!.copyWith(color: Tokens.primary),
             ),
-          group(g),
-        ],
+          )
+        else if (gi > 0)
+          SizedBox(width: _between, height: 12),
+        group(g),
       ],
-    );
+    ];
+    return layout.inRow
+        ? Row(mainAxisSize: MainAxisSize.min, children: children)
+        : Column(mainAxisSize: MainAxisSize.min, children: children);
   }
 }
 
