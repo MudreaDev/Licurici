@@ -63,7 +63,20 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 05.10.2026.** **Sesiunea a șaptea — jocuri noi pe ariile goale (Claude; Codex doar imagini):**
+**Ultima actualizare: 08.10.2026.** **Sesiunea a opta — Acvariul (Claude, 06–08.10):**
+- ✅ **Acvariul meu** (`/acvariu`, buton cu valuri pe ecranul principal): recif desenat din cod (apă, raze, nisip cu sclipiri, corali, alge care se leagănă, bule, plancton), peștii copilului înoată liber; **atingere → fug**, **apăsare lungă → se adună la deget**, **Mâncare → mănâncă fulgii**; la prima vizită Licurici dăruiește un pește-clovn colorat. Simularea e pură și testată: `licurici_core/lib/src/aquarium.dart` (`Aquarium`, `SwimmingFish`).
+- ✅ **4 modele de pești** cu contururi originale (clovn, înger, balon, chirurg) + **volumul** calculat din contur (`aquarium_fish.dart`: `FishBody` — transformata distanței → grosime → lumină). Peștele = desenul copilului pe plasă deformată (`tank_painter.dart`), fără shadere.
+- ✅ **Colorez un pește** (`/acvariu/coloreaza`): carioca (3 mărimi), găleată (se oprește la liniile fișei, culoarea intră sub linii), 12 culori + gumă, „Înapoi”; „Gata!” → peștele intră în acvariu de sus. Desenele se salvează local (§11).
+- Teste: 11 în core (`test/aquarium_test.dart`), 2 widget (telefon mic + tabletă: cadou, atingeri, colorare pe zone, „Gata!”, salvare).
+- Prototipul three.js de la începutul sesiunii a fost abandonat (decizie: Flutter pur, cameră fixă). `paper-aquarium/` rămâne doar ca referință (licență MIT, nu se copiază din el).
+- ✅ **Pușculița cu stele** (`AppSettings.stars`, pornește cu 3): stelele arătate la finalul oricărui joc intră o dată în pușculiță (`_FinishSounds` din `reward_finish.dart`); în acvariu, **o mână de mâncare = o stea**; fără stele, Licurici spune „Joacă un joc și câștigi stele pentru mâncare.” și pușculița se clatină. Colorarea peștilor rămâne gratuită (e creație, nu recompensă).
+- ✅ Vocea pentru frazele acvariului (edge-tts, `tool/voice_coverage.dart` → `gen-voice.mjs`); acoperire 1712/1712.
+- ✅ Ținut în portret (web), ecranul de dedesubt se așază ca în landscape — nu mai apar depășiri sub „Întoarce telefonul” (`app/boot.dart`, `_Landscape`).
+- ✅ Brief pentru Codex: [docs/brief-codex-acvariu.md](docs/brief-codex-acvariu.md) — `scenes/aquarium_back` (opac, nisipul doar în 11% de jos, mijlocul liber) și `scenes/aquarium_front` (doar colțurile de jos). Codul le folosește automat, aliniate jos.
+- Verificat: analyze curat; core 387 teste, aplicația 167 (inclusiv acvariul pe telefon mic și tabletă).
+- **Urmează (acvariu):** rularea Codex pe brief; fișa A4 printabilă cu marcaje proprii + scanarea cu camera (cere pachete noi → ADR: generare PDF/printare, cameră); poate un preț în stele și pentru peștii noi (de discutat — acum colorarea e liberă).
+
+**Sesiunea a șaptea (05.10.2026) — jocuri noi pe ariile goale (Claude; Codex doar imagini):**
 - ✅ **Prinde licuriciul**: licuricii apar de ~2× mai des și **zboară** de la primul nivel (bucle, aripi, halou care pulsează; dacă nu e prins, zboară în sus și se stinge). Axe noi în `ReactionAxes`: `driftRange`, `flies`, `firstGapMs`; `ReactionStimulus.driftY`.
 - ✅ **Potrivește** (POT1–2), **Arată-mi** (LRC1–2, „Arată mingea”, doar cuvinte cunoscute la început, apoi distractori din aceeași grupă), **Corpul meu** (LRC3), **Intrusul** (POT6) — `licurici_core/lib/src/games/vocabular.dart` (banca `objectWords`, 51 de obiecte pictate cu nume articulat și grupă).
 - ✅ Ecranul `choice`: variantele care sunt doar imagine au imaginea cât încape (mult mai mare); rundele fără stimul (Intrusul) nu mai au panou gol. Test nou: fiecare joc `choice` pe telefonul mic și pe tabletă (`test/choice_games_test.dart`).
@@ -207,12 +220,12 @@ Codex se rulează din `%LOCALAPPDATA%\OpenAI\Codex\bin\<versiune>\codex.exe exec
 - Primește doar **statistici agregate, pseudonimizate** (fără nume, fără poreclă). Consimțământ separat, procesator cu DPA (§13, §17).
 - **Fără chat AI pentru copil** (siguranță, lege, previzibilitate).
 
-**Acvariul — sistemul de recompense** (integrează proiectul `paper-aquarium`)
-- Copilul câștigă **stele** în jocuri. Cu ele „cumpără” pești sau hrană pentru acvariu.
-- **Licuriciul e ghidul în toată aplicația.** La început îi dăruiește copilului un **pește gata desenat**.
-- Apoi copilul **colorează o fișă printată**, o **scanează cu camera**, iar peștele lui desenat apare și înoată în acvariu.
-- Acvariul: Flame (pești care înoată, bule, hrănire), animații calme, respectă modul calm.
-- Scanarea se face **pe dispozitiv** (detectarea fișei după marcaje, corecția perspectivei, decuparea peștelui). Imaginea desenului **rămâne pe telefon** implicit; sincronizarea ei cere consimțământ (e creația copilului). Logica de scanare se refolosește din `paper-aquarium`.
+**Acvariul — sistemul de recompense** (implementare proprie; `paper-aquarium` a fost doar sursă de inspirație, nu se copiază cod sau grafică din el)
+- Copilul câștigă **stele** în jocuri (pușculița, ✅). Cu ele „cumpără” mâncare pentru acvariu (o mână = o stea, ✅); peștii colorați rămân gratuiți.
+- **Licuriciul e ghidul în toată aplicația.** La prima vizită îi dăruiește copilului un **pește gata colorat** (✅).
+- Copilul alege un model de pește (contururi originale, `licurici_core/lib/src/aquarium_fish.dart`) și îl **colorează pe ecran** (carioca, găleată, „Înapoi”) (✅); varianta pe hârtie: **fișă printată → scanare cu camera** (de făcut). Peștele lui desenat apare și înoată în acvariu.
+- Acvariul: **Flutter pur, fără shadere** (ADR-028). Camera e fixă; copilul nu mișcă acvariul. Peștele = desenul copilului pe o plasă deformată din cod (coada bate, corpul unduiește, se întoarce „prin profil”); **volumul** se calculează din contur (distanța față de margine) și se pictează peste desen ca lumină/umbră/luciu. Fundalul e un recif desenat din cod (rezervă) până vin straturile pictate `scenes/aquarium_back` / `aquarium_front`. Interacțiuni: **atingere → peștii din apropiere fug**, **apăsare lungă → se adună în jurul degetului**, **Mâncare → fulgi care cad, peștii vin și mănâncă** (✅). În modul calm fundalul stă, peștii înoată.
+- Scanarea se va face **pe dispozitiv** (detectarea fișei după marcaje proprii, corecția perspectivei, decuparea peștelui după același contur). Imaginea desenului **rămâne pe telefon**; sincronizarea ei cere consimțământ (e creația copilului).
 
 **Jocuri „generative” (nivele și conținut fără șablon vizibil)**
 - **La rulare: algoritmi** (gratuit, offline, previzibil): labirinturi generate (dimensiune și ramificare cresc cu nivelul), puzzle-uri din orice imagine (mai multe piese), „găsește diferența” cu obiecte plasate procedural, memorie cu grile tot mai mari, șiruri logice, probleme de matematică, sortări. Animațiile se generează tot în cod (fizică, particule, tranziții). Motorul de dificultate (`Difficulty.tier`, nemărginit) e baza.
@@ -545,6 +558,8 @@ erDiagram
 
 - `CHILD` **nu** are nume real, dată de naștere completă, fotografie, școală sau diagnostic (vezi §13).
 - Pe tabletă, setările locale (`AppSettings` în Drift, cheia `settings` din `Meta`) țin și **abțibildurile câștigate** (`stickers`: lista id-urilor, ex. `bunny`; `stickersSeen`: câte au fost văzute în album, pentru semnul „nou”). Sunt doar recompensa copilului — nu intră în sesiuni, rapoarte sau sincronizare.
+- **Acvariul** (`features/aquarium/aquarium_store.dart`): `<suport aplicație>/aquarium/index.json` (id, model, data, cadou) + desenul fiecărui pește ca PNG (`<id>.png`, 1000×600). Desenele sunt creația copilului: **rămân doar pe dispozitiv**, nu intră în sesiuni, rapoarte sau sincronizare. Maximum 14 pești (cel mai vechi, în afară de cadou, iese). Pe web — în memorie.
+- **Stelele** (`AppSettings.stars` în aceeași cheie `settings`): soldul pușculiței, doar recompensă locală — nu intră în sesiuni, rapoarte sau sincronizare.
 - `GAME_EVENT.payload` = ce s-a întrebat, ce a ales, câte încercări, timp de răspuns — **fără text liber**.
 - `game_events` partiționat lunar; retenție 24 luni (job de curățare).
 
@@ -1072,7 +1087,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Dificultate adaptivă pe abilități, recomandări „Jocurile de azi” mai inteligente
 - [ ] Prometheus + Grafana, optimizări, build-uri pentru magazine (Families/Kids), semnare
 - [ ] Testare cu copii/educatori (cu acord parental), iterații UX
-- [ ] Acvariul complet: scanarea desenelor (din `paper-aquarium`), pești animați, hrănire
+- [ ] Acvariul complet: ✅ pești animați, colorare pe ecran, hrănire, fugă/adunare (sesiunea 8) · ⬜ fișa A4 + scanarea cu camera · ✅ stelele ca monedă (mâncare) · ⬜ fundal pictat pe straturi (brief gata)
 - [ ] Chat AI în panoul adulților (Claude API, date agregate)
 - [ ] Conținut pentru clasele 5–12 + temă „matură” + conturi pentru adolescenți (14+)
 - [ ] Redactarea tezei (§23) + prezentare
