@@ -124,6 +124,9 @@ class SettingsNotifier extends Notifier<AppSettings> {
     }
   }
 
+  /// Ștergerea datelor de pe tabletă: setările, abțibildurile și stelele revin la început.
+  void reset() => _set(const AppSettings());
+
   void addStars(int n) => _set(state.copyWith(stars: state.stars + n));
 
   /// Plătește [n] stele, dacă are destule.

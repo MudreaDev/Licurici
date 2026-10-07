@@ -12,6 +12,9 @@ abstract interface class SessionStore {
   /// Sesiunile încă netrimise pe server (outbox).
   Future<List<String>> unsyncedIds();
   Future<void> markSynced(List<String> ids);
+
+  /// Șterge toate sesiunile de pe dispozitiv (cererea părintelui).
+  Future<void> clear();
 }
 
 class MemorySessionStore implements SessionStore {
@@ -36,6 +39,12 @@ class MemorySessionStore implements SessionStore {
   @override
   Future<List<SessionRecord>> all() async =>
       _records.values.toList()..sort((a, b) => a.start.compareTo(b.start));
+
+  @override
+  Future<void> clear() async {
+    _records.clear();
+    _synced.clear();
+  }
 }
 
 class DriftSessionStore implements SessionStore {
@@ -53,6 +62,10 @@ class DriftSessionStore implements SessionStore {
 
   @override
   Future<void> markSynced(List<String> ids) => db.markSynced(ids);
+
+  /// Sesiunile și setările (aceeași bază de date): totul pleacă împreună.
+  @override
+  Future<void> clear() => db.wipe();
 }
 
 /// Pe dispozitiv există un singur profil de copil, fără cont; id-ul real (pseudonim, UUID)
@@ -107,6 +120,9 @@ class SessionController extends Notifier<SessionRecorder?> {
     if (record != null) await ref.read(sessionStoreProvider).save(record);
     return record;
   }
+
+  /// Părintele a șters datele: sesiunea în curs se abandonează, fără salvare.
+  void discard() => state = null;
 
   SessionRecord _snapshot(SessionRecorder r) => SessionRecord(
     id: r.id,

@@ -35,6 +35,11 @@ void main() {
 
       await db.writeMeta('k', 'v');
       expect(await db.readMeta('k'), 'v');
+
+      // Părintele șterge datele de pe tabletă: sesiunile și setările dispar.
+      await store.clear();
+      expect(await store.all(), isEmpty);
+      expect(await db.readMeta('k'), isNull);
     },
   );
 

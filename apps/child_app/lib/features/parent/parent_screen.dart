@@ -7,6 +7,7 @@ import '../../app/theme.dart';
 import '../../data/session.dart';
 import '../../shared/mascot.dart';
 import '../../shared/top_bar.dart';
+import '../aquarium/aquarium_store.dart';
 import '../settings/settings.dart';
 import 'sync_dialog.dart';
 
@@ -56,6 +57,14 @@ class ParentScreen extends ConsumerWidget {
                     color: Tokens.mint,
                     label: 'Copiază sesiunile pentru specialist',
                     onTap: () => _export(context, ref),
+                  ),
+                  const SizedBox(width: 8),
+                  BarButton(
+                    key: const ValueKey('wipe-device'),
+                    icon: Icons.delete_forever_rounded,
+                    color: const Color(0xFFC97B6B),
+                    label: 'Șterge datele de pe tabletă',
+                    onTap: () => _wipe(context, ref),
                   ),
                 ],
               ),
@@ -142,6 +151,46 @@ class _StartLevel extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Ștergerea datelor de pe tabletă (GDPR art. 17, pentru datele locale): sesiunile, setările,
+/// abțibildurile, stelele și peștii din acvariu. Ce s-a trimis deja pe server se șterge din
+/// panoul web („Contul meu”).
+Future<void> _wipe(BuildContext context, WidgetRef ref) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (c) => AlertDialog(
+      title: const Text('Ștergi datele de pe tabletă?'),
+      content: const Text(
+        'Se șterg sesiunile, setările, abțibildurile, stelele și peștii din acvariu. '
+        'Nu se pot recupera. Ce ai trimis deja pe server se șterge din panoul web („Contul meu”).',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(c, false),
+          child: const Text('Renunță'),
+        ),
+        FilledButton(
+          key: const ValueKey('wipe-confirm'),
+          style: FilledButton.styleFrom(backgroundColor: const Color(0xFFC97B6B)),
+          onPressed: () => Navigator.pop(c, true),
+          child: const Text('Șterge tot'),
+        ),
+      ],
+    ),
+  );
+  if (ok != true) return;
+  ref.read(sessionProvider.notifier).discard();
+  await ref.read(sessionStoreProvider).clear();
+  await ref.read(aquariumStoreProvider).clear();
+  ref.read(settingsProvider.notifier).reset();
+  ref
+    ..invalidate(aquariumProvider)
+    ..invalidate(localReportsProvider);
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Datele de pe tabletă au fost șterse.')),
+  );
 }
 
 /// Copiază sesiunile (JSON pseudonimizat) în clipboard; specialistul le lipește în panoul web.

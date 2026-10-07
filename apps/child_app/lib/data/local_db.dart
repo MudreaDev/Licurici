@@ -78,6 +78,12 @@ class LocalDb extends _$LocalDb {
       r.id,
   ];
 
+  /// Șterge tot ce ține de copil de pe dispozitiv (sesiuni + setări). Ireversibil.
+  Future<void> wipe() => transaction(() async {
+    await delete(sessions).go();
+    await delete(meta).go();
+  });
+
   Future<String?> readMeta(String key) async => (await (select(
     meta,
   )..where((m) => m.key.equals(key))).getSingleOrNull())?.value;

@@ -40,6 +40,9 @@ class AquariumEntry {
 abstract interface class AquariumStore {
   Future<List<(AquariumEntry, Uint8List)>> load();
   Future<void> save(List<AquariumEntry> entries, {(String, Uint8List)? drawing, String? removed});
+
+  /// Șterge toți peștii și desenele lor (cererea părintelui).
+  Future<void> clear();
 }
 
 /// Pe web (doar previzualizare) și în teste: în memorie.
@@ -58,6 +61,12 @@ class MemoryAquariumStore implements AquariumStore {
     _entries = List.of(entries);
     if (drawing != null) _drawings[drawing.$1] = drawing.$2;
     if (removed != null) _drawings.remove(removed);
+  }
+
+  @override
+  Future<void> clear() async {
+    _entries = [];
+    _drawings.clear();
   }
 }
 
@@ -93,6 +102,12 @@ class FileAquariumStore implements AquariumStore {
       final f = File('${d.path}/$removed.png');
       if (f.existsSync()) await f.delete();
     }
+  }
+
+  @override
+  Future<void> clear() async {
+    final d = await _dir();
+    if (d.existsSync()) await d.delete(recursive: true);
   }
 }
 

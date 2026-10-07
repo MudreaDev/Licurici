@@ -53,7 +53,7 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 | Panou părinte/terapeut — Flutter Web | 🟨 | `apps/dashboard`: două panouri în aceeași aplicație (ADR-013): **`/parinte`** (rezumat cald al ultimei sesiuni, „ce exersăm”, dispoziția aleasă de copil, istoric) și **`/specialist`** (listă de copii, KPI, notițe, grafic ABA al independenței pe trepte cu linia de 80%, tabel de sesiuni, confuzii, datele trimise la AI). Pe **date demo** (`demoChildren()`), **sesiuni importate** sau **date reale din API** după autentificare (`api.dart`, `login_page.dart`; butonul „Generează rezumat cu AI” funcțional; **„Contul meu”** — consimțăminte date/retrase, partajarea fiecărui copil cu specialistul, exportul tuturor datelor și ștergerea profilului copilului, `account_page.dart`). 13 teste de widget (inclusiv cu backend simulat), `flutter build web` OK. |
 | Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrări (`init`, `therapy_sessions`), `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. **Conturi pentru adulți** (`auth/`: Argon2id, JWT 15 min, refresh opac rotit în Redis), **acces la copil** (`children/access.ts`: părinte / specialist cu `CareLink`, 404 pentru restul), **consimțăminte** (`consents/`: jurnal append-only, retragere), **sincronizarea sesiunilor** (`sync/`: idempotentă, cere consimțământul `SYNC`; test de contract cu JSON generat din Dart), **rezumat AI** (`reports/summary-flow.ts`: consimțământ `AI_SUMMARY`, cache, limită zilnică), **partajarea cu specialistul** (`children/sharing.ts`: invitație după e-mail, consimțământ `THERAPIST_SHARING`, 90 de zile implicit, revocare, audit), **GDPR** (`gdpr/`: export complet `GET /me/export`, ștergerea copilului `DELETE /children/:id` — acces tăiat imediat, ștergere definitivă după 7 zile prin coada `gdpr` și `GdprProcessor` în worker), erori de infrastructură → 503. Serviciile sunt TypeScript simplu (NestJS 12 e ESM și nu se încarcă în Jest), legate în `api/api.module.ts`. 38 de teste; API-ul și worker-ul pornite fără Docker (testul de pornire a prins o dependență lipsă între module): rute, 400/401/503, Swagger verificate pe HTTP. **Netestat cu Postgres/Redis reale** (Docker lipsă). |
 | Docker Compose (dev) | 🟨 | postgres, redis, storage (RustFS), migrate, api, worker, mailpit. **Netestat încă**: Docker nu e instalat pe mașina de dezvoltare. Prod (Traefik, TLS) — de făcut. |
-| GDPR (consimțământ, export, ștergere, documente) | 🟨 | API: consimțăminte pe scopuri (jurnal append-only, retragere), export complet, ștergerea copilului cu perioadă de grație, audit. Panou: „Contul meu” (consimțăminte, partajare cu e-mailul specialistului, export, ștergerea copilului, **ștergerea contului** cu parola — sesiunea 8). **De făcut:** exportul ca fișier (acum în clipboard), documentele din `docs/gdpr/` (§13.5). |
+| GDPR (consimțământ, export, ștergere, documente) | 🟨 | API: consimțăminte pe scopuri (jurnal append-only, retragere), export complet, ștergerea copilului cu perioadă de grație, audit. Panou: „Contul meu” (consimțăminte, partajare cu e-mailul specialistului, export, ștergerea copilului, **ștergerea contului** cu parola — sesiunea 8). Tableta: **„Șterge datele de pe tabletă”** în „Pentru părinți” (sesiuni, setări, abțibilduri, stele, acvariu — sesiunea 8). Documentele din `docs/gdpr/` — ciorne (§13.5). **De făcut:** exportul ca fișier (acum în clipboard), verificarea juridică a documentelor, măsurile 🕓 din DPIA. |
 | Documente ADR / cercetare pentru teză | 🟨 | 25 de ADR-uri în `docs/adr/`. `docs/research/` — de început. |
 | Unelte | 🟨 | `tools/gen-voice/gen-voice.mjs` (Azure AI Speech sau edge-tts, incremental). |
 
@@ -81,6 +81,8 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - ✅ **Ultimele jocuri școlare din prototip** (`licurici_core/lib/src/games/scoala2.dart`, total **75** în aplicație): **Banii** (PAC-T2, bancnote desenate din cod — `MoneyVisual`, câte o culoare pe valoare; 1/2/5 lei → +10 → +20/50), **Tabla înmulțirii** (PAC-N13, până la 10 × 10, distractori din „tabla vecină”), **Probleme** (PAC-N14, adunare/scădere, de la nivelul 3 și înmulțire), **Ce fel de cuvânt?** (PAC-L9), **Trecut și prezent** (PAC-I1), **Simbolurile țării** (PAC-I2), **Engleză** (PAC-E1, cu **voce englezească** — frazele `en:…` se generează cu `en-US-AnaNeural`, voce de copil; `tools/gen-voice`). Teste: `scoala2_test.dart` + toate jocurile pe telefon mic și tabletă. Vocea: 1961/1961.
 - Brief pentru cardurile lor: [docs/brief-codex-carduri-scolare.md](docs/brief-codex-carduri-scolare.md) (până atunci, emoji).
 - ✅ **Ștergerea contului** (GDPR art. 17; backend `POST /me/delete` + panoul „Contul meu”): cere **parola din nou**; imediat: copiii marcați șterși, partajările tăiate (și cele în care contul e specialistul), e-mailul anonimizat (poate fi refolosit), parola ștearsă; **reîmprospătarea sesiunii e refuzată** pentru un cont șters (`AuthService.refresh`); job-ul `purge-account` (coada `gdpr`) șterge definitiv după 7 zile, în cascadă. Administratorii nu se șterg din aplicație. Lista de partajări arată acum **e-mailul specialistului**. Teste: backend 41, panou 14.
+- ✅ **„Șterge datele de pe tabletă”** (Pentru părinți, după poarta pentru adulți, cu confirmare): sesiunile + setările (Drift `wipe()`), abțibildurile, stelele, peștii din acvariu; sesiunea în curs se abandonează.
+- ✅ **Documentele GDPR** ([docs/gdpr/](docs/gdpr/README.md), §13.5) — 9 ciorne pe baza codului și arhitecturii: politica de confidențialitate (+ pentru copii), termeni, RoPA, DPIA, incident, drepturi, împuterniciți, retenție, declarațiile pentru magazine. **De verificat de un jurist** și de completat identitatea operatorului.
 
 **Sesiunea a șaptea (05.10.2026) — jocuri noi pe ariile goale (Claude; Codex doar imagini):**
 - ✅ **Prinde licuriciul**: licuricii apar de ~2× mai des și **zboară** de la primul nivel (bucle, aripi, halou care pulsează; dacă nu e prins, zboară în sus și se stinge). Axe noi în `ReactionAxes`: `driftRange`, `flies`, `firstGapMs`; `ReactionStimulus.driftY`.
@@ -663,16 +665,20 @@ să întrebe de diagnostic). Fără SDK-uri de analytics/reclame în aplicația 
 - [ ] Fără link-uri externe/cumpărături în zona copilului; orice link extern trece prin poarta parentală.
 - [ ] Sentry: `sendDefaultPii=false`, scrubbing pe server, regiune UE.
 
-### 13.5 Documente de produs (în `docs/gdpr/`)
-- [ ] `politica-confidentialitate.md` (+ versiunea pentru copii)
-- [ ] `termeni.md`
-- [ ] `registrul-activitatilor-de-prelucrare.md` (RoPA)
-- [ ] `dpia.md` — **evaluarea impactului** (recomandată: date ale copiilor = persoane vulnerabile + tehnologie nouă + monitorizarea progresului)
-- [ ] `procedura-incident.md` — detectare → evaluare → notificare CNPDCP în 72 h → notificare părinți dacă risc ridicat → registru incidente
-- [ ] `procedura-drepturi.md` — cum răspundem în ≤ 1 lună
-- [ ] `lista-imputerniciti.md` — procesatori, țară, DPA, garanții de transfer
-- [ ] `politica-retentie.md`
-- [ ] Declarațiile *Data safety* (Google Play) și *Privacy Nutrition Label* (App Store)
+### 13.5 Documente de produs (în [`docs/gdpr/`](docs/gdpr/README.md))
+**Ciorne scrise (sesiunea 8), de verificat de un jurist** și de completat cu identitatea operatorului
+(`[…]`). Separă clar ✅ implementat de 🕓 planificat.
+- [x] `politica-confidentialitate.md` (+ versiunea pentru copii) — ciornă
+- [x] `termeni.md` — ciornă
+- [x] `registrul-activitatilor-de-prelucrare.md` (RoPA) — ciornă
+- [x] `dpia.md` — **evaluarea impactului** — ciornă (riscuri reziduale + măsurile 🕓 de terminat înainte de lansare)
+- [x] `procedura-incident.md` — detectare → evaluare → notificare CNPDCP în 72 h → notificare părinți dacă risc ridicat → registru incidente — ciornă
+- [x] `procedura-drepturi.md` — cum răspundem în ≤ 1 lună — ciornă
+- [x] `lista-imputerniciti.md` — procesatori, țară, DPA, garanții de transfer — ciornă
+- [x] `politica-retentie.md` — ciornă
+- [x] Declarațiile *Data safety* (Google Play) și *Privacy Nutrition Label* (App Store) — `declaratii-magazine.md`, ciornă
+- [ ] Verificarea juridică + publicarea (link public) — **utilizatorul**
+- [ ] Măsurile 🕓 din DPIA: job de expirare 24 luni, limitarea încercărilor de autentificare, criptarea volumului și a e-mailului, 2FA pentru specialiști
 
 ### 13.6 Etica în testarea cu copii (pentru teză)
 Testele de utilizabilitate cu copii se fac **doar** cu acordul scris al părinților, anonimizat, fără înregistrări
