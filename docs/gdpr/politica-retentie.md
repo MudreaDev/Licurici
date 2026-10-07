@@ -13,7 +13,7 @@
 | Dovezile consimțământului | Server | Durata contului + 3 ani | 🕓 de mutat într-un jurnal separat care supraviețuiește contului 3 ani (acum se șterg odată cu contul) | 🕓 |
 | Jurnalul de audit | Server | Cât există contul | Cascadă cu contul | ✅ |
 | Refresh tokenuri | Redis | 30 de zile / până la folosire / ieșire | TTL; de unică folosință | ✅ |
-| Jurnale tehnice | Server | 30 de zile | Rotație | 🕓 |
+| Jurnale tehnice | Server | 30 de zile | Rotație (driverul de loguri Docker / furnizor); conținutul e deja fără date personale (IP trunchiat, fără antete) | 🕓 rotația |
 | Copiile de siguranță | Server/furnizor | ≤ 35 de zile | Rotație; o ștergere ajunge și în backup-uri după cel mult 35 de zile | 🕓 |
 | Datele de pe tabletă (sesiuni, setări, abțibilduri, stele, acvariu) | Dispozitiv | Cât există aplicația | Din „Pentru părinți” sau dezinstalare | ✅ (operatorul nu le are) |
 | Fotografia fișei de colorat | Dispozitiv (memorie) | Secunde | Nu se salvează; doar desenul decupat rămâne local | ✅ |

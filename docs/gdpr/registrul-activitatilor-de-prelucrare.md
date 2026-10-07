@@ -13,7 +13,7 @@
 | 6 | Rezumate AI ✅ (opțional) | Rezumatul sesiunii în cuvinte | Copii (pseudonimizat) | Fapte agregate ale sesiunii (fără poreclă/id) → text rezumat | Consimțământ separat („Rezumate AI”) | **Anthropic** (împuternicit) | **Da (SUA)** — SCC/DPA | Rezumatul: cât există sesiunea; la Anthropic: conform DPA (fără antrenare) | Pseudonimizare, limită zilnică, cache |
 | 7 | Export și ștergere ✅ | Drepturile persoanei | Părinți, copii, specialiști | Toate datele contului | Obligație legală | — | Nu | Audit: cât există contul | Parola cerută la ștergerea contului |
 | 8 | Jurnal de audit ✅ | Securitate, responsabilizare | Părinți, specialiști | Actor, acțiune, țintă, dată | Obligație legală / interes legitim | Găzduire | Nu | Cât există contul | Fără conținut, doar evenimente |
-| 9 | Jurnale tehnice 🕓 | Securitate, depanare | — | Fără PII, IP trunchiat | Interes legitim | Găzduire | Nu | 30 zile | Pino, fără corpul cererilor |
+| 9 | Jurnale tehnice ✅ | Securitate, depanare | — | Metodă, cale fără parametri, cod de răspuns, IP trunchiat (`common/log-privacy.ts`); câmpurile sensibile mascate | Interes legitim | Găzduire | Nu | 30 zile 🕓 (rotația, la configurarea serverului) | Fără antete, fără corp, fără IP complet |
 | 10 | Raport săptămânal pe e-mail 🕓 | Informarea părintelui | Părinți | E-mail, rezumat agregat | Consimțământ | Furnizor e-mail (de ales, UE) | De stabilit | — | — |
 | 11 | Notificări 🕓 | Memento-uri | Părinți | Token dispozitiv | Consimțământ | Google FCM / Apple APNs | Posibil | Până la dezactivare | — |
 

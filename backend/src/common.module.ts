@@ -6,6 +6,7 @@ import { ConfigModule } from './config/config.module';
 import { ENV, type Env } from './config/env';
 import { PrismaModule } from './prisma/prisma.module';
 import { QueueErrorLogger } from './queues/queue-errors';
+import { logSerializers } from './common/log-privacy';
 import { Queues, bullConnection, defaultJobOptions } from './queues/queues';
 import { RedisModule } from './redis/redis.module';
 
@@ -32,7 +33,9 @@ function hasPrettyLogs(): boolean {
           level: env.LOG_LEVEL,
           // Loguri colorate doar local; în container (fără devDependencies) rămân JSON.
           transport: env.NODE_ENV === 'development' && hasPrettyLogs() ? { target: 'pino-pretty' } : undefined,
-          // Fără date personale în loguri (README §13.4).
+          // Fără date personale în loguri (README §13.4): cererea redusă la metodă, cale și IP
+          // trunchiat; în plus, mascarea câmpurilor sensibile din orice alt obiect logat.
+          serializers: logSerializers,
           redact: {
             paths: ['req.headers.authorization', 'req.headers.cookie', '*.email', '*.password', '*.nickname'],
             censor: '[ascuns]',
