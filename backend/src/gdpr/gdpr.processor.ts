@@ -4,7 +4,7 @@ import type { Job } from 'bullmq';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Queues } from '../queues/queues';
-import { expireSessions } from './retention';
+import { archiveRows, expireConsentArchive, expireSessions } from './retention';
 
 export interface PurgeChildJob {
   childId: string;
@@ -30,18 +30,25 @@ export class GdprProcessor extends WorkerHost {
 
   async process(job: Job<PurgeChildJob | PurgeAccountJob>): Promise<{ deleted: number }> {
     if (job.name === 'expire-sessions') {
-      // Retenția (24 de luni): sesiunile vechi pleacă cu rezumatele și evenimentele lor (cascadă).
-      const deleted = await expireSessions(this.prisma, new Date());
-      this.log.log(`retenție: ${deleted} sesiuni expirate șterse`);
+      // Retenția: sesiunile mai vechi de 24 de luni și dovezile arhivate de peste 3 ani.
+      const now = new Date();
+      const deleted = (await expireSessions(this.prisma, now)) + (await expireConsentArchive(this.prisma, now));
+      this.log.log(`retenție: ${deleted} înregistrări expirate șterse`);
       return { deleted };
     }
     if (job.name === 'purge-account') {
-      // Cascada din schemă ia copiii, sesiunile, consimțămintele, dispozitivele, partajările.
-      const { count } = await this.prisma.user.deleteMany({
-        where: { id: (job.data as PurgeAccountJob).userId, deletedAt: { not: null } },
+      const userId = (job.data as PurgeAccountJob).userId;
+      // Dovezile consimțământului rămân 3 ani, fără identificatori; restul pleacă în cascadă
+      // (copiii, sesiunile, consimțămintele, dispozitivele, partajările).
+      const deleted = await this.prisma.$transaction(async (tx) => {
+        const user = await tx.user.findFirst({ where: { id: userId, deletedAt: { not: null } }, select: { id: true } });
+        if (!user) return 0;
+        const consents = await tx.consent.findMany({ where: { userId } });
+        if (consents.length) await tx.consentArchive.createMany({ data: archiveRows(userId, consents) });
+        return (await tx.user.deleteMany({ where: { id: userId, deletedAt: { not: null } } })).count;
       });
-      this.log.log(`ștergere definitivă: ${count} cont(uri)`);
-      return { deleted: count };
+      this.log.log(`ștergere definitivă: ${deleted} cont(uri)`);
+      return { deleted };
     }
     if (job.name !== 'purge-child') return { deleted: 0 };
     const { count } = await this.prisma.child.deleteMany({

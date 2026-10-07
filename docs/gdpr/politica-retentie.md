@@ -10,7 +10,7 @@
 | Sesiunile de joc | Server | **24 de luni rulant** | Job zilnic `expire-sessions` (coada `gdpr`, 03:30) — `backend/src/gdpr/retention.ts` | ✅ |
 | Rezumatele AI | Server | Cât există sesiunea | Cascadă cu sesiunea | ✅ |
 | Partajările cu specialistul | Server | Până la termen (implicit 90 zile) / revocare | La revocare: imediat; la expirare: accesul se oprește (rândul rămâne până la reînnoire/revocare) | ✅ (🕓 curățarea rândurilor expirate) |
-| Dovezile consimțământului | Server | Durata contului + 3 ani | 🕓 de mutat într-un jurnal separat care supraviețuiește contului 3 ani (acum se șterg odată cu contul) | 🕓 |
+| Dovezile consimțământului | Server | Durata contului + 3 ani | La ștergerea definitivă a contului se mută în `consent_archive` (doar scop, versiune, acordat, dată + hash-ul id-ului contului — fără e-mail); job-ul zilnic le șterge după 3 ani | ✅ |
 | Jurnalul de audit | Server | Cât există contul | Cascadă cu contul | ✅ |
 | Refresh tokenuri | Redis | 30 de zile / până la folosire / ieșire | TTL; de unică folosință | ✅ |
 | Jurnale tehnice | Server | 30 de zile | Rotație (driverul de loguri Docker / furnizor); conținutul e deja fără date personale (IP trunchiat, fără antete) | 🕓 rotația |

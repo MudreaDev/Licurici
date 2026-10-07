@@ -102,6 +102,21 @@ model Consent {
   @@map("consents")
 }
 
+/// Dovezile consimțământului după ștergerea contului (README §13.3: durata contului + 3 ani).
+/// Fără e-mail sau alt identificator: doar hash-ul id-ului contului șters.
+model ConsentArchive {
+  id            String         @id @default(uuid(7)) @db.Uuid
+  subject       String         @db.VarChar(64)
+  purpose       ConsentPurpose
+  policyVersion String         @db.VarChar(16)
+  granted       Boolean
+  at            DateTime
+  archivedAt    DateTime       @default(now())
+
+  @@index([archivedAt])
+  @@map("consent_archive")
+}
+
 model Device {
   id        String    @id @default(uuid(7)) @db.Uuid
   userId    String    @db.Uuid
