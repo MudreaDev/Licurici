@@ -74,7 +74,10 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - ✅ Ținut în portret (web), ecranul de dedesubt se așază ca în landscape — nu mai apar depășiri sub „Întoarce telefonul” (`app/boot.dart`, `_Landscape`).
 - ✅ Brief pentru Codex: [docs/brief-codex-acvariu.md](docs/brief-codex-acvariu.md) — `scenes/aquarium_back` (opac, nisipul doar în 11% de jos, mijlocul liber) și `scenes/aquarium_front` (doar colțurile de jos). Codul le folosește automat, aliniate jos.
 - Verificat: analyze curat; core 387 teste, aplicația 167 (inclusiv acvariul pe telefon mic și tabletă).
-- **Urmează (acvariu):** rularea Codex pe brief; fișa A4 printabilă cu marcaje proprii + scanarea cu camera (cere pachete noi → ADR: generare PDF/printare, cameră); poate un preț în stele și pentru peștii noi (de discutat — acum colorarea e liberă).
+- ✅ **Peștele de pe hârtie** ([ADR-030](docs/adr/ADR-030-acvariul-pe-hartie-fisa-pdf-si-scanare-pe-dispozitiv.md), propus): **fișa A4** (PDF, `paper_sheet.dart`, pachetele `pdf` + `printing`) cu 4 marcaje proprii în colțuri (pătrat–inel–miez, 1:1:3:1:1) și un **cod de 4 biți** pentru model; se printează din acvariu, după **poarta pentru adulți**. **Scanarea** (`image_picker` → `licurici_core/lib/src/paper_scan.dart`, Dart pur, într-un isolate): prag adaptiv → componente conexe → perechi concentrice → cel mai mare patrulater → omografie → codul (încearcă 4 rotiri, deci și fișa ținută invers) → decuparea casetei 1000×600 → **lumina egalizată după hârtia albă** din jurul peștelui. Rezultatul intră în același `buildFishImage` ca desenul de pe ecran; fotografia nu se păstrează. Eșec → Licurici, blând: „Nu văd fișa. Fă poza de sus, cu toată foaia.” + „Mai încerc”.
+- Teste: 6 în core cu **fotografii sintetice** (perspectivă, lumină inegală, nuanță galbenă, zgomot, rotire 180°, poză fără fișă) — toate modelele găsite, marcaje la < 3 px, culorile corecte și în partea întunecată; 3 în aplicație (PDF-ul se construiește; poză fără fișă → „Mai încerc” → poză bună → peștele intră în acvariu, pe telefon mic și tabletă).
+- **De verificat pe dispozitiv real:** fotografii adevărate (lumină slabă, foaie îndoită, blitz). Dacă eșuează des: ghidaj în timp real cu `camera` (vezi ADR-030, „Când am alege altfel”).
+- **Urmează (acvariu):** rularea Codex pe brief (fundalul pictat); poate un preț în stele și pentru peștii noi (de discutat — acum colorarea e liberă).
 
 **Sesiunea a șaptea (05.10.2026) — jocuri noi pe ariile goale (Claude; Codex doar imagini):**
 - ✅ **Prinde licuriciul**: licuricii apar de ~2× mai des și **zboară** de la primul nivel (bucle, aripi, halou care pulsează; dacă nu e prins, zboară în sus și se stinge). Axe noi în `ReactionAxes`: `driftRange`, `flies`, `firstGapMs`; `ReactionStimulus.driftY`.
@@ -223,9 +226,9 @@ Codex se rulează din `%LOCALAPPDATA%\OpenAI\Codex\bin\<versiune>\codex.exe exec
 **Acvariul — sistemul de recompense** (implementare proprie; `paper-aquarium` a fost doar sursă de inspirație, nu se copiază cod sau grafică din el)
 - Copilul câștigă **stele** în jocuri (pușculița, ✅). Cu ele „cumpără” mâncare pentru acvariu (o mână = o stea, ✅); peștii colorați rămân gratuiți.
 - **Licuriciul e ghidul în toată aplicația.** La prima vizită îi dăruiește copilului un **pește gata colorat** (✅).
-- Copilul alege un model de pește (contururi originale, `licurici_core/lib/src/aquarium_fish.dart`) și îl **colorează pe ecran** (carioca, găleată, „Înapoi”) (✅); varianta pe hârtie: **fișă printată → scanare cu camera** (de făcut). Peștele lui desenat apare și înoată în acvariu.
+- Copilul alege un model de pește (contururi originale, `licurici_core/lib/src/aquarium_fish.dart`) și îl **colorează pe ecran** (carioca, găleată, „Înapoi”) (✅) sau **pe hârtie: fișa printată → poza cu camera** (✅, ADR-030). Peștele lui desenat apare și înoată în acvariu.
 - Acvariul: **Flutter pur, fără shadere** (ADR-028). Camera e fixă; copilul nu mișcă acvariul. Peștele = desenul copilului pe o plasă deformată din cod (coada bate, corpul unduiește, se întoarce „prin profil”); **volumul** se calculează din contur (distanța față de margine) și se pictează peste desen ca lumină/umbră/luciu. Fundalul e un recif desenat din cod (rezervă) până vin straturile pictate `scenes/aquarium_back` / `aquarium_front`. Interacțiuni: **atingere → peștii din apropiere fug**, **apăsare lungă → se adună în jurul degetului**, **Mâncare → fulgi care cad, peștii vin și mănâncă** (✅). În modul calm fundalul stă, peștii înoată.
-- Scanarea se va face **pe dispozitiv** (detectarea fișei după marcaje proprii, corecția perspectivei, decuparea peștelui după același contur). Imaginea desenului **rămâne pe telefon**; sincronizarea ei cere consimțământ (e creația copilului).
+- Scanarea se face **pe dispozitiv**, în Dart pur (marcaje proprii, omografie, decuparea după același contur, lumina egalizată după hârtie). Fotografia nu se păstrează; desenul decupat **rămâne pe telefon**; sincronizarea lui ar cere consimțământ (e creația copilului).
 
 **Jocuri „generative” (nivele și conținut fără șablon vizibil)**
 - **La rulare: algoritmi** (gratuit, offline, previzibil): labirinturi generate (dimensiune și ramificare cresc cu nivelul), puzzle-uri din orice imagine (mai multe piese), „găsește diferența” cu obiecte plasate procedural, memorie cu grile tot mai mari, șiruri logice, probleme de matematică, sortări. Animațiile se generează tot în cod (fizică, particule, tranziții). Motorul de dificultate (`Difficulty.tier`, nemărginit) e baza.
@@ -463,6 +466,8 @@ Fiecare decizie are fișierul ei în [`docs/adr/`](docs/adr/). Rezumat:
 | [ADR-026](docs/adr/ADR-026-trasee-de-dezvoltare-nu-clase.md) | Trasee de dezvoltare pe arii, nu clase și materii (propus) |
 | [ADR-027](docs/adr/ADR-027-niveluri-generate-procedural.md) | Niveluri generate procedural, rating adaptiv, fără repetări (propus) |
 | [ADR-028](docs/adr/ADR-028-animatie-procedurala-din-cod-fara-rive.md) | Animație procedurală din cod, fără Rive (propus) |
+| [ADR-029](docs/adr/ADR-029-rezumate-de-sesiune-cu-claude.md) | Rezumatele sesiunii: fapte calculate în cod, formulate de Claude (propus) |
+| [ADR-030](docs/adr/ADR-030-acvariul-pe-hartie-fisa-pdf-si-scanare-pe-dispozitiv.md) | Acvariul pe hârtie: fișa PDF și scanarea pe dispozitiv, în Dart pur (propus) |
 
 ---
 
@@ -1087,7 +1092,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Dificultate adaptivă pe abilități, recomandări „Jocurile de azi” mai inteligente
 - [ ] Prometheus + Grafana, optimizări, build-uri pentru magazine (Families/Kids), semnare
 - [ ] Testare cu copii/educatori (cu acord parental), iterații UX
-- [ ] Acvariul complet: ✅ pești animați, colorare pe ecran, hrănire, fugă/adunare (sesiunea 8) · ⬜ fișa A4 + scanarea cu camera · ✅ stelele ca monedă (mâncare) · ⬜ fundal pictat pe straturi (brief gata)
+- [ ] Acvariul complet: ✅ pești animați, colorare pe ecran, hrănire, fugă/adunare (sesiunea 8) · ✅ fișa A4 + scanarea cu camera (de testat cu poze reale) · ✅ stelele ca monedă (mâncare) · ⬜ fundal pictat pe straturi (brief gata)
 - [ ] Chat AI în panoul adulților (Claude API, date agregate)
 - [ ] Conținut pentru clasele 5–12 + temă „matură” + conturi pentru adolescenți (14+)
 - [ ] Redactarea tezei (§23) + prezentare
