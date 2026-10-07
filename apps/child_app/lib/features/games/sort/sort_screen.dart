@@ -37,10 +37,24 @@ Color _binColor(int i) =>
 /// copiii cărora tragerea le e grea: atingi lucrul, apoi cutia. Greșeala nu se pedepsește:
 /// lucrul se clatină blând și rămâne de pus.
 class SortScreen extends ConsumerStatefulWidget {
-  const SortScreen({super.key, this.game = const SortGame(), this.seed});
+  const SortScreen({
+    super.key,
+    this.game = const SortGame(),
+    this.seed,
+    this.preset,
+    this.title,
+    this.onComplete,
+  });
 
   final SortGame game;
   final int? seed;
+
+  /// O sortare gata făcută (oprirea unei explorări), în loc de una generată pe nivel.
+  final SortLevel? preset;
+  final String? title;
+
+  /// Dacă e dat, la final rezultatul se predă (explorarea își arată singură recompensa).
+  final void Function(SortResult result)? onComplete;
 
   @override
   ConsumerState<SortScreen> createState() => _SortScreenState();
@@ -73,10 +87,9 @@ class _SortScreenState extends ConsumerState<SortScreen> {
 
   void _start() {
     _timer?.cancel();
-    _level = widget.game.generate(
-      ref.read(sortLevelProvider),
-      seed: widget.seed,
-    );
+    _level =
+        widget.preset ??
+        widget.game.generate(ref.read(sortLevelProvider), seed: widget.seed);
     _placed.clear();
     _wrong.clear();
     _firstWrong.clear();
@@ -145,6 +158,10 @@ class _SortScreenState extends ConsumerState<SortScreen> {
     final session = ref.read(sessionProvider.notifier);
     session.record((r) => r.sortLevel(result));
     session.checkpoint();
+    if (widget.onComplete case final done?) {
+      done(result);
+      return;
+    }
     setState(() {
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
@@ -178,7 +195,7 @@ class _SortScreenState extends ConsumerState<SortScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              TopBar(title: widget.game.name),
+              TopBar(title: widget.title ?? widget.game.name),
               Expanded(
                 child: result != null
                     ? RewardFinish(

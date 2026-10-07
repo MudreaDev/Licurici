@@ -124,6 +124,7 @@ const List<Ladder> ladders = [
     Step('COG7', 'Cunoaște anotimpurile și semnele lor', games: ['anotimpuri']),
     Step('COG8', 'Știe unde trăiesc animalele', games: ['habitate']),
     Step('COG6', 'Pune în ordine imaginile unei întâmplări', games: ['ce-urmeaza']),
+    Step('COG9', 'Aplică ce știe despre natură: case, anotimpuri, hrană, reciclare', games: ['explorare-stiinte']),
   ]),
   Ladder(Domain.emo, [
     Step('EMO1', 'Deosebește bucuros de trist', games: ['emotii']),
@@ -153,6 +154,7 @@ const List<Ladder> ladders = [
     Step('AUT3', 'Alege hainele potrivite vremii', games: ['ce-imbrac']),
     Step('AUT4', 'Pune în ordine momentele zilei (orarul vizual)', games: ['orarul-meu']),
     Step('AUT5', 'Cumpără după o listă cu poze', games: ['la-magazin']),
+    Step('AUT6', 'Alege ce e sănătos și ce e sigur; potrivește emoțiile', games: ['explorare-viata']),
   ]),
   Ladder(Domain.mot, [
     Step('MOT1', 'Duce degetul pe un drum lat, drept, de la start la țintă', games: ['traseaza']),
@@ -184,6 +186,7 @@ const List<Ladder> ladders = [
     Step('PAC-I1', 'Deosebește lucrurile de demult de cele de acum', games: ['trecut']),
     Step('PAC-I2', 'Recunoaște simbolurile țării (drapel, stemă, imn)', games: ['simboluri']),
     Step('PAC-I3', 'Știe oameni importanți din istorie și literatură', games: ['personalitati']),
+    Step('PAC-I4', 'Explorează cum se trăia demult', games: ['explorare-istorie']),
     Step('PAC-E1', 'Primele cuvinte în engleză (culori, animale, lucruri)', games: ['engleza']),
   ]),
 ];

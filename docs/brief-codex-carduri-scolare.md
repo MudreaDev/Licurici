@@ -1,6 +1,6 @@
 # Brief pentru Codex — cardurile jocurilor școlare noi
 
-**NU modifica cod.** Generează cele 7 carduri de mai jos și notează-le într-un fișier nou
+**NU modifica cod.** Generează cele 11 carduri de mai jos și notează-le într-un fișier nou
 `packages/game_content/art/illustrations/README-cards11.md` (secțiuni `## games/<id>.webp`, cu `Sursă PNG:` și
 `Prompt exact:`), apoi rulează `python tools/art/convert_codex.py`. Până atunci, aplicația arată emoji-ul jocului.
 
@@ -17,6 +17,10 @@ Mai jos e doar **subiectul** fiecărui card; restul promptului se copiază de ac
 | `games/gramatica.webp` | Exactly THREE rounded wooden toy blocks in a row, peach, mint and lavender, each with ONE simple painted picture and no letters: the peach block shows a tiny house, the mint block shows a tiny running shoe, the lavender block shows a tiny sunshine-yellow star. Blocks clearly separated. |
 | `games/simboluri.webp` | ONE small friendly castle tower in cream stone with a sky-blue roof, and ONE gentle plain shield in lavender with a simple sunshine-yellow star painted on it, standing side by side. No flags, no national symbols, no text. |
 | `games/trecut.webp` | Exactly TWO light sources side by side with a clear gap: on the left ONE old cream candle with a soft sunshine-yellow flame in a simple peach holder; on the right ONE modern round lightbulb glowing softly. Both the same height. |
+| `games/personalitati.webp` | ONE closed old-fashioned book with a soft lavender leather cover and a simple sunshine-yellow ribbon bookmark, and ONE small cream quill feather resting on it. No faces, no portraits, no text. |
+| `games/explorare-stiinte.webp` | ONE small friendly rounded sunshine-yellow bus with mint windows driving on a short curving path past ONE tiny tree and ONE small flower. No people visible, no text. |
+| `games/explorare-istorie.webp` | ONE small cream-stone castle on a gentle green hill, with ONE soft dotted path leading to it and ONE small hourglass in the foreground. No flags, no text. |
+| `games/explorare-viata.webp` | ONE sunny morning scene object group: ONE small mint toothbrush, ONE peach apple and ONE smiling sunshine-yellow sun, clearly separated in a gentle arc. No people, no text. |
 | `games/engleza.webp` | ONE open storybook with a sky-blue cover and blank cream pages, with ONE small friendly mint speech bubble rising from it containing ONE small sunshine-yellow star, and ONE tiny red-free peach apple beside the book. Bubble empty except the star. No text. |
 
 **Notă:** fără drapele în ilustrații (cardul „Simbolurile țării” rămâne neutru); drapelele apar doar în joc, din OpenMoji.

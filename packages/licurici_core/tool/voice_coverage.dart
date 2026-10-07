@@ -136,6 +136,16 @@ void main(List<String> args) {
     add(SwitchGame.announce(r), 'regula-se-schimba');
   }
   add('Uită-te la semn: culoare sau formă.', 'regula-se-schimba');
+  // Explorările: povestea fiecărei opriri, instrucțiunea sortării, finalul.
+  for (final e in exploreEpisodes) {
+    add(e.outro, e.id);
+    for (final st in e.stops) {
+      add(st.intro, e.id);
+      add(st.instruction, e.id);
+    }
+  }
+  add('Alege o oprire pe hartă.', 'explorare');
+  add('Bravo! Alege altă oprire.', 'explorare');
   for (final o in objectWords) {
     add('Găsește ${o.word}.', 'cauta');
     add(o.word, 'cauta');

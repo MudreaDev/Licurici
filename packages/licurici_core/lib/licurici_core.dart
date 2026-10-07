@@ -7,6 +7,7 @@ export 'src/aquarium_fish.dart';
 export 'src/paper_scan.dart';
 export 'src/adaptive.dart';
 export 'src/difficulty.dart';
+export 'src/explore.dart';
 export 'src/game.dart';
 export 'src/games/games.dart';
 export 'src/grades.dart';

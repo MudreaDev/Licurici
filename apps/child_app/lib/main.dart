@@ -22,6 +22,7 @@ import 'features/games/build/build_screen.dart';
 import 'features/games/cause/cause_screen.dart';
 import 'features/games/change/change_screen.dart';
 import 'features/games/diff/diff_screen.dart';
+import 'features/games/explore/explore_screen.dart';
 import 'features/games/feed/feed_screen.dart';
 import 'features/games/gaze/gaze_screen.dart';
 import 'features/games/imitation/imitation_screen.dart';
@@ -188,6 +189,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) =>
             _fade(context, state, const BreathingScreen()),
       ),
+      exploreRoute(page: _fade),
       GoRoute(
         path: '/sortam',
         pageBuilder: (context, state) =>
