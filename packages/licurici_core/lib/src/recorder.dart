@@ -51,6 +51,23 @@ PromptLevel choicePromptLevel({
   return PromptLevel.p0;
 }
 
+/// Câte reușite independente (P0, din prima) pe o treaptă o fac „cunoscută”.
+const knownStepTrials = 5;
+
+/// Strategia de ajutor pentru un joc (plan §3.3): pe o treaptă **nouă** (sub
+/// [knownStepTrials] reușite independente în istoric) — most-to-least, cu întârziere
+/// progresivă; pe o treaptă cunoscută — least-to-most (ajutorul vine doar dacă e nevoie).
+PromptStrategy promptStrategyFor(String gameId, Iterable<SessionRecord> history) {
+  final step = stepFor(gameId);
+  var independent = 0;
+  for (final s in history) {
+    for (final t in s.trials) {
+      if (t.stepId == step && t.correct && t.promptLevel == PromptLevel.p0) independent++;
+    }
+  }
+  return independent >= knownStepTrials ? PromptStrategy.leastToMost : PromptStrategy.mostToLeast;
+}
+
 class SessionRecorder {
   SessionRecorder({required this.childId, DateTime Function()? clock, String? id})
       : _clock = clock ?? DateTime.now,

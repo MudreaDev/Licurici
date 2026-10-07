@@ -159,39 +159,69 @@ void main() {
     await closeApp(tester);
   });
 
-  testWidgets('fără răspuns: ținta pulsează, apoi mânuța o arată (P4)', (
-    tester,
-  ) async {
-    final store = MemorySessionStore();
-    await pumpApp(tester, store: store);
-    await openDomain(tester, 'POT');
-    await pumpUntil(tester, find.byKey(const ValueKey('game-potriveste')));
-    await tester.tap(find.byKey(const ValueKey('game-potriveste')));
-    await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
-    await tester.tap(find.byKey(const ValueKey('mood-skip')));
-    await pumpUntil(tester, find.byKey(const ValueKey('choice-0')));
+  // Strategia de ajutor (plan §3.3): treaptă nouă → most-to-least (pulsare imediată, mânuța
+  // după 5 s); treaptă cunoscută (≥ 5 reușite independente) → least-to-most (5 s, apoi 10 s).
+  for (final known in [false, true]) {
+    testWidgets(
+      known
+          ? 'treaptă cunoscută: fără răspuns, ținta pulsează după 5 s, mânuța după 10 s (P4)'
+          : 'treaptă nouă: ajutor de la început, mânuța după 5 s',
+      (tester) async {
+        final store = MemorySessionStore();
+        if (known) {
+          await tester.runAsync(
+            () => store.save(
+              SessionRecord(
+                id: 'istoric',
+                childId: localChildId,
+                start: DateTime(2026, 9),
+                end: DateTime(2026, 9),
+                events: const [],
+                trials: [
+                  for (var i = 0; i < knownStepTrials; i++)
+                    Trial(
+                      stepId: 'POT1',
+                      gameId: 'potriveste',
+                      correct: true,
+                      promptLevel: PromptLevel.p0,
+                      at: DateTime(2026, 9),
+                    ),
+                ],
+              ),
+            ),
+          );
+        }
+        await pumpApp(tester, store: store);
+        await openDomain(tester, 'POT');
+        await pumpUntil(tester, find.byKey(const ValueKey('game-potriveste')));
+        await tester.tap(find.byKey(const ValueKey('game-potriveste')));
+        await pumpUntil(tester, find.byKey(const ValueKey('mood-skip')));
+        await tester.tap(find.byKey(const ValueKey('mood-skip')));
+        await pumpUntil(tester, find.byKey(const ValueKey('choice-0')));
 
-    expect(find.byType(PointingHand), findsNothing);
-    await tester.pump(const Duration(seconds: 5)); // pulsează (P3)
-    expect(find.byType(PointingHand), findsNothing);
-    await tester.pump(const Duration(seconds: 5)); // mânuța (P4)
-    expect(find.byType(PointingHand), findsOneWidget);
+        expect(find.byType(PointingHand), findsNothing);
+        await tester.pump(const Duration(seconds: 5));
+        expect(find.byType(PointingHand), known ? findsNothing : findsOneWidget);
+        await tester.pump(const Duration(seconds: 5));
+        expect(find.byType(PointingHand), findsOneWidget);
 
-    // Mânuța stă pe răspunsul corect: îl atingem.
-    final correct = find.ancestor(
-      of: find.byType(PointingHand),
-      matching: find.byWidgetPredicate(
-        (w) =>
-            w.key is ValueKey<String> &&
-            (w.key! as ValueKey<String>).value.startsWith('choice-'),
-      ),
+        // Mânuța stă pe răspunsul corect: îl atingem.
+        final correct = find.ancestor(
+          of: find.byType(PointingHand),
+          matching: find.byWidgetPredicate(
+            (w) =>
+                w.key is ValueKey<String> &&
+                (w.key! as ValueKey<String>).value.startsWith('choice-'),
+          ),
+        );
+        await tester.tap(correct.first, warnIfMissed: false);
+        await tester.pump(const Duration(milliseconds: 100));
+        expect(find.text('Bravo!'), findsWidgets);
+        expect(find.byType(PointingHand), findsNothing);
+        await closeApp(tester);
+      },
     );
-    await tester.tap(correct.first, warnIfMissed: false);
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Bravo!'), findsWidgets);
-    expect(find.byType(PointingHand), findsNothing);
-    await closeApp(tester);
-  });
+  }
 
   testWidgets(
     'colțul părintelui: poarta pentru adulți, apoi rezumatul sesiunilor salvate',

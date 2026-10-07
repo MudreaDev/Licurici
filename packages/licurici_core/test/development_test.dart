@@ -65,6 +65,29 @@ void main() {
       expect(l.initial(independentStreak: 9), PromptLevel.p0);
       expect([0, 1, 2, 5].map((s) => l.delayMs(independentStreak: s)), [0, 2000, 4000, 4000]);
     });
+
+    test('treaptă nouă → most-to-least; după 5 reușite independente → least-to-most', () {
+      SessionRecord session(List<Trial> trials) => SessionRecord(
+            id: 's',
+            childId: 'c',
+            start: DateTime(2026),
+            end: DateTime(2026),
+            trials: trials,
+            events: const [],
+          );
+      Trial t(String game, {bool correct = true, PromptLevel p = PromptLevel.p0}) =>
+          Trial(stepId: stepFor(game), gameId: game, correct: correct, promptLevel: p, at: DateTime(2026));
+      expect(promptStrategyFor('adunam', const []), PromptStrategy.mostToLeast);
+      // Cu ajutor sau greșit nu contează; nici alt joc, pe altă treaptă.
+      final mixed = session([
+        for (var i = 0; i < 4; i++) t('adunam'),
+        t('adunam', p: PromptLevel.p3),
+        t('adunam', correct: false),
+        for (var i = 0; i < 9; i++) t('emotii'),
+      ]);
+      expect(promptStrategyFor('adunam', [mixed]), PromptStrategy.mostToLeast);
+      expect(promptStrategyFor('adunam', [mixed, session([t('adunam')])]), PromptStrategy.leastToMost);
+    });
   });
 
   group('TrialStats', () {

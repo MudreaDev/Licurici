@@ -60,6 +60,15 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   bool _guide = false;
   Timer? _guideTimer;
 
+  /// Strategia de ajutor (plan §3.3): pe o treaptă nouă răspunsul corect e arătat de la
+  /// început, iar întârzierea crește cu fiecare reușită din prima (0 s → 2 s → 4 s);
+  /// pe o treaptă cunoscută, indiciul vine doar după 5 s fără răspuns.
+  PromptStrategy _strategy = PromptStrategy.leastToMost;
+  static const _newStep = PromptLadder(strategy: PromptStrategy.mostToLeast);
+
+  /// Runde reușite la rând din prima încercare (pentru întârzierea progresivă).
+  int _errorFree = 0;
+
   /// Steluța care zboară de la răspunsul corect în bara de progres.
   final _stackKey = GlobalKey();
   final _progressKey = GlobalKey();
@@ -98,14 +107,33 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     );
     _index = 0;
     _firstTry = 0;
+    _errorFree = 0;
     _finished = false;
     _ready = false;
+    // Treaptă nouă sau cunoscută: din sesiunile salvate + sesiunea în curs.
+    final current = ref.read(sessionProvider);
+    final history = ref.read(sessionStoreProvider).all().then((saved) {
+      if (!mounted) return;
+      _strategy = promptStrategyFor(widget.game.id, [
+        ...saved,
+        if (current != null)
+          SessionRecord(
+            id: current.id,
+            childId: current.childId,
+            start: current.start,
+            end: DateTime.now(),
+            trials: current.trials,
+            events: const [],
+          ),
+      ]);
+    }, onError: (_) {});
     // Pre-încărcăm ilustrațiile ÎNAINTE de prima rundă: animațiile de intrare pornesc cu
     // imaginile deja în memorie (durează de obicei sub 100 ms).
     // (după montare: ilustrațiile pictate au nevoie de context)
-    Future(
-      () => mounted ? precacheStimuli(context, _lesson.art) : null,
-    ).whenComplete(() {
+    Future.wait([
+      Future(() => mounted ? precacheStimuli(context, _lesson.art) : null),
+      history,
+    ]).whenComplete(() {
       if (!mounted) return;
       setState(() {
         _ready = true;
@@ -135,11 +163,15 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     });
   }
 
-  /// Stratul 3: după 5 s fără răspuns, ținta corectă pulsează ușor.
+  /// Stratul 3: ținta corectă pulsează ușor — după 5 s fără răspuns pe o treaptă cunoscută,
+  /// sau după întârzierea progresivă (0 s → 2 s → 4 s) pe o treaptă nouă.
   void _armGuide() {
     _guide = false;
     _guideTimer?.cancel();
-    _guideTimer = Timer(const Duration(seconds: 5), () {
+    final delay = _strategy == PromptStrategy.mostToLeast
+        ? Duration(milliseconds: _newStep.delayMs(independentStreak: _errorFree))
+        : const Duration(seconds: 5);
+    _guideTimer = Timer(delay, () {
       if (mounted && !_solved) {
         setState(() => _guide = _guideShown = true);
         _armHand();
@@ -164,6 +196,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     if (choice.correct) {
       ref.read(sfxProvider).play(Sfx.correct);
       if (_attempts == 0) _firstTry++;
+      _errorFree = _attempts == 0 ? _errorFree + 1 : 0;
       final round = _round;
       ref
           .read(sessionProvider.notifier)
