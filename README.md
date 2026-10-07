@@ -83,6 +83,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - ✅ **Ștergerea contului** (GDPR art. 17; backend `POST /me/delete` + panoul „Contul meu”): cere **parola din nou**; imediat: copiii marcați șterși, partajările tăiate (și cele în care contul e specialistul), e-mailul anonimizat (poate fi refolosit), parola ștearsă; **reîmprospătarea sesiunii e refuzată** pentru un cont șters (`AuthService.refresh`); job-ul `purge-account` (coada `gdpr`) șterge definitiv după 7 zile, în cascadă. Administratorii nu se șterg din aplicație. Lista de partajări arată acum **e-mailul specialistului**. Teste: backend 41, panou 14.
 - ✅ **„Șterge datele de pe tabletă”** (Pentru părinți, după poarta pentru adulți, cu confirmare): sesiunile + setările (Drift `wipe()`), abțibildurile, stelele, peștii din acvariu; sesiunea în curs se abandonează.
 - ✅ **Documentele GDPR** ([docs/gdpr/](docs/gdpr/README.md), §13.5) — 9 ciorne pe baza codului și arhitecturii: politica de confidențialitate (+ pentru copii), termeni, RoPA, DPIA, incident, drepturi, împuterniciți, retenție, declarațiile pentru magazine. **De verificat de un jurist** și de completat identitatea operatorului.
+- ✅ **Măsuri din DPIA în backend:** **blocare 15 minute după 5 parole greșite** (`AuthService`, contor în Redis cu cheia = hash-ul e-mailului; se aplică și e-mailurilor fără cont, ca să nu dezvăluie cine e înscris) și **retenția de 24 de luni** (job zilnic `expire-sessions` în coada `gdpr`, programat idempotent cu `upsertJobScheduler`; logica pură în `gdpr/retention.ts`). Backend: 44 de teste.
 
 **Sesiunea a șaptea (05.10.2026) — jocuri noi pe ariile goale (Claude; Codex doar imagini):**
 - ✅ **Prinde licuriciul**: licuricii apar de ~2× mai des și **zboară** de la primul nivel (bucle, aripi, halou care pulsează; dacă nu e prins, zboară în sus și se stinge). Axe noi în `ReactionAxes`: `driftRange`, `flies`, `firstGapMs`; `ReactionStimulus.driftY`.
@@ -678,7 +679,7 @@ să întrebe de diagnostic). Fără SDK-uri de analytics/reclame în aplicația 
 - [x] `politica-retentie.md` — ciornă
 - [x] Declarațiile *Data safety* (Google Play) și *Privacy Nutrition Label* (App Store) — `declaratii-magazine.md`, ciornă
 - [ ] Verificarea juridică + publicarea (link public) — **utilizatorul**
-- [ ] Măsurile 🕓 din DPIA: job de expirare 24 luni, limitarea încercărilor de autentificare, criptarea volumului și a e-mailului, 2FA pentru specialiști
+- [ ] Măsurile 🕓 rămase din DPIA: criptarea volumului și a e-mailului, 2FA pentru specialiști (✅ făcute în sesiunea 8: expirarea sesiunilor la 24 de luni, blocarea după 5 parole greșite)
 
 ### 13.6 Etica în testarea cu copii (pentru teză)
 Testele de utilizabilitate cu copii se fac **doar** cu acordul scris al părinților, anonimizat, fără înregistrări

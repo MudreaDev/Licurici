@@ -42,8 +42,8 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
     },
     {
       provide: AuthService,
-      inject: [PrismaRepos, TokenService],
-      useFactory: (r: PrismaRepos, t: TokenService) => new AuthService(r.users, t),
+      inject: [PrismaRepos, TokenService, REDIS],
+      useFactory: (r: PrismaRepos, t: TokenService, redis: Redis) => new AuthService(r.users, t, redis),
     },
     { provide: ChildAccess, inject: [PrismaRepos], useFactory: (r: PrismaRepos) => new ChildAccess(r.childAccess) },
     {

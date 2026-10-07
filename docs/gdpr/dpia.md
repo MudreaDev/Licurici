@@ -26,7 +26,7 @@ sănătate → tratăm datele ca sensibile.
 | Limitarea scopului | Datele de joc servesc doar progresului, dificultății și rapoartelor; nu reclame, nu profilare comercială. |
 | Implicit privat | Aplicația copilului merge fără cont și fără rețea; sincronizarea e opțională. |
 | Consimțământ | Separat pe scopuri, fără bife implicite, retragere la fel de ușoară, versiunea politicii salvată. |
-| Retenție | 24 de luni pentru sesiuni (🕓 job de expirare), ștergere definitivă la 7 zile după cerere. |
+| Retenție | 24 de luni pentru sesiuni (job zilnic ✅), ștergere definitivă la 7 zile după cerere. |
 | Drepturi | Export complet, ștergere copil, ștergere cont (cu parola), din panou. |
 
 ## 4. Riscuri și măsuri
@@ -34,7 +34,7 @@ sănătate → tratăm datele ca sensibile.
 | Risc | Probabilitate | Impact | Măsuri | Risc rezidual |
 |---|---|---|---|---|
 | Acces neautorizat la datele unui copil (alt părinte, specialist fără partajare) | Scăzută | Ridicat | Verificarea accesului la fiecare cerere (`ChildAccess`: părintele doar copiii lui; specialistul doar cu `CareLink` activ, neexpirat), teste automate, audit | Scăzut |
-| Compromiterea contului părintelui | Medie | Ridicat | Argon2id, sesiuni de 15 min, refresh rotit de unică folosință, parola cerută la ștergerea contului; 🕓 limitare încercări, 2FA pentru specialiști | Mediu → Scăzut după 🕓 |
+| Compromiterea contului părintelui | Medie | Ridicat | Argon2id, sesiuni de 15 min, refresh rotit de unică folosință, parola cerută la ștergerea contului, **blocare 15 min după 5 parole greșite** ✅; 🕓 2FA pentru specialiști | Scăzut |
 | Scurgere din baza de date | Scăzută | Ridicat | Minimizare (fără nume/diagnostic), hash-uri pentru parole și refresh tokenuri, 🕓 criptarea volumului și a e-mailului | Mediu |
 | Reidentificare prin rezumatele AI | Scăzută | Mediu | Doar fapte agregate, fără poreclă/id; consimțământ separat; DPA fără antrenare pe date | Scăzut |
 | Inferarea unei condiții de sănătate | Medie | Mediu | Nu cerem diagnostic; limbaj neutru; date minime; acces restrâns | Scăzut |
@@ -44,8 +44,8 @@ sănătate → tratăm datele ca sensibile.
 
 ## 5. Concluzie
 Cu măsurile existente, riscul rezidual e **acceptabil**, cu condiția finalizării măsurilor 🕓:
-job-ul de expirare la 24 luni, limitarea încercărilor de autentificare, criptarea volumului bazei de
-date și a câmpului e-mail, 2FA pentru specialiști. Nu e necesară consultarea prealabilă a autorității
+criptarea volumului bazei de date și a câmpului e-mail, 2FA pentru specialiști. (Făcute: expirarea
+sesiunilor la 24 de luni, blocarea după 5 parole greșite.) Nu e necesară consultarea prealabilă a autorității
 dacă acestea se implementează înainte de lansarea publică.
 
 **Aprobat de:** […] **Data:** […]

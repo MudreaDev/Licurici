@@ -1,5 +1,5 @@
-import { ConflictError, UnauthorizedError } from '../common/errors';
-import { AuthService, registerSchema, UserRepo } from './auth.service';
+import { ConflictError, RateLimitedError, UnauthorizedError } from '../common/errors';
+import { AuthService, LoginAttempts, MAX_FAILED_LOGINS, registerSchema, UserRepo } from './auth.service';
 import { hashPassword, verifyPassword } from './passwords';
 import { Role, TokenService, TokenStore } from './tokens';
 
@@ -109,5 +109,35 @@ describe('AuthService', () => {
     expect(await auth.confirmPassword('nimeni', 'parola-lunga-1')).toBe(false);
     users.rows.splice(0, 1); // contul a fost marcat șters (findById nu-l mai găsește)
     await expect(auth.refresh(pair.refreshToken)).rejects.toBeInstanceOf(UnauthorizedError);
+  });
+
+  it('după 5 parole greșite contul e blocat temporar (și cu parola bună); reușita resetează contorul', async () => {
+    const counts = new Map<string, number>();
+    const attempts: LoginAttempts = {
+      get: async (k) => (counts.has(k) ? String(counts.get(k)) : null),
+      incr: async (k) => {
+        counts.set(k, (counts.get(k) ?? 0) + 1);
+        return counts.get(k)!;
+      },
+      expire: async () => 1,
+      del: async (k) => (counts.delete(k) ? 1 : 0),
+    };
+    const store = new MemoryStore();
+    const users = new MemoryUsers();
+    const auth = new AuthService(users, new TokenService('x'.repeat(32), store), attempts);
+    await auth.register(creds);
+    const wrong = { ...creds, password: 'gresita-1234' };
+
+    // Câteva greșeli, apoi reușita: contorul se resetează.
+    await expect(auth.login(wrong)).rejects.toBeInstanceOf(UnauthorizedError);
+    await expect(auth.login(creds)).resolves.toBeTruthy();
+    expect(counts.size).toBe(0);
+
+    for (let i = 0; i < MAX_FAILED_LOGINS; i++) {
+      await expect(auth.login(wrong)).rejects.toBeInstanceOf(UnauthorizedError);
+    }
+    await expect(auth.login(creds)).rejects.toBeInstanceOf(RateLimitedError);
+    // Cheia e hash-ul e-mailului, nu e-mailul.
+    expect([...counts.keys()].join()).not.toContain('example');
   });
 });

@@ -7,7 +7,7 @@
 |---|---|---|---|---|
 | Contul (e-mail, hash parolă) | Server | Cât există contul | La cererea de ștergere: anonimizat imediat, șters definitiv la 7 zile (`purge-account`) | ✅ |
 | Profilul copilului | Server | Cât există profilul | Marcare imediată, definitiv la 7 zile (`purge-child`), în cascadă | ✅ |
-| Sesiunile de joc | Server | **24 de luni rulant** | Job periodic care șterge sesiunile mai vechi | 🕓 |
+| Sesiunile de joc | Server | **24 de luni rulant** | Job zilnic `expire-sessions` (coada `gdpr`, 03:30) — `backend/src/gdpr/retention.ts` | ✅ |
 | Rezumatele AI | Server | Cât există sesiunea | Cascadă cu sesiunea | ✅ |
 | Partajările cu specialistul | Server | Până la termen (implicit 90 zile) / revocare | La revocare: imediat; la expirare: accesul se oprește (rândul rămâne până la reînnoire/revocare) | ✅ (🕓 curățarea rândurilor expirate) |
 | Dovezile consimțământului | Server | Durata contului + 3 ani | 🕓 de mutat într-un jurnal separat care supraviețuiește contului 3 ani (acum se șterg odată cu contul) | 🕓 |

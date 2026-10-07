@@ -1,6 +1,8 @@
+import { createHash } from 'node:crypto';
+
 import { z } from 'zod';
 
-import { ConflictError, UnauthorizedError } from '../common/errors';
+import { ConflictError, RateLimitedError, UnauthorizedError } from '../common/errors';
 
 import { DUMMY_HASH, hashPassword, verifyPassword } from './passwords';
 import { Role, TokenPair, TokenService } from './tokens';
@@ -28,11 +30,29 @@ export interface UserRepo {
   findById(id: string): Promise<{ id: string; role: Role; passwordHash: string | null } | null>;
 }
 
+/** Contorul încercărilor greșite (Redis; în teste, memorie). */
+export interface LoginAttempts {
+  get(key: string): Promise<string | null>;
+  incr(key: string): Promise<number>;
+  expire(key: string, seconds: number): Promise<number>;
+  del(key: string): Promise<number>;
+}
+
+/** După atâtea parole greșite la rând, contul e blocat temporar (DPIA: forța brută). */
+export const MAX_FAILED_LOGINS = 5;
+export const LOCKOUT_SECONDS = 15 * 60;
+
 export class AuthService {
   constructor(
     private readonly users: UserRepo,
     private readonly tokens: TokenService,
+    private readonly attempts?: LoginAttempts,
   ) {}
+
+  /** Cheia contorului: hash-ul e-mailului (în Redis nu stă e-mailul în clar). */
+  private static attemptsKey(email: string): string {
+    return `login-fail:${createHash('sha256').update(email).digest('hex')}`;
+  }
 
   async register(body: z.infer<typeof registerSchema>): Promise<TokenPair> {
     if (await this.users.findByEmail(body.email)) {
@@ -47,12 +67,22 @@ export class AuthService {
   }
 
   async login(body: z.infer<typeof credentialsSchema>): Promise<TokenPair> {
+    const key = AuthService.attemptsKey(body.email);
+    // Blocarea se aplică și e-mailurilor fără cont: răspunsul nu dezvăluie cine e înscris.
+    if (this.attempts && Number((await this.attempts.get(key)) ?? 0) >= MAX_FAILED_LOGINS) {
+      throw new RateLimitedError('Prea multe încercări. Încearcă din nou peste 15 minute.');
+    }
     const user = await this.users.findByEmail(body.email);
     // Verificăm și când contul nu există, ca durata să nu dezvăluie ce e-mailuri sunt înscrise.
     const ok = await verifyPassword(user?.passwordHash ?? DUMMY_HASH, body.password);
     if (!user || !user.passwordHash || !ok) {
+      if (this.attempts) {
+        const n = await this.attempts.incr(key);
+        if (n === 1) await this.attempts.expire(key, LOCKOUT_SECONDS);
+      }
       throw new UnauthorizedError('E-mail sau parolă greșită.');
     }
+    await this.attempts?.del(key);
     return this.tokens.issue(user);
   }
 
