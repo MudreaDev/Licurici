@@ -18,6 +18,9 @@ const DIR = path.join(ROOT, 'packages', 'game_content', 'audio', 'ro');
 const MANIFEST = path.join(DIR, 'voice.json');
 const MISSING = path.join(DIR, 'lipsa.txt');
 const VOICE = 'ro-RO-AlinaNeural';
+// Frazele cu prefixul „en:” (jocul Engleză) se rostesc cu o voce englezească, fără prefix.
+const VOICE_EN = 'en-US-AnaNeural';
+const voiceOf = (text) => (text.startsWith('en:') ? [VOICE_EN, 'en-US', text.slice(3)] : [VOICE, 'ro-RO', text]);
 const RATE = '+0%';
 
 const manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
@@ -36,9 +39,10 @@ const fileName = () => `v${String(next++).padStart(3, '0')}.mp3`;
 
 const escapeXml = (s) => s.replace(/[<>&'"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' })[c]);
 
-async function azure(text, out) {
+async function azure(phrase, out) {
   const region = process.env.AZURE_SPEECH_REGION ?? 'westeurope';
-  const ssml = `<speak version="1.0" xml:lang="ro-RO"><voice name="${VOICE}"><prosody rate="${RATE}">${escapeXml(text)}</prosody></voice></speak>`;
+  const [voice, lang, text] = voiceOf(phrase);
+  const ssml = `<speak version="1.0" xml:lang="${lang}"><voice name="${voice}"><prosody rate="${RATE}">${escapeXml(text)}</prosody></voice></speak>`;
   const res = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
     method: 'POST',
     headers: {
@@ -52,8 +56,9 @@ async function azure(text, out) {
   fs.writeFileSync(out, Buffer.from(await res.arrayBuffer()));
 }
 
-function edgeTts(text, out) {
-  execFileSync('python', ['-m', 'edge_tts', '--voice', VOICE, `--rate=${RATE}`, '--text', text, '--write-media', out], {
+function edgeTts(phrase, out) {
+  const [voice, , text] = voiceOf(phrase);
+  execFileSync('python', ['-m', 'edge_tts', '--voice', voice, `--rate=${RATE}`, '--text', text, '--write-media', out], {
     stdio: 'ignore',
   });
 }
