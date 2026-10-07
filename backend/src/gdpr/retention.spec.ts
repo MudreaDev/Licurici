@@ -1,4 +1,11 @@
-import { RETENTION_MONTHS, archiveRows, expireConsentArchive, expireSessions, retentionCutoff } from './retention';
+import {
+  RETENTION_MONTHS,
+  archiveRows,
+  expireCareLinks,
+  expireConsentArchive,
+  expireSessions,
+  retentionCutoff,
+} from './retention';
 
 describe('retenția sesiunilor', () => {
   it('pragul e acum minus 24 de luni', () => {
@@ -34,5 +41,12 @@ describe('retenția sesiunilor', () => {
     );
     expect(n).toBe(4);
     expect(before!.toISOString()).toBe('2023-10-08T12:00:00.000Z');
+  });
+
+  it('partajările expirate dispar', async () => {
+    const now = new Date('2026-10-08T12:00:00Z');
+    let lt: Date | undefined;
+    expect(await expireCareLinks({ careLink: { deleteMany: async (q) => ((lt = q.where.expiresAt.lt), { count: 2 }) } }, now)).toBe(2);
+    expect(lt).toEqual(now);
   });
 });

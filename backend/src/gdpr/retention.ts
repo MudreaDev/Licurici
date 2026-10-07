@@ -58,3 +58,12 @@ export async function expireConsentArchive(db: ConsentArchiveDb, now: Date): Pro
   before.setUTCFullYear(before.getUTCFullYear() - CONSENT_ARCHIVE_YEARS);
   return (await db.consentArchive.deleteMany({ where: { archivedAt: { lt: before } } })).count;
 }
+
+export interface CareLinkDb {
+  careLink: { deleteMany: (q: { where: { expiresAt: { lt: Date } } }) => PromiseLike<{ count: number }> };
+}
+
+/** Partajările cu specialistul expirate: accesul era deja oprit; rândul dispare. */
+export async function expireCareLinks(db: CareLinkDb, now: Date): Promise<number> {
+  return (await db.careLink.deleteMany({ where: { expiresAt: { lt: now } } })).count;
+}

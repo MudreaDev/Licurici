@@ -4,7 +4,7 @@ import type { Job } from 'bullmq';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { Queues } from '../queues/queues';
-import { archiveRows, expireConsentArchive, expireSessions } from './retention';
+import { archiveRows, expireCareLinks, expireConsentArchive, expireSessions } from './retention';
 
 export interface PurgeChildJob {
   childId: string;
@@ -30,9 +30,12 @@ export class GdprProcessor extends WorkerHost {
 
   async process(job: Job<PurgeChildJob | PurgeAccountJob>): Promise<{ deleted: number }> {
     if (job.name === 'expire-sessions') {
-      // Retenția: sesiunile mai vechi de 24 de luni și dovezile arhivate de peste 3 ani.
+      // Retenția: sesiunile > 24 de luni, dovezile arhivate > 3 ani, partajările expirate.
       const now = new Date();
-      const deleted = (await expireSessions(this.prisma, now)) + (await expireConsentArchive(this.prisma, now));
+      const deleted =
+        (await expireSessions(this.prisma, now)) +
+        (await expireConsentArchive(this.prisma, now)) +
+        (await expireCareLinks(this.prisma, now));
       this.log.log(`retenție: ${deleted} înregistrări expirate șterse`);
       return { deleted };
     }
