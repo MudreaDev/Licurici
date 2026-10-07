@@ -78,6 +78,8 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - Teste: 6 în core cu **fotografii sintetice** (perspectivă, lumină inegală, nuanță galbenă, zgomot, rotire 180°, poză fără fișă) — toate modelele găsite, marcaje la < 3 px, culorile corecte și în partea întunecată; 3 în aplicație (PDF-ul se construiește; poză fără fișă → „Mai încerc” → poză bună → peștele intră în acvariu, pe telefon mic și tabletă).
 - **De verificat pe dispozitiv real:** fotografii adevărate (lumină slabă, foaie îndoită, blitz). Dacă eșuează des: ghidaj în timp real cu `camera` (vezi ADR-030, „Când am alege altfel”).
 - **Urmează (acvariu):** rularea Codex pe brief (fundalul pictat); poate un preț în stele și pentru peștii noi (de discutat — acum colorarea e liberă).
+- ✅ **Ultimele jocuri școlare din prototip** (`licurici_core/lib/src/games/scoala2.dart`, total **75** în aplicație): **Banii** (PAC-T2, bancnote desenate din cod — `MoneyVisual`, câte o culoare pe valoare; 1/2/5 lei → +10 → +20/50), **Tabla înmulțirii** (PAC-N13, până la 10 × 10, distractori din „tabla vecină”), **Probleme** (PAC-N14, adunare/scădere, de la nivelul 3 și înmulțire), **Ce fel de cuvânt?** (PAC-L9), **Trecut și prezent** (PAC-I1), **Simbolurile țării** (PAC-I2), **Engleză** (PAC-E1, cu **voce englezească** — frazele `en:…` se generează cu `en-US-AnaNeural`, voce de copil; `tools/gen-voice`). Teste: `scoala2_test.dart` + toate jocurile pe telefon mic și tabletă. Vocea: 1961/1961.
+- Brief pentru cardurile lor: [docs/brief-codex-carduri-scolare.md](docs/brief-codex-carduri-scolare.md) (până atunci, emoji).
 
 **Sesiunea a șaptea (05.10.2026) — jocuri noi pe ariile goale (Claude; Codex doar imagini):**
 - ✅ **Prinde licuriciul**: licuricii apar de ~2× mai des și **zboară** de la primul nivel (bucle, aripi, halou care pulsează; dacă nu e prins, zboară în sus și se stinge). Axe noi în `ReactionAxes`: `driftRange`, `flies`, `firstGapMs`; `ReactionStimulus.driftY`.
@@ -97,7 +99,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - ✅ Toate cele 62 de obiecte sunt pictate (inclusiv elefantul); carduri pictate pentru toate jocurile noi.
 - ✅ **Ce îmbrac?** (AUT3, haine după vreme), **Vorbește** (COM3: tabla AAC — „Vreau apă”, „Mă simt obosit”; cererile = `SessionEventKind.request`, notate și în rezumatul pentru părinte; validarea din backend acceptă noul tip), **Toba magică** (IMI4: ritmuri 2 → 6 bătăi, una/două tobe, sunete de tobă generate în `tools/audio/gen_sfx.py`; timpul bătăilor din `Ticker`, ca să meargă și cu timp simulat în teste), **Hrănește peștii** (MOT4: tragere la peștele flămând care înoată), **Atinge și vezi** (COG1: cauză–efect), **Peștele din mijloc** (Flanker; `FlankerVisual`, `ChoiceRound.stimulusId` = congruent/incongruent), **Primul sunet** (COM4), **Ce s-a schimbat?** (ATN5: apare / înlocuit / dispărut), **Puzzle** (POT7: 2 → 9 piese din ilustrațiile ariilor).
 - Ariile **IMI, AUT, MOT** au acum jocuri; în total **44 de jocuri noi** în această sesiune (**68** în aplicație). Ultimele: **Unde e ursulețul?** (LRC6, scene desenate din cod — `Placement`, `shared/placement_art.dart`), **Labirint** (FEX7, `maze.dart`: labirinturi perfecte, `MazeWalker`), **Găsește diferențele** (POT8, `spot_diff.dart`), **Ce face?** (LRC3b, cu ilustrațiile noi `actions/` — același copil care doarme, mănâncă, aleargă…, folosite automat și în rutine și în tabla AAC), **Orarul meu** (AUT4), **Construiește la fel** (IMI5, `build_copy.dart`: model din forme colorate, apoi din memorie), **La magazin** (AUT5, `shop.dart`: listă cu poze, produsele luate în plus se numără), **Spune propoziția** (COM5: poza + pictograme „Fetița / mănâncă / cu lingura”, cu capcane; `OrderStory.picture`, `OrderRound.distractors`/`tray`, propoziția rostită la final), **Semnele** și **Numărul lipsă** (PAC-N8/N9, portate din prototip); jocurile școlare portate în `games/scoala.dart`: **Anotimpuri**, **Unde trăiește?**, **Silabe**, **Citește cuvântul**, **Unul și mai mulți**, **Zeci și unități**, **Înmulțim**, **Împărțim**, **Ceasul** (cadran desenat din cod, `ClockVisual`: ore → jumătăți → sferturi).
-- **Urmează:** restul jocurilor școlare din prototip (banii, tabla înmulțirii, probleme, gramatica, simboluri, trecut, engleză), calculăm/citim (PAC, extinderi); obiectele din Adunăm/Comparăm mai mari pe telefonul mic (panoul e prea scund — reorganizare).
+- **Urmează:** ✅ jocurile școlare rămase (sesiunea 8); obiectele din Adunăm/Comparăm mai mari pe telefonul mic (panoul e prea scund — reorganizare).
 
 **Sesiunea a șasea — aspect profesionist pentru copil (Claude cod + Codex doar imagini):**
 - ✅ **Kitul vizual „candy”** (`apps/child_app/lib/shared/ui/candy.dart`): butoane/carduri cu buză 3D care „coboară” la atingere, panouri crem, titluri cu contur alb, baloane de vorbire; bara de sus cu butoane rotunde colorate (sens fix pe culoare). Folosit pe toate ecranele copilului.
@@ -921,14 +923,15 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (68):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
+**Gata în Flutter (75):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
 🆕 simon / Felinarele (`sequence`), perechi (`memoryCards`), sortam (`dragDrop`), cucu-bau, respira, continua-sirul,
 🆕 **sesiunea a șaptea:** potriveste, arata-mi, corpul, intrusul, umbre, mingea-rosie, ce-se-aude, ce-imbrac, primul-sunet,
 peste-in-mijloc (`choice`), traseaza (`trace`), pasii-rutinei, ce-urmeaza, mare-mic (`order` — „pune în ordine”),
 fa-ca-licuriciul (imitație), semaforul (așteptare), regula-se-schimba (DCCS), cauta (căutare vizuală), unde-se-uita
 (atenție comună), vorbeste (AAC), toba-magica (ritm), hraneste-pestii (tragere), atinge-si-vezi (cauză–efect),
-ce-s-a-schimbat, puzzle, unde-e-ursul, labirint, diferente, ce-face, orarul-meu, construieste, la-magazin, spune-propozitia, semne, numarul-lipsa, anotimpuri, habitate, silabe, cuvinte, plural, zeci, inmultim, impartim, ceasul.
+ce-s-a-schimbat, puzzle, unde-e-ursul, labirint, diferente, ce-face, orarul-meu, construieste, la-magazin, spune-propozitia, semne, numarul-lipsa, anotimpuri, habitate, silabe, cuvinte, plural, zeci, inmultim, impartim, ceasul,
+🆕 **sesiunea a opta:** bani, tabla, probleme, gramatica, simboluri, trecut, engleza (`games/scoala2.dart`).
 Fiecare mecanică nouă are fișierul ei în `licurici_core/lib/src/` (logică pură, testată) și ecranul în
 `apps/child_app/lib/features/games/<mecanică>/`; catalogul (`catalog.dart`, `GameKind`) dă ruta.
 Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii,social}.dart` + registrul `games.dart`;
