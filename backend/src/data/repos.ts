@@ -17,7 +17,7 @@ export class PrismaRepos {
   readonly users: UserRepo = {
     findByEmail: async (email) => {
       const u = await this.db.user.findFirst({ where: { email, deletedAt: null } });
-      return u ? { id: u.id, role: u.role as Role, passwordHash: u.passwordHash } : null;
+      return u ? PrismaRepos.userRow(u) : null;
     },
     create: async (data) => {
       const u = await this.db.user.create({ data });
@@ -25,9 +25,30 @@ export class PrismaRepos {
     },
     findById: async (id) => {
       const u = await this.db.user.findFirst({ where: { id, deletedAt: null } });
-      return u ? { id: u.id, role: u.role as Role, passwordHash: u.passwordHash } : null;
+      return u ? PrismaRepos.userRow(u) : null;
+    },
+    setTotp: async (id, secret, enabledAt) => {
+      await this.db.user.update({ where: { id }, data: { totpSecret: secret, totpEnabledAt: enabledAt } });
     },
   };
+
+  private static userRow(u: {
+    id: string;
+    role: string;
+    email: string;
+    passwordHash: string | null;
+    totpSecret: string | null;
+    totpEnabledAt: Date | null;
+  }) {
+    return {
+      id: u.id,
+      role: u.role as Role,
+      email: u.email,
+      passwordHash: u.passwordHash,
+      totpSecret: u.totpSecret,
+      totpEnabledAt: u.totpEnabledAt,
+    };
+  }
 
   readonly childAccess: ChildRepo = {
     findChild: (id) => this.db.child.findUnique({ where: { id }, select: { id: true, parentId: true, deletedAt: true } }),
@@ -203,7 +224,13 @@ export class PrismaRepos {
         this.db.child.updateMany({ where: { parentId: userId, deletedAt: null }, data: { deletedAt: at } }),
         this.db.user.update({
           where: { id: userId },
-          data: { deletedAt: at, passwordHash: null, email: `sters-${userId}@licurici.invalid` },
+          data: {
+            deletedAt: at,
+            passwordHash: null,
+            totpSecret: null,
+            totpEnabledAt: null,
+            email: `sters-${userId}@licurici.invalid`,
+          },
         }),
       ]);
     },

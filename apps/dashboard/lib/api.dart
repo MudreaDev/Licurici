@@ -15,9 +15,13 @@ const apiUrl = String.fromEnvironment(
 const privacyPolicyVersion = '2026-10';
 
 class ApiException implements Exception {
-  const ApiException(this.status, this.message);
+  const ApiException(this.status, this.message, [this.details = const []]);
   final int status;
   final String message;
+  final List<String> details;
+
+  /// Parola e bună, dar contul cere și codul din aplicația de autentificare (2FA).
+  bool get needsTotp => status == 401 && details.contains('totp');
   @override
   String toString() => message;
 }
@@ -35,11 +39,11 @@ class ApiClient {
 
   bool get signedIn => _access != null;
 
-  Future<void> login(String email, String password) async {
+  Future<void> login(String email, String password, {String? code}) async {
     final r = await _send(
       'POST',
       '/auth/login',
-      body: {'email': email, 'password': password},
+      body: {'email': email, 'password': password, 'code': ?code},
       auth: false,
     );
     _store(r as Map<String, dynamic>);
@@ -105,6 +109,24 @@ class ApiClient {
   Future<String> exportData() async => const JsonEncoder.withIndent(
     '  ',
   ).convert(await _send('GET', '/me/export'));
+
+  /// Autentificarea în doi pași (TOTP): starea, cheia nouă, activarea, oprirea.
+  Future<bool> totpEnabled() async =>
+      ((await _send('GET', '/me/2fa')) as Map)['enabled'] == true;
+
+  Future<({String secret, String url})> totpSetup() async {
+    final r = (await _send('POST', '/me/2fa/setup')) as Map;
+    return (secret: r['secret'] as String, url: r['otpauthUrl'] as String);
+  }
+
+  Future<void> totpEnable(String code) =>
+      _send('POST', '/me/2fa/enable', body: {'code': code});
+
+  Future<void> totpDisable(String password, String code) => _send(
+    'POST',
+    '/me/2fa/disable',
+    body: {'password': password, 'code': code},
+  );
 
   /// Ștergerea contului (GDPR art. 17): cere parola; întoarce data ștergerii definitive.
   Future<String> deleteAccount(String password) async =>
@@ -190,7 +212,10 @@ class ApiClient {
       final msg = data is Map && data['message'] is String
           ? data['message'] as String
           : 'Eroare ${res.statusCode}.';
-      throw ApiException(res.statusCode, msg);
+      final details = data is Map && data['details'] is List
+          ? (data['details'] as List).whereType<String>().toList()
+          : const <String>[];
+      throw ApiException(res.statusCode, msg, details);
     }
     return data;
   }
@@ -203,9 +228,9 @@ class ServerChildren extends Notifier<List<ChildHistory>> {
   @override
   List<ChildHistory> build() => const [];
 
-  Future<void> signIn(String email, String password) async {
+  Future<void> signIn(String email, String password, {String? code}) async {
     final api = ref.read(apiClientProvider);
-    await api.login(email, password);
+    await api.login(email, password, code: code);
     state = await api.children();
   }
 

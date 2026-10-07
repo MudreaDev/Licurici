@@ -1,7 +1,8 @@
-import { ConflictError, RateLimitedError, UnauthorizedError } from '../common/errors';
+import { ConflictError, RateLimitedError, TotpRequiredError, UnauthorizedError, ValidationError } from '../common/errors';
 import { AuthService, LoginAttempts, MAX_FAILED_LOGINS, registerSchema, UserRepo } from './auth.service';
 import { hashPassword, verifyPassword } from './passwords';
 import { Role, TokenService, TokenStore } from './tokens';
+import { base32Decode, totpCode } from './totp';
 
 class MemoryStore implements TokenStore {
   readonly data = new Map<string, string>();
@@ -20,7 +21,14 @@ class MemoryStore implements TokenStore {
 }
 
 class MemoryUsers implements UserRepo {
-  readonly rows: { id: string; email: string; role: Role; passwordHash: string }[] = [];
+  readonly rows: {
+    id: string;
+    email: string;
+    role: Role;
+    passwordHash: string;
+    totpSecret?: string | null;
+    totpEnabledAt?: Date | null;
+  }[] = [];
   async findByEmail(email: string) {
     return this.rows.find((r) => r.email === email) ?? null;
   }
@@ -31,6 +39,11 @@ class MemoryUsers implements UserRepo {
   }
   async findById(id: string) {
     return this.rows.find((r) => r.id === id) ?? null;
+  }
+  async setTotp(id: string, secret: string | null, enabledAt: Date | null) {
+    const r = this.rows.find((x) => x.id === id)!;
+    r.totpSecret = secret;
+    r.totpEnabledAt = enabledAt;
   }
 }
 
@@ -139,5 +152,38 @@ describe('AuthService', () => {
     await expect(auth.login(creds)).rejects.toBeInstanceOf(RateLimitedError);
     // Cheia e hash-ul e-mailului, nu e-mailul.
     expect([...counts.keys()].join()).not.toContain('example');
+  });
+
+  it('2FA: configurare → activare cu un cod corect → la login se cere codul; oprirea cere parola și codul', async () => {
+    const now = new Date('2026-10-08T12:00:00Z');
+    const users = new MemoryUsers();
+    const auth = new AuthService(users, new TokenService('x'.repeat(32), new MemoryStore()), undefined, () => now);
+    await auth.register(creds);
+    const me = { id: 'u1', role: 'PARENT' as const };
+    expect(await auth.totpStatus(me)).toEqual({ enabled: false });
+
+    const { secret, otpauthUrl } = await auth.setupTotp(me);
+    expect(otpauthUrl).toContain(`secret=${secret}`);
+    expect(otpauthUrl).toContain('ana%40example.md');
+    const code = totpCode(base32Decode(secret), now);
+    // Înainte de activare, login-ul merge fără cod.
+    await expect(auth.login(creds)).resolves.toBeTruthy();
+    await expect(auth.enableTotp(me, { code: '000000' === code ? '111111' : '000000' })).rejects.toBeInstanceOf(
+      ValidationError,
+    );
+    expect(await auth.enableTotp(me, { code })).toEqual({ enabled: true });
+    expect(await auth.totpStatus(me)).toEqual({ enabled: true });
+    await expect(auth.setupTotp(me)).rejects.toBeInstanceOf(ConflictError);
+
+    // Parola bună fără cod → se cere codul; cod greșit → refuzat; cod bun → intră.
+    await expect(auth.login(creds)).rejects.toBeInstanceOf(TotpRequiredError);
+    await expect(auth.login({ ...creds, code: code === '123456' ? '654321' : '123456' })).rejects.toBeInstanceOf(
+      UnauthorizedError,
+    );
+    await expect(auth.login({ ...creds, code })).resolves.toBeTruthy();
+
+    await expect(auth.disableTotp(me, { password: 'alta-parola', code })).rejects.toBeInstanceOf(UnauthorizedError);
+    expect(await auth.disableTotp(me, { password: 'parola-lunga-1', code })).toEqual({ enabled: false });
+    await expect(auth.login(creds)).resolves.toBeTruthy();
   });
 });

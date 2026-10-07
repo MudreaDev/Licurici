@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Inject, Param, ParseUUIDPipe, 
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
 
-import { AuthService, credentialsSchema, registerSchema } from '../auth/auth.service';
+import { AuthService, loginSchema, registerSchema } from '../auth/auth.service';
 import { AuthGuard, CurrentUser } from '../auth/guard';
 import type { AuthUser } from '../auth/tokens';
 import { ChildrenService } from '../children/children';
@@ -29,7 +29,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   login(@Body() body: unknown) {
-    return this.auth.login(parseWith(credentialsSchema, body));
+    return this.auth.login(parseWith(loginSchema, body));
   }
 
   @Post('refresh')
@@ -148,7 +148,34 @@ export class ConsentsController {
 @UseGuards(AuthGuard)
 @Controller('me')
 export class MeController {
-  constructor(@Inject(GdprService) private readonly gdpr: GdprService) {}
+  constructor(
+    @Inject(GdprService) private readonly gdpr: GdprService,
+    @Inject(AuthService) private readonly auth: AuthService,
+  ) {}
+
+  /** Autentificarea în doi pași (TOTP): starea, configurarea, activarea, oprirea. */
+  @Get('2fa')
+  totp(@CurrentUser() user: AuthUser) {
+    return this.auth.totpStatus(user);
+  }
+
+  @Post('2fa/setup')
+  @HttpCode(200)
+  totpSetup(@CurrentUser() user: AuthUser) {
+    return this.auth.setupTotp(user);
+  }
+
+  @Post('2fa/enable')
+  @HttpCode(200)
+  totpEnable(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    return this.auth.enableTotp(user, body);
+  }
+
+  @Post('2fa/disable')
+  @HttpCode(200)
+  totpDisable(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    return this.auth.disableTotp(user, body);
+  }
 
   @Get('export')
   export(@CurrentUser() user: AuthUser) {

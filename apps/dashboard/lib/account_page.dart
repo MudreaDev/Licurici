@@ -39,6 +39,7 @@ class AccountPage extends ConsumerStatefulWidget {
 
 class _AccountPageState extends ConsumerState<AccountPage> {
   Map<String, bool>? _consents;
+  bool _totp = false;
   List<Map<String, dynamic>> _children = const [];
   final _shares = <String, List<Map<String, dynamic>>>{};
   String? _error;
@@ -51,24 +52,35 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     _load();
   }
 
+  /// Erorile: la încărcare, în mijlocul paginii; la o acțiune, într-o notificare jos — se vede
+  /// oriunde ar fi derulată pagina (de ex. la „Șterg contul”, la final).
   Future<void> _guard(Future<void> Function() action) async {
     try {
       await action();
       if (mounted) setState(() => _error = null);
     } on ApiException catch (e) {
-      if (mounted) setState(() => _error = e.message);
+      if (!mounted) return;
+      if (_consents == null) {
+        setState(() => _error = e.message);
+      } else {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(e.message)));
+      }
     }
   }
 
   Future<void> _load() => _guard(() async {
     final consents = await _api.consents();
     final children = await _api.ownChildren();
+    final totp = await _api.totpEnabled();
     for (final c in children) {
       _shares[c['id'] as String] = await _api.shares(c['id'] as String);
     }
     setState(() {
       _consents = consents;
       _children = children;
+      _totp = totp;
     });
   });
 
@@ -144,6 +156,33 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     });
   }
 
+  /// Pornirea 2FA: cheia (de copiat în aplicația de autentificare), apoi primul cod.
+  Future<void> _enableTotp() => _guard(() async {
+    final setup = await _api.totpSetup();
+    if (!mounted) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => _TotpEnableDialog(
+        secret: setup.secret,
+        url: setup.url,
+        confirm: _api.totpEnable,
+      ),
+    );
+    if (ok == true) setState(() => _totp = true);
+  });
+
+  Future<void> _disableTotp() async {
+    final input = await showDialog<(String, String)>(
+      context: context,
+      builder: (_) => const _TotpDisableDialog(),
+    );
+    if (input == null) return;
+    await _guard(() async {
+      await _api.totpDisable(input.$1, input.$2);
+      setState(() => _totp = false);
+    });
+  }
+
   /// Ștergerea contului: explicație clară, parola din nou, apoi ieșirea din cont.
   Future<void> _deleteAccount() async {
     final password = await showDialog<String>(
@@ -181,18 +220,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                   : Text(_error!),
             )
           : ListView(
-              padding: const EdgeInsets.all(24),
+              // Jos rămâne loc pentru notificări: nu acoperă ultimul buton („Șterg contul”).
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
               children: [
-                if (_error != null)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      _error!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ),
                 Text(
                   'Acordurile mele',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -293,6 +323,31 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                       ),
                     ),
                   ),
+                const Divider(height: 40),
+                Text(
+                  'Autentificarea în doi pași',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _totp
+                      ? 'Activă: la intrare se cere și codul din aplicația de autentificare.'
+                      : 'Recomandată, mai ales pentru specialiști: pe lângă parolă, un cod din '
+                            'aplicația de autentificare de pe telefon.',
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    key: const ValueKey('totp-toggle'),
+                    onPressed: _totp ? _disableTotp : _enableTotp,
+                    icon: Icon(
+                      _totp
+                          ? Icons.lock_open_outlined
+                          : Icons.verified_user_outlined,
+                    ),
+                    label: Text(_totp ? 'Opresc' : 'Activez'),
+                  ),
+                ),
                 const Divider(height: 40),
                 Text('Contul', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 4),
@@ -414,6 +469,160 @@ class _InviteDialogState extends State<_InviteDialog> {
         key: const ValueKey('share-confirm'),
         onPressed: () => Navigator.pop(context, _email.text.trim()),
         child: const Text('Invită'),
+      ),
+    ],
+  );
+}
+
+/// Activarea 2FA: cheia se introduce în aplicația de autentificare (sau se deschide legătura),
+/// apoi primul cod arată că aplicația a primit-o.
+class _TotpEnableDialog extends StatefulWidget {
+  const _TotpEnableDialog({
+    required this.secret,
+    required this.url,
+    required this.confirm,
+  });
+
+  final String secret;
+  final String url;
+  final Future<void> Function(String code) confirm;
+
+  @override
+  State<_TotpEnableDialog> createState() => _TotpEnableDialogState();
+}
+
+class _TotpEnableDialogState extends State<_TotpEnableDialog> {
+  final _code = TextEditingController();
+  String? _error;
+
+  @override
+  void dispose() {
+    _code.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    try {
+      await widget.confirm(_code.text.trim());
+      if (mounted) Navigator.pop(context, true);
+    } on ApiException catch (e) {
+      setState(() => _error = e.message);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Cheia pe grupe de câte 4, ușor de tastat.
+    final grouped = [
+      for (var i = 0; i < widget.secret.length; i += 4)
+        widget.secret.substring(i, (i + 4).clamp(0, widget.secret.length)),
+    ].join(' ');
+    return AlertDialog(
+      title: const Text('Activez autentificarea în doi pași'),
+      content: SizedBox(
+        width: 460,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '1. În aplicația de autentificare (de ex. Google Authenticator, Microsoft '
+              'Authenticator, Aegis), adaugă un cont nou cu cheia de mai jos.',
+            ),
+            const SizedBox(height: 8),
+            SelectableText(
+              grouped,
+              key: const ValueKey('totp-secret'),
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: () =>
+                  Clipboard.setData(ClipboardData(text: widget.url)),
+              icon: const Icon(Icons.copy_outlined),
+              label: const Text('Copiază legătura otpauth://'),
+            ),
+            const SizedBox(height: 8),
+            const Text('2. Scrie codul de 6 cifre pe care îl arată aplicația.'),
+            TextField(
+              key: const ValueKey('totp-code'),
+              controller: _code,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              decoration: InputDecoration(labelText: 'Cod', errorText: _error),
+              onSubmitted: (_) => _submit(),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Renunță'),
+        ),
+        FilledButton(
+          key: const ValueKey('totp-confirm'),
+          onPressed: _submit,
+          child: const Text('Activez'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Oprirea 2FA: parola și un cod valid.
+class _TotpDisableDialog extends StatefulWidget {
+  const _TotpDisableDialog();
+
+  @override
+  State<_TotpDisableDialog> createState() => _TotpDisableDialogState();
+}
+
+class _TotpDisableDialogState extends State<_TotpDisableDialog> {
+  final _password = TextEditingController();
+  final _code = TextEditingController();
+
+  @override
+  void dispose() {
+    _password.dispose();
+    _code.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Opresc autentificarea în doi pași?'),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextField(
+          key: const ValueKey('totp-off-password'),
+          controller: _password,
+          obscureText: true,
+          decoration: const InputDecoration(labelText: 'Parola contului'),
+        ),
+        TextField(
+          key: const ValueKey('totp-off-code'),
+          controller: _code,
+          keyboardType: TextInputType.number,
+          maxLength: 6,
+          decoration: const InputDecoration(labelText: 'Codul din aplicație'),
+        ),
+      ],
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Renunță'),
+      ),
+      FilledButton(
+        key: const ValueKey('totp-off-confirm'),
+        onPressed: () =>
+            Navigator.pop(context, (_password.text, _code.text.trim())),
+        child: const Text('Opresc'),
       ),
     ],
   );

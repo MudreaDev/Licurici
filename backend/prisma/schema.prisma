@@ -47,6 +47,10 @@ model User {
   updatedAt    DateTime  @updatedAt
   /// Soft delete: acces blocat imediat, purge definitiv în ≤ 30 zile (job `gdpr.erase`).
   deletedAt    DateTime?
+  /// Autentificarea în doi pași (TOTP, RFC 6238): cheia (base32) și când a fost activată.
+  /// Cheia există și înainte de activare (configurare în curs); contează doar cu `totpEnabledAt`.
+  totpSecret    String?   @db.VarChar(64)
+  totpEnabledAt DateTime?
 
   children   Child[]
   consents   Consent[]

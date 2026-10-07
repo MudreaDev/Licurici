@@ -28,6 +28,8 @@ class FakeBackend {
   final shares = <Map<String, dynamic>>[];
   bool deleted = false;
   bool accountDeleted = false;
+  bool totp = false;
+  bool totpRequired = false;
   final sessions = demoChildren().first.sessions;
 
   http.Response json(Object body, [int status = 200]) => http.Response.bytes(
@@ -45,6 +47,15 @@ class FakeBackend {
         return json({
           'statusCode': 401,
           'message': 'E-mail sau parolă greșită.',
+        }, 401);
+      }
+      if (totpRequired && b['code'] != '123456') {
+        return json({
+          'statusCode': 401,
+          'message': b['code'] == null
+              ? 'Introdu codul din aplicația de autentificare.'
+              : 'Codul nu e corect.',
+          if (b['code'] == null) 'details': ['totp'],
         }, 401);
       }
       return json({
@@ -130,6 +141,28 @@ class FakeBackend {
     }
     if (path == '/me/export') {
       return json({'format': 'licurici-export', 'version': 1, 'children': []});
+    }
+    if (path == '/me/2fa') return json({'enabled': totp});
+    if (path == '/me/2fa/setup') {
+      return json({
+        'secret': 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP',
+        'otpauthUrl': 'otpauth://totp/Licurici:ana?secret=JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP',
+      });
+    }
+    if (path == '/me/2fa/enable') {
+      if ((jsonDecode(r.body) as Map)['code'] != '123456') {
+        return json({
+          'statusCode': 400,
+          'message': 'Date invalide.',
+          'details': ['code: codul nu e corect'],
+        }, 400);
+      }
+      totp = true;
+      return json({'enabled': true});
+    }
+    if (path == '/me/2fa/disable') {
+      totp = false;
+      return json({'enabled': false});
     }
     if (path == '/me/delete' && r.method == 'POST') {
       if ((jsonDecode(r.body) as Map)['password'] != 'parola-lunga-1') {
@@ -382,5 +415,41 @@ void main() {
     );
     expect(find.byKey(const ValueKey('account')), findsNothing);
     expect(find.byKey(const ValueKey('sign-in')), findsOneWidget);
+  });
+
+  testWidgets('2FA: la intrare se cere codul; din cont se activează cu primul cod', (
+    tester,
+  ) async {
+    final backend = FakeBackend()..totpRequired = true;
+    await pumpDashboard(tester, backend);
+    await signIn(tester, 'parola-lunga-1');
+    // Parola e bună: apare câmpul pentru cod.
+    expect(find.byKey(const ValueKey('login-code')), findsOneWidget);
+    expect(find.text('Introdu codul din aplicația de autentificare.'), findsOneWidget);
+    await tester.enterText(find.byKey(const ValueKey('login-code')), '000000');
+    await tester.tap(find.byKey(const ValueKey('login-submit')));
+    await tester.pumpAndSettle();
+    expect(find.text('Codul nu e corect.'), findsOneWidget);
+    await tester.enterText(find.byKey(const ValueKey('login-code')), '123456');
+    await tester.tap(find.byKey(const ValueKey('login-submit')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('account')), findsOneWidget);
+
+    // Din „Contul meu”: cheia apare grupată; un cod greșit nu activează, cel bun da.
+    await tester.tap(find.byKey(const ValueKey('account')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('totp-toggle')), 200);
+    await tester.tap(find.byKey(const ValueKey('totp-toggle')));
+    await tester.pumpAndSettle();
+    expect(find.text('JBSW Y3DP EHPK 3PXP JBSW Y3DP EHPK 3PXP'), findsOneWidget);
+    await tester.enterText(find.byKey(const ValueKey('totp-code')), '999999');
+    await tester.tap(find.byKey(const ValueKey('totp-confirm')));
+    await tester.pumpAndSettle();
+    expect(backend.totp, isFalse);
+    await tester.enterText(find.byKey(const ValueKey('totp-code')), '123456');
+    await tester.tap(find.byKey(const ValueKey('totp-confirm')));
+    await tester.pumpAndSettle();
+    expect(backend.totp, isTrue);
+    expect(find.text('Opresc'), findsOneWidget);
   });
 }

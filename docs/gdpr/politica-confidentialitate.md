@@ -74,7 +74,8 @@ Pentru restul: […e-mail…]. Răspundem în cel mult **o lună** (detalii în
 [procedura-drepturi.md](procedura-drepturi.md)).
 
 ## 8. Securitate
-Conexiuni criptate (TLS); parolele doar ca hash Argon2id; sesiuni scurte (15 minute) cu reîmprospătare
+Conexiuni criptate (TLS); parolele doar ca hash Argon2id; autentificare în doi pași (cod din aplicația
+de autentificare), recomandată specialiștilor; blocare temporară după încercări greșite; sesiuni scurte (15 minute) cu reîmprospătare
 de unică folosință; acces verificat la fiecare cerere (părintele doar la copiii lui, specialistul doar cu
 partajare activă); jurnal de audit; date minimizate prin design. În caz de incident, procedura e în
 [procedura-incident.md](procedura-incident.md).

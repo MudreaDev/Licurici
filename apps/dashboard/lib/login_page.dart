@@ -15,13 +15,18 @@ class LoginPage extends ConsumerStatefulWidget {
 class _LoginPageState extends ConsumerState<LoginPage> {
   final _email = TextEditingController();
   final _password = TextEditingController();
+  final _code = TextEditingController();
   String? _error;
   bool _busy = false;
+
+  /// Contul are 2FA: după parola corectă se cere codul din aplicația de autentificare.
+  bool _askCode = false;
 
   @override
   void dispose() {
     _email.dispose();
     _password.dispose();
+    _code.dispose();
     super.dispose();
   }
 
@@ -33,10 +38,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     try {
       await ref
           .read(serverChildrenProvider.notifier)
-          .signIn(_email.text, _password.text);
+          .signIn(
+            _email.text,
+            _password.text,
+            code: _askCode ? _code.text.trim() : null,
+          );
       if (mounted) context.go('/');
     } on ApiException catch (e) {
-      setState(() => _error = e.message);
+      setState(() {
+        _error = e.message;
+        _askCode |= e.needsTotp;
+      });
     } on Object {
       setState(() => _error = 'Serverul nu răspunde. Încearcă mai târziu.');
     } finally {
@@ -72,10 +84,26 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   autofillHints: const [AutofillHints.password],
                   decoration: InputDecoration(
                     labelText: 'Parolă',
-                    errorText: _error,
+                    errorText: _askCode ? null : _error,
                   ),
                   onSubmitted: (_) => _submit(),
                 ),
+                if (_askCode) ...[
+                  const SizedBox(height: 12),
+                  TextField(
+                    key: const ValueKey('login-code'),
+                    controller: _code,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    autofillHints: const [AutofillHints.oneTimeCode],
+                    maxLength: 6,
+                    decoration: InputDecoration(
+                      labelText: 'Codul din aplicația de autentificare',
+                      errorText: _error,
+                    ),
+                    onSubmitted: (_) => _submit(),
+                  ),
+                ],
                 const SizedBox(height: 20),
                 FilledButton(
                   key: const ValueKey('login-submit'),

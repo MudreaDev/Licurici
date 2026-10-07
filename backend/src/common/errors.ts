@@ -23,6 +23,12 @@ export class UnauthorizedError extends DomainError {
     super(message, 401);
   }
 }
+/** Parola e corectă, dar contul cere și codul din aplicația de autentificare (2FA). */
+export class TotpRequiredError extends DomainError {
+  constructor() {
+    super('Introdu codul din aplicația de autentificare.', 401, ['totp']);
+  }
+}
 export class ForbiddenError extends DomainError {
   constructor(message = 'Acces interzis.') {
     super(message, 403);
