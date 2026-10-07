@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'api.dart';
+import 'download.dart';
 
 /// Ce înseamnă fiecare consimțământ, spus simplu (README §13). Ordinea = ordinea pe ecran.
 const consentTexts = {
@@ -83,16 +84,22 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     });
   }
 
+  /// Exportul complet: pe web se descarcă un fișier JSON; altfel se copiază în clipboard.
   Future<void> _export() => _guard(() async {
     final json = await _api.exportData();
-    await Clipboard.setData(ClipboardData(text: json));
+    final day = DateTime.now().toIso8601String().substring(0, 10);
+    final file = 'licurici-datele-mele-$day.json';
+    final downloaded = await downloadText(file, json);
+    if (!downloaded) await Clipboard.setData(ClipboardData(text: json));
     if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Toate datele tale au fost copiate (JSON). Le poți salva într-un fișier.',
+            downloaded
+                ? 'Toate datele tale au fost descărcate în fișierul $file.'
+                : 'Toate datele tale au fost copiate (JSON). Le poți salva într-un fișier.',
           ),
         ),
       );
@@ -220,7 +227,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                     key: const ValueKey('export-data'),
                     onPressed: _export,
                     icon: const Icon(Icons.download_outlined),
-                    label: const Text('Copiază toate datele mele'),
+                    label: const Text('Descarcă toate datele mele'),
                   ),
                 ),
                 const Divider(height: 40),

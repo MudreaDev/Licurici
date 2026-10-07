@@ -69,7 +69,7 @@ după **7 zile** (perioada în care se poate anula o greșeală, scriind la supo
 ## 7. Drepturile tale
 Acces, rectificare, ștergere, restricționare, opoziție, portabilitate, retragerea consimțământului,
 plângere la autoritate. Majoritatea se exercită direct din panou: **„Contul meu” → Datele mele** (export
-complet JSON), **Șterge profilul** (un copil), **Șterg contul** (cu parola), comutatoarele de acord.
+complet, fișier JSON), **Șterge profilul** (un copil), **Șterg contul** (cu parola), comutatoarele de acord.
 Pentru restul: […e-mail…]. Răspundem în cel mult **o lună** (detalii în
 [procedura-drepturi.md](procedura-drepturi.md)).
 

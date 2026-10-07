@@ -14,8 +14,8 @@ complexe, cu anunțarea motivului în prima lună). **Gratuit.**
 
 | Dreptul | Cum se exercită | Implementare |
 |---|---|---|
-| Acces (art. 15) | „Datele mele” → copiază exportul complet (JSON) | ✅ `GET /me/export` |
-| Portabilitate (art. 20) | Același export, format citibil de mașină | ✅ (🕓 descărcare ca fișier; acum clipboard) |
+| Acces (art. 15) | „Datele mele” → descarcă exportul complet (fișier JSON) | ✅ `GET /me/export` |
+| Portabilitate (art. 20) | Același export, format citibil de mașină | ✅ fișier `licurici-datele-mele-<data>.json` |
 | Rectificare (art. 16) | Poreclă, an, clasă: din aplicație / panou; e-mail: la cerere | 🟨 parțial |
 | Ștergere (art. 17) | „Șterge profilul” (copil); „Șterg contul” (cu parola) | ✅ acces tăiat imediat, definitiv la 7 zile |
 | Retragerea consimțământului (art. 7) | Comutatoarele din „Acordurile mele” | ✅ jurnal append-only |
