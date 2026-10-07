@@ -4,6 +4,7 @@ library;
 export 'src/aac.dart';
 export 'src/aquarium.dart';
 export 'src/aquarium_fish.dart';
+export 'src/paper_scan.dart';
 export 'src/adaptive.dart';
 export 'src/difficulty.dart';
 export 'src/game.dart';
