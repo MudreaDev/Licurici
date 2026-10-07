@@ -116,6 +116,12 @@ class ClockVisual extends Visual {
   final int minute;
 }
 
+/// Bani de numărat: bancnote desenate din cod, cu valoarea în lei pe ele.
+class MoneyVisual extends Visual {
+  const MoneyVisual(this.notes);
+  final List<int> notes;
+}
+
 /// Silueta (umbra) unui obiect; la răspunsul corect se colorează.
 class SilhouetteVisual extends Visual {
   const SilhouetteVisual(this.emoji);

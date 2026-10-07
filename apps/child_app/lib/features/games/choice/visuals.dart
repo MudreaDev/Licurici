@@ -9,6 +9,7 @@ import '../../../app/theme.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/stimulus_art.dart';
+import '../../../shared/ui/candy.dart' show shade;
 import 'choice_game_screen.dart' show wobble;
 
 /// Desenează stimulii unei runde. Fiecare tip are animația lui semnătură (README §15.1):
@@ -44,6 +45,7 @@ class PromptVisuals extends StatelessWidget {
             EmojiVisual() => _BigEmoji(v.emoji, solved: solved),
             FlankerVisual() => _Flanker(v),
             ClockVisual() => _Clock(v),
+            MoneyVisual() => _Money(v),
             SilhouetteVisual() => _BigEmoji(
               v.emoji,
               solved: solved,
@@ -423,6 +425,101 @@ class _Flanker extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Banii: bancnote desenate din cod, fiecare valoare cu culoarea ei (ca bancnotele
+/// adevărate: copilul învață și după culoare), valoarea mare în colț și în mijloc.
+class _Money extends StatelessWidget {
+  const _Money(this.visual);
+
+  final MoneyVisual visual;
+
+  static const _colors = {
+    1: Color(0xFF9CC5A1),
+    2: Color(0xFFA9CBE3),
+    5: Color(0xFFB9A3D6),
+    10: Color(0xFFE79BA8),
+    20: Color(0xFFF2B880),
+    50: Color(0xFFF2CF6B),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final k = VisualScale.of(context);
+    final w = 132 * k, h = 66 * k;
+    final text = Theme.of(context).textTheme.titleLarge!;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: (w + 10) * 3),
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        alignment: WrapAlignment.center,
+        children: [
+          for (final (i, v) in visual.notes.indexed)
+            SizedBox(
+              key: ValueKey('note-$i-$v'),
+              width: w,
+              height: h,
+              child: CustomPaint(
+                painter: _NotePainter(v, _colors[v] ?? Tokens.sun, text),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotePainter extends CustomPainter {
+  _NotePainter(this.value, this.color, this.style);
+
+  final int value;
+  final Color color;
+  final TextStyle style;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final r = RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(size.height * 0.14));
+    canvas.drawRRect(r.shift(const Offset(0, 3)), Paint()..color = const Color(0x22000000));
+    canvas.drawRRect(r, Paint()..color = color);
+    // Chenarul și fâșia de siguranță, ca pe o bancnotă.
+    canvas.drawRRect(
+      r.deflate(size.height * 0.08),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.height * 0.03
+        ..color = Colors.white.withValues(alpha: 0.7),
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(size.width * 0.66, 0, size.width * 0.05, size.height),
+      Paint()..color = Colors.white.withValues(alpha: 0.35),
+    );
+    // Medalionul din stânga (în locul portretului).
+    final c = Offset(size.width * 0.28, size.height / 2);
+    canvas.drawCircle(c, size.height * 0.3, Paint()..color = Colors.white.withValues(alpha: 0.55));
+    canvas.drawCircle(
+      c,
+      size.height * 0.3,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.height * 0.03
+        ..color = shade(color, 0.3),
+    );
+    void label(String t, double fontSize, Offset center) {
+      final tp = TextPainter(
+        text: TextSpan(text: t, style: style.copyWith(fontSize: fontSize, color: shade(color, 0.55), height: 1)),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, center - Offset(tp.width / 2, tp.height / 2));
+    }
+
+    label('$value', size.height * 0.38, c);
+    label('$value', size.height * 0.34, Offset(size.width * 0.84, size.height * 0.38));
+    label('lei', size.height * 0.2, Offset(size.width * 0.84, size.height * 0.72));
+  }
+
+  @override
+  bool shouldRepaint(_NotePainter old) => old.value != value || old.color != color;
 }
 
 /// Ceasul: cadran crem cu cifre, acul mic (ora) gros și scurt, acul mare (minutele) subțire.

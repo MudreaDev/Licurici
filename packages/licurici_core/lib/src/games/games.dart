@@ -10,6 +10,7 @@ import 'logica.dart';
 import 'matematica.dart';
 import 'romana.dart';
 import 'scoala.dart';
+import 'scoala2.dart';
 import 'social.dart';
 import 'vocabular.dart';
 
@@ -19,6 +20,7 @@ export 'logica.dart';
 export 'matematica.dart';
 export 'romana.dart';
 export 'scoala.dart';
+export 'scoala2.dart';
 export 'social.dart';
 export 'vocabular.dart';
 
@@ -41,6 +43,7 @@ const List<GameSpec> allGames = [
   SilabeGame(),
   CuvinteGame(),
   PluralGame(),
+  GramaticaGame(),
   // Matematică
   NumaramGame(),
   ComparamGame(),
@@ -52,6 +55,9 @@ const List<GameSpec> allGames = [
   InmultimGame(),
   ImpartimGame(),
   CeasulGame(),
+  BaniGame(),
+  TablaGame(),
+  ProblemeGame(),
   // Forme & logică
   CuloriGame(),
   FormeGame(),
@@ -62,6 +68,9 @@ const List<GameSpec> allGames = [
   DaNuGame(),
   AnotimpuriGame(),
   HabitateGame(),
+  TrecutGame(),
+  SimboluriGame(),
+  EnglezaGame(),
   CeSeAudeGame(),
   CeImbracGame(),
   CeSimteGame(),
