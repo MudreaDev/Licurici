@@ -59,8 +59,8 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
     },
     {
       provide: GdprService,
-      inject: [ChildAccess, PrismaRepos, getQueueToken(Queues.gdpr)],
-      useFactory: (a: ChildAccess, r: PrismaRepos, queue: Queue) =>
+      inject: [ChildAccess, PrismaRepos, getQueueToken(Queues.gdpr), AuthService],
+      useFactory: (a: ChildAccess, r: PrismaRepos, queue: Queue, auth: AuthService) =>
         new GdprService(a, r.gdpr, {
           // jobId fix → programarea e idempotentă (o a doua cerere nu dublează ștergerea).
           schedulePurge: async (childId, at) => {
@@ -70,7 +70,14 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
               { jobId: `purge-child-${childId}`, delay: Math.max(0, at.getTime() - Date.now()) },
             );
           },
-        }),
+          schedulePurgeAccount: async (userId, at) => {
+            await queue.add(
+              'purge-account',
+              { userId },
+              { jobId: `purge-account-${userId}`, delay: Math.max(0, at.getTime() - Date.now()) },
+            );
+          },
+        }, { confirm: (id, password) => auth.confirmPassword(id, password) }),
     },
     {
       provide: SyncService,

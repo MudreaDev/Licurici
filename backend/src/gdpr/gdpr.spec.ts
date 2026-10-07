@@ -1,6 +1,6 @@
 import type { AuthUser } from '../auth/tokens';
 import { ChildAccess, type ChildRow } from '../children/access';
-import { ForbiddenError, NotFoundError } from '../common/errors';
+import { ForbiddenError, NotFoundError, UnauthorizedError, ValidationError } from '../common/errors';
 import { GdprService, type GdprRepo } from './gdpr';
 
 const CHILD = '0190a1b2-0000-7000-8000-000000000001';
@@ -14,6 +14,8 @@ function setup() {
   let linked = true;
   const audit: string[] = [];
   const purges: [string, Date][] = [];
+  const accountPurges: [string, Date][] = [];
+  const deletedAccounts: string[] = [];
   const repo: GdprRepo = {
     account: async () => ({ email: 'ana@example.md', role: 'PARENT', createdAt: '2026-09-01T00:00:00.000Z' }),
     consentLog: async () => [{ purpose: 'SYNC', granted: true, policyVersion: '2026-10', at: '2026-09-02T00:00:00.000Z' }],
@@ -24,14 +26,28 @@ function setup() {
       child.deletedAt = at;
       linked = false;
     },
+    softDeleteAccount: async (userId) => {
+      deletedAccounts.push(userId);
+      if (userId === child.parentId) child.deletedAt = now;
+      linked = false;
+    },
     audit: async (actor, action) => void audit.push(`${actor}:${action}`),
   };
   const access = new ChildAccess(
     { findChild: async (id) => (id === CHILD ? child : null), hasActiveLink: async () => linked },
     () => now,
   );
-  const gdpr = new GdprService(access, repo, { schedulePurge: async (id, at) => void purges.push([id, at]) }, () => now);
-  return { gdpr, access, audit, purges };
+  const gdpr = new GdprService(
+    access,
+    repo,
+    {
+      schedulePurge: async (id, at) => void purges.push([id, at]),
+      schedulePurgeAccount: async (id, at) => void accountPurges.push([id, at]),
+    },
+    { confirm: async (_id, password) => password === 'parola-corecta' },
+    () => now,
+  );
+  return { gdpr, access, audit, purges, accountPurges, deletedAccounts };
 }
 
 describe('GdprService', () => {
@@ -60,5 +76,28 @@ describe('GdprService', () => {
     const { gdpr } = setup();
     await expect(gdpr.deleteChild(otherParent, CHILD)).rejects.toBeInstanceOf(NotFoundError);
     await expect(gdpr.deleteChild(therapist, CHILD)).rejects.toBeInstanceOf(ForbiddenError);
+  });
+
+  it('ștergerea contului: cere parola; copilul dispare și pentru specialist; ștergere definitivă peste 7 zile', async () => {
+    const { gdpr, access, accountPurges, deletedAccounts, audit } = setup();
+    await expect(gdpr.deleteAccount(parent, { password: 'greșită' })).rejects.toBeInstanceOf(UnauthorizedError);
+    await expect(gdpr.deleteAccount(parent, {})).rejects.toBeInstanceOf(ValidationError);
+    expect(deletedAccounts).toEqual([]);
+    expect(await gdpr.deleteAccount(parent, { password: 'parola-corecta' })).toEqual({
+      purgeAt: '2026-10-08T12:00:00.000Z',
+    });
+    expect(deletedAccounts).toEqual(['p1']);
+    await expect(access.assert(therapist, CHILD, 'read')).rejects.toBeInstanceOf(NotFoundError);
+    expect(accountPurges).toEqual([['p1', new Date('2026-10-08T12:00:00.000Z')]]);
+    expect(audit).toEqual(['p1:gdpr.account.delete']);
+  });
+
+  it('și specialistul își poate șterge contul; administratorul nu, din aplicație', async () => {
+    const { gdpr, deletedAccounts } = setup();
+    await gdpr.deleteAccount(therapist, { password: 'parola-corecta' });
+    expect(deletedAccounts).toEqual(['t1']);
+    await expect(gdpr.deleteAccount({ id: 'a1', role: 'ADMIN' }, { password: 'parola-corecta' })).rejects.toBeInstanceOf(
+      ForbiddenError,
+    );
   });
 });

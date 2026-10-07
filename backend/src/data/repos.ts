@@ -23,6 +23,10 @@ export class PrismaRepos {
       const u = await this.db.user.create({ data });
       return { id: u.id, role: u.role as Role };
     },
+    findById: async (id) => {
+      const u = await this.db.user.findFirst({ where: { id, deletedAt: null } });
+      return u ? { id: u.id, role: u.role as Role, passwordHash: u.passwordHash } : null;
+    },
   };
 
   readonly childAccess: ChildRepo = {
@@ -152,8 +156,15 @@ export class PrismaRepos {
     removeLink: async (childId, therapistId) =>
       (await this.db.careLink.deleteMany({ where: { childId, therapistId } })).count > 0,
     links: async (childId) =>
-      (await this.db.careLink.findMany({ where: { childId }, orderBy: { createdAt: 'asc' } })).map((l) => ({
+      (
+        await this.db.careLink.findMany({
+          where: { childId },
+          orderBy: { createdAt: 'asc' },
+          include: { therapist: { select: { email: true } } },
+        })
+      ).map((l) => ({
         therapistId: l.therapistId,
+        email: l.therapist.email,
         // Partajările vechi fără termen sunt afișate ca expirând „acum” — trebuie reînnoite.
         expiresAt: l.expiresAt ?? new Date(0),
       })),
@@ -186,6 +197,16 @@ export class PrismaRepos {
         birthYear: c.birthYear,
         sessions: c.therapySessions.map((s) => ({ record: s.record, summary: s.summary?.content ?? null })),
       })),
+    softDeleteAccount: async (userId, at) => {
+      await this.db.$transaction([
+        this.db.careLink.deleteMany({ where: { OR: [{ therapistId: userId }, { child: { parentId: userId } }] } }),
+        this.db.child.updateMany({ where: { parentId: userId, deletedAt: null }, data: { deletedAt: at } }),
+        this.db.user.update({
+          where: { id: userId },
+          data: { deletedAt: at, passwordHash: null, email: `sters-${userId}@licurici.invalid` },
+        }),
+      ]);
+    },
     softDeleteChild: async (childId, at) => {
       await this.db.$transaction([
         this.db.child.update({ where: { id: childId }, data: { deletedAt: at } }),

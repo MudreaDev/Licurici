@@ -29,6 +29,9 @@ class MemoryUsers implements UserRepo {
     this.rows.push(row);
     return row;
   }
+  async findById(id: string) {
+    return this.rows.find((r) => r.id === id) ?? null;
+  }
 }
 
 function setup() {
@@ -96,5 +99,15 @@ describe('AuthService', () => {
     const other = new TokenService('y'.repeat(32), new MemoryStore());
     const forged = (await other.issue({ id: 'u1', role: 'ADMIN' })).accessToken;
     expect(() => tokens.verifyAccess(forged)).toThrow(UnauthorizedError);
+  });
+
+  it('cont șters: sesiunea nu se mai reînnoiește; parola se verifică pentru acțiuni ireversibile', async () => {
+    const { auth, users } = setup();
+    const pair = await auth.register(creds);
+    expect(await auth.confirmPassword('u1', 'parola-lunga-1')).toBe(true);
+    expect(await auth.confirmPassword('u1', 'alta-parola-x')).toBe(false);
+    expect(await auth.confirmPassword('nimeni', 'parola-lunga-1')).toBe(false);
+    users.rows.splice(0, 1); // contul a fost marcat șters (findById nu-l mai găsește)
+    await expect(auth.refresh(pair.refreshToken)).rejects.toBeInstanceOf(UnauthorizedError);
   });
 });

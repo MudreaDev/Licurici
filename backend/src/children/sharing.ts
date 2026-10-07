@@ -16,6 +16,8 @@ export const shareSchema = z
 
 export interface Share {
   therapistId: string;
+  /** E-mailul contului de specialist (părintele l-a scris la invitație), ca lista să-l arate. */
+  email?: string;
   expiresAt: Date;
 }
 
@@ -59,7 +61,7 @@ export class SharingService {
     const expiresAt = new Date(this.now().getTime() + days * 24 * 3600 * 1000);
     await this.repo.upsertLink(childId, therapist.id, expiresAt);
     await this.repo.audit(user.id, 'child.share', childId);
-    return { therapistId: therapist.id, expiresAt };
+    return { therapistId: therapist.id, email, expiresAt };
   }
 
   async revoke(user: AuthUser, childId: string, therapistId: string): Promise<void> {

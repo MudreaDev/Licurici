@@ -106,6 +106,12 @@ class ApiClient {
     '  ',
   ).convert(await _send('GET', '/me/export'));
 
+  /// Ștergerea contului (GDPR art. 17): cere parola; întoarce data ștergerii definitive.
+  Future<String> deleteAccount(String password) async =>
+      ((await _send('POST', '/me/delete', body: {'password': password}))
+              as Map)['purgeAt']
+          as String;
+
   /// Ștergerea profilului copilului; întoarce data ștergerii definitive.
   Future<String> deleteChild(String childId) async =>
       ((await _send('DELETE', '/children/$childId')) as Map)['purgeAt']

@@ -27,6 +27,7 @@ class FakeBackend {
   };
   final shares = <Map<String, dynamic>>[];
   bool deleted = false;
+  bool accountDeleted = false;
   final sessions = demoChildren().first.sessions;
 
   http.Response json(Object body, [int status = 200]) => http.Response.bytes(
@@ -116,6 +117,7 @@ class FakeBackend {
         }
         shares.add({
           'therapistId': 't1',
+          'email': 'dr@clinica.md',
           'expiresAt': '2026-12-30T12:00:00.000Z',
         });
         return json(shares.last);
@@ -128,6 +130,13 @@ class FakeBackend {
     }
     if (path == '/me/export') {
       return json({'format': 'licurici-export', 'version': 1, 'children': []});
+    }
+    if (path == '/me/delete' && r.method == 'POST') {
+      if ((jsonDecode(r.body) as Map)['password'] != 'parola-lunga-1') {
+        return json({'statusCode': 401, 'message': 'Parola nu e corectă.'}, 401);
+      }
+      accountDeleted = true;
+      return json({'purgeAt': '2026-10-15T12:00:00.000Z'}, 202);
     }
     if (path == '/children/$childId' && r.method == 'DELETE') {
       deleted = true;
@@ -284,6 +293,8 @@ void main() {
     );
     await invite('dr@clinica.md');
     expect(find.text('Acces până la 2026-12-30'), findsOneWidget);
+    // Lista arată cine e specialistul, nu doar „Specialist”.
+    expect(find.text('dr@clinica.md'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('unshare-t1')));
     await tester.pumpAndSettle();
     expect(find.text('Acces până la 2026-12-30'), findsNothing);
@@ -334,4 +345,42 @@ void main() {
       expect(find.byKey(const ValueKey('delete-$childId')), findsNothing);
     },
   );
+
+  testWidgets('ștergerea contului cere parola; apoi panoul iese din cont', (
+    tester,
+  ) async {
+    final backend = FakeBackend();
+    await pumpDashboard(tester, backend);
+    await signIn(tester, 'parola-lunga-1');
+    await tester.tap(find.byKey(const ValueKey('account')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('delete-account')),
+      200,
+    );
+
+    Future<void> deleteWith(String password) async {
+      await tester.tap(find.byKey(const ValueKey('delete-account')));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const ValueKey('delete-account-password')),
+        password,
+      );
+      await tester.tap(find.byKey(const ValueKey('delete-account-confirm')));
+      await tester.pumpAndSettle();
+    }
+
+    await deleteWith('gresita-123');
+    expect(backend.accountDeleted, isFalse);
+    expect(find.text('Parola nu e corectă.'), findsOneWidget);
+
+    await deleteWith('parola-lunga-1');
+    expect(backend.accountDeleted, isTrue);
+    expect(
+      find.text('Contul a fost șters. Ștergere definitivă la 2026-10-15.'),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('account')), findsNothing);
+    expect(find.byKey(const ValueKey('sign-in')), findsOneWidget);
+  });
 }

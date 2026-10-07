@@ -9,6 +9,10 @@ export interface PurgeChildJob {
   childId: string;
 }
 
+export interface PurgeAccountJob {
+  userId: string;
+}
+
 /**
  * Ștergerea definitivă a unui copil (GDPR art. 17), la finalul perioadei de grație.
  * Șterge doar dacă profilul e încă marcat șters (dacă părintele a anulat, nu face nimic).
@@ -23,10 +27,18 @@ export class GdprProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<PurgeChildJob>): Promise<{ deleted: number }> {
+  async process(job: Job<PurgeChildJob | PurgeAccountJob>): Promise<{ deleted: number }> {
+    if (job.name === 'purge-account') {
+      // Cascada din schemă ia copiii, sesiunile, consimțămintele, dispozitivele, partajările.
+      const { count } = await this.prisma.user.deleteMany({
+        where: { id: (job.data as PurgeAccountJob).userId, deletedAt: { not: null } },
+      });
+      this.log.log(`ștergere definitivă: ${count} cont(uri)`);
+      return { deleted: count };
+    }
     if (job.name !== 'purge-child') return { deleted: 0 };
     const { count } = await this.prisma.child.deleteMany({
-      where: { id: job.data.childId, deletedAt: { not: null } },
+      where: { id: (job.data as PurgeChildJob).childId, deletedAt: { not: null } },
     });
     // Fără id-ul copilului în log (date personale minimizate); doar rezultatul.
     this.log.log(`ștergere definitivă: ${count} profil(e)`);

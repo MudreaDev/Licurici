@@ -154,4 +154,12 @@ export class MeController {
   export(@CurrentUser() user: AuthUser) {
     return this.gdpr.export(user);
   }
+
+  /** Ștergerea contului (GDPR art. 17): cere parola; acces tăiat acum, ștergere definitivă în 7 zile.
+   *  POST, nu DELETE: corpul (parola) trece sigur prin orice proxy. */
+  @Post('delete')
+  @HttpCode(202)
+  remove(@CurrentUser() user: AuthUser, @Body() body: unknown) {
+    return this.gdpr.deleteAccount(user, body);
+  }
 }

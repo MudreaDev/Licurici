@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:go_router/go_router.dart';
+
 import 'api.dart';
 
 /// Ce înseamnă fiecare consimțământ, spus simplu (README §13). Ordinea = ordinea pe ecran.
@@ -135,6 +137,31 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     });
   }
 
+  /// Ștergerea contului: explicație clară, parola din nou, apoi ieșirea din cont.
+  Future<void> _deleteAccount() async {
+    final password = await showDialog<String>(
+      context: context,
+      builder: (_) => const _DeleteAccountDialog(),
+    );
+    if (password == null || password.isEmpty) return;
+    await _guard(() async {
+      final purgeAt = await _api.deleteAccount(password);
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      await ref.read(serverChildrenProvider.notifier).signOut();
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              'Contul a fost șters. Ștergere definitivă la ${purgeAt.substring(0, 10)}.',
+            ),
+          ),
+        );
+      if (mounted) context.go('/');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final consents = _consents;
@@ -218,7 +245,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                                   const <Map<String, dynamic>>[])
                             ListTile(
                               contentPadding: EdgeInsets.zero,
-                              title: const Text('Specialist'),
+                              title: Text(
+                                s['email'] as String? ?? 'Specialist',
+                              ),
                               subtitle: Text(
                                 'Acces până la ${(s['expiresAt'] as String).substring(0, 10)}',
                               ),
@@ -257,10 +286,87 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                       ),
                     ),
                   ),
+                const Divider(height: 40),
+                Text('Contul', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 4),
+                const Text(
+                  'Ștergerea contului ia cu ea profilurile copiilor, sesiunile și partajările. '
+                  'Datele de pe tabletă rămân pe tabletă.',
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    key: const ValueKey('delete-account'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                    onPressed: _deleteAccount,
+                    icon: const Icon(Icons.no_accounts_outlined),
+                    label: const Text('Șterg contul'),
+                  ),
+                ),
               ],
             ),
     );
   }
+}
+
+/// Confirmarea ștergerii contului: ce se întâmplă, apoi parola (ca o sesiune lăsată deschisă
+/// să nu poată șterge contul).
+class _DeleteAccountDialog extends StatefulWidget {
+  const _DeleteAccountDialog();
+
+  @override
+  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+}
+
+class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+  final _password = TextEditingController();
+
+  @override
+  void dispose() {
+    _password.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Ștergi contul?'),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Accesul se oprește imediat, pentru tine și pentru specialiștii cu care ai partajat. '
+          'Datele se șterg definitiv după 7 zile; până atunci poți scrie la suport ca să anulezi. '
+          'Dacă vrei să le păstrezi, copiază-le întâi („Datele mele”).',
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          key: const ValueKey('delete-account-password'),
+          controller: _password,
+          obscureText: true,
+          autofocus: true,
+          decoration: const InputDecoration(labelText: 'Parola contului'),
+          onSubmitted: (v) => Navigator.pop(context, v),
+        ),
+      ],
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Renunță'),
+      ),
+      FilledButton(
+        key: const ValueKey('delete-account-confirm'),
+        style: FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+        onPressed: () => Navigator.pop(context, _password.text),
+        child: const Text('Șterg contul'),
+      ),
+    ],
+  );
 }
 
 /// Dialogul de invitație își ține singur câmpul de text (eliberat abia după animația de închidere).
