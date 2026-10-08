@@ -217,7 +217,12 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
                         sticker: _sticker,
                         actions: [
                           FinishAction('Încă o dată', Icons.replay_rounded, Tokens.primary, () => _again(next: false)),
-                          FinishAction('Mai departe', Icons.arrow_forward_rounded, Tokens.good, () => _again(next: true)),
+                          FinishAction(
+                            'Mai departe',
+                            Icons.arrow_forward_rounded,
+                            Tokens.good,
+                            () => _again(next: true),
+                          ),
                         ],
                       )
                     : !_ready
@@ -270,7 +275,9 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
                   else if (int.tryParse(g.char) case final n? when n > 0)
                     Expanded(flex: 3, child: _Count(n)),
                   if (g.word != null)
-                    FittedBox(child: Text(g.word!, style: text.titleMedium!.copyWith(color: Tokens.ink))),
+                    FittedBox(
+                      child: Text(g.word!, style: text.titleMedium!.copyWith(color: Tokens.ink)),
+                    ),
                 ],
               ),
             ),
@@ -292,51 +299,61 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
       Offset px(math.Point<double> p) => Offset(p.x * field.width, p.y * field.height);
       final at = px(tracker.position);
       final star = math.max(44.0, road * 1.3);
-      return Listener(
-        key: const ValueKey('write-field'),
-        behavior: HitTestBehavior.opaque,
-        onPointerDown: (e) => _down(e.localPosition, field),
-        onPointerMove: (e) => _move(e.localPosition, field),
-        onPointerUp: (_) => _up(),
-        onPointerCancel: (_) => _up(),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: _idle,
-                builder: (context, _) => CustomPaint(
-                  painter: _GlyphPainter(
-                    strokes: [for (final p in paths) [for (final q in p.points) px(q)]],
-                    width: road,
-                    active: _glyphDone ? paths.length : _stroke,
-                    progress: tracker.progress,
-                    guide: _level.axes.guide,
-                    pulse: motion.movement ? _idle.value : 0,
-                    shine: _glyphDone,
+      return Semantics(
+        label: 'Tabla. ${widget.game.instructionFor(_glyph)} Duce steluța cu degetul pe fiecare trăsătură.',
+        child: Listener(
+          key: const ValueKey('write-field'),
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: (e) => _down(e.localPosition, field),
+          onPointerMove: (e) => _move(e.localPosition, field),
+          onPointerUp: (_) => _up(),
+          onPointerCancel: (_) => _up(),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                child: AnimatedBuilder(
+                  animation: _idle,
+                  builder: (context, _) => CustomPaint(
+                    painter: _GlyphPainter(
+                      strokes: [
+                        for (final p in paths) [for (final q in p.points) px(q)],
+                      ],
+                      width: road,
+                      active: _glyphDone ? paths.length : _stroke,
+                      progress: tracker.progress,
+                      guide: _level.axes.guide,
+                      pulse: motion.movement ? _idle.value : 0,
+                      shine: _glyphDone,
+                    ),
                   ),
                 ),
               ),
-            ),
-            if (!_glyphDone)
-              AnimatedBuilder(
-                animation: _idle,
-                builder: (context, child) {
-                  final pulse = !_holding && tracker.progress == 0 && motion.movement
-                      ? 1 + 0.1 * math.sin(_idle.value * 2 * math.pi)
-                      : 1.0;
-                  return Positioned(
-                    left: at.dx - star / 2,
-                    top: at.dy - star / 2,
-                    width: star,
-                    height: star,
-                    child: IgnorePointer(child: Transform.scale(scale: (_holding ? 1.15 : 1) * pulse, child: child)),
-                  );
-                },
-                child: CustomPaint(painter: _StarPainter()),
-              ),
-            if (motion.particles) Positioned.fill(child: IgnorePointer(child: StarBurst(trigger: _burst, count: 14))),
-          ],
+              if (!_glyphDone)
+                AnimatedBuilder(
+                  animation: _idle,
+                  builder: (context, child) {
+                    final pulse = !_holding && tracker.progress == 0 && motion.movement
+                        ? 1 + 0.1 * math.sin(_idle.value * 2 * math.pi)
+                        : 1.0;
+                    return Positioned(
+                      left: at.dx - star / 2,
+                      top: at.dy - star / 2,
+                      width: star,
+                      height: star,
+                      child: IgnorePointer(
+                        child: Transform.scale(scale: (_holding ? 1.15 : 1) * pulse, child: child),
+                      ),
+                    );
+                  },
+                  child: CustomPaint(painter: _StarPainter()),
+                ),
+              if (motion.particles)
+                Positioned.fill(
+                  child: IgnorePointer(child: StarBurst(trigger: _burst, count: 14)),
+                ),
+            ],
+          ),
         ),
       );
     },
@@ -440,12 +457,18 @@ class _GlyphPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
     // Șanțurile (tot semnul), ca o urmă de cretă.
     for (final s in strokes) {
-      canvas.drawPath(_path(s), round
-        ..strokeWidth = width
-        ..color = const Color(0x33FFFFFF));
-      canvas.drawPath(_path(s), round
-        ..strokeWidth = width * 0.12
-        ..color = const Color(0x22FFFFFF));
+      canvas.drawPath(
+        _path(s),
+        round
+          ..strokeWidth = width
+          ..color = const Color(0x33FFFFFF),
+      );
+      canvas.drawPath(
+        _path(s),
+        round
+          ..strokeWidth = width * 0.12
+          ..color = const Color(0x22FFFFFF),
+      );
     }
     // Trăsăturile scrise și cea de acum, până unde a ajuns.
     for (var i = 0; i < strokes.length && i <= active; i++) {
@@ -454,16 +477,25 @@ class _GlyphPainter extends CustomPainter {
       final col = _chalk[i % _chalk.length];
       final p = _path(strokes[i], done ? null : progress);
       if (shine) {
-        canvas.drawPath(p, round
-          ..strokeWidth = width * 1.5
-          ..color = col.withValues(alpha: 0.35));
+        canvas.drawPath(
+          p,
+          round
+            ..strokeWidth = width * 1.5
+            ..color = col.withValues(alpha: 0.35),
+        );
       }
-      canvas.drawPath(p, round
-        ..strokeWidth = width * 0.62
-        ..color = col);
-      canvas.drawPath(p.shift(Offset(-width * 0.08, -width * 0.08)), round
-        ..strokeWidth = width * 0.16
-        ..color = Colors.white.withValues(alpha: 0.55));
+      canvas.drawPath(
+        p,
+        round
+          ..strokeWidth = width * 0.62
+          ..color = col,
+      );
+      canvas.drawPath(
+        p.shift(Offset(-width * 0.08, -width * 0.08)),
+        round
+          ..strokeWidth = width * 0.16
+          ..color = Colors.white.withValues(alpha: 0.55),
+      );
     }
     if (active >= strokes.length) return;
     final s = strokes[active];
@@ -553,7 +585,10 @@ class _Count extends StatelessWidget {
           alignment: WrapAlignment.center,
           children: [
             for (var i = 0; i < n; i++)
-              SizedBox.square(dimension: side, child: CustomPaint(painter: _StarPainter())),
+              SizedBox.square(
+                dimension: side,
+                child: CustomPaint(painter: _StarPainter()),
+              ),
           ],
         ),
       );

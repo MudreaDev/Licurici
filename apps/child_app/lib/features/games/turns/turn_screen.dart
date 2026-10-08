@@ -255,7 +255,12 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                         sticker: _sticker,
                         actions: [
                           FinishAction('Încă o dată', Icons.replay_rounded, Tokens.primary, () => _again(next: false)),
-                          FinishAction('Mai departe', Icons.arrow_forward_rounded, Tokens.good, () => _again(next: true)),
+                          FinishAction(
+                            'Mai departe',
+                            Icons.arrow_forward_rounded,
+                            Tokens.good,
+                            () => _again(next: true),
+                          ),
                         ],
                       )
                     : _board(motion, layout),
@@ -286,35 +291,39 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                   children: [
                     _Badge(active: childTurn || _who == _Who.pass, label: 'Tu', icon: Icons.back_hand_rounded),
                     SizedBox(height: layout.compact ? 6 : 14),
-                    GestureDetector(
-                      key: const ValueKey('turn-tray'),
-                      behavior: HitTestBehavior.opaque,
-                      onTap: _childPlace,
-                      onPanEnd: (_) => _childPlace(),
-                      child: Juice(
-                        enabled: motion.movement,
-                        shakeTick: _shake,
-                        child: SizedBox.square(
-                          dimension: side * 0.7,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              CandyPanel(
-                                padding: EdgeInsets.zero,
-                                radius: side * 0.12,
-                                child: const SizedBox.expand(),
-                              ),
-                              AnimatedOpacity(
-                                opacity: childTurn && !_flying ? 1 : (_who == _Who.licurici ? 0.35 : 0),
-                                duration: motion.d(200),
-                                child: _Pulse(
-                                  enabled: motion.movement && childTurn,
-                                  child: _Block(color: nextColor, size: side * 0.22, mine: true),
+                    Semantics(
+                      button: true,
+                      label: childTurn ? 'Cubul tău. Pune-l pe turn.' : 'Cubul tău. Așteaptă rândul tău.',
+                      child: GestureDetector(
+                        key: const ValueKey('turn-tray'),
+                        behavior: HitTestBehavior.opaque,
+                        onTap: _childPlace,
+                        onPanEnd: (_) => _childPlace(),
+                        child: Juice(
+                          enabled: motion.movement,
+                          shakeTick: _shake,
+                          child: SizedBox.square(
+                            dimension: side * 0.7,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                CandyPanel(
+                                  padding: EdgeInsets.zero,
+                                  radius: side * 0.12,
+                                  child: const SizedBox.expand(),
                                 ),
-                              ),
-                              if (_who == _Who.licurici)
-                                Icon(Icons.front_hand_rounded, size: side * 0.3, color: const Color(0xCC8A9BB0)),
-                            ],
+                                AnimatedOpacity(
+                                  opacity: childTurn && !_flying ? 1 : (_who == _Who.licurici ? 0.35 : 0),
+                                  duration: motion.d(200),
+                                  child: _Pulse(
+                                    enabled: motion.movement && childTurn,
+                                    child: _Block(color: nextColor, size: side * 0.22, mine: true),
+                                  ),
+                                ),
+                                if (_who == _Who.licurici)
+                                  Icon(Icons.front_hand_rounded, size: side * 0.3, color: const Color(0xCC8A9BB0)),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -359,7 +368,9 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                       size: side * 0.62,
                       mood: _who == _Who.done && _placed > 0
                           ? MascotMood.celebrate
-                          : (_who == _Who.licurici ? (_thinking ? MascotMood.think : MascotMood.happy) : MascotMood.idle),
+                          : (_who == _Who.licurici
+                                ? (_thinking ? MascotMood.think : MascotMood.happy)
+                                : MascotMood.idle),
                     ),
                     AnimatedOpacity(
                       opacity: _who == _Who.licurici && !_flying ? 1 : 0,
@@ -388,7 +399,10 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                 ),
               ),
             ),
-          if (motion.particles) Positioned.fill(child: IgnorePointer(child: StarBurst(trigger: _burst, count: 18))),
+          if (motion.particles)
+            Positioned.fill(
+              child: IgnorePointer(child: StarBurst(trigger: _burst, count: 18)),
+            ),
         ],
       );
     },

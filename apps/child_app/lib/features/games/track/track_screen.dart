@@ -134,10 +134,12 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
     _result = null;
     _sticker = null;
     _phase = _Phase.loading;
-    unawaited(_loadImages().then((_) {
-      if (!mounted) return;
-      _beginTrial();
-    }));
+    unawaited(
+      _loadImages().then((_) {
+        if (!mounted) return;
+        _beginTrial();
+      }),
+    );
   }
 
   /// Peștii colorați de copil, pe modele: peștele lui de urmărit poate fi chiar desenul lui.
@@ -191,18 +193,19 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
       final id = 'f$i';
       final start = f.path.first;
       final at = _toTank(start);
-      final fish = SwimmingFish(
-        id: id,
-        species: f.species,
-        length: f.species == 'balon' ? 0.21 : 0.24,
-        cruise: 0.13 * _level.axes.speed,
-        at: at,
-        z: start.z,
-        yaw: at.x < _width / 2 ? 0 : math.pi,
-        liveliness: fishSpeciesById(f.species)!.swim,
-      )
-        ..autopilot = false
-        ..mode = FishMode.rest;
+      final fish =
+          SwimmingFish(
+              id: id,
+              species: f.species,
+              length: f.species == 'balon' ? 0.21 : 0.24,
+              cruise: 0.13 * _level.axes.speed,
+              at: at,
+              z: start.z,
+              yaw: at.x < _width / 2 ? 0 : math.pi,
+              liveliness: fishSpeciesById(f.species)!.swim,
+            )
+            ..autopilot = false
+            ..mode = FishMode.rest;
       fish
         ..target = fish.pos
         ..targetZ = fish.z;
@@ -214,7 +217,11 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
       // Peștele copilului: desenul lui, dacă are unul de același model (și peștii nu trebuie
       // să fie identici — acolo toți arată la fel).
       final mine = i == _trial.target && _level.axes.similarity != TrackSimilarity.identical ? _mine[f.species] : null;
-      owned[id] = OwnedFish(AquariumEntry(id: id, species: f.species, created: DateTime(2026)), s, mine ?? _images[_key(f)]!);
+      owned[id] = OwnedFish(
+        AquariumEntry(id: id, species: f.species, created: DateTime(2026)),
+        s,
+        mine ?? _images[_key(f)]!,
+      );
     }
     setState(() {
       _sim = sim;
@@ -327,7 +334,12 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
     if (_phase != _Phase.answer) return;
     _cancel();
     _rt.stop();
-    final r = TrackResponse(_trial, chosen: chosen, rtMs: chosen == null ? null : _rt.elapsedMilliseconds, earlyTaps: _early);
+    final r = TrackResponse(
+      _trial,
+      chosen: chosen,
+      rtMs: chosen == null ? null : _rt.elapsedMilliseconds,
+      earlyTaps: _early,
+    );
     _responses.add(r);
     final target = 'f${_trial.target}';
     setState(() {
@@ -392,21 +404,24 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
               fit: StackFit.expand,
               children: [
                 if (_sim != null && result == null)
-                  GestureDetector(
-                    key: const ValueKey('track-field'),
-                    behavior: HitTestBehavior.opaque,
-                    onTapDown: (d) => _tap(d.localPosition),
-                    child: RepaintBoundary(
-                      child: CustomPaint(
-                        size: Size.infinite,
-                        painter: TrackFishPainter(
-                          sim: _sim!,
-                          fish: _owned,
-                          time: _time,
-                          glow: _glow,
-                          glowSince: _glowSince,
-                          picked: _picked,
-                          pickedRight: _pickedRight,
+                  Semantics(
+                    label: 'Acvariul. Urmărește peștele tău și atinge-l când se oprește.',
+                    child: GestureDetector(
+                      key: const ValueKey('track-field'),
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (d) => _tap(d.localPosition),
+                      child: RepaintBoundary(
+                        child: CustomPaint(
+                          size: Size.infinite,
+                          painter: TrackFishPainter(
+                            sim: _sim!,
+                            fish: _owned,
+                            time: _time,
+                            glow: _glow,
+                            glowSince: _glowSince,
+                            picked: _picked,
+                            pickedRight: _pickedRight,
+                          ),
                         ),
                       ),
                     ),
@@ -422,8 +437,18 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
                                 stars: result.stars,
                                 sticker: _sticker,
                                 actions: [
-                                  FinishAction('Încă o dată', Icons.replay_rounded, Tokens.primary, () => _again(next: false)),
-                                  FinishAction('Mai departe', Icons.arrow_forward_rounded, Tokens.good, () => _again(next: true)),
+                                  FinishAction(
+                                    'Încă o dată',
+                                    Icons.replay_rounded,
+                                    Tokens.primary,
+                                    () => _again(next: false),
+                                  ),
+                                  FinishAction(
+                                    'Mai departe',
+                                    Icons.arrow_forward_rounded,
+                                    Tokens.good,
+                                    () => _again(next: true),
+                                  ),
                                 ],
                               ),
                       ),
@@ -501,11 +526,12 @@ class TrackFishPainter extends CustomPainter {
           c,
           r,
           Paint()
-            ..shader = ui.Gradient.radial(c, r, [
-              Color.fromRGBO(255, 236, 150, 0.75 * k),
-              Color.fromRGBO(255, 214, 90, 0.3 * k),
-              const Color(0x00FFD65A),
-            ], const [0, 0.55, 1]),
+            ..shader = ui.Gradient.radial(
+              c,
+              r,
+              [Color.fromRGBO(255, 236, 150, 0.75 * k), Color.fromRGBO(255, 214, 90, 0.3 * k), const Color(0x00FFD65A)],
+              const [0, 0.55, 1],
+            ),
         );
       }
       if (f.id == picked && !pickedRight) {
