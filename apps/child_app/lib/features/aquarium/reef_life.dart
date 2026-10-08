@@ -70,19 +70,43 @@ abstract final class Caustics {
 
 /// Desenează causticele în [area], cu două straturi care se mișcă în sensuri diferite.
 /// [squash] turtește rețeaua pe verticală (pe fund, în perspectivă).
-void paintCaustics(Canvas canvas, Rect area, double t, double h, {double alpha = 0.3, double squash = 0.45, double scale = 1}) {
+/// Desenează causticele în benzile [bands] ale zonei [area] (fiecare bandă cu intensitatea
+/// ei), cu două straturi care se mișcă în sensuri diferite. Cele două shadere se fac o dată
+/// pe apel, nu pe bandă. [squash] turtește rețeaua pe verticală (pe fund, în perspectivă).
+void paintCaustics(
+  Canvas canvas,
+  Rect area,
+  double t,
+  double h, {
+  required List<(Rect, double)> bands,
+  double squash = 0.45,
+  double scale = 1,
+}) {
   final img = Caustics.image;
   if (img == null) return;
   final s = h * 0.55 * scale / img.width;
-  for (final (dx, dy, k, a) in [(t * 9.0, t * 3.0, 1.0, alpha), (-t * 7.0, t * 4.5, 0.77, alpha * 0.8)]) {
-    final m = Matrix4Storage.scaleTranslate(s * k, s * k * squash, dx * h / 300, dy * h / 300 + area.top);
-    canvas.drawRect(
-      area,
-      Paint()
-        ..blendMode = BlendMode.plus
-        ..color = Color.fromRGBO(255, 255, 255, a)
-        ..shader = ui.ImageShader(img, TileMode.repeated, TileMode.repeated, m),
-    );
+  final layers = [
+    for (final (dx, dy, k, a) in [(t * 9.0, t * 3.0, 1.0, 1.0), (-t * 7.0, t * 4.5, 0.77, 0.8)])
+      (
+        ui.ImageShader(
+          img,
+          TileMode.repeated,
+          TileMode.repeated,
+          Matrix4Storage.scaleTranslate(s * k, s * k * squash, dx * h / 300, dy * h / 300 + area.top),
+        ),
+        a,
+      ),
+  ];
+  final paint = Paint()..blendMode = BlendMode.plus;
+  for (final (strip, alpha) in bands) {
+    for (final (shader, a) in layers) {
+      canvas.drawRect(
+        strip,
+        paint
+          ..shader = shader
+          ..color = Color.fromRGBO(255, 255, 255, alpha * a),
+      );
+    }
   }
 }
 
@@ -167,13 +191,19 @@ class ReefAmbiencePainter extends CustomPainter {
     final floorArea = Rect.fromLTWH(0, h * 0.74, w, h * 0.26);
     canvas.save();
     canvas.clipPath(floorPath(size));
-    for (var i = 0; i < 6; i++) {
-      final strip = Rect.fromLTWH(0, floorArea.top + floorArea.height * i / 6, w, floorArea.height / 6 + 1);
-      canvas.save();
-      canvas.clipRect(strip);
-      paintCaustics(canvas, floorArea, t, h, alpha: 0.05 + 0.15 * math.min(1.0, i / 3));
-      canvas.restore();
-    }
+    paintCaustics(
+      canvas,
+      floorArea,
+      t,
+      h,
+      bands: [
+        for (var i = 0; i < 6; i++)
+          (
+            Rect.fromLTWH(0, floorArea.top + floorArea.height * i / 6, w, floorArea.height / 6 + 1),
+            0.05 + 0.15 * math.min(1.0, i / 3),
+          ),
+      ],
+    );
     canvas.restore();
 
     // Alge la mijlocul adâncimii.
@@ -218,13 +248,15 @@ class ReefAmbiencePainter extends CustomPainter {
       Paint()..shader = ui.Gradient.linear(Offset.zero, Offset(0, h * 0.075), const [Color(0x77FFFFFF), Color(0x00FFFFFF)]),
     );
     // Rețeaua valurilor se vede doar sus și se stinge în jos (benzi tot mai slabe).
-    for (var i = 0; i < 4; i++) {
-      final strip = Rect.fromLTWH(0, band.height * i / 4, w, band.height / 4 + 1);
-      canvas.save();
-      canvas.clipRect(strip);
-      paintCaustics(canvas, band, t * 1.4, h, alpha: 0.3 * (1 - i / 4), squash: 0.2, scale: 0.8);
-      canvas.restore();
-    }
+    paintCaustics(
+      canvas,
+      band,
+      t * 1.4,
+      h,
+      squash: 0.2,
+      scale: 0.8,
+      bands: [for (var i = 0; i < 4; i++) (Rect.fromLTWH(0, band.height * i / 4, w, band.height / 4 + 1), 0.3 * (1 - i / 4))],
+    );
     // Marginea de jos a suprafeței, unduită (unde se termină „oglinda” apei).
     final edge = Path()..moveTo(0, 0);
     for (var x = 0.0; x <= w + 10; x += 10) {
