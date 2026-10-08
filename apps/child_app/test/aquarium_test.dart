@@ -85,6 +85,17 @@ void main() {
       expect(hand, findsOneWidget);
       if (shots) await expectLater(find.byType(AquariumScreen), matchesGoldenFile('shots/acvariu-indiciu-$device.png'));
 
+      // Noaptea: apa se întunecă, degetul ținut e lanterna; apoi iar zi.
+      await tester.tap(find.byKey(const ValueKey('night')));
+      await settle(tester, 10);
+      await tester.startGesture(tester.getCenter(find.byType(AquariumScreen))).then((g) async {
+        await tester.pump(const Duration(milliseconds: 700));
+        if (shots) await expectLater(find.byType(AquariumScreen), matchesGoldenFile('shots/acvariu-noapte-$device.png'));
+        await g.up();
+      });
+      await tester.tap(find.byKey(const ValueKey('night')));
+      await settle(tester, 2);
+
       // Atingere, apăsare lungă și mâncare: nimic nu se strică.
       final tank = tester.getCenter(find.byType(AquariumScreen));
       await tester.tapAt(tank);

@@ -25,6 +25,7 @@ import 'aquarium_store.dart';
 import 'paper_scan_flow.dart';
 import 'paper_sheet.dart';
 import 'reef_life.dart';
+import 'reef_night.dart';
 import 'reef_scene.dart';
 import 'tank_painter.dart';
 
@@ -47,6 +48,11 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   final _time = ValueNotifier<double>(0);
   final _ambient = ValueNotifier<double>(0);
   final _gather = ValueNotifier<math.Point<double>?>(null);
+
+  /// Noaptea (0 = zi, 1 = noapte), trecere lină; degetul ținut e lanterna (pixeli).
+  final _night = ValueNotifier<double>(0);
+  final _finger = ValueNotifier<Offset?>(null);
+  bool _nightOn = false;
   final _fx = <TankFx>[];
   final _chest = ReefChest();
   Size _size = Size.zero;
@@ -82,6 +88,8 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     _time.dispose();
     _ambient.dispose();
     _gather.dispose();
+    _night.dispose();
+    _finger.dispose();
     super.dispose();
   }
 
@@ -91,6 +99,8 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     _last = elapsed;
     // Timpul „de ceas” (pentru indicii): nu se taie la 50 ms ca pasul simulării.
     _wall += math.min(raw, 1.0);
+    final dusk = (_nightOn ? 1.0 : 0.0) - _night.value;
+    if (dusk.abs() > 0.001) _night.value += dusk * math.min(1.0, math.min(raw, 0.1) * 2.5);
     final sim = _sim;
     if (sim == null) return;
     final g = _gather.value;
@@ -280,6 +290,13 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     ref.read(voiceProvider).say([says]);
   }
 
+  /// Zi ↔ noapte. Noaptea, degetul ținut pe apă e o lanternă: peștii vin la lumină.
+  void _toggleNight() {
+    setState(() => _nightOn = !_nightOn);
+    ref.read(sfxProvider).play(Sfx.tap);
+    ref.read(voiceProvider).say([_nightOn ? 'Noapte bună, peștișori!' : 'Bună dimineața, peștișori!']);
+  }
+
   /// Copilul a atins ecranul: indiciul pleacă, numărătoarea reîncepe.
   void _touched() {
     _idleSince = _wall;
@@ -338,14 +355,20 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                           _touched();
                           _usedGather = true;
                           _gather.value = _toTank(d.localPosition);
+                          _finger.value = d.localPosition;
                         },
-                        onLongPressMoveUpdate: (d) => _gather.value = _toTank(d.localPosition),
+                        onLongPressMoveUpdate: (d) {
+                          _gather.value = _toTank(d.localPosition);
+                          _finger.value = d.localPosition;
+                        },
                         onLongPressEnd: (_) {
                           _gather.value = null;
+                          _finger.value = null;
                           _sim!.release();
                         },
                         onLongPressCancel: () {
                           _gather.value = null;
+                          _finger.value = null;
                           _sim?.release();
                         },
                         child: RepaintBoundary(
@@ -355,6 +378,13 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                           ),
                         ),
                       ),
+              ),
+              IgnorePointer(
+                child: RepaintBoundary(
+                  child: CustomPaint(
+                    painter: ReefNightPainter(time: _ambient, night: _night, finger: _finger, chest: _chest),
+                  ),
+                ),
               ),
               if (_hint case final h?)
                 _HandHint(
@@ -370,6 +400,14 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          BarButton(
+                            key: const ValueKey('night'),
+                            icon: _nightOn ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+                            color: _nightOn ? const Color(0xFFF2C14E) : const Color(0xFF4B5A9C),
+                            label: _nightOn ? 'Zi' : 'Noapte',
+                            onTap: _toggleNight,
+                          ),
+                          const SizedBox(width: 10),
                           BarButton(
                             key: const ValueKey('print-sheets'),
                             icon: Icons.print_rounded,
