@@ -294,7 +294,9 @@ class _LanternMapScreenState extends ConsumerState<LanternMapScreen> with Single
 
   /// Unde stau stațiile și felinarele: pe o cărare care urcă și coboară lin.
   _Spots _layout(List<MapStation> stations, double h) {
-    double y(double x) => h * (0.6 + 0.12 * math.sin(x / 300));
+    // Cărarea urcă și coboară lin; stațiile (cerc + nume) încap mereu deasupra marginii de jos.
+    final r = math.min(h * 0.13, 70.0);
+    double y(double x) => math.min(h * (0.56 + 0.1 * math.sin(x / 300)), h - r - 48);
     final st = <Offset>[], lt = <List<Offset>>[];
     for (final (i, s) in stations.indexed) {
       final x = _lead + i * _stationGap;
