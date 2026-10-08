@@ -53,7 +53,7 @@ class FormaAscunsaGame extends ChoiceGame {
       : super(
           id: 'forma-ascunsa',
           name: 'Forma ascunsă',
-          emoji: '🔍',
+          emoji: '🔎',
           description: 'Găsește forma din desen',
           subject: Subject.forme,
           gradeCodes: 'G1234',

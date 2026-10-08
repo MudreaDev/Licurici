@@ -114,7 +114,7 @@ class TurnGame {
 
   String get id => 'pe-rand';
   String get name => 'Rândul meu, rândul tău';
-  String get emoji => '🧱';
+  String get emoji => '🤝';
   String get description => 'Construim turnul pe rând';
   Set<Grade> get grades => Grade.parseCodes('G1');
   List<String> get steps => const ['EMO7'];

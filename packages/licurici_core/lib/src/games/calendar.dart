@@ -30,7 +30,7 @@ class CalendarGame extends ChoiceGame {
       : super(
           id: 'calendar',
           name: 'Zilele și lunile',
-          emoji: '📅',
+          emoji: '🗓️',
           description: 'Săptămâna și anul',
           subject: Subject.timpBani,
           gradeCodes: 'G12',
