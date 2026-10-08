@@ -41,7 +41,7 @@ class WriteScreen extends ConsumerStatefulWidget {
   ConsumerState<WriteScreen> createState() => _WriteScreenState();
 }
 
-class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProviderStateMixin {
+class _WriteScreenState extends ConsumerState<WriteScreen> with TickerProviderStateMixin {
   late WritingLevel _level;
   late final _idle = AnimationController(vsync: this, duration: const Duration(milliseconds: 1600));
   final _runs = <WritingRun>[];
@@ -60,6 +60,11 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
   String? _sticker;
   Timer? _timer;
 
+  /// Modelul: dacă copilul nu începe trăsătura, steluța o arată singură (o dată sau de două ori).
+  late final _demo = AnimationController(vsync: this, duration: const Duration(milliseconds: 2200));
+  Timer? _demoTimer;
+  int _demos = 0;
+
   Glyph get _glyph => _level.glyphs[_index];
 
   @override
@@ -70,6 +75,8 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
 
   @override
   void dispose() {
+    _demoTimer?.cancel();
+    _demo.dispose();
     _timer?.cancel();
     _idle.dispose();
     super.dispose();
@@ -101,6 +108,35 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
       ..reset()
       ..start();
     ref.read(voiceProvider).say([widget.game.instructionFor(_glyph)]);
+    _demos = 0;
+    _armDemo();
+  }
+
+  /// Peste câteva secunde fără început, steluța arată drumul trăsăturii de acum.
+  void _armDemo() {
+    _demoTimer?.cancel();
+    if (_demos >= 2) return;
+    _demoTimer = Timer(const Duration(seconds: 6), () {
+      if (!mounted || _glyphDone || _holding || (_tracker?.progress ?? 0) > 0) return;
+      _demos++;
+      ref.read(voiceProvider).say(['Uite așa.']);
+      _demo.forward(from: 0).whenComplete(() {
+        if (!mounted) return;
+        _demo.value = 0;
+        setState(() {});
+        _armDemo();
+      });
+      setState(() {});
+    });
+  }
+
+  void _stopDemo() {
+    _demoTimer?.cancel();
+    if (_demo.isAnimating || _demo.value > 0) {
+      _demo
+        ..stop()
+        ..value = 0;
+    }
   }
 
   List<TracePath> _pathsFor(Size field) {
@@ -122,6 +158,7 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
 
   void _down(Offset pos, Size field) {
     if (_glyphDone || _result != null) return;
+    _stopDemo();
     final grabbed = _trackerFor(field).down(pos.dx / field.width, pos.dy / field.height);
     setState(() => _holding = grabbed);
   }
@@ -149,9 +186,12 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
         _stroke++;
         _tracker = TraceTracker(_paths![_stroke], width: _level.axes.width, aspect: field.width / field.height);
       });
+      _demos = 0;
+      _armDemo();
       return;
     }
     _glyphDone = true;
+    _stopDemo();
     _runs.add(WritingRun(_glyph, List.of(_strokeRuns), ms: _clock.elapsedMilliseconds));
     ref.read(sfxProvider).play(Sfx.correct);
     setState(() => _burst++);
@@ -322,6 +362,24 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
                   ),
                 ),
               ),
+              // Modelul: steluța-fantomă care merge singură pe trăsătură.
+              if (!_glyphDone)
+                AnimatedBuilder(
+                  animation: _demo,
+                  builder: (context, child) {
+                    if (_demo.value == 0) return const SizedBox.shrink();
+                    final pts = paths[_stroke].points;
+                    final q = px(pts[(Curves.easeInOut.transform(_demo.value) * (pts.length - 1)).round()]);
+                    return Positioned(
+                      left: q.dx - star * 0.45,
+                      top: q.dy - star * 0.45,
+                      width: star * 0.9,
+                      height: star * 0.9,
+                      child: IgnorePointer(key: const ValueKey('write-demo'), child: Opacity(opacity: 0.6, child: child)),
+                    );
+                  },
+                  child: CustomPaint(painter: _StarPainter()),
+                ),
               if (!_glyphDone)
                 AnimatedBuilder(
                   animation: _idle,

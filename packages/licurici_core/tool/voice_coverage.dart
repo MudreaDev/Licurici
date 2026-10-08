@@ -26,6 +26,8 @@ const uiPhrases = [
   'Ascultă bine și atinge în aceeași ordine.',
   'Mai ascultă o dată.',
   'Uite, în ordinea asta.',
+  // Scriem cifrele / literele (modelul)
+  'Uite așa.',
   // Rândul meu, rândul tău
   'Construim un turn. Pe rând: o dată tu, o dată eu.',
   'Rândul tău.',

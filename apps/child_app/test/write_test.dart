@@ -47,6 +47,12 @@ void main() {
         final level = game.generate(5, seed: 3);
         final field = find.byKey(const ValueKey('write-field'));
         expect(field, findsOneWidget);
+        // Fără nicio atingere 6 s: steluța arată singură trăsătura (modelul).
+        expect(find.byKey(const ValueKey('write-demo')), findsNothing);
+        await tester.pump(const Duration(seconds: 6));
+        await tester.pump(const Duration(milliseconds: 600));
+        expect(find.byKey(const ValueKey('write-demo')), findsOneWidget);
+        await tester.pump(const Duration(seconds: 2));
         for (final (i, g) in level.glyphs.indexed) {
           final box = tester.getRect(field);
           final paths = g.fit(box.width / box.height, height: 0.78);
