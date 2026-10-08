@@ -68,7 +68,7 @@ class FakeServer {
     if (path == '/children/$serverChild/plan' && r.method == 'PUT') {
       final hidden = ((body as Map)['hiddenGames'] as List).cast<String>();
       planPuts.add(hidden);
-      lastPutLevels = (body as Map)['levels'];
+      lastPutLevels = body['levels'];
       plan = {'hiddenGames': hidden, 'updatedAt': '2026-10-09T10:00:00.000Z', 'updatedBy': 'PARENT'};
       return json(plan);
     }
