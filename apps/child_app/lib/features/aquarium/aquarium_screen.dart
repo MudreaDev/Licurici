@@ -12,7 +12,6 @@ import 'package:printing/printing.dart';
 
 import '../../app/layout.dart';
 import '../../app/theme.dart';
-import '../../shared/illustration.dart';
 import '../../shared/mascot.dart';
 import '../../shared/motion.dart';
 import '../../shared/sfx.dart';
@@ -24,7 +23,8 @@ import '../settings/settings.dart';
 import 'aquarium_store.dart';
 import 'paper_scan_flow.dart';
 import 'paper_sheet.dart';
-import 'reef.dart';
+import 'reef_life.dart';
+import 'reef_scene.dart';
 import 'tank_painter.dart';
 
 /// Acvariul copilului (`/acvariu`, README §2): peștii colorați de el înoată liber.
@@ -47,6 +47,8 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   final _ambient = ValueNotifier<double>(0);
   final _gather = ValueNotifier<math.Point<double>?>(null);
   final _fx = <TankFx>[];
+  final _chest = ReefChest();
+  Size _size = Size.zero;
   late final Ticker _ticker = createTicker(_tick);
   Aquarium? _sim;
   var _owned = <String, OwnedFish>{};
@@ -63,6 +65,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   void initState() {
     super.initState();
     _ticker.start();
+    unawaited(Caustics.load());
   }
 
   @override
@@ -110,10 +113,12 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
         SwimmingFish(
           id: o.entry.id,
           species: o.species.id,
-          length: 0.2 + rnd.nextDouble() * 0.05 - (o.species.id == 'balon' ? 0.03 : 0),
-          cruise: 0.09 + rnd.nextDouble() * 0.04,
+          length: 0.24 + rnd.nextDouble() * 0.05 - (o.species.id == 'balon' ? 0.03 : 0),
+          cruise: 0.1 + rnd.nextDouble() * 0.04,
           liveliness: o.species.swim,
           at: math.Point(0.2 + rnd.nextDouble() * (width - 0.4), Aquarium.top + 0.1 + rnd.nextDouble() * 0.45),
+          z: 0.1 + rnd.nextDouble() * 0.6,
+          yaw: rnd.nextBool() ? 0 : math.pi,
         ),
         diveIn: dive,
       );
@@ -258,68 +263,44 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
       body: LayoutBuilder(
         builder: (context, c) {
           _height = c.maxHeight;
+          _size = c.biggest;
           if (list != null) _sync(list, c.maxWidth / c.maxHeight);
           return Stack(
             fit: StackFit.expand,
             children: [
-              // Fundalul pictat (când există) sau recif desenat din cod.
-              RepaintBoundary(
-                child: Image(
-                  image: illustration('scenes/aquarium_back'),
-                  fit: BoxFit.cover,
-                  alignment: Alignment.bottomCenter,
-                  excludeFromSemantics: true,
-                  errorBuilder: (_, _, _) => const CustomPaint(painter: ReefBackdropPainter()),
-                ),
-              ),
-              RepaintBoundary(child: CustomPaint(painter: ReefAmbiencePainter(_ambient))),
-              if (_sim != null)
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapUp: (d) {
-                    final p = _toTank(d.localPosition);
-                    _sim!.tap(p);
-                    _fx.add(TankFx(p, TankFxKind.tap, _time.value));
-                  },
-                  onLongPressStart: (d) => _gather.value = _toTank(d.localPosition),
-                  onLongPressMoveUpdate: (d) => _gather.value = _toTank(d.localPosition),
-                  onLongPressEnd: (_) {
-                    _gather.value = null;
-                    _sim!.release();
-                  },
-                  onLongPressCancel: () {
-                    _gather.value = null;
-                    _sim?.release();
-                  },
-                  child: RepaintBoundary(
-                    child: CustomPaint(
-                      painter: TankPainter(aquarium: _sim!, fish: _owned, time: _time, fx: _fx, gather: _gather),
-                      size: Size.infinite,
-                    ),
-                  ),
-                ),
-              IgnorePointer(
-                child: RepaintBoundary(
-                  child: Image(
-                    image: illustration('scenes/aquarium_front'),
-                    fit: BoxFit.cover,
-                    alignment: Alignment.bottomCenter,
-                    excludeFromSemantics: true,
-                    errorBuilder: (_, _, _) => CustomPaint(painter: ReefFrontPainter(_ambient)),
-                  ),
-                ),
-              ),
-              // Sticla acvariului: margini puțin mai întunecate.
-              const IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      radius: 1.15,
-                      colors: [Color(0x00000000), Color(0x00000000), Color(0x33062A40)],
-                      stops: [0, 0.7, 1],
-                    ),
-                  ),
-                ),
+              ReefScene(
+                ambient: _ambient,
+                chest: _chest,
+                child: _sim == null
+                    ? const SizedBox.expand()
+                    : GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTapUp: (d) {
+                          if (ReefChest.hitRect(_size).contains(d.localPosition)) {
+                            _chest.open(_ambient.value);
+                            ref.read(sfxProvider).play(Sfx.star);
+                          }
+                          final p = _toTank(d.localPosition);
+                          _sim!.tap(p);
+                          _fx.add(TankFx(p, TankFxKind.tap, _time.value));
+                        },
+                        onLongPressStart: (d) => _gather.value = _toTank(d.localPosition),
+                        onLongPressMoveUpdate: (d) => _gather.value = _toTank(d.localPosition),
+                        onLongPressEnd: (_) {
+                          _gather.value = null;
+                          _sim!.release();
+                        },
+                        onLongPressCancel: () {
+                          _gather.value = null;
+                          _sim?.release();
+                        },
+                        child: RepaintBoundary(
+                          child: CustomPaint(
+                            painter: TankPainter(aquarium: _sim!, fish: _owned, time: _time, fx: _fx, gather: _gather),
+                            size: Size.infinite,
+                          ),
+                        ),
+                      ),
               ),
               SafeArea(
                 child: Column(

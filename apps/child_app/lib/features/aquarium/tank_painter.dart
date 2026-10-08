@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
@@ -7,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import 'aquarium_store.dart';
-import 'fish_art.dart';
+import 'fish_render.dart';
 import 'reef.dart';
 
 /// O mică bucurie desenată (bule după ce un pește a mâncat, cercul unei atingeri).
@@ -21,9 +20,8 @@ class TankFx {
 
 enum TankFxKind { ate, tap }
 
-/// Peștii, umbrele lor pe nisip, mâncarea și efectele. Peștele e imaginea lui pe o plasă
-/// deformată din cod (ADR-028): coada „se strânge” și se desface ca și cum ar bate spre noi
-/// și înapoi, corpul unduiește, înotătoarele flutură.
+/// Peștii, umbrele lor pe nisip, mâncarea și efectele. Fiecare pește e desenat ca un corp
+/// în spațiu de [FishRenderer] (plasă pe o coloană vertebrală 3D, ADR-028).
 class TankPainter extends CustomPainter {
   TankPainter({
     required this.aquarium,
@@ -41,7 +39,7 @@ class TankPainter extends CustomPainter {
   /// Unde ține copilul degetul (pentru halou), dacă îl ține.
   final ValueListenable<math.Point<double>?> gather;
 
-  static const _cols = 20, _rows = 8;
+  final _renderer = FishRenderer();
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -60,20 +58,17 @@ class TankPainter extends CustomPainter {
       );
     }
 
-    // Umbrele, apoi peștii (cei din spate primii: cei mai mici par mai departe).
-    final order = List.of(aquarium.fish)..sort((a, b) => a.length.compareTo(b.length));
+    // Umbrele pe fund, apoi peștii — cei din spate primii.
+    final order = List.of(aquarium.fish)..sort((a, b) => b.z.compareTo(a.z));
     for (final f in order) {
-      final x = f.pos.x * h, sand = h * sandLine(x, w);
-      final lift = ((sand - f.pos.y * h) / h).clamp(0.0, 1.0);
-      final a = 0.22 * (1 - lift * 1.1).clamp(0.15, 1.0);
-      final sw = f.length * h * (0.75 - lift * 0.3);
+      final x = f.pos.x * h, floor = h * floorY(x, w, f.z);
+      final lift = ((floor - f.pos.y * h) / h).clamp(0.0, 1.0);
+      final a = 0.26 * (1 - lift * 1.3).clamp(0.12, 1.0) * f.scale;
+      final sw = f.apparentLength * h * (0.8 - lift * 0.3) * (0.35 + 0.65 * f.facing.abs());
+      final c = Offset(x, floor);
       canvas.drawOval(
-        Rect.fromCenter(center: Offset(x, sand + h * 0.012), width: sw, height: sw * 0.16),
-        Paint()
-          ..shader = ui.Gradient.radial(Offset(x, sand + h * 0.012), sw / 2, [
-            Color.fromRGBO(20, 50, 60, a),
-            const Color(0x00143C3C),
-          ]),
+        Rect.fromCenter(center: c, width: sw, height: sw * 0.18 * f.scale),
+        Paint()..shader = ui.Gradient.radial(c, sw / 2, [Color.fromRGBO(12, 40, 52, a), const Color(0x000C2834)]),
       );
     }
 
@@ -82,6 +77,7 @@ class TankPainter extends CustomPainter {
       final c = Offset(p.pos.x * h, p.pos.y * h);
       canvas.save();
       canvas.translate(c.dx, c.dy);
+      canvas.scale(depthScale(p.z));
       canvas.rotate(p.age * 1.4 + p.drift);
       final fade = p.grounded > 6 ? (8 - p.grounded) / 2 : 1.0;
       canvas.drawRRect(
@@ -93,7 +89,7 @@ class TankPainter extends CustomPainter {
 
     for (final f in order) {
       final owned = fish[f.id];
-      if (owned != null) _drawFish(canvas, h, f, owned);
+      if (owned != null) _renderer.paint(canvas, h, f, owned, t);
     }
 
     // Efectele.
@@ -122,103 +118,6 @@ class TankPainter extends CustomPainter {
     }
   }
 
-  void _drawFish(Canvas canvas, double h, SwimmingFish f, OwnedFish owned) {
-    final frame = FishFrame.of(owned.species);
-    final img = owned.art;
-    final k = f.length * h / frame.length; // pixeli pe unitate de desen
-    final texScale = img.width / fishBox.width;
-
-    // Întoarcerea: peștele se „subțiază” trecând prin profil, apoi se oglindește.
-    final turn = f.facing.abs() < 0.12 ? 0.12 * (f.facing >= 0 ? 1 : -1) : f.facing;
-    final tilt = math.atan2(f.vel.y, math.max(f.vel.x.abs(), 0.02)).clamp(-0.4, 0.4);
-    final bob = math.sin(f.phase * 0.35) * h * 0.004;
-
-    canvas.save();
-    canvas.translate(f.pos.x * h, f.pos.y * h + bob);
-    canvas.scale(turn * k, k * (1 + (1 - f.facing.abs()) * 0.06));
-    canvas.rotate(tilt);
-    // Peștele-balon umflat: mai rotund (mai mult pe înălțime), cu țepi.
-    final p = f.puff * f.puff * (3 - 2 * f.puff);
-    if (p > 0) canvas.scale(1 + 0.16 * p, 1 + 0.42 * p);
-    canvas.translate(-frame.center.dx, -frame.center.dy);
-
-    final sweep = math.sin(f.phase) * (0.42 * (0.55 + 0.35 * f.effort + 0.5 * f.joy)).clamp(0.0, 0.75);
-    final waveAmp = frame.length * 0.03 * (0.6 + 0.4 * f.effort + 0.6 * f.joy);
-    final x0 = math.max(0.0, frame.tail - 12), x1 = math.min(fishBox.width, frame.head + 12);
-    final y0 = math.max(0.0, frame.top - 12), y1 = math.min(fishBox.height, frame.bottom + 12);
-    final midY = (frame.top + frame.bottom) / 2, halfH = (frame.bottom - frame.top) / 2;
-
-    const n = (_cols + 1) * (_rows + 1);
-    final pos = Float32List(n * 2), tex = Float32List(n * 2);
-    var i = 0;
-    for (var r = 0; r <= _rows; r++) {
-      for (var c = 0; c <= _cols; c++) {
-        final bx = x0 + (x1 - x0) * c / _cols, by = y0 + (y1 - y0) * r / _rows;
-        final tt = ((frame.head - bx) / frame.length).clamp(0.0, 1.0); // 0 la cap, 1 la coadă
-        // Coada care bate spre privitor apare mai scurtă (perspectivă).
-        final dx = math.pow(tt, 2.2) * (1 - math.cos(sweep)) * frame.length * 0.32;
-        final edge = ((by - midY).abs() / halfH).clamp(0.0, 1.0);
-        final dy = tt * tt * math.sin(f.phase - tt * 2.6) * waveAmp + edge * edge * edge * math.sin(f.phase * 1.3 + bx * 0.02) * 5;
-        pos[i] = bx + dx;
-        pos[i + 1] = by + dy;
-        tex[i] = bx * texScale;
-        tex[i + 1] = by * texScale;
-        i += 2;
-      }
-    }
-    final idx = Uint16List(_cols * _rows * 6);
-    var j = 0;
-    for (var r = 0; r < _rows; r++) {
-      for (var c = 0; c < _cols; c++) {
-        final a = r * (_cols + 1) + c;
-        idx
-          ..[j++] = a
-          ..[j++] = a + 1
-          ..[j++] = a + _cols + 1
-          ..[j++] = a + 1
-          ..[j++] = a + _cols + 2
-          ..[j++] = a + _cols + 1;
-      }
-    }
-    final v = ui.Vertices.raw(ui.VertexMode.triangles, pos, textureCoordinates: tex, indices: idx);
-    canvas.drawVertices(
-      v,
-      BlendMode.srcOver,
-      Paint()
-        ..filterQuality = FilterQuality.medium
-        ..shader = ui.ImageShader(img, TileMode.decal, TileMode.decal, Matrix4Identity.storage),
-    );
-    v.dispose();
-    if (p > 0.02) _spikes(canvas, owned.species, p);
-    canvas.restore();
-  }
-
-  /// Țepii peștelui-balon: triunghiuri mici pe conturul corpului (unități de desen).
-  void _spikes(Canvas canvas, FishSpecies s, double p) {
-    final body = sampleCurve(s.body, steps: 3);
-    final c = body.fold(Offset.zero, (a, q) => a + Offset(q.x, q.y)) / body.length.toDouble();
-    final paint = Paint()..color = Color.fromRGBO(70, 60, 40, 0.85 * p);
-    for (var i = 0; i < body.length; i += 2) {
-      final q = Offset(body[i].x, body[i].y);
-      final out = q - c;
-      final n = out / out.distance;
-      final side = Offset(-n.dy, n.dx) * 7;
-      final tip = q + n * (16 * p);
-      canvas.drawPath(
-        Path()
-          ..moveTo(q.dx + side.dx, q.dy + side.dy)
-          ..lineTo(tip.dx, tip.dy)
-          ..lineTo(q.dx - side.dx, q.dy - side.dy)
-          ..close(),
-        paint,
-      );
-    }
-  }
-
   @override
   bool shouldRepaint(TankPainter old) => old.fish != fish || old.aquarium != aquarium;
-}
-
-abstract final class Matrix4Identity {
-  static final storage = Float64List.fromList(const [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 }

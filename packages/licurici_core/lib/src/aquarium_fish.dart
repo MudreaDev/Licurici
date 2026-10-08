@@ -203,7 +203,7 @@ List<Point<double>> sampleCurve(List<Point<double>> pts, {bool closed = true, in
 /// Volumul unui pește, calculat o dată pe model, pe o grilă [width]×[height] care acoperă
 /// caseta desenului: unde e silueta, cât e de gros și ce lumină primește.
 class FishBody {
-  FishBody._(this.width, this.height, this.coverage, this.thickness, this.light);
+  FishBody._(this.width, this.height, this.coverage, this.thickness, this.light, this.fin);
 
   final int width, height;
 
@@ -215,6 +215,9 @@ class FishBody {
 
   /// Lumina: −1 (umbră) … 0 (neschimbat) … +1 (luciu).
   final Float32List light;
+
+  /// 1 pe înotătoare (în afara corpului): acolo peștele e subțire și lasă lumina să treacă.
+  final Float32List fin;
 
   static final _cache = <String, FishBody>{};
 
@@ -241,7 +244,7 @@ class FishBody {
       }
     }
     const outline = FishSpecies.outlineWidth;
-    final coverage = Float32List(n), thick = Float32List(n);
+    final coverage = Float32List(n), thick = Float32List(n), fin = Float32List(n), rim = Float32List(n);
     for (var i = 0; i < n; i++) {
       // Silueta plus conturul negru de pe fișă (desenat în afara ei), cu margine moale.
       coverage[i] = sil[i] == 1 ? 1 : (outline * scale + 0.8 - outD[i]).clamp(0.0, 1.0).toDouble();
@@ -251,6 +254,9 @@ class FishBody {
       final zb = (0.62 + 0.38 * head) * sqrt(max(0, 1 - (1 - r) * (1 - r)));
       final zf = 0.06 * _smooth(0, 5 * scale * 2, inD[i]);
       thick[i] = max(zb, zf);
+      if (sil[i] == 1 && body[i] == 0) fin[i] = 1;
+      // Marginea corpului se întoarce de la lumină: puțin mai întunecată (dă rotunjime).
+      if (body[i] == 1) rim[i] = pow(1 - r, 2.5).toDouble();
     }
 
     // Lumina vine de sus, din față, puțin din stânga: difuz + luciu + umbră spre burtă.
@@ -270,10 +276,10 @@ class FishBody {
         final rz = 2 * diff * nz - lz;
         final spec = pow(max(0.0, rz), 24).toDouble();
         final belly = (y / height - 0.55).clamp(0.0, 0.45) * thick[i];
-        light[i] = ((diff - 0.72) * 1.6 + spec * 0.9 - belly * 0.9).clamp(-1.0, 1.0).toDouble();
+        light[i] = ((diff - 0.72) * 1.8 + spec * 1.1 - belly * 1.1 - rim[i] * 0.75).clamp(-1.0, 1.0).toDouble();
       }
     }
-    return FishBody._(width, height, coverage, thick, light);
+    return FishBody._(width, height, coverage, thick, light, fin);
   }
 }
 

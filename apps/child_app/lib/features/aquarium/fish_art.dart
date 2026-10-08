@@ -77,7 +77,9 @@ class FishFrame {
 }
 
 /// Peștele gata de înot: desenul copilului decupat după siluetă, cu volumul pictat peste
-/// (lumină pe spate, umbră spre burtă, luciu) și ochi vii. Imaginea are jumătate din
+/// (lumină pe spate, umbră spre burtă și pe margini, luciu) și ochi vii. Conturul negru de
+/// pe fișă devine o nuanță închisă a culorii de lângă el (peștele pare rotund, nu
+/// decupat), iar înotătoarele lasă puțin lumina să treacă. Imaginea are jumătate din
 /// rezoluția casetei (500×300).
 Future<ui.Image> buildFishImage(FishSpecies s, ui.Image drawing) async {
   final body = FishBody.of(s);
@@ -92,24 +94,40 @@ Future<ui.Image> buildFishImage(FishSpecies s, ui.Image drawing) async {
   final small = await rec.endRecording().toImage(w, h);
   final src = (await small.toByteData(format: ui.ImageByteFormat.rawStraightRgba))!.buffer.asUint8List();
   small.dispose();
+  final ink = await _lineMask(s, w, h);
+  final edge = _edgeColors(src, ink, body, w, h);
 
   final out = Uint8List(w * h * 4);
   for (var i = 0; i < w * h; i++) {
-    final a = body.coverage[i];
+    var a = body.coverage[i];
     if (a == 0) continue;
     final l = body.light[i];
     var r = src[i * 4].toDouble(), g = src[i * 4 + 1].toDouble(), b = src[i * 4 + 2].toDouble();
+    // Linia fișei → culoarea vecină, mai închisă.
+    final m = ink[i] * 0.85;
+    if (m > 0 && edge[i * 3] >= 0) {
+      r += (edge[i * 3] * 0.5 - r) * m;
+      g += (edge[i * 3 + 1] * 0.5 - g) * m;
+      b += (edge[i * 3 + 2] * 0.56 - b) * m;
+    }
     if (l < 0) {
       // Umbra: mai închis și puțin spre albastrul apei.
-      final f = 1 + l * 0.5;
-      r *= f * (1 + l * 0.08);
+      final f = 1 + l * 0.55;
+      r *= f * (1 + l * 0.1);
       g *= f;
-      b *= f * (1 - l * 0.06);
+      b *= f * (1 - l * 0.08);
     } else {
-      final f = l * 0.55;
+      final f = l * 0.6;
       r += (255 - r) * f;
       g += (255 - g) * f;
       b += (255 - b) * f;
+    }
+    if (body.fin[i] > 0) {
+      // Înotătoarea: subțire, lasă să treacă puțină lumină.
+      r += (235 - r) * 0.12;
+      g += (250 - g) * 0.12;
+      b += (255 - b) * 0.12;
+      a *= 0.86;
     }
     // Alfa premultiplicat: marginea moale rămâne închisă, fără halou deschis.
     out[i * 4] = (r.clamp(0, 255) * a).round();
@@ -126,14 +144,69 @@ Future<ui.Image> buildFishImage(FishSpecies s, ui.Image drawing) async {
   c.scale(w / fishBox.width);
   final (e, er) = s.eye;
   final eye = Offset(e.x, e.y);
-  c.drawCircle(eye, er * 1.05, Paint()..color = _ink);
-  c.drawCircle(eye, er * 0.88, Paint()..color = const Color(0xFFFFFFFF));
+  c.drawCircle(eye, er * 1.1, Paint()..color = const Color(0x55000000));
+  c.drawCircle(eye, er * 0.95, Paint()..color = const Color(0xFFF7FAFC));
   final pupil = eye + Offset(er * 0.22, er * 0.04);
-  c.drawCircle(pupil, er * 0.55, Paint()..color = const Color(0xFF1B1B22));
-  c.drawCircle(pupil + Offset(er * 0.18, -er * 0.2), er * 0.19, Paint()..color = const Color(0xFFFFFFFF));
+  c.drawCircle(
+    pupil,
+    er * 0.6,
+    Paint()..shader = ui.Gradient.radial(pupil - Offset(er * 0.1, er * 0.1), er * 0.6, const [Color(0xFF2A3140), Color(0xFF0E1018)]),
+  );
+  c.drawCircle(pupil + Offset(er * 0.18, -er * 0.2), er * 0.2, Paint()..color = const Color(0xFFFFFFFF));
   c.drawCircle(pupil + Offset(-er * 0.2, er * 0.22), er * 0.08, Paint()..color = const Color(0xCCFFFFFF));
   shaded.dispose();
   return rec2.endRecording().toImage(w, h);
+}
+
+/// Unde sunt liniile fișei (0…1), la rezoluția [w]×[h].
+Future<Float32List> _lineMask(FishSpecies s, int w, int h) async {
+  final rec = ui.PictureRecorder();
+  final c = Canvas(rec);
+  c.scale(w / fishBox.width);
+  paintLineArt(c, s, color: const Color(0xFFFFFFFF), eye: false);
+  final img = await rec.endRecording().toImage(w, h);
+  final px = (await img.toByteData(format: ui.ImageByteFormat.rawStraightRgba))!.buffer.asUint8List();
+  img.dispose();
+  return Float32List.fromList([for (var i = 0; i < w * h; i++) px[i * 4 + 3] / 255]);
+}
+
+/// Pentru fiecare pixel de pe linie: culoarea din interiorul peștelui de lângă el
+/// (umplere din vecini, câțiva pași). −1 unde nu s-a găsit.
+Float32List _edgeColors(Uint8List src, Float32List ink, FishBody body, int w, int h) {
+  final col = Float32List(w * h * 3)..fillRange(0, w * h * 3, -1);
+  var known = Uint8List(w * h);
+  for (var i = 0; i < w * h; i++) {
+    if (ink[i] < 0.25 && body.coverage[i] == 1 && body.thickness[i] > 0) {
+      known[i] = 1;
+      col[i * 3] = src[i * 4].toDouble();
+      col[i * 3 + 1] = src[i * 4 + 1].toDouble();
+      col[i * 3 + 2] = src[i * 4 + 2].toDouble();
+    }
+  }
+  for (var pass = 0; pass < 7; pass++) {
+    final next = Uint8List.fromList(known);
+    for (var y = 1; y < h - 1; y++) {
+      for (var x = 1; x < w - 1; x++) {
+        final i = y * w + x;
+        if (known[i] == 1 || ink[i] == 0) continue;
+        var r = 0.0, g = 0.0, b = 0.0, n = 0;
+        for (final j in [i - 1, i + 1, i - w, i + w, i - w - 1, i - w + 1, i + w - 1, i + w + 1]) {
+          if (known[j] == 0) continue;
+          r += col[j * 3];
+          g += col[j * 3 + 1];
+          b += col[j * 3 + 2];
+          n++;
+        }
+        if (n == 0) continue;
+        col[i * 3] = r / n;
+        col[i * 3 + 1] = g / n;
+        col[i * 3 + 2] = b / n;
+        next[i] = 1;
+      }
+    }
+    known = next;
+  }
+  return col;
 }
 
 Future<ui.Image> _decode(Uint8List px, int w, int h) {
@@ -249,4 +322,23 @@ Future<ui.Image> paintGiftDrawing(FishSpecies s, {int seed = 1}) {
   }
   paintLineArt(c, s);
   return rec.endRecording().toImage(fishBox.width.toInt(), fishBox.height.toInt());
+}
+
+/// Același desen cu culorile rotite pe cercul culorilor ([degrees]); negrul, albul și
+/// griurile rămân (pentru pești „la fel, dar de altă culoare”).
+Future<ui.Image> hueShifted(ui.Image src, double degrees) {
+  final a = degrees * math.pi / 180, c = math.cos(a), s = math.sin(a);
+  final rec = ui.PictureRecorder();
+  Canvas(rec).drawImage(
+    src,
+    Offset.zero,
+    Paint()
+      ..colorFilter = ColorFilter.matrix([
+        0.213 + c * 0.787 - s * 0.213, 0.715 - c * 0.715 - s * 0.715, 0.072 - c * 0.072 + s * 0.928, 0, 0, //
+        0.213 - c * 0.213 + s * 0.143, 0.715 + c * 0.285 + s * 0.140, 0.072 - c * 0.072 - s * 0.283, 0, 0,
+        0.213 - c * 0.213 - s * 0.787, 0.715 - c * 0.715 + s * 0.715, 0.072 + c * 0.928 + s * 0.072, 0, 0,
+        0, 0, 0, 1, 0,
+      ]),
+  );
+  return rec.endRecording().toImage(src.width, src.height);
 }

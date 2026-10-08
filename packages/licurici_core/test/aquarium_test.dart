@@ -119,12 +119,13 @@ void main() {
       final a = Aquarium(width: 1.6, seed: 9);
       final f = _fish('x', const Point(1.2, 0.5));
       a.add(f);
-      f.target = const Point(0.2, 0.5);
-      for (var t = 0; t < 60; t++) {
+      for (var t = 0; t < 90; t++) {
+        f
+          ..target = const Point(0.2, 0.5)
+          ..targetZ = f.z;
         a.step(1 / 60);
-        f.target = const Point(0.2, 0.5);
       }
-      expect(f.facing, -1);
+      expect(f.facing, closeTo(-1, 0.05));
       expect(f.mouth.x, lessThan(f.pos.x));
     });
 
@@ -157,6 +158,42 @@ void main() {
         a.step(1 / 60);
       }
       expect(f.pos.y, greaterThan(Aquarium.top));
+    });
+
+    test('adâncimea: fuge spre fundal, vine la geam când e chemat, rămâne în acvariu', () {
+      final a = Aquarium(width: 1.6, seed: 8);
+      final f = _fish('z', const Point(0.85, 0.5))..z = 0.2;
+      a.add(f);
+      a.tap(const Point(0.8, 0.5));
+      for (var t = 0; t < 40; t++) {
+        a.step(1 / 60);
+      }
+      expect(f.z, greaterThan(0.3));
+      expect(f.scale, lessThan(depthScale(0.2)));
+      for (var t = 0; t < 60 * 6; t++) {
+        a
+          ..gather(const Point(0.8, 0.5))
+          ..step(1 / 60);
+        expect(f.z, inInclusiveRange(0, 1));
+      }
+      expect(f.z, lessThan(0.2));
+    });
+
+    test('virajul: coada rămâne în urmă (viteza de rotire), apoi se liniștește', () {
+      final a = Aquarium(width: 1.6, seed: 6);
+      final f = _fish('v', const Point(0.8, 0.5));
+      a.add(f);
+      var maxRate = 0.0;
+      for (var t = 0; t < 60 * 3; t++) {
+        f
+          ..target = const Point(0.2, 0.5)
+          ..targetZ = f.z;
+        a.step(1 / 60);
+        maxRate = max(maxRate, f.turnRate.abs());
+      }
+      expect(maxRate, greaterThan(1));
+      expect(f.turnRate.abs(), lessThan(0.3));
+      expect(f.thrust, inInclusiveRange(0, 1));
     });
   });
 }
