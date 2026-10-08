@@ -22,16 +22,8 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class MemoryProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
 /// Nivelul curent la Perechi, pe durata aplicației (următorul joc pornește de unde a rămas).
-final memoryLevelProvider = NotifierProvider<MemoryProgress, int>(
-  MemoryProgress.new,
-);
+final memoryLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('perechi'));
 
 /// Perechi (FEX5): cărțile se întorc în 3D; o pereche găsită rămâne la vedere, luminată.
 /// Fără timp, fără penalizări — o pereche greșită se întoarce la loc după o clipă.

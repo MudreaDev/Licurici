@@ -27,10 +27,11 @@ class SimonScreen extends ConsumerStatefulWidget {
   const SimonScreen({
     super.key,
     this.game = const SimonGame(),
-    this.initialLevel = 1,
+    this.initialLevel,
   });
   final SequenceGame game;
-  final int initialLevel;
+  /// Nivelul de pornire; implicit, cel la care a ajuns copilul data trecută (salvat pe tabletă).
+  final int? initialLevel;
 
   @override
   ConsumerState<SimonScreen> createState() => _SimonScreenState();
@@ -58,7 +59,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _speaker = ref.read(voiceProvider);
-    _sessionLevel = widget.initialLevel;
+    _sessionLevel = widget.initialLevel ?? ref.read(settingsProvider).levels[widget.game.id] ?? 1;
     _nextSessionLevel = _sessionLevel;
     _level = widget.game.generate(_sessionLevel);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -158,6 +159,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
         _round++;
         if (_round == 5) {
           _nextSessionLevel = next;
+          ref.read(settingsProvider.notifier).setGameLevel(widget.game.id, next);
           _phase = _Phase.finished;
           _sticker = ref.read(settingsProvider.notifier).awardSticker();
         } else {

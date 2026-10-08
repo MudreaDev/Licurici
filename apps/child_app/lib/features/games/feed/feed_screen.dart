@@ -20,13 +20,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class FeedProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final feedLevelProvider = NotifierProvider<FeedProgress, int>(FeedProgress.new);
+final feedLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('hraneste-pestii'));
 
 /// Hrănește peștii (MOT4): mâncarea stă pe o frunză în colț; copilul o trage la peștele
 /// flămând (cel cu balonul deasupra). Peștii înoată (timpul vine dintr-un `Ticker`, deci și

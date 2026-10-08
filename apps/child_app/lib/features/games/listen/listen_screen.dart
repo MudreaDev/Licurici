@@ -21,13 +21,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class ListenProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final listenLevelProvider = NotifierProvider<ListenProgress, int>(ListenProgress.new);
+final listenLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('asculta-si-fa'));
 
 /// Ascultă și fă (LRC5): Licurici spune ce să atingă și în ce ordine; obiectele stau pe masă.
 /// Fiecare atingere bună primește numărul ei (1, 2, 3). La prima greșeală Licurici repetă

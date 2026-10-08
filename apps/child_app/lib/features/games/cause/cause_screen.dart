@@ -17,15 +17,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class CauseProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final causeLevelProvider = NotifierProvider<CauseProgress, int>(
-  CauseProgress.new,
-);
+final causeLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('atinge-si-vezi'));
 
 /// Atinge și vezi (COG1): obiectele de pe pajiște reacționează la atingere — fiecare în felul
 /// lui, cu sunet. Nu există greșeli; după 10 reacții vine finalul cu abțibildul. Atingerile pe

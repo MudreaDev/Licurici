@@ -20,15 +20,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class SearchProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final searchLevelProvider = NotifierProvider<SearchProgress, int>(
-  SearchProgress.new,
-);
+final searchLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('cauta'));
 
 /// Caută (ATN2): obiectele sunt împrăștiate pe pajiște; în colț se vede ce căutăm. Atingerea
 /// altui obiect doar îl clatină; ținta găsită sare, cu steluțe. După 8 s fără găsire, ținta

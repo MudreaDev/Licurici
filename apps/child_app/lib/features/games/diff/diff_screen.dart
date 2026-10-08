@@ -18,13 +18,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class DiffProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final diffLevelProvider = NotifierProvider<DiffProgress, int>(DiffProgress.new);
+final diffLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('diferente'));
 
 /// Găsește diferențele (POT8): două „poze” una lângă alta; copilul atinge în a doua locurile
 /// diferite. Fiecare diferență găsită se încercuiește în ambele poze. Atingerea pe un loc la

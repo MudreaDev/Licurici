@@ -21,13 +21,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class SortProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final sortLevelProvider = NotifierProvider<SortProgress, int>(SortProgress.new);
+final sortLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('sortam'));
 
 /// Culoarea fiecărei grupe (cutia și buza ei).
 Color _binColor(int i) =>

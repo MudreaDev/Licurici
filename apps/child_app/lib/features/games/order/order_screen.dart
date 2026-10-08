@@ -20,15 +20,8 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class OrderProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
 
-final orderLevelProvider = NotifierProvider.family<OrderProgress, int, String>(
-  (_) => OrderProgress(),
-);
+final orderLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
 
 /// „Pune în ordine” (Pașii rutinei, Ce urmează?): sus, locurile numerotate; jos, pozele
 /// amestecate. Copilul atinge poza care urmează și ea „zboară” la locul ei, cu propoziția ei

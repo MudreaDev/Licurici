@@ -20,13 +20,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class WaitProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final waitLevelProvider = NotifierProvider<WaitProgress, int>(WaitProgress.new);
+final waitLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('semaforul'));
 
 enum _Light { off, flicker, green }
 

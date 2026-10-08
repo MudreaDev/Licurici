@@ -20,15 +20,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class ChangeProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final changeLevelProvider = NotifierProvider<ChangeProgress, int>(
-  ChangeProgress.new,
-);
+final changeLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('ce-s-a-schimbat'));
 
 enum _Phase { look, cover, answer, done }
 

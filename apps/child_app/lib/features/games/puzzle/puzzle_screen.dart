@@ -19,15 +19,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class PuzzleProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final puzzleLevelProvider = NotifierProvider<PuzzleProgress, int>(
-  PuzzleProgress.new,
-);
+final puzzleLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('puzzle'));
 
 /// Puzzle (POT7): piesele unei ilustrații pictate, amestecate în stânga; rama în dreapta, cu
 /// modelul estompat (la nivelurile mici). Piesa se trage la locul ei — sau se atinge piesa,

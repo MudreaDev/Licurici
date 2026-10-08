@@ -21,15 +21,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class ImitationProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final imitationLevelProvider = NotifierProvider<ImitationProgress, int>(
-  ImitationProgress.new,
-);
+final imitationLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('fa-ca-licuriciul'));
 
 enum _Phase { demo, turn, done }
 

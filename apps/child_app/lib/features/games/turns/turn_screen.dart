@@ -20,13 +20,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class TurnProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final turnLevelProvider = NotifierProvider<TurnProgress, int>(TurnProgress.new);
+final turnLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('pe-rand'));
 
 enum _Who { child, licurici, pass, done }
 

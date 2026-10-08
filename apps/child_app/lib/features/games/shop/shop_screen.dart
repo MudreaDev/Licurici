@@ -19,13 +19,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class ShopProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final shopLevelProvider = NotifierProvider<ShopProgress, int>(ShopProgress.new);
+final shopLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('la-magazin'));
 
 /// La magazin (AUT5): lista cu poze în stânga (bifă la ce s-a cumpărat), rafturile în dreapta,
 /// coșul jos. Atingi un produs de pe listă → intră în coș. Un produs care nu e pe listă doar se

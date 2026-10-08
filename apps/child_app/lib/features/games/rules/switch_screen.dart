@@ -19,15 +19,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class SwitchProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final switchLevelProvider = NotifierProvider<SwitchProgress, int>(
-  SwitchProgress.new,
-);
+final switchLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('regula-se-schimba'));
 
 /// Regula se schimbă (FEX3–4): cartonașul de sus se pune într-una din cutii, după regula
 /// arătată (culoare sau formă). Se atinge cutia sau se trage cartonașul în ea. Greșeala doar

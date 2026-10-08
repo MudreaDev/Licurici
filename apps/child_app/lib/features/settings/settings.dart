@@ -15,6 +15,7 @@ class AppSettings {
     this.hiddenGames = const {},
     this.lanternsSeen = 0,
     this.hiddenGamesAt,
+    this.levels = const {},
   });
 
   final Grade grade;
@@ -48,6 +49,10 @@ class AppSettings {
   /// la sincronizare câștigă alegerea mai nouă (ADR-011, „ultimul câștigă”).
   final DateTime? hiddenGamesAt;
 
+  /// Nivelul la care a ajuns copilul în fiecare joc (adaptiv): data viitoare pornește de acolo,
+  /// nu de la 1. Doar pe tabletă.
+  final Map<String, int> levels;
+
   /// Câte felinare aprinse a văzut copilul pe hartă (pentru sărbătoarea unui felinar nou).
   final int lanternsSeen;
 
@@ -65,6 +70,7 @@ class AppSettings {
     'hiddenGames': hiddenGames.toList()..sort(),
     'lanternsSeen': lanternsSeen,
     if (hiddenGamesAt != null) 'hiddenGamesAt': hiddenGamesAt!.toIso8601String(),
+    if (levels.isNotEmpty) 'levels': levels,
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -85,6 +91,10 @@ class AppSettings {
     },
     lanternsSeen: (j['lanternsSeen'] as num?)?.toInt() ?? 0,
     hiddenGamesAt: DateTime.tryParse(j['hiddenGamesAt'] as String? ?? ''),
+    levels: {
+      for (final MapEntry(:key, :value) in ((j['levels'] as Map?) ?? const {}).entries)
+        if (key is String && value is num && value >= 1) key: value.toInt(),
+    },
   );
 
   AppSettings copyWith({
@@ -98,6 +108,7 @@ class AppSettings {
     Set<String>? hiddenGames,
     int? lanternsSeen,
     DateTime? hiddenGamesAt,
+    Map<String, int>? levels,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -109,6 +120,7 @@ class AppSettings {
     hiddenGames: hiddenGames ?? this.hiddenGames,
     lanternsSeen: lanternsSeen ?? this.lanternsSeen,
     hiddenGamesAt: hiddenGamesAt ?? this.hiddenGamesAt,
+    levels: levels ?? this.levels,
   );
 }
 
@@ -167,12 +179,19 @@ class SettingsNotifier extends Notifier<AppSettings> {
     _set(state.copyWith(hiddenGames: next, hiddenGamesAt: DateTime.now().toUtc()));
   }
 
-  /// Planul venit de pe server (ales de părinte în panou sau de specialist).
-  void applyPlan(Set<String> hidden, DateTime at) {
+  /// Planul venit de pe server (ales de părinte în panou sau de specialist): jocurile scoase
+  /// și, pentru unele jocuri, nivelul de pornire ales de specialist.
+  void applyPlan(Set<String> hidden, Map<String, int> levels, DateTime at) {
     final known = {for (final e in catalog) e.id};
     final next = hidden.where(known.contains).toSet();
     if (next.length >= catalog.length) return;
-    _set(state.copyWith(hiddenGames: next, hiddenGamesAt: at));
+    _set(state.copyWith(hiddenGames: next, hiddenGamesAt: at, levels: {...state.levels, ...levels}));
+  }
+
+  /// Nivelul la care a ajuns copilul în jocul [gameId].
+  void setGameLevel(String gameId, int level) {
+    if (state.levels[gameId] == level) return;
+    _set(state.copyWith(levels: {...state.levels, gameId: level < 1 ? 1 : level}));
   }
 
   void setLanternsSeen(int n) => _set(state.copyWith(lanternsSeen: n));
@@ -196,3 +215,20 @@ class SettingsNotifier extends Notifier<AppSettings> {
 final settingsProvider = NotifierProvider<SettingsNotifier, AppSettings>(
   SettingsNotifier.new,
 );
+
+/// Nivelul unui joc, păstrat pe tabletă (pornește de unde a rămas copilul data trecută).
+class GameLevel extends Notifier<int> {
+  GameLevel(this.gameId);
+
+  final String gameId;
+
+  @override
+  int build() => ref.read(settingsProvider).levels[gameId] ?? 1;
+
+  void setLevel(int level) {
+    state = level < 1 ? 1 : level;
+    ref.read(settingsProvider.notifier).setGameLevel(gameId, state);
+  }
+
+  void advance() => setLevel(state + 1);
+}

@@ -28,7 +28,7 @@ void main() {
         addTearDown(tester.view.reset);
         final container = ProviderContainer(overrides: [voiceProvider.overrideWithValue(const SilentSpeaker())]);
         addTearDown(container.dispose);
-        container.read(writeLevelProvider.notifier).setLevel(game.id, 5);
+        container.read(writeLevelProvider(game.id).notifier).setLevel(5);
         final router = GoRouter(
           initialLocation: '/s',
           routes: [

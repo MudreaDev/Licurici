@@ -23,13 +23,7 @@ import '../../aquarium/reef_life.dart';
 import '../../aquarium/reef_scene.dart';
 import '../../settings/settings.dart';
 
-class TrackProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final trackLevelProvider = NotifierProvider<TrackProgress, int>(TrackProgress.new);
+final trackLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('urmareste-pestele'));
 
 enum _Phase { loading, show, swim, answer, feedback }
 

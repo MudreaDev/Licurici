@@ -27,6 +27,23 @@ void main() {
     expect(container.read(settingsProvider).visibleGames, isNotEmpty);
   });
 
+  test('nivelul fiecărui joc se păstrează: data viitoare copilul pornește de unde a rămas', () {
+    final c1 = ProviderContainer();
+    addTearDown(c1.dispose);
+    final p = NotifierProvider<GameLevel, int>(() => GameLevel('semaforul'));
+    expect(c1.read(p), 1);
+    c1.read(p.notifier).setLevel(4);
+    final saved = AppSettings.fromJson(c1.read(settingsProvider).toJson());
+    expect(saved.levels['semaforul'], 4);
+    // O pornire nouă a aplicației, cu setările salvate.
+    final c2 = ProviderContainer(overrides: [settingsProvider.overrideWith(() => SettingsNotifier(saved))]);
+    addTearDown(c2.dispose);
+    expect(c2.read(p), 4);
+    // Planul de pe server poate fixa nivelul de pornire.
+    c2.read(settingsProvider.notifier).applyPlan(const {}, const {'semaforul': 2}, DateTime.utc(2026, 10, 9));
+    expect(c2.read(settingsProvider).levels['semaforul'], 2);
+  });
+
   testWidgets('adultul scoate o arie și un joc; copilul nu le mai vede', (tester) async {
     tester.view.physicalSize = const Size(1280, 800);
     tester.view.devicePixelRatio = 1;

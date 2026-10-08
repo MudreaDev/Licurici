@@ -21,15 +21,8 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-/// Nivelul curent, separat pe joc (cifre / litere).
-class WriteProgress extends Notifier<Map<String, int>> {
-  @override
-  Map<String, int> build() => const {};
-  int of(String id) => state[id] ?? 1;
-  void setLevel(String id, int level) => state = {...state, id: level};
-}
-
-final writeLevelProvider = NotifierProvider<WriteProgress, Map<String, int>>(WriteProgress.new);
+/// Nivelul curent, separat pe joc (cifre / litere), păstrat pe tabletă.
+final writeLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
 
 /// Culorile cretei, câte una pe trăsătură.
 const _chalk = [Color(0xFFFFD45E), Color(0xFF7FE0C9), Color(0xFFFF9FC0), Color(0xFF9CC8FF), Color(0xFFC4A6FF)];
@@ -84,7 +77,7 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
 
   void _start() {
     _timer?.cancel();
-    _level = widget.game.generate(ref.read(writeLevelProvider.notifier).of(widget.game.id), seed: widget.seed);
+    _level = widget.game.generate(ref.read(writeLevelProvider(widget.game.id)), seed: widget.seed);
     _runs.clear();
     _index = 0;
     _result = null;
@@ -188,7 +181,7 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with SingleTickerProv
 
   void _again({required bool next}) {
     if (next) {
-      ref.read(writeLevelProvider.notifier).setLevel(widget.game.id, _result!.suggestedNextLevel(_level.level));
+      ref.read(writeLevelProvider(widget.game.id).notifier).setLevel(_result!.suggestedNextLevel(_level.level));
     }
     setState(_start);
   }

@@ -46,7 +46,7 @@ class SyncClient {
     required String password,
     required bool consent,
     ({Set<String> hidden, DateTime? at})? plan,
-    void Function(Set<String> hidden, DateTime at)? onPlan,
+    void Function(Set<String> hidden, Map<String, int> levels, DateTime at)? onPlan,
   }) async {
     if (!consent) {
       throw const SyncException(
@@ -97,13 +97,17 @@ class SyncClient {
   Future<void> _syncPlan(
     String childId,
     ({Set<String> hidden, DateTime? at}) local,
-    void Function(Set<String> hidden, DateTime at)? onPlan,
+    void Function(Set<String> hidden, Map<String, int> levels, DateTime at)? onPlan,
   ) async {
     final server = await _call('GET', '/children/$childId/plan') as Map;
     final at = DateTime.tryParse(server['updatedAt'] as String? ?? '');
     final hidden = {for (final g in (server['hiddenGames'] as List? ?? const [])) g as String};
+    final levels = {
+      for (final MapEntry(:key, :value) in ((server['levels'] as Map?) ?? const {}).entries)
+        if (key is String && value is num) key: value.toInt(),
+    };
     if (at != null && (local.at == null || at.isAfter(local.at!))) {
-      onPlan?.call(hidden, at);
+      onPlan?.call(hidden, levels, at);
     } else if (local.at != null && (at == null || local.at!.isAfter(at))) {
       await _call('PUT', '/children/$childId/plan', {'hiddenGames': (local.hidden.toList()..sort())});
     }

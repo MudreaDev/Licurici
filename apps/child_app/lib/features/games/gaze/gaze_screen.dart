@@ -21,13 +21,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class GazeProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final gazeLevelProvider = NotifierProvider<GazeProgress, int>(GazeProgress.new);
+final gazeLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('unde-se-uita'));
 
 /// Unde se uită? (ATN3–4): Licurici, în mijloc, se întoarce spre unul din cele două obiecte
 /// (și, la început, arată cu mâna). Copilul atinge obiectul. Dacă greșește când indiciul e

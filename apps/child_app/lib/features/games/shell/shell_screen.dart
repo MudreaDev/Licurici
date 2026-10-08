@@ -20,15 +20,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class ShellProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final shellLevelProvider = NotifierProvider<ShellProgress, int>(
-  ShellProgress.new,
-);
+final shellLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('cucu-bau'));
 
 enum _Phase { show, swapping, ask, reveal, finished }
 

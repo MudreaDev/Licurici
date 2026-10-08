@@ -19,15 +19,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class TraceProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final traceLevelProvider = NotifierProvider<TraceProgress, int>(
-  TraceProgress.new,
-);
+final traceLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('traseaza'));
 
 /// Trasează (MOT1–3): copilul duce personajul cu degetul pe drum până la ținta lui. Drumul
 /// e desenat din cod; partea parcursă se colorează. Ieșirea de pe drum nu se pedepsește:

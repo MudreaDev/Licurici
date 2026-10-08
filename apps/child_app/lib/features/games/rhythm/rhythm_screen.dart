@@ -21,15 +21,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class RhythmProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final rhythmLevelProvider = NotifierProvider<RhythmProgress, int>(
-  RhythmProgress.new,
-);
+final rhythmLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('toba-magica'));
 
 enum _Phase { listen, play, done }
 

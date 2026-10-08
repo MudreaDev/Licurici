@@ -191,17 +191,27 @@ void main() {
     final store = MemorySessionStore();
     SyncClient client() => SyncClient(client: MockClient(server.handle), baseUrl: 'http://api/api/v1');
     // 1. Specialistul a ales în panou; tableta nu a schimbat nimic.
-    server.plan = {'hiddenGames': ['pescarul', 'simon'], 'updatedAt': '2026-10-09T08:00:00.000Z', 'updatedBy': 'THERAPIST'};
+    server.plan = {
+      'hiddenGames': ['pescarul', 'simon'],
+      'levels': {'emotii': 3},
+      'updatedAt': '2026-10-09T08:00:00.000Z',
+      'updatedBy': 'THERAPIST',
+    };
     Set<String>? applied;
+    Map<String, int>? levels;
     await client().run(
       store: store,
       email: 'ana@example.md',
       password: 'parola-lunga-1',
       consent: true,
       plan: (hidden: <String>{}, at: null),
-      onPlan: (h, at) => applied = h,
+      onPlan: (h, l, at) {
+        applied = h;
+        levels = l;
+      },
     );
     expect(applied, {'pescarul', 'simon'});
+    expect(levels, {'emotii': 3});
     expect(server.planPuts, isEmpty);
     // 2. Părintele a schimbat pe tabletă, după: lista de pe tabletă urcă pe server.
     applied = null;
@@ -211,7 +221,7 @@ void main() {
       password: 'parola-lunga-1',
       consent: true,
       plan: (hidden: {'cauta'}, at: DateTime.utc(2026, 10, 9, 9)),
-      onPlan: (h, at) => applied = h,
+      onPlan: (h, l, at) => applied = h,
     );
     expect(applied, isNull);
     expect(server.planPuts.single, ['cauta']);

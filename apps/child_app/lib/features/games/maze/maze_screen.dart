@@ -18,13 +18,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class MazeProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void setLevel(int level) => state = level;
-}
-
-final mazeLevelProvider = NotifierProvider<MazeProgress, int>(MazeProgress.new);
+final mazeLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('labirint'));
 
 /// Labirint (FEX7): peștișorul pornește din colțul de sus-stânga, casa e în colțul opus.
 /// Degetul îl duce pe culoare, celulă cu celulă; prin pereți nu trece (lovirea se numără, fără

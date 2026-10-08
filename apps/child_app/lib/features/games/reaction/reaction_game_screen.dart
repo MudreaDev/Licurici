@@ -21,17 +21,8 @@ import '../../../shared/sfx.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-class ReactionProgress extends Notifier<int> {
-  @override
-  int build() => 1;
-  void advance() => state++;
-  void setLevel(int level) => state = level;
-}
 
-final reactionLevelProvider =
-    NotifierProvider.family<ReactionProgress, int, String>(
-      (_) => ReactionProgress(),
-    );
+final reactionLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
 
 enum _Phase { introduction, gap, visible, finished }
 
