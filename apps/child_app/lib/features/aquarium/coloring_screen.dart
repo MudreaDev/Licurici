@@ -566,7 +566,8 @@ class _Picker extends StatelessWidget {
             final rows = (pages.length / cols).ceil();
             final w = math.min(
               (box.maxWidth - gap * (cols - 1)) / cols,
-              ((box.maxHeight - gap * (rows - 1)) / rows) * 1.4,
+              // Buza cartonașului (umbra de jos) ocupă și ea loc: ~8 px pe rând.
+              ((box.maxHeight - gap * (rows - 1) - rows * 8) / rows) * 1.4,
             );
             if (w > best.$1) best = (w, cols);
           }

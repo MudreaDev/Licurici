@@ -308,4 +308,122 @@ final picturePages = <ColoringPage>[
       c.drawLine(Offset(580, y), Offset(700, y + d * 2), ink);
     }
   }),
+  PicturePage('dinozaur', 'dinozaurul', (c, ink) {
+    c.drawLine(const Offset(0, 575), const Offset(1000, 575), ink);
+    final body = _oval(520, 390, 400, 230);
+    final neck = Path()
+      ..moveTo(360, 345)
+      ..quadraticBezierTo(290, 220, 235, 160)
+      ..lineTo(300, 140)
+      ..quadraticBezierTo(350, 230, 450, 300)
+      ..close();
+    final head = _oval(225, 125, 140, 90, -0.2);
+    final tail = Path()
+      ..moveTo(690, 340)
+      ..quadraticBezierTo(840, 330, 940, 440)
+      ..quadraticBezierTo(820, 395, 700, 440)
+      ..close();
+    final legs = [
+      for (final x in [390.0, 460.0, 570.0, 640.0]) Path()..addRRect(RRect.fromLTRBR(x, 430, x + 60, 572, const Radius.circular(18))),
+    ];
+    _outside(c, body, () {
+      for (final l in legs) {
+        c.drawPath(l, ink);
+      }
+      c.drawPath(tail, ink);
+    });
+    _outside(c, Path.combine(PathOperation.union, body, head), () => c.drawPath(neck, ink));
+    c.drawPath(body, ink);
+    c.drawPath(head, ink);
+    c.drawPath(_circle(198, 112, 10), ink);
+    c.drawArc(const Rect.fromLTRB(160, 120, 220, 150), 0.2, 1.6, false, ink);
+    for (final (x, y, r) in [(470.0, 360.0, 30.0), (560.0, 330.0, 22.0), (610.0, 410.0, 26.0), (520.0, 440.0, 18.0)]) {
+      c.drawPath(_circle(x, y, r), ink);
+    }
+    // Un palmier mic și soarele.
+    c.drawPath(_poly([[860, 575], [868, 400], [884, 400], [890, 575]], close: false), ink);
+    for (final a in [-2.6, -1.9, -1.2, -0.5]) {
+      c.drawPath(_oval(876 + 55 * math.cos(a), 392 + 30 * math.sin(a), 120, 34, a + math.pi / 2 * 0), ink);
+    }
+    c.drawPath(_circle(820, 110, 50), ink);
+  }),
+  PicturePage('tren', 'trenul', (c, ink) {
+    c.drawLine(const Offset(0, 532), const Offset(1000, 532), ink);
+    for (var x = 20.0; x < 1000; x += 70) {
+      c.drawLine(Offset(x, 532), Offset(x + 30, 560), ink);
+    }
+    // Locomotiva.
+    c.drawRRect(RRect.fromLTRBR(110, 300, 400, 470, const Radius.circular(16)), ink);
+    c.drawRect(const Rect.fromLTRB(300, 205, 400, 300), ink);
+    c.drawRRect(RRect.fromLTRBR(285, 185, 415, 210, const Radius.circular(8)), ink);
+    c.drawRect(const Rect.fromLTRB(320, 228, 380, 280), ink);
+    c.drawRect(const Rect.fromLTRB(150, 225, 200, 300), ink);
+    c.drawRRect(RRect.fromLTRBR(138, 205, 212, 228, const Radius.circular(8)), ink);
+    c.drawPath(_circle(140, 345, 18), ink);
+    c.drawPath(_union([_circle(175, 150, 32), _circle(225, 120, 40), _circle(285, 100, 34)]), ink);
+    for (final x in [170.0, 260.0, 350.0]) {
+      c.drawPath(_circle(x, 480, 42), ink);
+      c.drawPath(_circle(x, 480, 14), ink);
+    }
+    // Vagoanele.
+    for (final x0 in [440.0, 690.0]) {
+      c.drawLine(Offset(x0 - 40, 420), Offset(x0, 420), ink);
+      c.drawRRect(RRect.fromLTRBR(x0, 320, x0 + 220, 470, const Radius.circular(14)), ink);
+      for (final wx in [x0 + 30, x0 + 125]) {
+        c.drawRRect(RRect.fromLTRBR(wx, 345, wx + 65, 405, const Radius.circular(10)), ink);
+      }
+      for (final x in [x0 + 50, x0 + 170]) {
+        c.drawPath(_circle(x, 488, 32), ink);
+        c.drawPath(_circle(x, 488, 10), ink);
+      }
+    }
+    c.drawPath(_circle(880, 100, 48), ink);
+  }),
+  PicturePage('castel', 'castelul', (c, ink) {
+    c.drawLine(const Offset(0, 562), const Offset(1000, 562), ink);
+    // Zidul cu creneluri.
+    final wall = <List<double>>[[320, 562], [320, 260]];
+    for (var x = 320.0; x < 680; x += 60) {
+      wall.addAll([[x + 30, 260], [x + 30, 290], [x + 60, 290], [x + 60, 260]]);
+    }
+    wall.add([680, 562]);
+    final towers = [
+      Path()..addRect(const Rect.fromLTRB(220, 190, 320, 562)),
+      Path()..addRect(const Rect.fromLTRB(680, 190, 780, 562)),
+    ];
+    _outside(c, _union(towers), () => c.drawPath(_poly(wall), ink));
+    for (final (i, t) in towers.indexed) {
+      c.drawPath(t, ink);
+      final cx = i == 0 ? 270.0 : 730.0;
+      c.drawPath(_poly([[cx - 64, 190], [cx, 80], [cx + 64, 190]]), ink);
+      c.drawLine(Offset(cx, 80), Offset(cx, 30), ink);
+      c.drawPath(_poly([[cx, 30], [cx + 50, 44], [cx, 58]]), ink);
+      c.drawPath(
+        Path()
+          ..moveTo(cx - 18, 320)
+          ..lineTo(cx - 18, 290)
+          ..arcToPoint(Offset(cx + 18, 290), radius: const Radius.circular(18))
+          ..lineTo(cx + 18, 320)
+          ..close(),
+        ink,
+      );
+    }
+    // Poarta, cu gratii.
+    c.drawPath(
+      Path()
+        ..moveTo(440, 562)
+        ..lineTo(440, 450)
+        ..arcToPoint(const Offset(560, 450), radius: const Radius.circular(60))
+        ..lineTo(560, 562),
+      ink,
+    );
+    for (final x in [470.0, 500.0, 530.0]) {
+      c.drawLine(Offset(x, 400), Offset(x, 562), ink);
+    }
+    for (final x in [380.0, 600.0]) {
+      c.drawRRect(RRect.fromLTRBR(x - 22, 340, x + 22, 400, const Radius.circular(14)), ink);
+    }
+    c.drawPath(_union([_circle(70, 120, 36), _circle(115, 100, 44), _circle(158, 124, 30)]), ink);
+    c.drawPath(_circle(890, 110, 50), ink);
+  }),
 ];
