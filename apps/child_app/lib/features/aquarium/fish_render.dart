@@ -148,6 +148,34 @@ class FishRenderer {
         ..colorFilter = fog > 0.01 ? _fogFilter(fog) : null,
     );
     v.dispose();
+
+    // Cu capul spre noi (sau cu coada): vederea din față, ca peștele să nu devină o „felie”.
+    final headCs = math.cos(_psi[_cols]), headSn = math.sin(_psi[_cols]);
+    final front = ((0.36 - headCs.abs()) / 0.24).clamp(0.0, 1.0);
+    if (front > 0.01) {
+      final tone = _toneOf(img);
+      final body = (frame.bottom - frame.top) * 0.6;
+      // Pe corpul rotund se întinde chiar desenul copilului din spatele capului (dungi, pete).
+      final (eye, er) = species.eye;
+      final src = Rect.fromLTRB(
+        (eye.x - frame.length * 0.42) * texScale,
+        (frame.top + (frame.bottom - frame.top) * 0.16) * texScale,
+        (eye.x - er * 1.6) * texScale,
+        (frame.bottom - (frame.bottom - frame.top) * 0.16) * texScale,
+      );
+      _frontView(
+        canvas,
+        Offset(((headSn < 0 ? _sx[_cols] : _sx[0]) - ox) * 0.45, 0),
+        body,
+        body * (0.55 + species.thickness * 2.4),
+        towardUs: headSn < 0,
+        tone: Color.lerp(tone, tankFog, fog)!,
+        alpha: front,
+        phase: f.phase,
+        skin: (img, src),
+        fog: fog,
+      );
+    }
     if (puff > 0.02) {
       final turn = f.facing.abs() < 0.3 ? 0.3 * (f.facing >= 0 ? 1 : -1) : f.facing;
       canvas.scale(turn, 1);
@@ -155,6 +183,131 @@ class FishRenderer {
       _spikes(canvas, species, puff, fog);
     }
     canvas.restore();
+  }
+
+  /// Peștele văzut din față (ochii amândoi, gura care se deschide) sau din spate (coada care
+  /// bate). [h] = înălțimea corpului, [w] = lățimea lui (unități de desen).
+  void _frontView(
+    Canvas canvas,
+    Offset c,
+    double h,
+    double w, {
+    required bool towardUs,
+    required Color tone,
+    required double alpha,
+    required double phase,
+    (ui.Image, Rect)? skin,
+    double fog = 0,
+  }) {
+    Color a(Color x) => x.withValues(alpha: x.a * alpha);
+    final dark = Color.lerp(tone, const Color(0xFF14202A), 0.35)!, light = Color.lerp(tone, const Color(0xFFFFFFFF), 0.35)!;
+    final fin = Paint()..color = a(dark);
+    // Înotătoarea de pe spate și cea de dedesubt (subțiri, văzute din față).
+    canvas.drawPath(
+      Path()
+        ..moveTo(c.dx - w * 0.07, c.dy - h * 0.45)
+        ..quadraticBezierTo(c.dx, c.dy - h * 0.95, c.dx + w * 0.07, c.dy - h * 0.45)
+        ..close(),
+      fin,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(c.dx - w * 0.06, c.dy + h * 0.45)
+        ..quadraticBezierTo(c.dx, c.dy + h * 0.8, c.dx + w * 0.06, c.dy + h * 0.45)
+        ..close(),
+      fin,
+    );
+    if (!towardUs) {
+      // Din spate: coada bate stânga–dreapta, în fața corpului.
+      final sway = math.sin(phase) * w * 0.35;
+      canvas.drawPath(
+        Path()
+          ..moveTo(c.dx, c.dy - h * 0.15)
+          ..quadraticBezierTo(c.dx + sway, c.dy - h * 0.9, c.dx + sway * 1.2, c.dy - h * 0.75)
+          ..lineTo(c.dx + sway * 1.2, c.dy + h * 0.75)
+          ..quadraticBezierTo(c.dx + sway, c.dy + h * 0.9, c.dx, c.dy + h * 0.15)
+          ..close(),
+        Paint()..color = a(Color.lerp(dark, tone, 0.4)!),
+      );
+    }
+    // Înotătoarele de pe lateral, care vâslesc.
+    for (final side in [-1.0, 1.0]) {
+      canvas.save();
+      canvas.translate(c.dx + side * w * 0.5, c.dy + h * 0.12);
+      canvas.rotate(side * (0.5 + 0.35 * math.sin(phase * 0.8)));
+      canvas.drawOval(Rect.fromCenter(center: Offset(side * w * 0.12, 0), width: w * 0.32, height: h * 0.16), fin);
+      canvas.restore();
+    }
+    // Corpul: rotund, cu desenul peștelui pe el, luminat de sus și umbrit pe margini.
+    final rect = Rect.fromCenter(center: c, width: w, height: h);
+    if (skin case (final img, final src)) {
+      final sx = rect.width / src.width, sy = rect.height / src.height;
+      final m = Float64List.fromList([sx, 0, 0, 0, 0, sy, 0, 0, 0, 0, 1, 0, rect.left - src.left * sx, rect.top - src.top * sy, 0, 1]);
+      canvas.drawOval(
+        rect,
+        Paint()
+          ..color = Color.fromRGBO(0, 0, 0, alpha)
+          ..filterQuality = FilterQuality.medium
+          ..shader = ui.ImageShader(img, TileMode.clamp, TileMode.clamp, m)
+          ..colorFilter = fog > 0.01 ? _fogFilter(fog) : null,
+      );
+      canvas.drawOval(
+        rect,
+        Paint()
+          ..shader = ui.Gradient.radial(c - Offset(w * 0.1, h * 0.25), h * 0.75, [
+            Color.fromRGBO(255, 255, 255, 0.35 * alpha),
+            const Color(0x00FFFFFF),
+            Color.fromRGBO(10, 25, 40, 0.45 * alpha),
+          ], const [0, 0.5, 1]),
+      );
+    } else {
+      canvas.drawOval(
+        rect,
+        Paint()
+          ..shader = ui.Gradient.radial(c - Offset(0, h * 0.2), h * 0.7, [a(light), a(tone), a(dark)], const [0, 0.55, 1]),
+      );
+    }
+    if (!towardUs) return;
+    // Ochii, unul de fiecare parte, și gura care se deschide și se închide.
+    for (final side in [-1.0, 1.0]) {
+      final e = c + Offset(side * w * 0.36, -h * 0.12);
+      final r = h * 0.13;
+      canvas.drawCircle(e, r * 1.12, Paint()..color = a(const Color(0x55000000)));
+      canvas.drawCircle(e, r, Paint()..color = a(const Color(0xFFF7FAFC)));
+      canvas.drawCircle(e + Offset(-side * r * 0.15, r * 0.05), r * 0.55, Paint()..color = a(const Color(0xFF151820)));
+      canvas.drawCircle(e + Offset(-side * r * 0.3, -r * 0.2), r * 0.18, Paint()..color = a(const Color(0xFFFFFFFF)));
+    }
+    final open = 0.5 + 0.5 * math.sin(phase * 0.5);
+    canvas.drawOval(
+      Rect.fromCenter(center: c + Offset(0, h * 0.22), width: w * 0.16, height: h * (0.04 + 0.06 * open)),
+      Paint()..color = a(const Color(0xFF3A1E24)),
+    );
+  }
+
+  /// Culoarea medie a peștelui (pentru vederea din față); se calculează o dată, în fundal.
+  static final _tones = Expando<Color>();
+  static final _pending = Expando<bool>();
+
+  static Color _toneOf(ui.Image img) {
+    final t = _tones[img];
+    if (t != null) return t;
+    if (_pending[img] == null) {
+      _pending[img] = true;
+      img.toByteData().then((bytes) {
+        if (bytes == null) return;
+        var r = 0, g = 0, b = 0, n = 0;
+        final px = bytes.buffer.asUint8List();
+        for (var i = 0; i < px.length; i += 16) {
+          if (px[i + 3] < 230) continue;
+          r += px[i];
+          g += px[i + 1];
+          b += px[i + 2];
+          n++;
+        }
+        _tones[img] = n == 0 ? const Color(0xFF7FA6C2) : Color.fromARGB(255, r ~/ n, g ~/ n, b ~/ n);
+      });
+    }
+    return const Color(0xFF7FA6C2);
   }
 
   /// Țepii peștelui-balon: triunghiuri mici pe conturul corpului (unități de desen).
