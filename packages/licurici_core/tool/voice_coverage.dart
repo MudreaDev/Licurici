@@ -18,6 +18,14 @@ const uiPhrases = [
   'Uite! Peștele tău înoată în acvariu!',
   'Alege un pește.',
   'Colorează peștele cum vrei tu.',
+  // Rândul meu, rândul tău
+  'Construim un turn. Pe rând: o dată tu, o dată eu.',
+  'Rândul tău.',
+  'Acum e rândul meu.',
+  'Așteaptă rândul tău.',
+  'Spune-mi când e rândul meu.',
+  'E rândul meu?',
+  'Am construit împreună!',
   // Colorăm
   'Alege un desen.',
   'Colorează cum vrei tu.',

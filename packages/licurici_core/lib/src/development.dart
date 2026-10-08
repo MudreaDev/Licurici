@@ -138,6 +138,8 @@ const List<Ladder> ladders = [
     Step('EMO4', 'Alege ce poate face cineva ca să se simtă mai bine', games: ['ce-ma-ajuta']),
     Step('EMO5', 'Înțelege ce știe și ce crede altcineva (perspectivă)', games: ['cine-stie']),
     Step('EMO6', 'Alege comportamentul potrivit în situații sociale', games: ['situatii']),
+    Step('EMO7', 'Își așteaptă rândul într-un joc cu altcineva și dă rândul mai departe',
+        games: ['pe-rand']),
   ]),
   Ladder(Domain.fex, [
     Step('FEX1', 'Așteaptă semnalul (verde) înainte să atingă', games: ['semaforul']),

@@ -29,6 +29,7 @@ import 'spot_diff.dart';
 import 'switching.dart';
 import 'trace.dart';
 import 'tracking.dart';
+import 'turns.dart';
 import 'writing.dart';
 import 'waiting.dart';
 import 'trial.dart';
@@ -568,6 +569,30 @@ class SessionRecorder {
         difficulty: 1 / level.axes.width,
         targetId: r.glyph.char,
         offTargetTaps: r.exits,
+      ));
+    }
+  }
+
+  /// Un nivel `pe-rand`: câte o încercare pe ciclu (rândul lui Licurici + al copilului).
+  /// Corectă = n-a atins nimic în rândul lui Licurici și, când trebuia, a dat singur rândul;
+  /// atingerile în rândul celuilalt = `offTargetTaps`; rândul dat abia după întrebarea lui
+  /// Licurici = ajutor verbal (P2); dificultatea = secundele de așteptare.
+  void turnLevel(TurnResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final c in result.cycles) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: c.clean,
+        promptLevel: c.passPrompted ? PromptLevel.p2 : PromptLevel.p0,
+        attempts: c.earlyTaps + 1,
+        latencyMs: c.placeMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: level.axes.passTurn ? 'da-randul' : 'asteapta',
+        difficulty: level.axes.waitMs / 1000,
+        offTargetTaps: c.earlyTaps,
       ));
     }
   }

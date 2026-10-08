@@ -30,11 +30,12 @@ import 'spot_diff.dart';
 import 'switching.dart';
 import 'trace.dart';
 import 'tracking.dart';
+import 'turns.dart';
 import 'writing.dart';
 import 'waiting.dart';
 
 /// Mecanica de care depinde ruta ecranului.
-enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff, build, shop, explore, track, write, color }
+enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff, build, shop, explore, track, write, color, turns }
 
 /// Un joc din catalog, indiferent de mecanică.
 class CatalogEntry {
@@ -86,6 +87,7 @@ class CatalogEntry {
         GameKind.track => '/urmareste-pestele',
         GameKind.write => '/scrie/$id',
         GameKind.color => '/coloram',
+        GameKind.turns => '/pe-rand',
       };
 
   @override
@@ -294,6 +296,15 @@ List<CatalogEntry> get catalog => [
           emoji: g.emoji,
           description: g.description,
           kind: GameKind.rules,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [TurnGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.turns,
           domain: _domainOf(g.id, g.steps),
         ),
       for (final g in const [ColorPlayGame()])
