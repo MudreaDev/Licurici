@@ -26,12 +26,17 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   String? _error;
   bool _busy = false;
 
-  bool get _fromServer => ref.read(serverChildrenProvider).any((h) => h.child.id == widget.history.child.id);
+  bool _loading = false;
 
   @override
-  void initState() {
-    super.initState();
-    if (_fromServer) _load();
+  Widget build(BuildContext context) {
+    final fromServer = ref.watch(serverChildrenProvider).any((h) => h.child.id == widget.history.child.id);
+    // Copiii de pe server pot sosi după deschiderea paginii: încărcăm planul atunci.
+    if (fromServer && _hidden == null && !_loading) {
+      _loading = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    }
+    return _body(context, fromServer);
   }
 
   Future<void> _load() async {
@@ -82,9 +87,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
     setState(() => _hidden = next);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (!_fromServer) {
+  Widget _body(BuildContext context, bool fromServer) {
+    if (!fromServer) {
       return const Section(
         'Jocurile copilului',
         child: Text(

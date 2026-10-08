@@ -220,6 +220,12 @@ class SpatialSpanGame extends SequenceGame {
       final minD = tries > 3000 ? 0.16 : 0.22;
       if (out.every((q) => q.distanceTo(p) >= minD)) out.add(p);
     }
+    // Rar: n-au încăput întâmplător — completăm cu locurile unei grile 3 × 3, cele mai libere.
+    final grid = [for (var j = 0; j < 3; j++) for (var i = 0; i < 3; i++) Point(0.18 + i * 0.32, 0.2 + j * 0.3)];
+    while (out.length < n) {
+      grid.sort((a, b) => out.map((q) => q.distanceTo(b)).fold(9.0, min).compareTo(out.map((q) => q.distanceTo(a)).fold(9.0, min)));
+      out.add(grid.removeAt(0));
+    }
     return out;
   }
 

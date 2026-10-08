@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:licurici_core/licurici_core.dart';
 import 'package:test/test.dart';
 
@@ -23,6 +25,11 @@ void main() {
         expect(l.sequence[i], isNot(l.sequence[i - 1]));
       }
     }
+  });
+
+  test('chiar dacă nu încap întâmplător, fiecare floare are un loc', () {
+    final pos = SpatialSpanGame.scatter(15, Random(1));
+    expect(pos.length, 15);
   });
 
   test('e în catalog, pe aria Memorie și răbdare', () {

@@ -90,7 +90,13 @@ class SyncClient {
         for (final p in batch) (p['record']! as Map)['id'] as String,
       ]);
     }
-    if (plan != null) await _syncPlan(childId, plan, onPlan);
+    if (plan != null) {
+      try {
+        await _syncPlan(childId, plan, onPlan);
+      } on SyncException {
+        // Planul e un bonus: sesiunile au plecat deja; încercăm iar la următoarea sincronizare.
+      }
+    }
     return payload.length;
   }
 
@@ -109,7 +115,8 @@ class SyncClient {
     if (at != null && (local.at == null || at.isAfter(local.at!))) {
       onPlan?.call(hidden, levels, at);
     } else if (local.at != null && (at == null || local.at!.isAfter(at))) {
-      await _call('PUT', '/children/$childId/plan', {'hiddenGames': (local.hidden.toList()..sort())});
+      // Nivelurile de pornire le alege specialistul în panou: rămân cele de pe server.
+      await _call('PUT', '/children/$childId/plan', {'hiddenGames': (local.hidden.toList()..sort()), 'levels': levels});
     }
   }
 

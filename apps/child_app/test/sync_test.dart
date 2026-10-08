@@ -19,6 +19,7 @@ class FakeServer {
   bool down = false;
   Map<String, Object?> plan = {'hiddenGames': <String>[], 'updatedAt': null, 'updatedBy': null};
   final planPuts = <List<String>>[];
+  Object? lastPutLevels;
 
   http.Response json(Object body, [int status = 200]) =>
       http.Response.bytes(utf8.encode(jsonEncode(body)), status);
@@ -67,6 +68,7 @@ class FakeServer {
     if (path == '/children/$serverChild/plan' && r.method == 'PUT') {
       final hidden = ((body as Map)['hiddenGames'] as List).cast<String>();
       planPuts.add(hidden);
+      lastPutLevels = (body as Map)['levels'];
       plan = {'hiddenGames': hidden, 'updatedAt': '2026-10-09T10:00:00.000Z', 'updatedBy': 'PARENT'};
       return json(plan);
     }
@@ -225,5 +227,7 @@ void main() {
     );
     expect(applied, isNull);
     expect(server.planPuts.single, ['cauta']);
+    // Nivelurile alese de specialist nu se pierd când urcă lista de pe tabletă.
+    expect(server.lastPutLevels, {'emotii': 3});
   });
 }

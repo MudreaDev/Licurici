@@ -100,6 +100,8 @@ class _LanternMapScreenState extends ConsumerState<LanternMapScreen> with Single
     final count = lit.where((x) => x).length;
     final seen = ref.read(settingsProvider).lanternsSeen;
     final voice = ref.read(voiceProvider);
+    // Ținem minte câte ard acum (și în jos, dacă unele jocuri au fost scoase din listă).
+    if (count != seen) ref.read(settingsProvider.notifier).setLanternsSeen(count);
     if (count > seen) {
       // Ultimul felinar aprins: acolo zboară Licurici.
       final i = lit.lastIndexWhere((x) => x);
@@ -109,7 +111,6 @@ class _LanternMapScreenState extends ConsumerState<LanternMapScreen> with Single
       });
       ref.read(sfxProvider).play(Sfx.star);
       voice.say(['Ai aprins un felinar nou!']);
-      ref.read(settingsProvider.notifier).setLanternsSeen(count);
       _scrollTo(stations, i);
     } else {
       voice.say([count == 0 ? 'Joacă-te și aprinzi felinarele.' : 'Uite câte felinare ai aprins!']);
