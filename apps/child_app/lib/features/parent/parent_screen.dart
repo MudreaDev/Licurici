@@ -8,6 +8,7 @@ import '../../data/session.dart';
 import '../../shared/mascot.dart';
 import '../../shared/top_bar.dart';
 import '../aquarium/aquarium_store.dart';
+import '../coloring/drawings_store.dart';
 import '../settings/settings.dart';
 import 'sync_dialog.dart';
 
@@ -183,9 +184,11 @@ Future<void> _wipe(BuildContext context, WidgetRef ref) async {
   ref.read(sessionProvider.notifier).discard();
   await ref.read(sessionStoreProvider).clear();
   await ref.read(aquariumStoreProvider).clear();
+  await ref.read(drawingStoreProvider).clear();
   ref.read(settingsProvider.notifier).reset();
   ref
     ..invalidate(aquariumProvider)
+    ..invalidate(drawingsProvider)
     ..invalidate(localReportsProvider);
   if (!context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(

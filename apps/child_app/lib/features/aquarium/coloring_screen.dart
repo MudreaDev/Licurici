@@ -7,7 +7,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:licurici_core/licurici_core.dart';
 
 import '../../app/layout.dart';
 import '../../app/theme.dart';
@@ -15,14 +14,28 @@ import '../../shared/sfx.dart';
 import '../../shared/top_bar.dart';
 import '../../shared/ui/candy.dart';
 import '../../shared/voice.dart';
+import '../coloring/coloring_pages.dart';
 import 'aquarium_store.dart';
 import 'fish_art.dart';
 
-/// Colorez un pește (`/acvariu/coloreaza`): copilul alege un model și îl colorează pe ecran
-/// (carioca sau găleata), apoi peștele lui intră în acvariu. Varianta pe hârtie (fișa
-/// printată + camera) folosește același model și același desen.
+/// Colorez (carioca sau găleata) o pagină aleasă dintr-o listă. Implicit: un pește
+/// (`/acvariu/coloreaza`), care la „Gata!” intră în acvariu; varianta pe hârtie (fișa
+/// printată + camera) folosește același model și același desen. Jocul „Colorăm” dă alte
+/// pagini și alt final ([onDone]).
 class ColoringScreen extends ConsumerStatefulWidget {
-  const ColoringScreen({super.key});
+  const ColoringScreen({super.key, this.pages, this.onDone, this.pickPrompt = 'Alege un pește.', this.startPrompt = 'Colorează peștele cum vrei tu.', this.showAquarium = true});
+
+  /// Paginile din care alege copilul (implicit: peștii).
+  final List<ColoringPage>? pages;
+
+  /// Ce se întâmplă cu desenul gata (cu liniile peste culoare). Implicit: peștele intră în
+  /// acvariu.
+  final Future<void> Function(BuildContext context, ColoringPage page, ui.Image drawing)? onDone;
+  final String pickPrompt;
+  final String startPrompt;
+
+  /// Butonul „Acvariul” din bara de sus.
+  final bool showAquarium;
 
   @override
   ConsumerState<ColoringScreen> createState() => _ColoringScreenState();
@@ -38,7 +51,7 @@ const _palette = [
 const _sizes = [14.0, 30.0, 58.0];
 
 class _ColoringScreenState extends ConsumerState<ColoringScreen> {
-  FishSpecies? _species;
+  ColoringPage? _page;
   ui.Image? _paint;
   Uint8List? _walls;
   final _undo = ListQueue<ui.Image>();
@@ -52,7 +65,7 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => ref.read(voiceProvider).say(['Alege un pește.']));
+    WidgetsBinding.instance.addPostFrameCallback((_) => ref.read(voiceProvider).say([widget.pickPrompt]));
   }
 
   @override
@@ -64,14 +77,16 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
     super.dispose();
   }
 
-  Future<void> _start(FishSpecies s) async {
+  List<ColoringPage> get _pages => widget.pages ?? fishPages;
+
+  Future<void> _start(ColoringPage s) async {
     ref.read(sfxProvider).play(Sfx.tap);
     final rec = ui.PictureRecorder();
     Canvas(rec).drawRect(Offset.zero & fishBox, Paint()..color = Colors.white);
     final blank = await rec.endRecording().toImage(fishBox.width.toInt(), fishBox.height.toInt());
     // Liniile fișei sunt „pereți” pentru găleată.
     final rec2 = ui.PictureRecorder();
-    paintLineArt(Canvas(rec2), s);
+    s.paintLines(Canvas(rec2));
     final lines = await rec2.endRecording().toImage(fishBox.width.toInt(), fishBox.height.toInt());
     final px = (await lines.toByteData(format: ui.ImageByteFormat.rawStraightRgba))!.buffer.asUint8List();
     lines.dispose();
@@ -81,11 +96,11 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
     }
     if (!mounted) return;
     setState(() {
-      _species = s;
+      _page = s;
       _paint = blank;
       _walls = walls;
     });
-    ref.read(voiceProvider).say(['Colorează peștele cum vrei tu.']);
+    ref.read(voiceProvider).say([widget.startPrompt]);
   }
 
   void _push(ui.Image next) {
@@ -146,23 +161,40 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
   }
 
   Future<void> _done() async {
-    final s = _species, paint = _paint;
+    final s = _page, paint = _paint;
     if (s == null || paint == null || _busy) return;
     setState(() => _busy = true);
     final rec = ui.PictureRecorder();
     final c = Canvas(rec);
     c.drawImage(paint, Offset.zero, Paint());
-    paintLineArt(c, s);
+    s.paintLines(c);
     final drawing = await rec.endRecording().toImage(paint.width, paint.height);
-    final id = await ref.read(aquariumProvider.notifier).add(s, drawing);
-    drawing.dispose();
     ref.read(sfxProvider).play(Sfx.correct);
+    if (widget.onDone case final done?) {
+      if (mounted) await done(context, s, drawing);
+      drawing.dispose();
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _page = null;
+          _paint?.dispose();
+          _paint = null;
+          for (final i in _undo) {
+            i.dispose();
+          }
+          _undo.clear();
+        });
+      }
+      return;
+    }
+    final id = await ref.read(aquariumProvider.notifier).add((s as FishPage).species, drawing);
+    drawing.dispose();
     if (mounted) context.go('/acvariu?nou=$id');
   }
 
   @override
   Widget build(BuildContext context) {
-    final s = _species;
+    final s = _page;
     return Scaffold(
       body: DecoratedBox(
         decoration: const BoxDecoration(
@@ -176,16 +208,17 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
           child: Column(
             children: [
               TopBar(
-                title: s == null ? 'Alege un pește' : 'Colorez ${s.name}',
+                title: s == null ? widget.pickPrompt.replaceAll('.', '') : 'Colorez ${s.name}',
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    BarButton(
-                      icon: Icons.water_rounded,
-                      color: const Color(0xFF3FA7C4),
-                      label: 'Acvariul',
-                      onTap: () => context.go('/acvariu'),
-                    ),
+                    if (widget.showAquarium)
+                      BarButton(
+                        icon: Icons.water_rounded,
+                        color: const Color(0xFF3FA7C4),
+                        label: 'Acvariul',
+                        onTap: () => context.go('/acvariu'),
+                      ),
                     if (s != null) ...[
                       const SizedBox(width: 10),
                       BarButton(
@@ -199,7 +232,7 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
                   ],
                 ),
               ),
-              Expanded(child: s == null ? _Picker(onPick: _start) : _editor(context)),
+              Expanded(child: s == null ? _Picker(pages: _pages, onPick: _start) : _editor(context)),
             ],
           ),
         ),
@@ -245,7 +278,7 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
                         onPointerCancel: (_) => _commitStroke(),
                         child: CustomPaint(
                           painter: _SheetPainter(
-                            species: _species!,
+                            page: _page!,
                             layer: _paint,
                             pending: _pending,
                             stroke: (_stroke, _color, _size),
@@ -413,9 +446,9 @@ void floodFill(Uint8List px, Uint8List walls, int w, int h, int x0, int y0, Colo
 }
 
 class _SheetPainter extends CustomPainter {
-  _SheetPainter({required this.species, required this.layer, required this.pending, required this.stroke});
+  _SheetPainter({required this.page, required this.layer, required this.pending, required this.stroke});
 
-  final FishSpecies species;
+  final ColoringPage page;
   final ui.Image? layer;
   final List<(List<Offset>, Color, double)> pending;
   final (List<Offset>, Color, double) stroke;
@@ -432,7 +465,7 @@ class _SheetPainter extends CustomPainter {
       _drawStroke(canvas, pts, c, w);
     }
     if (stroke.$1.isNotEmpty) _drawStroke(canvas, stroke.$1, stroke.$2, stroke.$3);
-    paintLineArt(canvas, species);
+    page.paintLines(canvas);
   }
 
   @override
@@ -514,9 +547,10 @@ class _ToolButton extends StatelessWidget {
 
 /// Alegerea modelului: fișele, ca niște cartonașe.
 class _Picker extends StatelessWidget {
-  const _Picker({required this.onPick});
+  const _Picker({required this.pages, required this.onPick});
 
-  final void Function(FishSpecies) onPick;
+  final List<ColoringPage> pages;
+  final void Function(ColoringPage) onPick;
 
   @override
   Widget build(BuildContext context) {
@@ -528,8 +562,8 @@ class _Picker extends StatelessWidget {
         builder: (context, box) {
           // Cartonașele cât mai mari, toate pe ecran: alegem câte pe rând.
           var best = (0.0, 1);
-          for (var cols = 2; cols <= fishSpecies.length; cols++) {
-            final rows = (fishSpecies.length / cols).ceil();
+          for (var cols = 2; cols <= pages.length; cols++) {
+            final rows = (pages.length / cols).ceil();
             final w = math.min(
               (box.maxWidth - gap * (cols - 1)) / cols,
               ((box.maxHeight - gap * (rows - 1)) / rows) * 1.4,
@@ -543,7 +577,7 @@ class _Picker extends StatelessWidget {
               runSpacing: gap,
               alignment: WrapAlignment.center,
               children: [
-                for (final s in fishSpecies)
+                for (final s in pages)
                   CandyPressable(
                     key: ValueKey('species-${s.id}'),
                     color: Colors.white,
@@ -581,18 +615,18 @@ class _Picker extends StatelessWidget {
 }
 
 class _ThumbPainter extends CustomPainter {
-  _ThumbPainter(this.species);
+  _ThumbPainter(this.page);
 
-  final FishSpecies species;
+  final ColoringPage page;
 
   @override
   void paint(Canvas canvas, Size size) {
     final k = math.min(size.width / fishBox.width, size.height / fishBox.height);
     canvas.translate((size.width - fishBox.width * k) / 2, (size.height - fishBox.height * k) / 2);
     canvas.scale(k);
-    paintLineArt(canvas, species, color: Tokens.ink);
+    page.paintLines(canvas, color: Tokens.ink);
   }
 
   @override
-  bool shouldRepaint(_ThumbPainter old) => old.species != species;
+  bool shouldRepaint(_ThumbPainter old) => old.page != page;
 }

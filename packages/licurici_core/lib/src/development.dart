@@ -166,6 +166,8 @@ const List<Ladder> ladders = [
     Step('MOT2', 'Urmărește curbe și valuri fără să iasă de pe drum', games: ['traseaza']),
     Step('MOT3', 'Urmărește zig-zag și bucle pe un drum îngust, fără ajutor', games: ['traseaza']),
     Step('MOT4', 'Trage un obiect precis la o țintă care se mișcă', games: ['hraneste-pestii']),
+    Step('MOT5', 'Colorează în contur, cu carioca și cu găleata (motricitate fină, creație)',
+        games: ['colorare']),
   ]),
   Ladder(Domain.pac, [
     Step('PAC-N2', 'Numără până la 5', games: ['numaram']),

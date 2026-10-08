@@ -15,6 +15,7 @@ export 'src/reaction.dart';
 export 'src/development.dart';
 export 'src/build_copy.dart';
 export 'src/catalog.dart';
+export 'src/coloring.dart';
 export 'src/cause_effect.dart';
 export 'src/change.dart';
 export 'src/scene.dart';
