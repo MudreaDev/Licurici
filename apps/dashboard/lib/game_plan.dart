@@ -20,6 +20,8 @@ class GamePlanPanel extends ConsumerStatefulWidget {
 class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   Set<String>? _hidden;
   Set<String> _saved = const {};
+  Map<String, int> _levels = {};
+  Map<String, int> _savedLevels = const {};
   String? _info;
   String? _error;
   bool _busy = false;
@@ -39,6 +41,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
       setState(() {
         _hidden = {...plan.hidden};
         _saved = {...plan.hidden};
+        _levels = {...plan.levels};
+        _savedLevels = {...plan.levels};
         _info = plan.updatedAt == null
             ? 'Copilul vede toate jocurile.'
             : 'Ultima schimbare: ${plan.updatedAt!.toLocal().toString().substring(0, 16)}'
@@ -52,10 +56,11 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   Future<void> _save() async {
     setState(() => _busy = true);
     try {
-      final plan = await ref.read(apiClientProvider).setPlan(widget.history.child.id, _hidden!);
+      final plan = await ref.read(apiClientProvider).setPlan(widget.history.child.id, _hidden!, levels: _levels);
       if (!mounted) return;
       setState(() {
         _saved = {...plan.hidden};
+        _savedLevels = {...plan.levels};
         _info = 'Salvat. Tableta preia lista la următoarea sincronizare.';
         _error = null;
       });
@@ -65,6 +70,10 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
       if (mounted) setState(() => _busy = false);
     }
   }
+
+  static bool _sameSet(Set<String> a, Set<String> b) => a.length == b.length && a.containsAll(b);
+  static bool _sameMap(Map<String, int> a, Map<String, int> b) =>
+      a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
 
   void _toggle(Iterable<String> ids, bool visible) {
     final next = {..._hidden!};
@@ -96,6 +105,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                 Text(
                   'Copilul vede doar jocurile bifate (pe ecranul principal și în „Drumul de azi”). '
                   'Scoate jocurile care nu îi folosesc acum sau care îl agită; datele lor rămân. '
+                  'Nivelul de pornire e opțional: implicit, jocul continuă adaptiv de unde a rămas copilul. '
                   'Fiecare schimbare apare în jurnal.',
                   style: text.bodyMedium,
                 ),
@@ -129,13 +139,24 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                           subtitle: Text('${g.description} · ${stepsForGame(g.id).map((s) => s.id).join(', ')}'),
                           value: !hidden.contains(g.id),
                           onChanged: (v) => _toggle([g.id], v ?? true),
+                          secondary: DropdownButton<int?>(
+                            key: ValueKey('plan-level-${g.id}'),
+                            value: _levels[g.id],
+                            hint: const Text('nivel: adaptiv'),
+                            underline: const SizedBox.shrink(),
+                            items: [
+                              const DropdownMenuItem<int?>(value: null, child: Text('nivel: adaptiv')),
+                              for (var l = 1; l <= 15; l++) DropdownMenuItem<int?>(value: l, child: Text('pornește de la $l')),
+                            ],
+                            onChanged: (l) => setState(() => l == null ? _levels.remove(g.id) : _levels[g.id] = l),
+                          ),
                         ),
                     ],
                   ),
                 const SizedBox(height: 12),
                 FilledButton.icon(
                   key: const ValueKey('plan-save'),
-                  onPressed: _busy || (hidden.length == _saved.length && hidden.containsAll(_saved)) ? null : _save,
+                  onPressed: _busy || (_sameSet(hidden, _saved) && _sameMap(_levels, _savedLevels)) ? null : _save,
                   icon: const Icon(Icons.save_rounded),
                   label: const Text('Salvează lista'),
                 ),

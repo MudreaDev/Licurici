@@ -123,6 +123,7 @@ class FakeBackend {
         final b = jsonDecode(r.body) as Map;
         plan = {
           'hiddenGames': b['hiddenGames'],
+          'levels': b['levels'],
           'updatedAt': '2026-10-09T09:00:00.000Z',
           'updatedBy': 'THERAPIST',
           'history': [
@@ -481,6 +482,14 @@ void main() {
     expect(find.text('Copilul vede toate jocurile.'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('plan-domain-FEX')));
     await tester.pumpAndSettle();
+    // Nivelul de pornire pentru „Emoții”: se deschide aria, apoi se alege nivelul 3.
+    await tester.tap(find.textContaining('EMO ·'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const ValueKey('plan-level-emotii')));
+    await tester.tap(find.byKey(const ValueKey('plan-level-emotii')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('pornește de la 3').last);
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const ValueKey('plan-save')));
     await tester.tap(find.byKey(const ValueKey('plan-save')));
     await tester.pumpAndSettle();
@@ -488,6 +497,7 @@ void main() {
     final hidden = (backend.plan['hiddenGames']! as List).cast<String>();
     expect(hidden, containsAll(['pescarul', 'simon', 'semaforul']));
     expect(hidden, isNot(contains('emotii')));
+    expect(backend.plan['levels'], {'emotii': 3});
     expect(find.textContaining('Tableta preia lista'), findsOneWidget);
   });
 }

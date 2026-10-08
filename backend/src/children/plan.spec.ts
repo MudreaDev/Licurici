@@ -30,7 +30,13 @@ function setup({ linked = true } = {}) {
 describe('GamePlanService', () => {
   it('fără plan: toate jocurile (listă goală)', async () => {
     const { plan } = setup();
-    await expect(plan.get(parent, CHILD)).resolves.toEqual({ hiddenGames: [], updatedAt: null, updatedBy: null, history: [] });
+    await expect(plan.get(parent, CHILD)).resolves.toEqual({
+      hiddenGames: [],
+      levels: {},
+      updatedAt: null,
+      updatedBy: null,
+      history: [],
+    });
   });
 
   it('părintele și specialistul cu partajare activă pot alege jocurile; fiecare schimbare e în audit', async () => {
@@ -54,6 +60,14 @@ describe('GamePlanService', () => {
     const { plan } = setup({ linked: false });
     await expect(plan.put(therapist, CHILD, { hiddenGames: [] })).rejects.toBeInstanceOf(NotFoundError);
     await expect(plan.get(stranger, CHILD)).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it('nivelul de pornire pe joc: între 1 și 40, doar pentru id-uri de joc', async () => {
+    const { plan } = setup();
+    const p = await plan.put(therapist, CHILD, { hiddenGames: [], levels: { pescarul: 5, simon: 3 } });
+    expect(p.levels).toEqual({ pescarul: 5, simon: 3 });
+    await expect(plan.put(parent, CHILD, { hiddenGames: [], levels: { pescarul: 0 } })).rejects.toBeInstanceOf(ValidationError);
+    await expect(plan.put(parent, CHILD, { hiddenGames: [], levels: { 'Nume Copil': 2 } })).rejects.toBeInstanceOf(ValidationError);
   });
 
   it('doar id-uri de joc, cel mult 200, fără alte câmpuri', async () => {

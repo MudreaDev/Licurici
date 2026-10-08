@@ -201,6 +201,7 @@ export class PrismaRepos {
       const row = await this.db.childSettings.findUnique({ where: { childId }, select: { extra: true } });
       type Stored = {
         hiddenGames?: string[];
+        levels?: Record<string, number>;
         updatedAt?: string;
         updatedBy?: string;
         history?: { at: string; by: string; hidden: number }[];
@@ -209,6 +210,7 @@ export class PrismaRepos {
       if (!plan) return null;
       return {
         hiddenGames: Array.isArray(plan.hiddenGames) ? plan.hiddenGames : [],
+        levels: plan.levels && typeof plan.levels === 'object' ? plan.levels : {},
         updatedAt: plan.updatedAt ? new Date(plan.updatedAt) : null,
         updatedBy: plan.updatedBy === 'THERAPIST' ? 'THERAPIST' : plan.updatedBy === 'PARENT' ? 'PARENT' : null,
         history: (plan.history ?? []).map((h) => ({

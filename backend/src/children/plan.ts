@@ -8,12 +8,19 @@ import type { ChildAccess } from './access';
  * Planul de jocuri al copilului (plan §5.1): ce jocuri **nu** vede copilul pe tabletă. Lista e
  * de id-uri de joc (slug-uri), nu date despre copil. Un joc nou din aplicație apare implicit.
  */
+const gameId = z.string().regex(/^[a-z0-9-]{2,40}$/);
+
 export const planSchema = z
   .object({
     hiddenGames: z
-      .array(z.string().regex(/^[a-z0-9-]{2,40}$/))
+      .array(gameId)
       .max(200)
       .transform((xs) => [...new Set(xs)].sort()),
+    /** Nivelul de pornire ales de specialist pentru unele jocuri (ADR-025, `GameConfig`). */
+    levels: z
+      .record(gameId, z.number().int().min(1).max(40))
+      .refine((r) => Object.keys(r).length <= 200)
+      .default({}),
   })
   .strict();
 
@@ -26,6 +33,8 @@ export interface PlanChange {
 
 export interface GamePlan {
   hiddenGames: string[];
+  /** Nivelul de pornire pe joc (doar jocurile pentru care s-a ales). */
+  levels: Record<string, number>;
   /** Când s-a schimbat ultima dată și de cine (rolul), ca tableta să știe dacă e mai nou. */
   updatedAt: Date | null;
   updatedBy: 'PARENT' | 'THERAPIST' | null;
@@ -54,18 +63,19 @@ export class GamePlanService {
 
   async get(user: AuthUser, childId: string): Promise<GamePlan> {
     await this.access.assert(user, childId, 'read');
-    return (await this.repo.read(childId)) ?? { hiddenGames: [], updatedAt: null, updatedBy: null, history: [] };
+    return (await this.repo.read(childId)) ?? { hiddenGames: [], levels: {}, updatedAt: null, updatedBy: null, history: [] };
   }
 
   async put(user: AuthUser, childId: string, body: unknown): Promise<GamePlan> {
     // Citirea e suficientă ca drept: specialistul are voie aici (doar pentru plan).
     await this.access.assert(user, childId, 'read');
-    const { hiddenGames } = parseWith(planSchema, body);
+    const { hiddenGames, levels } = parseWith(planSchema, body);
     const previous = await this.repo.read(childId);
     const by: PlanChange['by'] = user.role === 'THERAPIST' ? 'THERAPIST' : 'PARENT';
     const at = this.now();
     const plan: GamePlan = {
       hiddenGames,
+      levels,
       updatedAt: at,
       updatedBy: by,
       history: [...(previous?.history ?? []), { at, by, hidden: hiddenGames.length }].slice(-50),
