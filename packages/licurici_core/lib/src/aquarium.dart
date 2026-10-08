@@ -113,6 +113,10 @@ class SwimmingFish {
   double _timer = 0;
   double _burst = 0;
   double _peck = 0;
+
+  /// Peștele după care înoată acum (un mic banc), dacă are unul; și cât mai stă cu el.
+  SwimmingFish? buddy;
+  double _buddyLeft = 0;
   Point<double> _offset = const Point(0, 0);
 
   /// Cât de mic pare la adâncimea lui.
@@ -221,6 +225,14 @@ class Aquarium {
 
   void remove(String id) => fish.removeWhere((f) => f.id == id);
 
+  /// [f] înoată în urma lui [b] cam [seconds] secunde (un mic banc).
+  void follow(SwimmingFish f, SwimmingFish b, {double seconds = 8}) {
+    f
+      ..mode = FishMode.wander
+      ..buddy = b
+      .._buddyLeft = seconds;
+  }
+
   /// Peștele coboară să caute de mâncare pe fund, lângă locul unde e.
   void forage(SwimmingFish f) {
     f.mode = FishMode.forage;
@@ -265,6 +277,7 @@ class Aquarium {
       final away = dist < 1e-6 ? Point(_rng.nextBool() ? 1.0 : -1.0, 0.0) : d * (1 / dist);
       final strength = 1 - dist / fleeRadius;
       f.mode = FishMode.flee;
+      f.buddy = null;
       f._timer = 0.8 + strength * 0.6;
       f.target = _clamp(at + away * (fleeRadius * 1.6));
       f.targetZ = min(1.0, f.z + 0.35 + 0.3 * strength);
@@ -422,8 +435,22 @@ class Aquarium {
           }
         }
       case FishMode.wander || FishMode.rest:
+        if (f.buddy case final b? when f.mode == FishMode.wander) {
+          // În urma prietenului, puțin în lateral, la aceeași adâncime.
+          f._buddyLeft -= dt;
+          if (f._buddyLeft <= 0 || !fish.contains(b) || b.mode == FishMode.flee) {
+            f.buddy = null;
+          } else {
+            final behind = -cos(b.yaw).sign;
+            f.target = _clamp(Point(b.pos.x + behind * b.apparentLength * 0.9, b.pos.y + b.apparentLength * 0.35));
+            f.targetZ = (b.z + 0.08).clamp(0.0, 0.95);
+          }
+        }
         if (_nearestFood(f) != null) {
+          f.buddy = null;
           f.mode = FishMode.food;
+        } else if (f.buddy != null) {
+          // urmează prietenul (ținta e deja pusă)
         } else if (f.mode == FishMode.rest) {
           if (f._timer <= 0) {
             f.mode = FishMode.wander;
@@ -441,7 +468,16 @@ class Aquarium {
             f.targetZ = f.z;
           } else if (roll < 0.45) {
             forage(f);
-          } else if (roll < 0.55) {
+          } else if (roll < 0.67 && fish.length > 1) {
+            // Se alătură altui pește și înoată în urma lui o vreme.
+            final others = [for (final o in fish) if (!identical(o, f) && o.buddy != f && o.mode == FishMode.wander) o];
+            if (others.isNotEmpty) {
+              follow(f, others[_rng.nextInt(others.length)], seconds: 6 + _rng.nextDouble() * 6);
+            } else {
+              f.target = _randomSpot(near: f.pos);
+              f.targetZ = _randomZ(near: f.z);
+            }
+          } else if (roll < 0.75) {
             // La geam, aproape de mijloc: mare și clar.
             f.target = _clamp(Point(width * (0.3 + _rng.nextDouble() * 0.4), 0.35 + _rng.nextDouble() * 0.2));
             f.targetZ = 0.02;

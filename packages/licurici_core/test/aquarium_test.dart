@@ -242,5 +242,23 @@ void main() {
       expect(maxNod, greaterThan(0.3));
       expect(f.mode, isNot(FishMode.forage));
     });
+
+    test('un pește se poate alătura altuia: înoată în urma lui o vreme, apoi pleacă singur', () {
+      final a = Aquarium(width: 1.6, seed: 12);
+      final lead = _fish('a', const Point(0.4, 0.5));
+      final follower = _fish('b', const Point(1.2, 0.4));
+      a
+        ..add(lead)
+        ..add(follower);
+      a.follow(follower, lead); // ca și cum ar fi ales singur
+      for (var t = 0; t < 60 * 5; t++) {
+        a.step(1 / 60);
+      }
+      expect(follower.buddy, same(lead));
+      expect(follower.pos.distanceTo(lead.pos), lessThan(0.45));
+      // O atingere lângă el îl desparte.
+      a.tap(follower.pos + const Point(0.1, 0));
+      expect(follower.buddy, isNull);
+    });
   });
 }
