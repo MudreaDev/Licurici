@@ -26,6 +26,7 @@ export 'src/shop.dart';
 export 'src/feeding.dart';
 export 'src/gaze.dart';
 export 'src/imitation.dart';
+export 'src/instructions.dart';
 export 'src/maze.dart';
 export 'src/memory.dart';
 export 'src/ordering.dart';

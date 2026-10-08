@@ -18,6 +18,10 @@ const uiPhrases = [
   'Uite! Peștele tău înoată în acvariu!',
   'Alege un pește.',
   'Colorează peștele cum vrei tu.',
+  // Ascultă și fă
+  'Ascultă bine și atinge în aceeași ordine.',
+  'Mai ascultă o dată.',
+  'Uite, în ordinea asta.',
   // Rândul meu, rândul tău
   'Construim un turn. Pe rând: o dată tu, o dată eu.',
   'Rândul tău.',
@@ -138,6 +142,13 @@ void main(List<String> args) {
   // Jocurile cu ecran propriu (fără runde `choice`).
   for (final t in traceTrips) {
     add(t.says, 'traseaza');
+  }
+  for (var level = 1; level <= 14; level++) {
+    for (var seed = 0; seed < 40; seed++) {
+      for (final r in const InstructionGame().generate(level, seed: seed).rounds) {
+        add(r.says, 'asculta-si-fa');
+      }
+    }
   }
   for (final g in writingGames) {
     for (final glyph in g.allGlyphs) {

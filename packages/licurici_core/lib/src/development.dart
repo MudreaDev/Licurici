@@ -106,6 +106,7 @@ const List<Ladder> ladders = [
     Step('LRC3b', 'Înțelege acțiuni: „cine doarme?”, „cine mănâncă?”', games: ['ce-face']),
     Step('LRC4', 'Înțelege un atribut: mare / mic, culoare („cartea verde”)',
         games: ['mingea-rosie']),
+    Step('LRC5', 'Urmează o instrucțiune în 2–3 pași („atinge mărul, apoi mingea”)', games: ['asculta-si-fa']),
     Step('LRC6', 'Înțelege pozițiile: pe, sub, în, lângă, deasupra', games: ['unde-e-ursul']),
     Step('LRC6b', 'Înțelege sus, jos, stânga, dreapta (și colțurile)', games: ['pozitii']),
     Step('LRC7', 'Răspunde la întrebări despre o poveste ascultată', games: ['povesti']),

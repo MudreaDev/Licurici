@@ -42,6 +42,7 @@ import 'features/aquarium/aquarium_screen.dart';
 import 'features/aquarium/coloring_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/games/track/track_screen.dart';
+import 'features/games/listen/listen_screen.dart';
 import 'features/games/turns/turn_screen.dart';
 import 'features/coloring/color_play_screen.dart';
 import 'features/games/write/write_screen.dart';
@@ -286,6 +287,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/cauta',
         pageBuilder: (context, state) =>
             _fade(context, state, const SearchScreen()),
+      ),
+      GoRoute(
+        path: '/asculta-si-fa',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const ListenScreen()),
       ),
       GoRoute(
         path: '/pe-rand',

@@ -13,6 +13,7 @@ import 'change.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
+import 'instructions.dart';
 import 'maze.dart';
 import 'memory.dart';
 import 'ordering.dart';
@@ -593,6 +594,38 @@ class SessionRecorder {
         stimulusId: level.axes.passTurn ? 'da-randul' : 'asteapta',
         difficulty: level.axes.waitMs / 1000,
         offTargetTaps: c.earlyTaps,
+      ));
+    }
+  }
+
+  /// Un nivel `asculta-si-fa`: câte o încercare pe instrucțiune. Corectă = toți pașii în ordine,
+  /// din prima; ajutorul = repetarea (P2) sau pozele în ordine (P3); dificultatea = numărul de
+  /// pași; confuzia = primul obiect atins greșit.
+  void instructionLevel(InstructionResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final a in result.attempts) {
+      final r = a.round;
+      String? wrong;
+      for (var i = 0; i < a.taps.length; i++) {
+        if (i >= r.order.length || a.taps[i] != r.order[i]) {
+          wrong = r.table[a.taps[i]].word;
+          break;
+        }
+      }
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: a.clean,
+        promptLevel: a.prompt,
+        attempts: max(1, a.taps.length - r.order.length + 1),
+        latencyMs: a.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: r.reversedWording ? 'invers' : '${r.order.length}-pasi',
+        difficulty: r.order.length.toDouble(),
+        targetId: r.table[r.order.first].word,
+        chosenId: wrong,
       ));
     }
   }
