@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
 
 import { AuthService, loginSchema, registerSchema } from '../auth/auth.service';
+import { EmailFlows } from '../auth/email-flows';
 import { AuthGuard, CurrentUser } from '../auth/guard';
 import type { AuthUser } from '../auth/tokens';
 import { ChildrenService } from '../children/children';
@@ -20,7 +21,10 @@ const refreshSchema = z.object({ refreshToken: z.string().min(20).max(200) }).st
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(@Inject(AuthService) private readonly auth: AuthService) {}
+  constructor(
+    @Inject(AuthService) private readonly auth: AuthService,
+    @Inject(EmailFlows) private readonly mail: EmailFlows,
+  ) {}
 
   @Post('register')
   register(@Body() body: unknown) {
@@ -43,6 +47,26 @@ export class AuthController {
   @HttpCode(204)
   async logout(@Body() body: unknown): Promise<void> {
     await this.auth.logout(parseWith(refreshSchema, body).refreshToken);
+  }
+
+  /** Legătura din e-mailul de confirmare (fără autentificare: se poate deschide pe alt dispozitiv). */
+  @Post('verify-email')
+  @HttpCode(200)
+  verifyEmail(@Body() body: unknown) {
+    return this.mail.verify(body);
+  }
+
+  /** „Am uitat parola”: răspunde la fel pentru orice adresă. */
+  @Post('password/forgot')
+  @HttpCode(202)
+  forgot(@Body() body: unknown) {
+    return this.mail.forgot(body);
+  }
+
+  @Post('password/reset')
+  @HttpCode(200)
+  reset(@Body() body: unknown) {
+    return this.mail.reset(body);
   }
 }
 
@@ -164,7 +188,21 @@ export class MeController {
   constructor(
     @Inject(GdprService) private readonly gdpr: GdprService,
     @Inject(AuthService) private readonly auth: AuthService,
+    @Inject(EmailFlows) private readonly mail: EmailFlows,
   ) {}
+
+  /** Contul: adresa și dacă e confirmată. */
+  @Get()
+  account(@CurrentUser() user: AuthUser) {
+    return this.auth.account(user);
+  }
+
+  /** Retrimite legătura de confirmare a adresei. */
+  @Post('verify-email')
+  @HttpCode(202)
+  resendVerification(@CurrentUser() user: AuthUser) {
+    return this.mail.requestVerification(user);
+  }
 
   /** Autentificarea în doi pași (TOTP): starea, configurarea, activarea, oprirea. */
   @Get('2fa')

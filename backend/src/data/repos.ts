@@ -31,6 +31,12 @@ export class PrismaRepos {
     setTotp: async (id, secret, enabledAt) => {
       await this.db.user.update({ where: { id }, data: { totpSecret: secret, totpEnabledAt: enabledAt } });
     },
+    setVerified: async (id, at) => {
+      await this.db.user.update({ where: { id }, data: { verifiedAt: at } });
+    },
+    setPassword: async (id, passwordHash) => {
+      await this.db.user.update({ where: { id }, data: { passwordHash } });
+    },
   };
 
   private static userRow(u: {
@@ -40,6 +46,7 @@ export class PrismaRepos {
     passwordHash: string | null;
     totpSecret: string | null;
     totpEnabledAt: Date | null;
+    verifiedAt: Date | null;
   }) {
     return {
       id: u.id,
@@ -48,6 +55,7 @@ export class PrismaRepos {
       passwordHash: u.passwordHash,
       totpSecret: u.totpSecret,
       totpEnabledAt: u.totpEnabledAt,
+      verifiedAt: u.verifiedAt,
     };
   }
 

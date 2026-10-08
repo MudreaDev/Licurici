@@ -9,6 +9,7 @@ export interface TokenStore {
   set(key: string, value: string, mode: 'EX', seconds: number): Promise<unknown>;
   getdel(key: string): Promise<string | null>;
   del(key: string): Promise<number>;
+  get(key: string): Promise<string | null>;
 }
 
 export type Role = 'PARENT' | 'THERAPIST' | 'ADMIN';
@@ -26,6 +27,8 @@ export interface TokenPair {
 
 export const ACCESS_TTL_SECONDS = 15 * 60;
 export const REFRESH_TTL_SECONDS = 30 * 24 * 3600;
+/** Generația trebuie să trăiască mai mult decât orice lanț de rotiri (fiecare rotire = încă 30 de zile). */
+const GENERATION_TTL_SECONDS = 5 * 365 * 24 * 3600;
 
 /**
  * Tokenuri (ADR-012): access JWT scurt (15 min, HS256) + refresh token opac, de unică
@@ -51,7 +54,7 @@ export class TokenService {
     const refreshToken = randomBytes(32).toString('base64url');
     await this.store.set(
       TokenService.key(refreshToken),
-      JSON.stringify({ id: user.id, role: user.role }),
+      JSON.stringify({ id: user.id, role: user.role, gen: await this.generation(user.id) }),
       'EX',
       REFRESH_TTL_SECONDS,
     );
@@ -63,7 +66,27 @@ export class TokenService {
   async rotate(refreshToken: string): Promise<TokenPair> {
     const raw = await this.store.getdel(TokenService.key(refreshToken));
     if (!raw) throw new UnauthorizedError('Sesiune expirată. Autentifică-te din nou.');
-    return this.issue(JSON.parse(raw) as AuthUser);
+    const { id, role, gen } = JSON.parse(raw) as AuthUser & { gen?: string };
+    // Sesiunile deschise înainte de o schimbare a parolei nu se mai reînnoiesc.
+    if ((gen ?? '') !== (await this.generation(id))) {
+      throw new UnauthorizedError('Parola s-a schimbat. Autentifică-te din nou.');
+    }
+    return this.issue({ id, role });
+  }
+
+  private static genKey(userId: string): string {
+    return `refresh-gen:${userId}`;
+  }
+
+  /** „Generația” sesiunilor contului: se schimbă la `revokeAll`; lipsă = sesiunile inițiale. */
+  private async generation(userId: string): Promise<string> {
+    return (await this.store.get(TokenService.genKey(userId))) ?? '';
+  }
+
+  /** Închide toate sesiunile contului (după resetarea parolei): refresh tokenurile emise până
+   *  acum nu se mai pot roti. Tokenurile de acces expiră singure în cel mult 15 minute. */
+  async revokeAll(userId: string): Promise<void> {
+    await this.store.set(TokenService.genKey(userId), randomBytes(8).toString('hex'), 'EX', GENERATION_TTL_SECONDS);
   }
 
   async revoke(refreshToken: string): Promise<void> {

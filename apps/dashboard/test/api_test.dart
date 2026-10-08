@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:licurici_core/licurici_core.dart';
@@ -30,6 +31,9 @@ class FakeBackend {
   bool accountDeleted = false;
   bool totp = false;
   bool totpRequired = false;
+  bool verified = false;
+  String? registeredRole;
+  final mails = <String>[];
   final sessions = demoChildren().first.sessions;
   Map<String, Object?> plan = {'hiddenGames': <String>[], 'updatedAt': null, 'updatedBy': null};
 
@@ -64,6 +68,29 @@ class FakeBackend {
         'refreshToken': 'r$accessVersion',
         'expiresIn': 900,
       });
+    }
+    if (path == '/auth/register') {
+      registeredRole = (jsonDecode(r.body) as Map)['role'] as String?;
+      mails.add('verify');
+      return json({'accessToken': 'a$accessVersion', 'refreshToken': 'r$accessVersion', 'expiresIn': 900}, 201);
+    }
+    if (path == '/auth/password/forgot') {
+      mails.add('reset');
+      return json({'ok': true}, 202);
+    }
+    if (path == '/auth/verify-email' || path == '/auth/password/reset') {
+      if ((jsonDecode(r.body) as Map)['token'] != 'tok-bun-bun-bun-bun-bun') {
+        return json({'statusCode': 400, 'message': 'Date invalide.', 'details': ['token: legătura a expirat']}, 400);
+      }
+      verified = true;
+      return json(path == '/auth/verify-email' ? {'verified': true} : {'ok': true});
+    }
+    if (path == '/me' && r.method == 'GET') {
+      return json({'email': 'ana@example.md', 'role': 'PARENT', 'emailVerified': verified});
+    }
+    if (path == '/me/verify-email') {
+      mails.add('verify');
+      return json({'sent': true}, 202);
     }
     if (path == '/auth/refresh') {
       accessVersion++;
@@ -499,5 +526,68 @@ void main() {
     expect(hidden, isNot(contains('emotii')));
     expect(backend.plan['levels'], {'emotii': 3});
     expect(find.textContaining('Tableta preia lista'), findsOneWidget);
+  });
+
+  testWidgets('cont nou: rolul, acordul, apoi „Contul meu” cere confirmarea adresei', (tester) async {
+    final backend = FakeBackend();
+    await pumpDashboard(tester, backend);
+    await tester.tap(find.byKey(const ValueKey('to-register')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('login-email')), 'dr@example.md');
+    await tester.enterText(find.byKey(const ValueKey('login-password')), 'parola-lunga-1');
+    // Fără acord, butonul nu merge.
+    expect(tester.widget<FilledButton>(find.byKey(const ValueKey('login-submit'))).onPressed, isNull);
+    await tester.tap(find.text('Sunt specialist'));
+    await tester.tap(find.byKey(const ValueKey('register-accept')));
+    await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('login-submit')));
+    await tester.pumpAndSettle();
+    expect(backend.registeredRole, 'THERAPIST');
+    expect(find.byKey(const ValueKey('verify-banner')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('verify-resend')));
+    await tester.pumpAndSettle();
+    expect(backend.mails, ['verify', 'verify']);
+    expect(find.text('Am trimis din nou legătura.'), findsOneWidget);
+  });
+
+  testWidgets('am uitat parola → legătura din e-mail → parola nouă', (tester) async {
+    final backend = FakeBackend();
+    await pumpDashboard(tester, backend);
+    await tester.tap(find.byKey(const ValueKey('to-forgot')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('login-password')), findsNothing);
+    await tester.enterText(find.byKey(const ValueKey('login-email')), 'ana@example.md');
+    await tester.tap(find.byKey(const ValueKey('login-submit')));
+    await tester.pumpAndSettle();
+    expect(backend.mails, ['reset']);
+    expect(find.byKey(const ValueKey('login-info')), findsOneWidget);
+
+    final router = GoRouter.of(tester.element(find.byType(Scaffold).first));
+    router.go('/parola-noua?token=tok-vechi-vechi-vechi-vechi');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('reset-password')), 'parola-noua-22');
+    await tester.enterText(find.byKey(const ValueKey('reset-again')), 'parola-noua-2');
+    await tester.tap(find.byKey(const ValueKey('reset-submit')));
+    await tester.pumpAndSettle();
+    expect(find.text('Parolele nu sunt la fel.'), findsOneWidget);
+    await tester.enterText(find.byKey(const ValueKey('reset-again')), 'parola-noua-22');
+    await tester.tap(find.byKey(const ValueKey('reset-submit')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Legătura a expirat'), findsOneWidget);
+
+    router.go('/parola-noua?token=tok-bun-bun-bun-bun-bun');
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('reset-password')), 'parola-noua-22');
+    await tester.enterText(find.byKey(const ValueKey('reset-again')), 'parola-noua-22');
+    await tester.tap(find.byKey(const ValueKey('reset-submit')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('reset-ok')), findsOneWidget);
+
+    router.go('/confirmare?token=tok-bun-bun-bun-bun-bun');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('confirm-ok')), findsOneWidget);
+    router.go('/confirmare?token=altul-altul-altul-altul');
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('confirm-error')), findsOneWidget);
   });
 }

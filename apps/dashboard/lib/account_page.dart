@@ -40,6 +40,9 @@ class AccountPage extends ConsumerStatefulWidget {
 class _AccountPageState extends ConsumerState<AccountPage> {
   Map<String, bool>? _consents;
   bool _totp = false;
+
+  /// Adresa contului și dacă e confirmată (ADR-032).
+  ({String? email, bool verified})? _account;
   List<Map<String, dynamic>> _children = const [];
   final _shares = <String, List<Map<String, dynamic>>>{};
   String? _error;
@@ -74,6 +77,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
     final consents = await _api.consents();
     final children = await _api.ownChildren();
     final totp = await _api.totpEnabled();
+    final account = await _api.account();
     for (final c in children) {
       _shares[c['id'] as String] = await _api.shares(c['id'] as String);
     }
@@ -81,6 +85,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
       _consents = consents;
       _children = children;
       _totp = totp;
+      _account = account;
     });
   });
 
@@ -223,6 +228,31 @@ class _AccountPageState extends ConsumerState<AccountPage> {
               // Jos rămâne loc pentru notificări: nu acoperă ultimul buton („Șterg contul”).
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
               children: [
+                if (_account case (email: final email, verified: false))
+                  Card(
+                    key: const ValueKey('verify-banner'),
+                    margin: const EdgeInsets.only(bottom: 24),
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
+                    child: ListTile(
+                      leading: const Icon(Icons.mark_email_unread_outlined),
+                      title: const Text('Confirmă adresa de e-mail'),
+                      subtitle: Text(
+                        'Ți-am trimis o legătură${email == null ? '' : ' la $email'}. Fără adresă confirmată nu-ți '
+                        'putem trimite parolă nouă dacă o uiți.',
+                      ),
+                      trailing: TextButton(
+                        key: const ValueKey('verify-resend'),
+                        onPressed: () => _guard(() async {
+                          await _api.resendVerification();
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(const SnackBar(content: Text('Am trimis din nou legătura.')));
+                        }),
+                        child: const Text('Trimite din nou'),
+                      ),
+                    ),
+                  ),
                 Text(
                   'Acordurile mele',
                   style: Theme.of(context).textTheme.titleLarge,

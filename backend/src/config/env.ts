@@ -27,6 +27,14 @@ export const envSchema = z.object({
   /** Câte rezumate AI poate cere un cont pe zi (limită în Redis). */
   AI_SUMMARIES_PER_DAY: z.coerce.number().int().min(0).max(1000).default(30),
 
+  /** E-mailurile tranzacționale (coada `mail`): `smtp://mailpit:1025` în dezvoltare, releul
+   *  SMTP Brevo în producție. Lipsă = nu se trimite nimic (job-ul doar notează în log). */
+  SMTP_URL: z.url({ protocol: /^smtps?$/ }).optional(),
+  MAIL_FROM: z.string().min(3).default('Licurici <nu-raspunde@licurici.local>'),
+
+  /** Adresa panoului (legăturile din e-mailuri duc acolo). */
+  APP_URL: z.url().default('http://localhost:8080'),
+
   /** Câte job-uri procesează un worker în paralel, pe coadă. */
   WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(64).default(4),
 });

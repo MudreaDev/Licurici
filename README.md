@@ -54,7 +54,7 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 | Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrări (`init`, `therapy_sessions`), `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. **Conturi pentru adulți** (`auth/`: Argon2id, JWT 15 min, refresh opac rotit în Redis), **acces la copil** (`children/access.ts`: părinte / specialist cu `CareLink`, 404 pentru restul), **consimțăminte** (`consents/`: jurnal append-only, retragere), **sincronizarea sesiunilor** (`sync/`: idempotentă, cere consimțământul `SYNC`; test de contract cu JSON generat din Dart), **rezumat AI** (`reports/summary-flow.ts`: consimțământ `AI_SUMMARY`, cache, limită zilnică), **partajarea cu specialistul** (`children/sharing.ts`: invitație după e-mail, consimțământ `THERAPIST_SHARING`, 90 de zile implicit, revocare, audit), **GDPR** (`gdpr/`: export complet `GET /me/export`, ștergerea copilului `DELETE /children/:id` — acces tăiat imediat, ștergere definitivă după 7 zile prin coada `gdpr` și `GdprProcessor` în worker), erori de infrastructură → 503. Serviciile sunt TypeScript simplu (NestJS 12 e ESM și nu se încarcă în Jest), legate în `api/api.module.ts`. 38 de teste; API-ul și worker-ul pornite fără Docker (testul de pornire a prins o dependență lipsă între module): rute, 400/401/503, Swagger verificate pe HTTP. **Netestat cu Postgres/Redis reale** (Docker lipsă). |
 | Docker Compose (dev) | 🟨 | postgres, redis, storage (RustFS), migrate, api, worker, mailpit. **Netestat încă**: Docker nu e instalat pe mașina de dezvoltare. Prod (Traefik, TLS) — de făcut. |
 | GDPR (consimțământ, export, ștergere, documente) | 🟨 | API: consimțăminte pe scopuri (jurnal append-only, retragere), export complet, ștergerea copilului cu perioadă de grație, audit. Panou: „Contul meu” (consimțăminte, partajare cu e-mailul specialistului, export, ștergerea copilului, **ștergerea contului** cu parola — sesiunea 8). Tableta: **„Șterge datele de pe tabletă”** în „Pentru părinți” (sesiuni, setări, abțibilduri, stele, acvariu — sesiunea 8). Documentele din `docs/gdpr/` — ciorne (§13.5). Exportul se descarcă ca fișier JSON (sesiunea 8). **De făcut:** verificarea juridică a documentelor, criptarea volumului și a e-mailului (DPIA). |
-| Documente ADR / cercetare pentru teză | 🟨 | ADR-001…ADR-031 în `docs/adr/`. `docs/research/`: [acvariul — pești 3D din cod](docs/research/acvariul-pesti-3d.md) (sesiunea 9). |
+| Documente ADR / cercetare pentru teză | 🟨 | ADR-001…ADR-032 în `docs/adr/`. `docs/research/`: [acvariul — pești 3D din cod](docs/research/acvariul-pesti-3d.md) (sesiunea 9). |
 | Unelte | 🟨 | `tools/gen-voice/gen-voice.mjs` (Azure AI Speech sau edge-tts, incremental). |
 
 **Termen:** 70% din aplicație gata la finalul semestrului 1 (**decembrie 2026**). Teza propriu-zisă — semestrul 2.
@@ -519,6 +519,7 @@ Fiecare decizie are fișierul ei în [`docs/adr/`](docs/adr/). Rezumat:
 | [ADR-029](docs/adr/ADR-029-rezumate-de-sesiune-cu-claude.md) | Rezumatele sesiunii: fapte calculate în cod, formulate de Claude (propus) |
 | [ADR-030](docs/adr/ADR-030-acvariul-pe-hartie-fisa-pdf-si-scanare-pe-dispozitiv.md) | Acvariul pe hârtie: fișa PDF și scanarea pe dispozitiv, în Dart pur (propus) |
 | [ADR-031](docs/adr/ADR-031-specialistul-alege-jocurile-copilului.md) | Specialistul poate alege jocurile copilului — singura scriere permisă lui (propus) |
+| [ADR-032](docs/adr/ADR-032-e-mailuri-tranzactionale-prin-smtp.md) | E-mailurile tranzacționale (confirmarea adresei, parola nouă) prin SMTP/nodemailer, din coada `mail` (propus) |
 
 ---
 
@@ -1106,7 +1107,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 ### Sprint 2 · 12 – 25 oct — Design system + primul joc
 - [ ] Tokeni, teme (normal/calm/contrast), componente de bază, mascota `CutoutRig` (idle + bucurie + încurajare)
 - [x] `MotionPolicy` (full/gentle/off) + cele 7 straturi de animație din §15.1 în `ChoiceMechanic` (mascota desenată în cod; `CutoutRig` urmează)
-- [ ] Home: „Jocurile de azi” + categorii; alegerea clasei; navigație fixă — 🟨 clase, materii și bara fixă gata; lipsește „Jocurile de azi”
+- [x] Home: „Jocurile de azi” + categorii; alegerea clasei; navigație fixă — „Drumul de azi” (`home/today_path.dart`), arii, clase, bara fixă
 - [x] Port `difficulty.js` → Dart + teste de paritate
 - [x] `ChoiceMechanic` + audio + recompense + final cu stele
 - [x] 10 jocuri `choice` (alfabetul, numaram, adunam, scadem, culori, forme, emotii, opuse, comparam, da-nu)
@@ -1116,32 +1117,32 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Drift: profil local, setări, evenimente, outbox, plan, acvariu (stele + pești)
 
 ### Sprint 3 · 26 oct – 8 nov — Conturi + sincronizare
-- [ ] Auth părinte (e-mail + Argon2id, verificare e-mail prin Mailpit/Brevo), JWT + refresh în Redis, rate limit
-- [ ] Poarta parentală + ecran consimțământ pe scopuri + tabel `consents`
-- [ ] Profiluri copii (CRUD), `/sync/events` cu Idempotency-Key, `/sync/state`
-- [ ] Sync client: outbox + workmanager + backoff
+- [x] Auth părinte (e-mail + Argon2id, verificare e-mail prin Mailpit/Brevo), JWT + refresh în Redis, rate limit — + „Am uitat parola”, cont nou din panou (ADR-032)
+- [x] Poarta parentală + ecran consimțământ pe scopuri + tabel `consents`
+- [x] Profiluri copii (CRUD), sincronizarea sesiunilor idempotentă (id-ul sesiunii), setări LWW (ADR-011), planul de jocuri (ADR-031)
+- [ ] Sync client: outbox + workmanager + backoff — 🟨 outbox + sincronizare manuală/la pornire gata; workmanager lipsește
 - [ ] Teste e2e (Testcontainers) pentru auth + sync + autorizare
 
 ### Sprint 4 · 9 – 22 nov — Mecanici + cozi
-- [ ] `DragDropMechanic`, `SequenceMechanic`, `MemoryCardsMechanic`, `TraceMechanic` — cu interacțiunile animate din §15.1 (ridicare, magnet, flip 3D, cerneală magică)
-- [ ] +15 jocuri (sortare, grupam, habitate, umbre, marimi, perechi, memorie, secventa, ordonam, trasare-litere, trasare-cifre, ceasul, bani, zeci, semne)
-- [ ] BullMQ: cozi `stats`, `mail`; read model `child_skill_stats`; Bull Board
+- [x] `DragDropMechanic`, `SequenceMechanic`, `MemoryCardsMechanic`, `TraceMechanic` — cu interacțiunile animate din §15.1 (ridicare, magnet, flip 3D, cerneală magică)
+- [x] +15 jocuri (sortare, grupam, habitate, umbre, marimi, perechi, memorie, secventa, ordonam, trasare-litere, trasare-cifre, ceasul, bani, zeci, semne)
+- [ ] BullMQ: cozi `stats`, `mail`; read model `child_skill_stats`; Bull Board — 🟨 `stats`, `mail`, `gdpr`, `child_skill_stats` gata; Bull Board lipsește
 - [ ] Pipeline voce Azure Speech (`tools/gen-voice`), pachet de conținut în stocarea S3 + `/content/manifest`
-- [ ] Aventura: hartă, niveluri infinite, stele
+- [x] Aventura: hartă, niveluri infinite, stele — „Harta felinarelor” (`/harta`), niveluri adaptive păstrate pe joc, stele + pușculița
 
 ### Sprint 5 · 23 nov – 6 dec — Dashboard + timp real
-- [ ] Dashboard Flutter Web: login, copii, statistici pe abilități (grafice), setări senzoriale la distanță
+- [x] Dashboard Flutter Web: login, copii, statistici pe abilități (grafice), setări senzoriale la distanță
 - [ ] WebSocket live (Socket.IO + Redis adapter), prezență
 - [ ] Raport săptămânal (cron BullMQ → e-mail)
-- [ ] Partajare cu terapeut (invitație, `CARE_LINK`, audit)
-- [ ] +12 jocuri (restul `choice` din S1 + explorare-stiinte, explorare-istorie, explorare-viata)
+- [x] Partajare cu terapeut (invitație, `CARE_LINK`, audit)
+- [x] +12 jocuri (restul `choice` din S1 + explorare-stiinte, explorare-istorie, explorare-viata)
 
 ### Sprint 6 · 7 – 20 dec — GDPR + producție = **70%**
-- [ ] Export date (job → ZIP în stocarea S3 → link pe e-mail), ștergere cont (soft + purge), retragere consimțământ
-- [ ] `docs/gdpr/*` (politică, RoPA, DPIA, proceduri)
+- [x] Export date (job → ZIP în stocarea S3 → link pe e-mail), ștergere cont (soft + purge), retragere consimțământ
+- [x] `docs/gdpr/*` (politică, RoPA, DPIA, proceduri)
 - [ ] `docker-compose.prod.yml` + Traefik + TLS + backup; deploy pe VPS UE
 - [ ] Sentry (app + API), testare de încărcare k6, audit accesibilitate
-- [ ] Toate cele 48 de jocuri S1 funcționale; ADR-10…ADR-21 scrise
+- [x] Toate cele 48 de jocuri S1 funcționale; ADR-10…ADR-21 scrise — 89 de jocuri, ADR-001…ADR-032
 - [ ] Demo pentru coordonator
 
 ### Semestrul 2 · feb – mai 2027

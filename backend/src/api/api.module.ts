@@ -5,6 +5,7 @@ import type { Queue } from 'bullmq';
 import type { Redis } from 'ioredis';
 
 import { AuthService } from '../auth/auth.service';
+import { EmailFlows, type MailJob } from '../auth/email-flows';
 import { AuthGuard } from '../auth/guard';
 import { TokenService } from '../auth/tokens';
 import { ChildAccess } from '../children/access';
@@ -42,9 +43,17 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
       useFactory: (env: Env, redis: Redis) => new TokenService(env.JWT_SECRET, redis),
     },
     {
+      provide: EmailFlows,
+      inject: [PrismaRepos, TokenService, REDIS, getQueueToken(Queues.mail)],
+      useFactory: (r: PrismaRepos, t: TokenService, redis: Redis, queue: Queue<MailJob>) =>
+        new EmailFlows(r.users, redis, t, { enqueue: async (job) => void (await queue.add(job.kind, job)) }, redis),
+    },
+    {
       provide: AuthService,
-      inject: [PrismaRepos, TokenService, REDIS],
-      useFactory: (r: PrismaRepos, t: TokenService, redis: Redis) => new AuthService(r.users, t, redis),
+      inject: [PrismaRepos, TokenService, REDIS, EmailFlows],
+      useFactory: (r: PrismaRepos, t: TokenService, redis: Redis, mail: EmailFlows) =>
+        // La înregistrare pleacă legătura de confirmare a adresei.
+        new AuthService(r.users, t, redis, undefined, (id) => mail.requestVerification({ id })),
     },
     { provide: ChildAccess, inject: [PrismaRepos], useFactory: (r: PrismaRepos) => new ChildAccess(r.childAccess) },
     {

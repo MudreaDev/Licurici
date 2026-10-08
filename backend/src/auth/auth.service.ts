@@ -41,6 +41,8 @@ export interface UserRow {
   /** Cheia TOTP (și înainte de activare) și data activării 2FA. */
   totpSecret?: string | null;
   totpEnabledAt?: Date | null;
+  /** Când și-a confirmat adresa de e-mail (null = încă nu). */
+  verifiedAt?: Date | null;
 }
 
 export interface UserRepo {
@@ -50,6 +52,8 @@ export interface UserRepo {
   findById(id: string): Promise<UserRow | null>;
   /** Salvează cheia TOTP și starea 2FA (null, null = dezactivat). */
   setTotp(id: string, secret: string | null, enabledAt: Date | null): Promise<void>;
+  setVerified(id: string, at: Date): Promise<void>;
+  setPassword(id: string, passwordHash: string): Promise<void>;
 }
 
 /** Contorul încercărilor greșite (Redis; în teste, memorie). */
@@ -70,6 +74,8 @@ export class AuthService {
     private readonly tokens: TokenService,
     private readonly attempts?: LoginAttempts,
     private readonly now: () => Date = () => new Date(),
+    /** După înregistrare (trimiterea legăturii de confirmare). O eroare aici nu strică contul. */
+    private readonly onRegistered?: (userId: string) => Promise<unknown>,
   ) {}
 
   /** Cheia contorului: hash-ul e-mailului (în Redis nu stă e-mailul în clar). */
@@ -86,6 +92,7 @@ export class AuthService {
       passwordHash: await hashPassword(body.password),
       role: body.role,
     });
+    await this.onRegistered?.(user.id).catch(() => undefined);
     return this.tokens.issue(user);
   }
 
@@ -113,6 +120,13 @@ export class AuthService {
     }
     await this.attempts?.del(key);
     return this.tokens.issue(user);
+  }
+
+  /** Contul: adresa și dacă e confirmată (pentru panou). */
+  async account(user: AuthUser): Promise<{ email: string | null; role: Role; emailVerified: boolean }> {
+    const u = await this.users.findById(user.id);
+    if (!u) throw new UnauthorizedError();
+    return { email: u.email ?? null, role: u.role, emailVerified: Boolean(u.verifiedAt) };
   }
 
   /** Starea 2FA a contului. */

@@ -49,6 +49,34 @@ class ApiClient {
     _store(r as Map<String, dynamic>);
   }
 
+  /// Cont nou (părinte sau specialist); la înregistrare serverul trimite legătura de confirmare.
+  Future<void> register(String email, String password, {String role = 'PARENT'}) async {
+    final r = await _send(
+      'POST',
+      '/auth/register',
+      body: {'email': email, 'password': password, 'role': role},
+      auth: false,
+    );
+    _store(r as Map<String, dynamic>);
+  }
+
+  /// Contul: adresa și dacă e confirmată.
+  Future<({String? email, bool verified})> account() async {
+    final r = (await _send('GET', '/me')) as Map;
+    return (email: r['email'] as String?, verified: r['emailVerified'] == true);
+  }
+
+  Future<void> resendVerification() => _send('POST', '/me/verify-email');
+
+  /// Legăturile din e-mailuri (fără autentificare: se pot deschide pe alt dispozitiv).
+  Future<void> verifyEmail(String token) => _send('POST', '/auth/verify-email', body: {'token': token}, auth: false);
+
+  Future<void> forgotPassword(String email) =>
+      _send('POST', '/auth/password/forgot', body: {'email': email}, auth: false);
+
+  Future<void> resetPassword(String token, String password) =>
+      _send('POST', '/auth/password/reset', body: {'token': token, 'password': password}, auth: false);
+
   Future<void> logout() async {
     final refresh = _refresh;
     _access = _refresh = null;
@@ -273,6 +301,12 @@ class ServerChildren extends Notifier<List<ChildHistory>> {
   Future<void> signIn(String email, String password, {String? code}) async {
     final api = ref.read(apiClientProvider);
     await api.login(email, password, code: code);
+    state = await api.children();
+  }
+
+  Future<void> register(String email, String password, {String role = 'PARENT'}) async {
+    final api = ref.read(apiClientProvider);
+    await api.register(email, password, role: role);
     state = await api.children();
   }
 

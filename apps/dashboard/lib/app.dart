@@ -4,6 +4,7 @@ import 'package:game_content/game_content.dart' as content;
 import 'package:go_router/go_router.dart';
 import 'account_page.dart';
 import 'api.dart';
+import 'email_pages.dart';
 import 'import_dialog.dart';
 import 'login_page.dart';
 import 'parent.dart';
@@ -15,6 +16,15 @@ GoRouter createRouter({String? initialLocation}) => GoRouter(
     GoRoute(path: '/', builder: (_, _) => const RolePage()),
     GoRoute(path: '/autentificare', builder: (_, _) => const LoginPage()),
     GoRoute(path: '/cont', builder: (_, _) => const AccountPage()),
+    // Legăturile din e-mailuri (ADR-032).
+    GoRoute(
+      path: '/confirmare',
+      builder: (_, s) => ConfirmEmailPage(key: ValueKey(s.uri), token: s.uri.queryParameters['token'] ?? ''),
+    ),
+    GoRoute(
+      path: '/parola-noua',
+      builder: (_, s) => ResetPasswordPage(key: ValueKey(s.uri), token: s.uri.queryParameters['token'] ?? ''),
+    ),
     GoRoute(path: '/parinte', builder: (_, _) => const ParentPage()),
     GoRoute(path: '/specialist', builder: (_, _) => const SpecialistPage()),
     GoRoute(
