@@ -65,6 +65,7 @@ class PromptVisuals extends StatelessWidget {
             PatternVisual() => _Pattern(v, solved: solved),
             ShelfVisual() => _Shelf(v, solved: solved),
             StripVisual() => _Strip(v, solved: solved),
+            HiddenShapeVisual() => _Hidden(v, solved: solved),
           },
         ),
     ],
@@ -564,6 +565,76 @@ class _NotePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_NotePainter old) => old.value != value || old.color != color;
+}
+
+/// Forma ascunsă: desenul încâlcit, ca pe o foaie; la răspunsul corect forma se colorează
+/// și strălucește.
+class _Hidden extends StatelessWidget {
+  const _Hidden(this.visual, {required this.solved});
+
+  final HiddenShapeVisual visual;
+  final bool solved;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = 250 * VisualScale.of(context);
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFDF6),
+        borderRadius: BorderRadius.circular(size * 0.08),
+        border: Border.all(color: const Color(0xFFE6DCC8), width: 2),
+      ),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(end: solved ? 1 : 0),
+        duration: const Duration(milliseconds: 450),
+        builder: (context, k, _) => CustomPaint(painter: _HiddenPainter(visual, k)),
+      ),
+    );
+  }
+}
+
+class _HiddenPainter extends CustomPainter {
+  _HiddenPainter(this.visual, this.reveal);
+
+  final HiddenShapeVisual visual;
+  final double reveal;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final pad = size.width * 0.06, w = size.width - pad * 2;
+    Path path(List<math.Point<double>> pts) {
+      final p = Path()..moveTo(pad + pts.first.x * w, pad + pts.first.y * w);
+      for (final q in pts.skip(1)) {
+        p.lineTo(pad + q.x * w, pad + q.y * w);
+      }
+      return p;
+    }
+
+    final ink = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.014
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..color = const Color(0xFF3A3A48);
+    for (final l in visual.lines) {
+      canvas.drawPath(path(l), ink);
+    }
+    if (reveal > 0) {
+      final t = path(visual.lines[visual.target]);
+      canvas.drawPath(t, Paint()..color = Tokens.sun.withValues(alpha: 0.35 * reveal));
+      canvas.drawPath(
+        t,
+        ink
+          ..strokeWidth = size.width * (0.014 + 0.016 * reveal)
+          ..color = Color.lerp(const Color(0xFF3A3A48), const Color(0xFFE8833A), reveal)!,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_HiddenPainter old) => old.reveal != reveal || old.visual != visual;
 }
 
 /// Banda de cartonașe (zilele, lunile): fiecare cu culoarea lui, ca un calendar de perete;

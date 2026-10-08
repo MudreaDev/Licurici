@@ -159,6 +159,14 @@ class StripVisual extends Visual {
   final List<String>? captions;
 }
 
+/// Forma ascunsă — desenul: linii frânte în caseta 1 × 1 (y în jos). [target] = indicele formei ascunse
+/// (se colorează după răspunsul corect).
+class HiddenShapeVisual extends Visual {
+  const HiddenShapeVisual(this.lines, {required this.target});
+  final List<List<Point<double>>> lines;
+  final int target;
+}
+
 /// O scenă scurtă descrisă în cuvinte („Un copil a primit un cadou.”).
 class SceneVisual extends Visual {
   const SceneVisual(this.text);

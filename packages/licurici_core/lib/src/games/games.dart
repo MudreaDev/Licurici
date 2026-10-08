@@ -6,6 +6,7 @@ import '../game.dart';
 import '../grades.dart';
 import 'calendar.dart';
 import 'emotii.dart';
+import 'hidden_shape.dart';
 import 'forme.dart';
 import 'logica.dart';
 import 'matematica.dart';
@@ -17,6 +18,7 @@ import 'vocabular.dart';
 
 export 'calendar.dart';
 export 'emotii.dart';
+export 'hidden_shape.dart';
 export 'forme.dart';
 export 'logica.dart';
 export 'matematica.dart';
@@ -35,6 +37,7 @@ const List<GameSpec> allGames = [
   AtributeGame(),
   UndeEUrsulGame(),
   PozitiiGame(),
+  FormaAscunsaGame(),
   PrimulSunetGame(),
   IntrusulGame(),
   UmbreGame(),
