@@ -140,8 +140,20 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
     }));
   }
 
+  /// Peștii colorați de copil, pe modele: peștele lui de urmărit poate fi chiar desenul lui.
+  final _mine = <String, ui.Image>{};
+
   /// Desenele peștilor (colorate de Licurici), o dată pe model și culoare.
   Future<void> _loadImages() async {
+    try {
+      final owned = await ref.read(aquariumProvider.future).timeout(const Duration(seconds: 3));
+      // Întâi peștii colorați de copil, apoi (dacă nu are alții) cadoul lui Licurici.
+      for (final o in [...owned.where((o) => !o.entry.gift), ...owned.where((o) => o.entry.gift)]) {
+        _mine.putIfAbsent(o.species.id, () => o.art);
+      }
+    } on Object {
+      // Fără acvariu (sau încă necitit): peștii colorați de Licurici.
+    }
     for (final t in _level.trials) {
       for (final f in t.fish) {
         final key = _key(f);
@@ -199,7 +211,10 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
       _depths[id] = [for (final p in f.path) p.z];
       _next[id] = 1;
       final s = fishSpeciesById(f.species)!;
-      owned[id] = OwnedFish(AquariumEntry(id: id, species: f.species, created: DateTime(2026)), s, _images[_key(f)]!);
+      // Peștele copilului: desenul lui, dacă are unul de același model (și peștii nu trebuie
+      // să fie identici — acolo toți arată la fel).
+      final mine = i == _trial.target && _level.axes.similarity != TrackSimilarity.identical ? _mine[f.species] : null;
+      owned[id] = OwnedFish(AquariumEntry(id: id, species: f.species, created: DateTime(2026)), s, mine ?? _images[_key(f)]!);
     }
     setState(() {
       _sim = sim;
