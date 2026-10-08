@@ -41,6 +41,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   int _index = 0;
   int _attempts = 0;
   int _firstTry = 0;
+  int _tier = 1;
   bool _solved = false;
   bool _finished = false;
 
@@ -99,9 +100,11 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
 
   void _start() {
     final s = ref.read(settingsProvider);
+    // Treapta jocului: unde a rămas copilul data trecută; prima dată, din clasă.
+    _tier = s.levels[widget.game.id] ?? Difficulty.freePlay(s.grade, s.level).tier;
     _lesson = widget.game.build(
       GameContext(
-        difficulty: Difficulty.freePlay(s.grade, s.level),
+        difficulty: Difficulty(_tier),
         grade: s.grade,
       ),
     );
@@ -274,6 +277,10 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     setState(() {
       if (_index + 1 >= _lesson.rounds.length) {
         _finished = true;
+        // Adaptiv: din prima la aproape tot → mai greu data viitoare; sub jumătate → mai ușor.
+        final ratio = _firstTry / _lesson.rounds.length;
+        final next = ratio >= 0.85 ? _tier + 1 : (ratio < 0.5 ? _tier - 1 : _tier);
+        ref.read(settingsProvider.notifier).setGameLevel(widget.game.id, next.clamp(1, 20));
         _sticker = ref.read(settingsProvider.notifier).awardSticker();
         ref.read(sessionProvider.notifier).checkpoint();
         _mood = MascotMood.happy;
