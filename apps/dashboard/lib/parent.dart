@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 import 'data.dart';
+import 'game_plan.dart';
 import 'shared.dart';
 
 class ParentPage extends ConsumerStatefulWidget {
@@ -176,6 +177,7 @@ class _ParentPageState extends ConsumerState<ParentPage> {
                         'Ilustrații: OpenMoji · CC BY-SA 4.0',
                         style: TextStyle(fontSize: 12),
                       ),
+                      GamePlanPanel(key: ValueKey('plan-${history.child.id}'), history: history),
                     ],
                   ),
                 ),
