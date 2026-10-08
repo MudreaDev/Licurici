@@ -66,6 +66,7 @@ class SequenceLevel {
     required this.pads,
     required this.sequence,
     required this.instruction,
+    this.positions,
   });
 
   final String gameId;
@@ -76,6 +77,10 @@ class SequenceLevel {
 
   /// Indicii felinarelor, în ordinea aprinderii.
   final List<int> sequence;
+
+  /// Unde stă fiecare felinar în zona de joc (0…1), dacă jocul îi împrăștie (Corsi); altfel
+  /// stau pe un rând.
+  final List<Point<double>>? positions;
   final String instruction;
 
   /// Ordinea în care trebuie atinse.
@@ -108,15 +113,34 @@ class SequenceResult {
   }
 }
 
-class SimonGame {
+/// Un joc pe mecanica `sequence` (Felinarele, Licuricii din grădină).
+abstract class SequenceGame {
+  const SequenceGame();
+
+  String get id;
+  String get name;
+  String get emoji;
+  String get description;
+  Set<Grade> get grades;
+  List<String> get steps;
+  SequenceLevel generate(int level, {int? seed});
+}
+
+class SimonGame extends SequenceGame {
   const SimonGame();
 
+  @override
   String get id => 'simon';
+  @override
   String get name => 'Felinarele';
+  @override
   String get emoji => '💡';
+  @override
   String get description => 'Ține minte ordinea luminilor';
   Subject get subject => Subject.forme;
+  @override
   Set<Grade> get grades => Grade.parseCodes('G1234');
+  @override
   List<String> get steps => const ['FEX5'];
 
   SequenceAxes axesFor(int level) => SequenceAxes(
@@ -129,6 +153,7 @@ class SimonGame {
         withSound: level < 25,
       );
 
+  @override
   SequenceLevel generate(int level, {int? seed}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
     final s = seed ?? Random().nextInt(1 << 31);
@@ -151,6 +176,77 @@ class SimonGame {
       instruction: axes.reverse
           ? 'Privește felinarele. Apoi atinge-le invers, de la ultimul.'
           : 'Privește felinarele. Apoi atinge-le în aceeași ordine.',
+    );
+  }
+}
+
+/// Licuricii din grădină (FEX5b, catalog pe arii #40, sarcina Corsi): licurici **identici**,
+/// așezați pe flori împrăștiate prin grădină, se aprind pe rând; copilul atinge florile în
+/// aceeași ordine. Doar locul îi deosebește (memorie vizuo-spațială), fără culori și fără note.
+/// Axe: câte flori (5 → 9), lungimea secvenței (span 2 → 7), viteza, ordinea inversă.
+class SpatialSpanGame extends SequenceGame {
+  const SpatialSpanGame();
+
+  @override
+  String get id => 'licuricii';
+  @override
+  String get name => 'Licuricii din grădină';
+  @override
+  String get emoji => '✨';
+  @override
+  String get description => 'Ține minte unde s-au aprins';
+  @override
+  Set<Grade> get grades => Grade.parseCodes('G1234');
+  @override
+  List<String> get steps => const ['FEX5b'];
+
+  SequenceAxes axesFor(int level) => SequenceAxes(
+        pads: ramp(level, 5, 9, 12).round(),
+        length: min(7, 2 + (level - 1) ~/ 3),
+        onMs: ramp(level, 900, 600, 18).round(),
+        gapMs: ramp(level, 450, 300, 18).round(),
+        reverse: level >= 19,
+        withSound: false,
+      );
+
+  /// Locurile florilor: împrăștiate, la cel puțin 0,22 una de alta (ca degetul să nu le
+  /// încurce), departe de margini.
+  static List<Point<double>> scatter(int n, Random r) {
+    final out = <Point<double>>[];
+    var tries = 0;
+    while (out.length < n && tries < 5000) {
+      tries++;
+      final p = Point(0.1 + r.nextDouble() * 0.8, 0.14 + r.nextDouble() * 0.72);
+      final minD = tries > 3000 ? 0.16 : 0.22;
+      if (out.every((q) => q.distanceTo(p) >= minD)) out.add(p);
+    }
+    return out;
+  }
+
+  @override
+  SequenceLevel generate(int level, {int? seed}) {
+    if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
+    final s = seed ?? Random().nextInt(1 << 31);
+    final random = Random(s);
+    final axes = axesFor(level);
+    final positions = scatter(axes.pads, random);
+    final seq = <int>[];
+    while (seq.length < axes.length) {
+      final next = random.nextInt(axes.pads);
+      if (seq.isNotEmpty && seq.last == next) continue;
+      seq.add(next);
+    }
+    return SequenceLevel(
+      gameId: id,
+      level: level,
+      seed: s,
+      axes: axes,
+      pads: [for (var i = 0; i < axes.pads; i++) SequencePad(i, 0xFFF2CF6B, 4)],
+      sequence: seq,
+      positions: positions,
+      instruction: axes.reverse
+          ? 'Privește licuricii. Apoi atinge florile invers, de la ultima.'
+          : 'Privește licuricii. Apoi atinge florile în aceeași ordine.',
     );
   }
 }

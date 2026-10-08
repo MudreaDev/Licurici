@@ -132,6 +132,7 @@ void main(List<String> args) {
 
   for (var level = 1; level <= 30; level++) {
     add(const SimonGame().generate(level, seed: level).instruction, 'simon');
+    add(const SpatialSpanGame().generate(level, seed: level).instruction, 'licuricii');
   }
 
   // Jocurile cu ecran propriu (fără runde `choice`).

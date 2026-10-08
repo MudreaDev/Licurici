@@ -171,6 +171,11 @@ final routerProvider = Provider<GoRouter>((ref) {
             _fade(context, state, const SimonScreen()),
       ),
       GoRoute(
+        path: '/secventa/licuricii',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const SimonScreen(game: SpatialSpanGame())),
+      ),
+      GoRoute(
         path: '/reactie/:id',
         redirect: (context, state) =>
             reactionGameById(state.pathParameters['id']!) == null ? '/' : null,

@@ -136,7 +136,7 @@ List<CatalogEntry> get catalog => [
           kind: GameKind.reaction,
           domain: _domainOf(g.id, g.steps),
         ),
-      for (final g in const [SimonGame()])
+      for (final g in const <SequenceGame>[SimonGame(), SpatialSpanGame()])
         CatalogEntry(
           id: g.id,
           name: g.name,

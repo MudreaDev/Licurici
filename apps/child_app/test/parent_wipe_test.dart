@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:licurici/app/theme.dart';
 import 'package:licurici/data/session.dart';
 import 'package:licurici/features/aquarium/aquarium_store.dart';
+import 'package:licurici/features/coloring/drawings_store.dart';
 import 'package:licurici/features/parent/parent_screen.dart';
 import 'package:licurici/features/settings/settings.dart';
 import 'package:licurici/shared/voice.dart';
@@ -31,6 +32,7 @@ void main() {
         voiceProvider.overrideWithValue(const SilentSpeaker()),
         sessionStoreProvider.overrideWithValue(sessions),
         aquariumStoreProvider.overrideWithValue(aquarium),
+        drawingStoreProvider.overrideWithValue(MemoryDrawingStore()),
       ],
     );
     addTearDown(container.dispose);

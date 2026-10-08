@@ -29,7 +29,7 @@ class SimonScreen extends ConsumerStatefulWidget {
     this.game = const SimonGame(),
     this.initialLevel = 1,
   });
-  final SimonGame game;
+  final SequenceGame game;
   final int initialLevel;
 
   @override
@@ -227,7 +227,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
         child: SafeArea(
           child: Column(
             children: [
-              const TopBar(title: 'Felinarele'),
+              TopBar(title: widget.game.name),
               Expanded(
                 child: ClipRect(
                   child: Stack(
@@ -316,6 +316,50 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
                                       ),
                                     ),
                                   );
+                                  if (_level.positions case final spots?) {
+                                    // Licuricii din grădină: florile stau împrăștiate.
+                                    final area = Size(constraints.maxWidth, constraints.maxHeight - (intro ? 80 : 0));
+                                    // Cât mai mari, dar fără să se atingă: după cele mai apropiate două flori.
+                                    var near = double.infinity;
+                                    for (var i = 0; i < spots.length; i++) {
+                                      for (var j = i + 1; j < spots.length; j++) {
+                                        final d = Offset((spots[i].x - spots[j].x) * area.width, (spots[i].y - spots[j].y) * area.height).distance;
+                                        near = math.min(near, d);
+                                      }
+                                    }
+                                    final r = (near * 0.92).clamp(52.0, math.max(52.0, math.min(150.0, area.shortestSide * 0.36))).toDouble();
+                                    return Column(
+                                      children: [
+                                        SizedBox.fromSize(
+                                          size: area,
+                                          child: Stack(
+                                            children: [
+                                              for (final pad in _level.pads)
+                                                Positioned(
+                                                  left: spots[pad.index].x * area.width - r / 2,
+                                                  top: spots[pad.index].y * area.height - r / 2,
+                                                  width: r,
+                                                  height: r,
+                                                  child: GestureDetector(
+                                                    key: ValueKey('simon-pad-${pad.index}'),
+                                                    behavior: HitTestBehavior.opaque,
+                                                    onTap: () => _tap(pad.index),
+                                                    child: _GardenFirefly(lit: _lit == pad.index, motion: motion),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                        if (intro)
+                                          CandyButton(
+                                            label: 'Începem',
+                                            icon: Icons.play_arrow_rounded,
+                                            color: Tokens.good,
+                                            onTap: _watch,
+                                          ),
+                                      ],
+                                    );
+                                  }
                                   return Center(
                                     child: SingleChildScrollView(
                                       child: Column(
@@ -418,6 +462,65 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
 
 /// Un felinar pictat (`sprites/lantern_<culoare>`): stins = hârtie mată; aprins = mai
 /// luminos, cu un halou cald și o mică creștere. Fără ilustrație — cercul colorat cu simbol.
+/// O floare din grădina de seară cu un licurici pe ea: stins (abia se vede) sau aprins
+/// (halou cald). Toți licuricii sunt la fel: doar locul îi deosebește.
+class _GardenFirefly extends StatelessWidget {
+  const _GardenFirefly({required this.lit, required this.motion});
+
+  final bool lit;
+  final MotionPolicy motion;
+
+  @override
+  Widget build(BuildContext context) => AnimatedScale(
+    scale: lit ? 1.12 : 1,
+    duration: motion.d(150),
+    child: CustomPaint(painter: _FireflyFlower(lit)),
+  );
+}
+
+class _FireflyFlower extends CustomPainter {
+  _FireflyFlower(this.lit);
+
+  final bool lit;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero), r = size.shortestSide / 2;
+    if (lit) {
+      canvas.drawCircle(
+        c,
+        r,
+        Paint()
+          ..shader = RadialGradient(
+            colors: const [Color(0xCCFFF3A0), Color(0x55FFE07A), Color(0x00FFE07A)],
+            stops: const [0, 0.45, 1],
+          ).createShader(Rect.fromCircle(center: c, radius: r)),
+      );
+    }
+    // Petalele.
+    final petal = Paint()..color = lit ? const Color(0xFFF9D5E5) : const Color(0xFF8C7FB8);
+    for (var i = 0; i < 6; i++) {
+      final a = i * math.pi / 3;
+      canvas.save();
+      canvas.translate(c.dx + math.cos(a) * r * 0.46, c.dy + math.sin(a) * r * 0.46);
+      canvas.rotate(a);
+      canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: r * 0.72, height: r * 0.46), petal);
+      canvas.restore();
+    }
+    canvas.drawCircle(c, r * 0.28, Paint()..color = lit ? const Color(0xFFFFD45E) : const Color(0xFF5E5486));
+    // Licuriciul: corpul și lumina din coadă.
+    final body = c + Offset(0, -r * 0.07);
+    canvas.drawOval(Rect.fromCenter(center: body, width: r * 0.3, height: r * 0.42), Paint()..color = const Color(0xFF3E4A5C));
+    canvas.drawCircle(body + Offset(0, r * 0.17), r * (lit ? 0.2 : 0.14), Paint()..color = lit ? const Color(0xFFFFF6B0) : const Color(0xFF9A9468));
+    final wing = Paint()..color = const Color(0x88E8F1FF);
+    canvas.drawOval(Rect.fromCenter(center: body + Offset(-r * 0.18, -r * 0.11), width: r * 0.28, height: r * 0.17), wing);
+    canvas.drawOval(Rect.fromCenter(center: body + Offset(r * 0.18, -r * 0.11), width: r * 0.28, height: r * 0.17), wing);
+  }
+
+  @override
+  bool shouldRepaint(_FireflyFlower old) => old.lit != lit;
+}
+
 class _Lantern extends StatelessWidget {
   const _Lantern({
     required this.pad,
