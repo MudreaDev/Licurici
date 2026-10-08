@@ -11,13 +11,14 @@ import '../../shared/illustration.dart';
 import '../../shared/motion.dart';
 import '../../shared/ui/candy.dart';
 import '../session/mood_check.dart';
+import '../settings/settings.dart';
 
 /// „Drumul de azi” (plan §3.4): încălzire → obiective → menținere → final pe succes, din
 /// progresul salvat. Aceeași zi → același drum (seed pe dată), ca orarul să fie previzibil.
 final todayPlanProvider = FutureProvider.autoDispose<SessionPlan>((ref) async {
   final records = await ref.watch(sessionStoreProvider).all();
-  // Toate jocurile (pe arii, nu pe clase — ADR-026); alocarea pe copil vine din plan §5.1.
-  final games = {for (final e in catalog) e.id};
+  // Jocurile copilului (pe arii, nu pe clase — ADR-026), fără cele scoase de adult (plan §5.1).
+  final games = ref.watch(settingsProvider.select((s) => s.visibleGames));
   final now = DateTime.now();
   return const SessionPlanner(config: SessionConfig(targetBlocks: 2)).plan(
     progress: defaultObjectives(progressFromSessions(records), games),

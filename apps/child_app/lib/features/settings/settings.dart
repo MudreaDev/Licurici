@@ -12,6 +12,7 @@ class AppSettings {
     this.stickers = const [],
     this.stickersSeen = 0,
     this.stars = startStars,
+    this.hiddenGames = const {},
   });
 
   final Grade grade;
@@ -37,6 +38,13 @@ class AppSettings {
   /// Cu câte stele pornește copilul, ca să poată hrăni peștii de la prima vizită.
   static const startStars = 3;
 
+  /// Jocurile pe care adultul le-a scos din lista copilului („Jocurile copilului”, plan
+  /// §5.1). Copilul vede doar restul; un joc nou apare de la sine.
+  final Set<String> hiddenGames;
+
+  /// Jocurile pe care le vede copilul.
+  Set<String> get visibleGames => {for (final e in catalog) if (!hiddenGames.contains(e.id)) e.id};
+
   Map<String, Object> toJson() => {
     'grade': grade.name,
     'level': level.name,
@@ -45,6 +53,7 @@ class AppSettings {
     'stickers': stickers,
     'stickersSeen': stickersSeen,
     'stars': stars,
+    'hiddenGames': hiddenGames.toList()..sort(),
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -59,6 +68,10 @@ class AppSettings {
     ],
     stickersSeen: (j['stickersSeen'] as num?)?.toInt() ?? 0,
     stars: (j['stars'] as num?)?.toInt() ?? startStars,
+    hiddenGames: {
+      for (final g in (j['hiddenGames'] as List? ?? const []))
+        if (g is String) g,
+    },
   );
 
   AppSettings copyWith({
@@ -69,6 +82,7 @@ class AppSettings {
     List<String>? stickers,
     int? stickersSeen,
     int? stars,
+    Set<String>? hiddenGames,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -77,6 +91,7 @@ class AppSettings {
     stickers: stickers ?? this.stickers,
     stickersSeen: stickersSeen ?? this.stickersSeen,
     stars: stars ?? this.stars,
+    hiddenGames: hiddenGames ?? this.hiddenGames,
   );
 }
 
@@ -126,6 +141,14 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
   /// Ștergerea datelor de pe tabletă: setările, abțibildurile și stelele revin la început.
   void reset() => _set(const AppSettings());
+
+  /// Arată sau ascunde jocurile [ids] în lista copilului (cel puțin un joc rămâne vizibil).
+  void setGamesVisible(Iterable<String> ids, bool visible) {
+    final next = {...state.hiddenGames};
+    visible ? next.removeAll(ids) : next.addAll(ids);
+    if (next.length >= catalog.length) return;
+    _set(state.copyWith(hiddenGames: next));
+  }
 
   void addStars(int n) => _set(state.copyWith(stars: state.stars + n));
 

@@ -143,10 +143,16 @@ void main(List<String> args) {
   for (final t in traceTrips) {
     add(t.says, 'traseaza');
   }
-  for (var level = 1; level <= 14; level++) {
-    for (var seed = 0; seed < 40; seed++) {
-      for (final r in const InstructionGame().generate(level, seed: seed).rounds) {
-        add(r.says, 'asculta-si-fa');
+  // Ascultă și fă: rostit pe bucăți, deci câte un clip pe obiect și formă.
+  for (final o in objectWords) {
+    for (final other in [objectWords.first, objectWords.last]) {
+      for (final rev in [false, true]) {
+        for (final piece in InstructionGame.pieces([o, other], reversed: rev)) {
+          add(piece, 'asculta-si-fa');
+        }
+        for (final piece in InstructionGame.pieces([other, o], reversed: rev)) {
+          add(piece, 'asculta-si-fa');
+        }
       }
     }
   }

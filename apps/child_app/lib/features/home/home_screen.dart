@@ -56,7 +56,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
-    final domains = catalogByDomain();
+    final domains = catalogByDomain(only: ref.watch(settingsProvider.select((s) => s.visibleGames)));
     final scene = SceneSpec.generate(daySeed());
     final gap = layout.compact ? 16.0 : 24.0;
 

@@ -55,7 +55,14 @@ class InstructionAxes {
 }
 
 class InstructionRound {
-  const InstructionRound({required this.index, required this.table, required this.order, required this.says, required this.reversedWording});
+  const InstructionRound({
+    required this.index,
+    required this.table,
+    required this.order,
+    required this.says,
+    required this.speak,
+    required this.reversedWording,
+  });
 
   final int index;
 
@@ -65,8 +72,11 @@ class InstructionRound {
   /// Indicii (în [table]) în ordinea în care trebuie atinse.
   final List<int> order;
 
-  /// Ce spune Licurici.
+  /// Ce spune Licurici (textul întreg).
   final String says;
+
+  /// Cum se rostește: pe bucăți, cu o mică pauză între pași („Atinge mărul” · „apoi mingea”).
+  final List<String> speak;
 
   /// Instrucțiunea pomenește întâi ce se face al doilea („Înainte de …”).
   final bool reversedWording;
@@ -158,6 +168,12 @@ class InstructionGame {
     return 'Atinge ${_then([for (final t in targets) t.word])}.';
   }
 
+  /// Bucățile rostite pentru [targets] (fiecare are clipul ei).
+  static List<String> pieces(List<ObjectWord> targets, {bool reversed = false}) {
+    if (targets.length == 2 && reversed) return ['Înainte de ${_bare(targets[1].word)}', 'atinge ${targets[0].word}'];
+    return ['Atinge ${targets.first.word}', for (final t in targets.skip(1)) 'apoi ${t.word}'];
+  }
+
   /// „mingea” → „minge” după „de” (forma nearticulată).
   static String _bare(String w) {
     const bare = {
@@ -194,6 +210,7 @@ class InstructionGame {
         table: table,
         order: order,
         says: phrase([for (final k in order) table[k]], reversed: reversed),
+        speak: pieces([for (final k in order) table[k]], reversed: reversed),
         reversedWording: reversed,
       ));
     }

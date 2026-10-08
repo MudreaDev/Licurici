@@ -10,6 +10,9 @@ void main() {
     expect(InstructionGame.phrase([mar]), 'Atinge mărul.');
     expect(InstructionGame.phrase([mar, minge]), 'Atinge mărul, apoi mingea.');
     expect(InstructionGame.phrase([mar, minge], reversed: true), 'Înainte de minge, atinge mărul.');
+    // Rostit pe bucăți (câte un clip), cu pauză între pași.
+    expect(InstructionGame.pieces([mar, minge]), ['Atinge mărul', 'apoi mingea']);
+    expect(InstructionGame.pieces([mar, minge], reversed: true), ['Înainte de minge', 'atinge mărul']);
   });
 
   test('nivelurile: mai mulți pași, mai multe obiecte, ordine inversă, de ținut minte', () {

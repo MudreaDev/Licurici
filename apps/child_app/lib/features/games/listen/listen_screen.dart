@@ -111,7 +111,7 @@ class _ListenScreenState extends ConsumerState<ListenScreen> {
     _locked = false;
     final hidden = _level.axes.hidden;
     setState(() => _covered = hidden);
-    ref.read(voiceProvider).say([_round.says]);
+    ref.read(voiceProvider).say(_round.speak);
     if (hidden) {
       _after(InstructionLevel.holdMs, () {
         setState(() => _covered = false);
@@ -143,7 +143,7 @@ class _ListenScreenState extends ConsumerState<ListenScreen> {
     _errors++;
     setState(() => _shake[k] = (_shake[k] ?? 0) + 1);
     if (_errors == 1) {
-      ref.read(voiceProvider).say(['Mai ascultă o dată.', r.says]);
+      ref.read(voiceProvider).say(['Mai ascultă o dată.', ...r.speak]);
     } else {
       ref.read(voiceProvider).say(['Uite, în ordinea asta.']);
     }
@@ -238,7 +238,7 @@ class _ListenScreenState extends ConsumerState<ListenScreen> {
                   label: 'Mai spune o dată',
                   color: Tokens.primary,
                   size: layout.compact ? 56 : 72,
-                  onTap: () => ref.read(voiceProvider).say([r.says]),
+                  onTap: () => ref.read(voiceProvider).say(r.speak),
                 ),
                 _Dots(total: _level.rounds.length, done: _attempts.length),
               ],

@@ -6,6 +6,7 @@ import '../../app/layout.dart';
 import '../../shared/fx/scene_background.dart';
 import '../../shared/motion.dart';
 import '../../shared/top_bar.dart';
+import '../settings/settings.dart';
 import '../home/catalog_cards.dart';
 import '../home/home_screen.dart';
 
@@ -19,7 +20,7 @@ class DomainScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
-    final games = catalogByDomain()[domain] ?? const <CatalogEntry>[];
+    final games = catalogByDomain(only: ref.watch(settingsProvider.select((s) => s.visibleGames)))[domain] ?? const <CatalogEntry>[];
     final gap = layout.compact ? 14.0 : 22.0;
     final cards = [
       for (final (i, g) in games.indexed)

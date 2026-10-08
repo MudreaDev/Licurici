@@ -10,6 +10,7 @@ import '../../shared/top_bar.dart';
 import '../aquarium/aquarium_store.dart';
 import '../coloring/drawings_store.dart';
 import '../settings/settings.dart';
+import 'child_games_screen.dart';
 import 'sync_dialog.dart';
 
 /// Rapoartele sesiunilor salvate pe dispozitiv (cele mai noi întâi), fiecare cu raportul
@@ -44,6 +45,14 @@ class ParentScreen extends ConsumerWidget {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  BarButton(
+                    key: const ValueKey('child-games'),
+                    icon: Icons.grid_view_rounded,
+                    color: const Color(0xFFA9A3D1),
+                    label: 'Jocurile copilului',
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ChildGamesScreen())),
+                  ),
+                  const SizedBox(width: 8),
                   BarButton(
                     key: const ValueKey('sync-sessions'),
                     icon: Icons.cloud_upload_rounded,
