@@ -63,7 +63,9 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 08.10.2026.** **Sesiunea a opta (Claude, 06–08.10) — pe scurt:** acvariul complet (pe ecran și pe hârtie, cu scanare), pușculița cu stele, **toate jocurile din prototip portate** (79 în aplicație, inclusiv Explorările), most-to-least pe trepte noi, telefonul mic reorganizat (stimulul are toată înălțimea), GDPR: ștergerea contului, ștergerea datelor de pe tabletă, exportul ca fișier, 2FA, blocare după 5 parole greșite, retenția automată (sesiuni 24 luni, dovezile consimțământului 3 ani, partajări expirate), jurnal fără date personale, **ciornele celor 9 documente din `docs/gdpr/`**. Verificat la final: core 436 de teste, aplicația 191, backend 57, panoul 15; analyze curat; build web (aplicație + panou) și APK OK.
+**Ultima actualizare: 09.10.2026.** **Sesiunea a noua (Claude, 08–09.10) — pe scurt:** **acvariul refăcut** (pești 3D cu fizică reală, recif bogat în perspectivă, viață ambientală, comportamente noi), 3 modele noi de pești de colorat (7 în total), **9 jocuri noi** (88 în aplicație): Urmărește peștele, Scriem cifrele, Scriem literele, Sus-jos-stânga-dreapta, Zilele și lunile, Forma ascunsă, Colorăm, Rândul meu-rândul tău, Licuricii din grădină (Corsi); vocea 100%. Detalii mai jos.
+
+**Sesiunea a opta (Claude, 06–08.10) — pe scurt:** acvariul complet (pe ecran și pe hârtie, cu scanare), pușculița cu stele, **toate jocurile din prototip portate** (79 în aplicație, inclusiv Explorările), most-to-least pe trepte noi, telefonul mic reorganizat (stimulul are toată înălțimea), GDPR: ștergerea contului, ștergerea datelor de pe tabletă, exportul ca fișier, 2FA, blocare după 5 parole greșite, retenția automată (sesiuni 24 luni, dovezile consimțământului 3 ani, partajări expirate), jurnal fără date personale, **ciornele celor 9 documente din `docs/gdpr/`**. Verificat la final: core 436 de teste, aplicația 191, backend 57, panoul 15; analyze curat; build web (aplicație + panou) și APK OK.
 
 **Urmează (după sesiunea 8):**
 1. **Utilizatorul:** Docker Desktop → `docker compose -f infra/docker-compose.yml up -d --build` → `prisma migrate deploy` (migrările noi: `20261008000000_totp`, `20261008010000_consent_archive`) → test cap-coadă (login cu 2FA, sincronizare, ștergerea contului, job-urile `gdpr`).
@@ -71,6 +73,22 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 3. **Utilizatorul:** acvariul pe hârtie cu **fotografii reale** (fișa printată din „Acvariul meu” → 🖨 după poarta pentru adulți); dacă scanarea greșește des, vezi ADR-030 („Când am alege altfel”).
 4. **Utilizatorul + jurist:** verificarea documentelor din `docs/gdpr/` și completarea identității operatorului (`[…]`); ADR-030 → Acceptat.
 5. Tehnic rămas: criptarea volumului bazei de date și a câmpului e-mail (DPIA); 2FA obligatorie pentru specialiști? (decizie); prețul în stele pentru peștii noi? (decizie).
+
+**Sesiunea a noua (08–09.10) — detalii:**
+- ✅ **Fizica peștilor** (`licurici_core/lib/src/aquarium.dart`): adâncime `z` (perspectivă `depthScale`), direcție `yaw` rotită cu viteză unghiulară limitată și inerție (`turnRate` → corpul se îndoaie în viraj), viteza câștigată din coadă și pierdută prin frecare (`thrust`, reprize de înot + alunecare), urcare/coborâre mai lentă decât înaintarea. Fuga merge **spre fundal**, chemarea (apăsare lungă) aduce peștii **la geam**. Comportamente noi: **caută pe fund** (coboară, ciugulește cu capul în jos — norișori de nisip), **vine la geam** să se arate, **atins chiar pe el se învârte bucuros** (bule + sunet), peștele-balon tot se umflă. `autopilot = false` lasă un joc să-i dea ținta (fizica rămâne). 19 teste.
+- ✅ **Randarea 3D** (`apps/child_app/lib/features/aquarium/fish_render.dart`): plasă 26 × 10 pe o coloană vertebrală proiectată (unda + îndoirea din viraj), burta iese în lateral când e văzut din unghi, fâșiile sortate după adâncime (la întoarcere capul trece prin fața cozii), lumină per vârf + reflexe de apă, ceață ușoară de adâncime (culorile copilului rămân vii). `buildFishImage`: conturul negru al fișei → nuanța închisă a culorii vecine, margini mai întunecate (rotunjime), înotătoare translucide.
+- ✅ **Recif nou** (`reef.dart`, `reef_parts.dart`, `reef_life.dart`, `reef_scene.dart`): fund în perspectivă (aceeași funcție ca simularea: `Aquarium.floorAt`), trei rânduri de recif în ceață + arcadă, stânci cu volum (pori, mușchi, muchie luminată), corali ramificați „tubulari”, coral-creier, coral-masă, bureți, evantaie, corali moi, iarbă de mare, scoici, stele; **caustice** (textură Voronoi generată din cod, două straturi în mișcare) pe nisip și la suprafață; raze moi (vârfuri colorate, fără `saveLayer`); banc de peștișori, două meduze, țestoasă (o dată pe minut), crab, anemonă cu tentacule, **cufăr care se deschide** (singur sau la atingere) cu bule și monede. Captura: `test/aquarium_scene_test.dart`.
+- ✅ **3 pești noi de colorat**: peștele-fluture, peștele-papagal (cu solzi de colorat), rechinul mic — fișă, scanare (testele cu fotografii sintetice trec pentru toate 7), culori „cadou”. Selectorul de modele își calculează mărimea ca să încapă pe orice ecran.
+- ✅ **Urmărește peștele** (ATN2b, `tracking.dart` + `features/games/track/`): în recif, peștele copilului strălucește, apoi peștii înoată (aceeași fizică) și se opresc; copilul îl atinge pe al lui. Axe: 1 → 5 pești, alt model → aceeași formă altă culoare (`hueShifted`) → identici, viteză, durată, drumuri cu adâncime. KPI: pierderi de urmărire, atingeri în timpul înotului.
+- ✅ **Scriem cifrele** (PAC-N3) și **Scriem literele** (PAC-L4) (`writing.dart` + `features/games/write/`): cifrele și literele de tipar (inclusiv Ă Â Î Ș Ț) ca trăsături în ordinea și sensul scrisului; tabla verde, steluța dusă cu degetul (`TraceTracker`), numărul trăsăturii la început, puncte/săgeată după nivel; „A, ca în albină” cu poza; la cifre — atâtea steluțe.
+- ✅ **Sus, jos, stânga, dreapta** (LRC6b, `PozitiiGame`, `ShelfVisual` — dulapul cu compartimente: 2 rafturi → stânga/dreapta → cruce → 3 × 3 cu colțuri).
+- ✅ **Zilele și lunile** (PAC-T0, `games/calendar.dart`, `StripVisual` — calendar de perete): ce zi urmează / lipsește, ieri–azi–mâine, lunile, anotimpul lunii.
+- ✅ **Forma ascunsă** (POT9, `games/hidden_shape.dart`, `HiddenShapeVisual`): forma printre linii, valuri, zig-zaguri, dreptunghiuri (niciuna nu seamănă cu variantele); forma găsită se colorează.
+- ✅ **Colorăm** (MOT5, `features/coloring/`): ecranul de colorat e acum generic (`ColoringPage`: pești sau desene); 7 pagini desenate din cod (casa, floarea, mașina, fluturele, curcubeul, racheta, pisica), la „Gata!” desenul într-o ramă; **„Desenele mele”** rămân doar pe tabletă (`DrawingStore`, ultimele 24) și se șterg cu „Șterge datele de pe tabletă”. Fără încercări notate (creație).
+- ✅ **Rândul meu, rândul tău** (EMO7, `turns.dart` + `features/games/turns/`): turnul construit pe rând cu Licurici; atingerile în rândul lui se numără (o singură amintire blândă), de la nivelul 5 copilul dă rândul cu butonul („E rândul meu?” după 6 s = ajutor P2), Licurici ezită la niveluri mari.
+- ✅ **Licuricii din grădină** (FEX5b, sarcina Corsi, `SpatialSpanGame`): licurici identici pe flori împrăștiate se aprind pe rând; aceeași logică ca Felinarele (`SequenceGame` comun), florile cât mai mari fără să se atingă.
+- ✅ Vocea: 2148/2148 (edge-tts). Brief pentru cardurile noi: [docs/brief-codex-carduri-sesiunea9.md](docs/brief-codex-carduri-sesiunea9.md) (până atunci, emoji).
+- **De verificat pe dispozitiv:** fluiditatea acvariului pe o tabletă reală (în panoul browserului ascuns animațiile sunt încetinite, măsurarea nu e relevantă).
 
 **Sesiunea a opta — detalii:**
 - ✅ **Acvariul meu** (`/acvariu`, buton cu valuri pe ecranul principal): recif desenat din cod (apă, raze, nisip cu sclipiri, corali, alge care se leagănă, bule, plancton), peștii copilului înoată liber; **atingere → fug**, **apăsare lungă → se adună la deget**, **Mâncare → mănâncă fulgii**; la prima vizită Licurici dăruiește un pește-clovn colorat. Simularea e pură și testată: `licurici_core/lib/src/aquarium.dart` (`Aquarium`, `SwimmingFish`).
@@ -250,7 +268,7 @@ Codex se rulează din `%LOCALAPPDATA%\OpenAI\Codex\bin\<versiune>\codex.exe exec
 - Copilul câștigă **stele** în jocuri (pușculița, ✅). Cu ele „cumpără” mâncare pentru acvariu (o mână = o stea, ✅); peștii colorați rămân gratuiți.
 - **Licuriciul e ghidul în toată aplicația.** La prima vizită îi dăruiește copilului un **pește gata colorat** (✅).
 - Copilul alege un model de pește (contururi originale, `licurici_core/lib/src/aquarium_fish.dart`) și îl **colorează pe ecran** (carioca, găleată, „Înapoi”) (✅) sau **pe hârtie: fișa printată → poza cu camera** (✅, ADR-030). Peștele lui desenat apare și înoată în acvariu.
-- Acvariul: **Flutter pur, fără shadere** (ADR-028). Camera e fixă; copilul nu mișcă acvariul. Peștele = desenul copilului pe o plasă deformată din cod (coada bate, corpul unduiește, se întoarce „prin profil”); **volumul** se calculează din contur (distanța față de margine) și se pictează peste desen ca lumină/umbră/luciu. Fundalul e un recif desenat din cod (rezervă) până vin straturile pictate `scenes/aquarium_back` / `aquarium_front`. Interacțiuni: **atingere → peștii din apropiere fug**, **apăsare lungă → se adună în jurul degetului**, **Mâncare → fulgi care cad, peștii vin și mănâncă** (✅). În modul calm fundalul stă, peștii înoată.
+- Acvariul: **Flutter pur, fără shadere** (ADR-028). Camera e fixă; copilul nu mișcă acvariul. **Peștii înoată în spațiu** (sesiunea 9): adâncime (cei din spate par mai mici și mai estompați, trec unul prin spatele altuia), direcție rotită cu inerție (viraj în „C”, întoarcere prin față sau prin spate), impuls din coadă și alunecare. Peștele = desenul copilului pe o plasă întinsă pe o **coloană vertebrală 3D**: fiecare felie a corpului are direcția ei (unda spre coadă + îndoirea din viraj) și se proiectează pe ecran, luminată după cum stă față de noi; **volumul** se calculează din contur (lumină, umbră, margini rotunjite, luciu), conturul fișei devine o nuanță închisă a culorii vecine, înotătoarele sunt ușor translucide. Fundalul e un **recif în perspectivă** desenat din cod (caustice animate pe nisip, stânci și corali cu volum, banc de peștișori, meduze, țestoasă, crab, anemonă, cufăr care se deschide la atingere) până vin straturile pictate `scenes/aquarium_back` / `aquarium_front`. Interacțiuni: **atingere → peștii din apropiere fug (spre fundal)**, **atingere chiar pe pește → se învârte bucuros**, **apăsare lungă → vin la geam, în jurul degetului**, **Mâncare → fulgi care cad, peștii vin și mănâncă** (✅). Singuri, peștii se plimbă în reprize, se odihnesc, **caută de mâncare pe fund** și vin la geam. În modul calm fundalul stă, peștii înoată.
 - Scanarea se face **pe dispozitiv**, în Dart pur (marcaje proprii, omografie, decuparea după același contur, lumina egalizată după hârtie). Fotografia nu se păstrează; desenul decupat **rămâne pe telefon**; sincronizarea lui ar cere consimțământ (e creația copilului).
 
 **Jocuri „generative” (nivele și conținut fără șablon vizibil)**
@@ -948,7 +966,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (79):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
+**Gata în Flutter (88):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
 🆕 simon / Felinarele (`sequence`), perechi (`memoryCards`), sortam (`dragDrop`), cucu-bau, respira, continua-sirul,
 🆕 **sesiunea a șaptea:** potriveste, arata-mi, corpul, intrusul, umbre, mingea-rosie, ce-se-aude, ce-imbrac, primul-sunet,
@@ -956,7 +974,8 @@ peste-in-mijloc (`choice`), traseaza (`trace`), pasii-rutinei, ce-urmeaza, mare-
 fa-ca-licuriciul (imitație), semaforul (așteptare), regula-se-schimba (DCCS), cauta (căutare vizuală), unde-se-uita
 (atenție comună), vorbeste (AAC), toba-magica (ritm), hraneste-pestii (tragere), atinge-si-vezi (cauză–efect),
 ce-s-a-schimbat, puzzle, unde-e-ursul, labirint, diferente, ce-face, orarul-meu, construieste, la-magazin, spune-propozitia, semne, numarul-lipsa, anotimpuri, habitate, silabe, cuvinte, plural, zeci, inmultim, impartim, ceasul,
-🆕 **sesiunea a opta:** bani, tabla, probleme, gramatica, simboluri, trecut, personalitati, engleza (`games/scoala2.dart`); explorare-stiinte, explorare-istorie, explorare-viata (`explore` — hartă cu opriri).
+🆕 **sesiunea a opta:** bani, tabla, probleme, gramatica, simboluri, trecut, personalitati, engleza (`games/scoala2.dart`); explorare-stiinte, explorare-istorie, explorare-viata (`explore` — hartă cu opriri);
+🆕 **sesiunea a noua:** urmareste-pestele (`track`), scriem-cifrele, scriem-literele (`write`), pozitii, calendar, forma-ascunsa (`choice`), colorare (`color`), pe-rand (`turns`), licuricii (`sequence`, Corsi).
 Fiecare mecanică nouă are fișierul ei în `licurici_core/lib/src/` (logică pură, testată) și ecranul în
 `apps/child_app/lib/features/games/<mecanică>/`; catalogul (`catalog.dart`, `GameKind`) dă ruta.
 Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii,social}.dart` + registrul `games.dart`;
@@ -1116,11 +1135,11 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Demo pentru coordonator
 
 ### Semestrul 2 · feb – mai 2027
-- [ ] 10 jocuri S2 (puzzle, labirint/Flame, colorare, sunete, privirea, imbracam, calendar, pozitii, sunetul-initial, personalitati)
+- [x] 10 jocuri S2 (puzzle, labirint, colorare, sunete, privirea, imbracam, calendar, pozitii, sunetul-initial, personalitati) — gata înainte de termen (sesiunile 7–9)
 - [ ] Dificultate adaptivă pe abilități, recomandări „Jocurile de azi” mai inteligente
 - [ ] Prometheus + Grafana, optimizări, build-uri pentru magazine (Families/Kids), semnare
 - [ ] Testare cu copii/educatori (cu acord parental), iterații UX
-- [ ] Acvariul complet: ✅ pești animați, colorare pe ecran, hrănire, fugă/adunare (sesiunea 8) · ✅ fișa A4 + scanarea cu camera (de testat cu poze reale) · ✅ stelele ca monedă (mâncare) · ⬜ fundal pictat pe straturi (brief gata)
+- [ ] Acvariul complet: ✅ pești 3D cu fizică, recif bogat (sesiunea 9) · ✅ pești animați, colorare pe ecran, hrănire, fugă/adunare (sesiunea 8) · ✅ fișa A4 + scanarea cu camera (de testat cu poze reale) · ✅ stelele ca monedă (mâncare) · ⬜ fundal pictat pe straturi (brief gata)
 - [ ] Chat AI în panoul adulților (Claude API, date agregate)
 - [ ] Conținut pentru clasele 5–12 + temă „matură” + conturi pentru adolescenți (14+)
 - [ ] Redactarea tezei (§23) + prezentare
