@@ -6,6 +6,7 @@ import '../../app/theme.dart';
 import '../../shared/illustration.dart';
 import '../../shared/top_bar.dart';
 import '../settings/settings.dart';
+import 'first_steps_screen.dart';
 
 /// „Jocurile copilului” (plan §5.1, varianta fără specialist): adultul alege, pe arii, ce
 /// jocuri vede copilul. Ce e scos nu apare pe ecranul principal și nici în „Drumul de azi”;
@@ -35,7 +36,13 @@ class ChildGamesScreen extends ConsumerWidget {
                     onTap: () => Navigator.of(context).pop(),
                   ),
                   const SizedBox(width: 12),
-                  Text('Jocurile copilului', style: text.titleLarge!.copyWith(color: Tokens.ink)),
+                  Expanded(child: Text('Jocurile copilului', style: text.titleLarge!.copyWith(color: Tokens.ink))),
+                  OutlinedButton.icon(
+                    key: const ValueKey('first-steps'),
+                    onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const FirstStepsScreen())),
+                    icon: const Icon(Icons.flag_rounded),
+                    label: const Text('Primii pași'),
+                  ),
                 ],
               ),
             ),
