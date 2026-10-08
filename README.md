@@ -63,7 +63,16 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 08.10.2026.** **Sesiunea a opta — Acvariul (Claude, 06–08.10):**
+**Ultima actualizare: 08.10.2026.** **Sesiunea a opta (Claude, 06–08.10) — pe scurt:** acvariul complet (pe ecran și pe hârtie, cu scanare), pușculița cu stele, **toate jocurile din prototip portate** (79 în aplicație, inclusiv Explorările), most-to-least pe trepte noi, telefonul mic reorganizat (stimulul are toată înălțimea), GDPR: ștergerea contului, ștergerea datelor de pe tabletă, exportul ca fișier, 2FA, blocare după 5 parole greșite, retenția automată (sesiuni 24 luni, dovezile consimțământului 3 ani, partajări expirate), jurnal fără date personale, **ciornele celor 9 documente din `docs/gdpr/`**. Verificat la final: core 436 de teste, aplicația 191, backend 57, panoul 15; analyze curat; build web (aplicație + panou) și APK OK.
+
+**Urmează (după sesiunea 8):**
+1. **Utilizatorul:** Docker Desktop → `docker compose -f infra/docker-compose.yml up -d --build` → `prisma migrate deploy` (migrările noi: `20261008000000_totp`, `20261008010000_consent_archive`) → test cap-coadă (login cu 2FA, sincronizare, ștergerea contului, job-urile `gdpr`).
+2. **Utilizatorul:** rularea Codex pe [docs/brief-codex-acvariu.md](docs/brief-codex-acvariu.md) (fundalul acvariului) și [docs/brief-codex-carduri-scolare.md](docs/brief-codex-carduri-scolare.md) (11 carduri).
+3. **Utilizatorul:** acvariul pe hârtie cu **fotografii reale** (fișa printată din „Acvariul meu” → 🖨 după poarta pentru adulți); dacă scanarea greșește des, vezi ADR-030 („Când am alege altfel”).
+4. **Utilizatorul + jurist:** verificarea documentelor din `docs/gdpr/` și completarea identității operatorului (`[…]`); ADR-030 → Acceptat.
+5. Tehnic rămas: criptarea volumului bazei de date și a câmpului e-mail (DPIA); 2FA obligatorie pentru specialiști? (decizie); prețul în stele pentru peștii noi? (decizie).
+
+**Sesiunea a opta — detalii:**
 - ✅ **Acvariul meu** (`/acvariu`, buton cu valuri pe ecranul principal): recif desenat din cod (apă, raze, nisip cu sclipiri, corali, alge care se leagănă, bule, plancton), peștii copilului înoată liber; **atingere → fug**, **apăsare lungă → se adună la deget**, **Mâncare → mănâncă fulgii**; la prima vizită Licurici dăruiește un pește-clovn colorat. Simularea e pură și testată: `licurici_core/lib/src/aquarium.dart` (`Aquarium`, `SwimmingFish`).
 - ✅ **4 modele de pești** cu contururi originale (clovn, înger, balon, chirurg) + **volumul** calculat din contur (`aquarium_fish.dart`: `FishBody` — transformata distanței → grosime → lumină). Peștele = desenul copilului pe plasă deformată (`tank_painter.dart`), fără shadere.
 - ✅ **Colorez un pește** (`/acvariu/coloreaza`): carioca (3 mărimi), găleată (se oprește la liniile fișei, culoarea intră sub linii), 12 culori + gumă, „Înapoi”; „Gata!” → peștele intră în acvariu de sus. Desenele se salvează local (§11).
