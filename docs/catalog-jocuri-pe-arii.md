@@ -10,6 +10,13 @@ Jocurile se bazează pe **paradigme din cercetare** (sarcini validate în psihol
 într-un joc atractiv. Asta e diferența față de „game dev”: fiecare joc măsoară ceva cunoscut, iar rezultatele pot fi
 interpretate de specialist.
 
+> **Stare (09.10.2026):** din cele 52 sunt în aplicație toate jocurile pe arii, cu excepția unora comasate în altele
+> (`cauta-in-camera` → `cauta`, `felinarele` → `licuricii` — sarcina Corsi, `vreau` → `vorbeste`, `asculta-povestea` →
+> `povesti`, `calculam`/`citim` → jocurile pe operații și pe litere). Noi în sesiunea a noua: `urmareste-pestele` (ATN2b),
+> `forma-ascunsa` (POT9), `licuricii` (FEX5b), `asculta-si-fa` (LRC5), `pozitii` (LRC6b), `pe-rand` (EMO7),
+> `scriem-cifrele` / `scriem-literele` (PAC-N3, PAC-L4), `calendar` (PAC-T0), `colorare` (MOT5). Lista exactă, cu treptele:
+> `licurici_core/lib/src/development.dart`; ce vede fiecare copil: planul de jocuri (ADR-031).
+
 > ⚠️ Jocurile **nu sunt teste standardizate** și nu se folosesc pentru diagnostic. Paradigmele sunt folosite pentru exersare și
 > pentru observarea progresului în timp; interpretarea aparține specialistului (plan §8).
 
