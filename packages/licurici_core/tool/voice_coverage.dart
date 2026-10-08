@@ -18,6 +18,10 @@ const uiPhrases = [
   'Uite! Peștele tău înoată în acvariu!',
   'Alege un pește.',
   'Colorează peștele cum vrei tu.',
+  // Harta cu felinare
+  'Ai aprins un felinar nou!',
+  'Joacă-te și aprinzi felinarele.',
+  'Uite câte felinare ai aprins!',
   // Ascultă și fă
   'Ascultă bine și atinge în aceeași ordine.',
   'Mai ascultă o dată.',

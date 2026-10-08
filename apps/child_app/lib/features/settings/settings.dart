@@ -13,6 +13,7 @@ class AppSettings {
     this.stickersSeen = 0,
     this.stars = startStars,
     this.hiddenGames = const {},
+    this.lanternsSeen = 0,
   });
 
   final Grade grade;
@@ -42,6 +43,9 @@ class AppSettings {
   /// §5.1). Copilul vede doar restul; un joc nou apare de la sine.
   final Set<String> hiddenGames;
 
+  /// Câte felinare aprinse a văzut copilul pe hartă (pentru sărbătoarea unui felinar nou).
+  final int lanternsSeen;
+
   /// Jocurile pe care le vede copilul.
   Set<String> get visibleGames => {for (final e in catalog) if (!hiddenGames.contains(e.id)) e.id};
 
@@ -54,6 +58,7 @@ class AppSettings {
     'stickersSeen': stickersSeen,
     'stars': stars,
     'hiddenGames': hiddenGames.toList()..sort(),
+    'lanternsSeen': lanternsSeen,
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -72,6 +77,7 @@ class AppSettings {
       for (final g in (j['hiddenGames'] as List? ?? const []))
         if (g is String) g,
     },
+    lanternsSeen: (j['lanternsSeen'] as num?)?.toInt() ?? 0,
   );
 
   AppSettings copyWith({
@@ -83,6 +89,7 @@ class AppSettings {
     int? stickersSeen,
     int? stars,
     Set<String>? hiddenGames,
+    int? lanternsSeen,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -92,6 +99,7 @@ class AppSettings {
     stickersSeen: stickersSeen ?? this.stickersSeen,
     stars: stars ?? this.stars,
     hiddenGames: hiddenGames ?? this.hiddenGames,
+    lanternsSeen: lanternsSeen ?? this.lanternsSeen,
   );
 }
 
@@ -149,6 +157,8 @@ class SettingsNotifier extends Notifier<AppSettings> {
     if (next.length >= catalog.length) return;
     _set(state.copyWith(hiddenGames: next));
   }
+
+  void setLanternsSeen(int n) => _set(state.copyWith(lanternsSeen: n));
 
   void addStars(int n) => _set(state.copyWith(stars: state.stars + n));
 

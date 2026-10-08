@@ -173,6 +173,14 @@ class _HomeBar extends ConsumerWidget {
             const SizedBox(width: 8),
           ],
           BarButton(
+            key: const ValueKey('lantern-map'),
+            icon: Icons.map_rounded,
+            color: const Color(0xFF6E6AB8),
+            label: 'Harta mea',
+            onTap: () => context.go('/harta'),
+          ),
+          const SizedBox(width: 10),
+          BarButton(
             key: const ValueKey('aquarium'),
             icon: Icons.water_rounded,
             color: const Color(0xFF3FA7C4),
