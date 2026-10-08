@@ -179,6 +179,8 @@ const List<Ladder> ladders = [
     Step('PAC-N12', 'Împărțirea în grupe egale', games: ['impartim']),
     Step('PAC-N13', 'Tabla înmulțirii până la 10 × 10', games: ['tabla']),
     Step('PAC-N14', 'Rezolvă probleme cu text (adunare, scădere, înmulțire)', games: ['probleme']),
+    Step('PAC-T0', 'Știe zilele săptămânii și lunile anului, în ordine; ieri, azi, mâine',
+        games: ['calendar']),
     Step('PAC-T1', 'Citește ceasul (ore, jumătăți, sferturi)', games: ['ceasul']),
     Step('PAC-T2', 'Numără banii (lei)', games: ['bani']),
     Step('PAC-L1', 'Recunoaște literele', games: ['alfabetul']),

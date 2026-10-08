@@ -4,6 +4,7 @@ library;
 
 import '../game.dart';
 import '../grades.dart';
+import 'calendar.dart';
 import 'emotii.dart';
 import 'forme.dart';
 import 'logica.dart';
@@ -14,6 +15,7 @@ import 'scoala2.dart';
 import 'social.dart';
 import 'vocabular.dart';
 
+export 'calendar.dart';
 export 'emotii.dart';
 export 'forme.dart';
 export 'logica.dart';
@@ -57,6 +59,7 @@ const List<GameSpec> allGames = [
   ImpartimGame(),
   CeasulGame(),
   BaniGame(),
+  CalendarGame(),
   TablaGame(),
   ProblemeGame(),
   // Forme & logică

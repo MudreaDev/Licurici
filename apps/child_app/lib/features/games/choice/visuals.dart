@@ -64,6 +64,7 @@ class PromptVisuals extends StatelessWidget {
             SceneVisual() => _Scene(v.text),
             PatternVisual() => _Pattern(v, solved: solved),
             ShelfVisual() => _Shelf(v, solved: solved),
+            StripVisual() => _Strip(v, solved: solved),
           },
         ),
     ],
@@ -563,6 +564,86 @@ class _NotePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_NotePainter old) => old.value != value || old.color != color;
+}
+
+/// Banda de cartonașe (zilele, lunile): fiecare cu culoarea lui, ca un calendar de perete;
+/// locul gol pulsează cu „?” și se completează la răspunsul corect.
+class _Strip extends ConsumerWidget {
+  const _Strip(this.visual, {required this.solved});
+
+  final StripVisual visual;
+  final bool solved;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final motion = MotionPolicy.of(context, ref);
+    final k = VisualScale.of(context);
+    final n = visual.labels.length;
+    final w = (n <= 4 ? 132.0 : 104.0) * k, h = w * 0.82;
+    final text = Theme.of(context).textTheme;
+    Widget card(int i) {
+      final gap = i == visual.missing && !solved;
+      final col = Color(visual.colors[i]);
+      final face = Container(
+        width: w,
+        height: h,
+        padding: EdgeInsets.all(w * 0.07),
+        decoration: BoxDecoration(
+          color: gap ? Colors.white : col,
+          borderRadius: BorderRadius.circular(w * 0.16),
+          border: Border.all(color: gap ? Tokens.sun : shade(col, 0.25), width: gap ? 3 : 2),
+          boxShadow: [BoxShadow(color: shade(col, 0.4).withValues(alpha: 0.35), offset: const Offset(0, 4))],
+        ),
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              gap ? '?' : visual.labels[i],
+              style: (gap ? text.displaySmall : text.titleLarge)!.copyWith(
+                color: gap ? _questionInk : const Color(0xFF2B2B33),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      );
+      final lit = i == visual.missing && solved;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Inelele calendarului de perete.
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var r = 0; r < 2; r++)
+                Container(
+                  width: w * 0.07,
+                  height: w * 0.14,
+                  margin: EdgeInsets.symmetric(horizontal: w * 0.14),
+                  decoration: BoxDecoration(color: const Color(0xFF8A94A6), borderRadius: BorderRadius.circular(w)),
+                ),
+            ],
+          ),
+          if (lit) Juice(enabled: motion.movement, popTick: 1, child: face) else face,
+          if (visual.captions case final c?)
+            Padding(
+              padding: EdgeInsets.only(top: h * 0.08),
+              child: Text(c[i], style: text.titleMedium!.copyWith(color: Tokens.ink)),
+            ),
+        ],
+      );
+    }
+
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < n; i++) Padding(padding: EdgeInsets.symmetric(horizontal: w * 0.05), child: card(i)),
+        ],
+      ),
+    );
+  }
 }
 
 /// Dulapul cu compartimente (sus / jos / stânga / dreapta): lemn cald, fundul fiecărui

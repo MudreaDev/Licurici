@@ -148,6 +148,17 @@ class ShelfVisual extends Visual {
   final int? target;
 }
 
+/// O bandă de cartonașe cu text (zilele săptămânii, lunile), fiecare cu culoarea lui;
+/// [missing] = cartonașul gol („?”), completat după răspunsul corect. [captions] = etichete
+/// mici sub cartonașe („ieri”, „azi”, „mâine”).
+class StripVisual extends Visual {
+  const StripVisual(this.labels, this.colors, {this.missing, this.captions});
+  final List<String> labels;
+  final List<int> colors;
+  final int? missing;
+  final List<String>? captions;
+}
+
 /// O scenă scurtă descrisă în cuvinte („Un copil a primit un cadou.”).
 class SceneVisual extends Visual {
   const SceneVisual(this.text);
