@@ -1,6 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:licurici_core/licurici_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'api.dart';
 import 'data.dart';
 import 'shared.dart';
 
@@ -11,11 +14,12 @@ const _lineColors = [
   Color(0xFF4F789E),
 ];
 
-class ProgressPanel extends StatelessWidget {
+class ProgressPanel extends ConsumerWidget {
   const ProgressPanel(this.history, {super.key});
   final ChildHistory history;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final changes = ref.watch(planChangesProvider(history.child.id)).value ?? const <DateTime>[];
     final steps = history.child.activeSteps;
     if (history.reports.isEmpty || steps.isEmpty) {
       return const Text(
@@ -82,6 +86,23 @@ class ProgressPanel extends StatelessWidget {
                   ),
                 ),
                 extraLinesData: ExtraLinesData(
+                  // Schimbările planului de jocuri: linii de fază între sesiuni (plan §5.1).
+                  verticalLines: [
+                    for (final at in changes)
+                      if (phaseX(reports, at) case final x?)
+                        VerticalLine(
+                          x: x,
+                          color: const Color(0xFF9A6A3A),
+                          strokeWidth: 1.5,
+                          dashArray: [3, 4],
+                          label: VerticalLineLabel(
+                            show: true,
+                            alignment: Alignment.topRight,
+                            style: const TextStyle(fontSize: 11, color: Color(0xFF9A6A3A)),
+                            labelResolver: (_) => 'plan',
+                          ),
+                        ),
+                  ],
                   horizontalLines: [
                     HorizontalLine(
                       y: 80,
@@ -137,7 +158,8 @@ class ProgressPanel extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Linie punctată la 80% · prag de independență al criteriului de stăpânire. Confirmarea depinde și de repetare, numărul de încercări și seturile de stimuli.',
+            'Linie punctată la 80% · prag de independență al criteriului de stăpânire. Confirmarea depinde și de repetare, numărul de încercări și seturile de stimuli. '
+            'Liniile verticale „plan” arată când s-a schimbat lista de jocuri a copilului.',
           ),
           const SizedBox(height: 20),
           for (final (i, id) in steps.indexed)
@@ -181,4 +203,12 @@ class ProgressPanel extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Unde cade pe axa sesiunilor o schimbare făcută la [at]: între ultima sesiune de dinainte și
+/// prima de după (x = 1 … n). Null dacă e înaintea primei sesiuni sau după ultima.
+double? phaseX(List<SessionReport> reports, DateTime at) {
+  final after = reports.indexWhere((r) => r.record.start.isAfter(at));
+  if (after <= 0) return null;
+  return after + 0.5;
 }

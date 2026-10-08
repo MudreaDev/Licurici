@@ -106,16 +106,19 @@ class ApiClient {
   );
 
   /// Planul de jocuri al copilului (plan §5.1): jocurile pe care nu le vede pe tabletă.
-  Future<({Set<String> hidden, DateTime? updatedAt, String? updatedBy})> plan(String childId) async =>
-      _plan((await _send('GET', '/children/$childId/plan')) as Map);
+  Future<GamePlan> plan(String childId) async => _plan((await _send('GET', '/children/$childId/plan')) as Map);
 
-  Future<({Set<String> hidden, DateTime? updatedAt, String? updatedBy})> setPlan(String childId, Set<String> hidden) async =>
+  Future<GamePlan> setPlan(String childId, Set<String> hidden) async =>
       _plan((await _send('PUT', '/children/$childId/plan', body: {'hiddenGames': hidden.toList()..sort()})) as Map);
 
-  ({Set<String> hidden, DateTime? updatedAt, String? updatedBy}) _plan(Map j) => (
+  GamePlan _plan(Map j) => (
     hidden: {for (final g in (j['hiddenGames'] as List? ?? const [])) g as String},
     updatedAt: DateTime.tryParse(j['updatedAt'] as String? ?? ''),
     updatedBy: j['updatedBy'] as String?,
+    changes: [
+      for (final h in (j['history'] as List? ?? const []).cast<Map>())
+        ?DateTime.tryParse(h['at'] as String? ?? ''),
+    ],
   );
 
   /// Exportul complet al datelor (GDPR art. 15, 20), ca text JSON.
@@ -235,6 +238,20 @@ class ApiClient {
 }
 
 final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
+
+/// Planul de jocuri al copilului (jocurile scoase + datele schimbărilor).
+typedef GamePlan = ({Set<String> hidden, DateTime? updatedAt, String? updatedBy, List<DateTime> changes});
+
+/// Datele schimbărilor planului de jocuri, pentru liniile de fază din grafice (doar copiii de
+/// pe server; altfel, nicio linie).
+final planChangesProvider = FutureProvider.autoDispose.family<List<DateTime>, String>((ref, childId) async {
+  if (!ref.watch(serverChildrenProvider).any((h) => h.child.id == childId)) return const [];
+  try {
+    return (await ref.read(apiClientProvider).plan(childId)).changes;
+  } on ApiException {
+    return const [];
+  }
+});
 
 /// Copiii de pe server după autentificare (gol = mod demo).
 class ServerChildren extends Notifier<List<ChildHistory>> {

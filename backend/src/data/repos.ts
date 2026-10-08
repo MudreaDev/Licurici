@@ -199,17 +199,35 @@ export class PrismaRepos {
   readonly plan: PlanRepo = {
     read: async (childId) => {
       const row = await this.db.childSettings.findUnique({ where: { childId }, select: { extra: true } });
-      const plan = (row?.extra as { plan?: { hiddenGames?: string[]; updatedAt?: string; updatedBy?: string } } | null)?.plan;
+      type Stored = {
+        hiddenGames?: string[];
+        updatedAt?: string;
+        updatedBy?: string;
+        history?: { at: string; by: string; hidden: number }[];
+      };
+      const plan = (row?.extra as { plan?: Stored } | null)?.plan;
       if (!plan) return null;
       return {
         hiddenGames: Array.isArray(plan.hiddenGames) ? plan.hiddenGames : [],
         updatedAt: plan.updatedAt ? new Date(plan.updatedAt) : null,
         updatedBy: plan.updatedBy === 'THERAPIST' ? 'THERAPIST' : plan.updatedBy === 'PARENT' ? 'PARENT' : null,
+        history: (plan.history ?? []).map((h) => ({
+          at: new Date(h.at),
+          by: h.by === 'THERAPIST' ? ('THERAPIST' as const) : ('PARENT' as const),
+          hidden: h.hidden,
+        })),
       };
     },
     write: async (childId, plan) => {
       const row = await this.db.childSettings.findUnique({ where: { childId }, select: { extra: true } });
-      const extra = { ...((row?.extra as Record<string, unknown> | null) ?? {}), plan: { ...plan, updatedAt: plan.updatedAt?.toISOString() } };
+      const extra = {
+        ...((row?.extra as Record<string, unknown> | null) ?? {}),
+        plan: {
+          ...plan,
+          updatedAt: plan.updatedAt?.toISOString(),
+          history: plan.history.map((h) => ({ ...h, at: h.at.toISOString() })),
+        },
+      };
       await this.db.childSettings.upsert({
         where: { childId },
         create: { childId, extra, updatedAt: plan.updatedAt ?? new Date() },

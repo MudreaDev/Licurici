@@ -30,7 +30,7 @@ function setup({ linked = true } = {}) {
 describe('GamePlanService', () => {
   it('fără plan: toate jocurile (listă goală)', async () => {
     const { plan } = setup();
-    await expect(plan.get(parent, CHILD)).resolves.toEqual({ hiddenGames: [], updatedAt: null, updatedBy: null });
+    await expect(plan.get(parent, CHILD)).resolves.toEqual({ hiddenGames: [], updatedAt: null, updatedBy: null, history: [] });
   });
 
   it('părintele și specialistul cu partajare activă pot alege jocurile; fiecare schimbare e în audit', async () => {
@@ -43,6 +43,11 @@ describe('GamePlanService', () => {
     expect(b.updatedAt).toEqual(now);
     await expect(plan.get(parent, CHILD)).resolves.toMatchObject({ hiddenGames: ['cauta'] });
     expect(auditLog).toEqual(['p1:child.plan', 't1:child.plan']);
+    // Istoricul: o linie de schimbare de fază pentru fiecare.
+    expect(b.history.map((h) => [h.by, h.hidden])).toEqual([
+      ['PARENT', 2],
+      ['THERAPIST', 1],
+    ]);
   });
 
   it('specialistul fără partajare (sau expirată) și oricine altcineva: 404', async () => {

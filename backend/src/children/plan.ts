@@ -17,11 +17,20 @@ export const planSchema = z
   })
   .strict();
 
+export interface PlanChange {
+  at: Date;
+  by: 'PARENT' | 'THERAPIST';
+  /** Câte jocuri erau scoase după schimbare. */
+  hidden: number;
+}
+
 export interface GamePlan {
   hiddenGames: string[];
   /** Când s-a schimbat ultima dată și de cine (rolul), ca tableta să știe dacă e mai nou. */
   updatedAt: Date | null;
   updatedBy: 'PARENT' | 'THERAPIST' | null;
+  /** Istoricul schimbărilor (cele mai recente 50): liniile de schimbare de fază din grafice. */
+  history: PlanChange[];
 }
 
 export interface PlanRepo {
@@ -45,17 +54,21 @@ export class GamePlanService {
 
   async get(user: AuthUser, childId: string): Promise<GamePlan> {
     await this.access.assert(user, childId, 'read');
-    return (await this.repo.read(childId)) ?? { hiddenGames: [], updatedAt: null, updatedBy: null };
+    return (await this.repo.read(childId)) ?? { hiddenGames: [], updatedAt: null, updatedBy: null, history: [] };
   }
 
   async put(user: AuthUser, childId: string, body: unknown): Promise<GamePlan> {
     // Citirea e suficientă ca drept: specialistul are voie aici (doar pentru plan).
     await this.access.assert(user, childId, 'read');
     const { hiddenGames } = parseWith(planSchema, body);
+    const previous = await this.repo.read(childId);
+    const by: PlanChange['by'] = user.role === 'THERAPIST' ? 'THERAPIST' : 'PARENT';
+    const at = this.now();
     const plan: GamePlan = {
       hiddenGames,
-      updatedAt: this.now(),
-      updatedBy: user.role === 'THERAPIST' ? 'THERAPIST' : 'PARENT',
+      updatedAt: at,
+      updatedBy: by,
+      history: [...(previous?.history ?? []), { at, by, hidden: hiddenGames.length }].slice(-50),
     };
     await this.repo.write(childId, plan);
     await this.repo.audit(user.id, 'child.plan', childId);

@@ -121,7 +121,14 @@ class FakeBackend {
     if (path == '/children/$childId/plan') {
       if (r.method == 'PUT') {
         final b = jsonDecode(r.body) as Map;
-        plan = {'hiddenGames': b['hiddenGames'], 'updatedAt': '2026-10-09T09:00:00.000Z', 'updatedBy': 'THERAPIST'};
+        plan = {
+          'hiddenGames': b['hiddenGames'],
+          'updatedAt': '2026-10-09T09:00:00.000Z',
+          'updatedBy': 'THERAPIST',
+          'history': [
+            {'at': '2026-10-09T09:00:00.000Z', 'by': 'THERAPIST', 'hidden': (b['hiddenGames'] as List).length},
+          ],
+        };
       }
       return json(plan);
     }
