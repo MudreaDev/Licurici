@@ -41,7 +41,10 @@ class ColoringScreen extends ConsumerStatefulWidget {
   ConsumerState<ColoringScreen> createState() => _ColoringScreenState();
 }
 
-enum _Tool { brush, fill }
+enum _Tool { brush, fill, stamp }
+
+/// Ștampilele: o atingere pune forma, în culoarea aleasă.
+enum _Stamp { star, heart, dot, flower }
 
 const _palette = [
   Color(0xFFE53935), Color(0xFFFB8C00), Color(0xFFFDD835), Color(0xFF8BC34A), //
@@ -60,6 +63,7 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
   Color _color = _palette[1];
   double _size = _sizes[1];
   _Tool _tool = _Tool.brush;
+  _Stamp _stamp = _Stamp.star;
   bool _busy = false;
 
   @override
@@ -129,6 +133,22 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
       _push(next);
       _pending.remove(stroke);
     });
+  }
+
+  /// Pune ștampila la [at] (unități de desen), pe stratul de culoare (liniile rămân deasupra).
+  Future<void> _stampAt(Offset at) async {
+    final base = _paint;
+    if (base == null || _busy) return;
+    _busy = true;
+    final rec = ui.PictureRecorder();
+    final c = Canvas(rec);
+    c.drawImage(base, Offset.zero, Paint());
+    paintStamp(c, _stamp.name, at, 24 + _size * 0.9, _color);
+    final next = await rec.endRecording().toImage(base.width, base.height);
+    _busy = false;
+    if (!mounted) return;
+    ref.read(sfxProvider).play(Sfx.tap);
+    setState(() => _push(next));
   }
 
   Future<void> _fill(Offset at) async {
@@ -263,7 +283,9 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
                       child: Listener(
                         key: const ValueKey('sheet'),
                         onPointerDown: (e) {
-                          if (_tool == _Tool.fill) {
+                          if (_tool == _Tool.stamp) {
+                            _stampAt(toBox(e.localPosition));
+                          } else if (_tool == _Tool.fill) {
                             _fill(toBox(e.localPosition));
                           } else {
                             setState(() => _stroke.add(toBox(e.localPosition)));
@@ -301,8 +323,16 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
   Widget _tools(BuildContext context, double gap) => LayoutBuilder(
     builder: (context, c) {
       // Patru rânduri de culori + rândul de unelte + butonul „Gata”.
-      final swatch = math.min(64.0, math.min((c.maxWidth - 2 * 8) / 3, (c.maxHeight - 150) / 4 - 8));
-      final tool = math.min(52.0, (c.maxWidth - 3 * 6) / 4);
+      // Ecranele joase (telefonul ținut culcat): culorile câte 4 pe rând, unelte mai mici.
+      final low = c.maxHeight < 420;
+      final cols = low ? 4 : 3;
+      final tool = math.min(low ? 40.0 : 52.0, (c.maxWidth - 3 * 6) / 4);
+      // Rândurile de culori, două rânduri de unelte (carioca + găleată, ștampile), „Gata”.
+      final rows = (_palette.length / cols).ceil();
+      final swatch = math.min(
+        64.0,
+        math.min((c.maxWidth - (cols - 1) * 8) / cols, (c.maxHeight - 86 - tool * 2 - gap) / rows - 8),
+      );
       return Column(
         children: [
           Wrap(
@@ -354,6 +384,27 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
                   size: tool * 0.58,
                 ),
               ),
+            ],
+          ),
+          SizedBox(height: gap * 0.5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (final st in _Stamp.values)
+                _ToolButton(
+                  key: ValueKey('stamp-${st.name}'),
+                  size: tool,
+                  selected: _tool == _Tool.stamp && _stamp == st,
+                  label: 'Ștampilă',
+                  onTap: () => setState(() {
+                    _tool = _Tool.stamp;
+                    _stamp = st;
+                  }),
+                  child: CustomPaint(
+                    size: Size.square(tool * 0.6),
+                    painter: _StampIcon(st.name, _color == Colors.white ? Tokens.line : _color),
+                  ),
+                ),
             ],
           ),
           SizedBox(height: gap),
@@ -504,6 +555,52 @@ class _Swatch extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Ștampila [kind] (`star`, `heart`, `dot`, `flower`) cu centrul în [c], de mărimea [size].
+void paintStamp(Canvas canvas, String kind, Offset c, double size, Color color) {
+  final paint = Paint()..color = color;
+  final r = size / 2;
+  switch (kind) {
+    case 'star':
+      final p = Path();
+      for (var i = 0; i < 10; i++) {
+        final a = -math.pi / 2 + i * math.pi / 5, rr = i.isEven ? r : r * 0.45;
+        final q = c + Offset(math.cos(a) * rr, math.sin(a) * rr);
+        i == 0 ? p.moveTo(q.dx, q.dy) : p.lineTo(q.dx, q.dy);
+      }
+      canvas.drawPath(p..close(), paint);
+    case 'heart':
+      canvas.drawPath(
+        Path()
+          ..moveTo(c.dx, c.dy + r * 0.85)
+          ..cubicTo(c.dx - r * 1.3, c.dy + r * 0.05, c.dx - r * 0.75, c.dy - r * 0.95, c.dx, c.dy - r * 0.35)
+          ..cubicTo(c.dx + r * 0.75, c.dy - r * 0.95, c.dx + r * 1.3, c.dy + r * 0.05, c.dx, c.dy + r * 0.85)
+          ..close(),
+        paint,
+      );
+    case 'flower':
+      for (var i = 0; i < 5; i++) {
+        final a = -math.pi / 2 + i * 2 * math.pi / 5;
+        canvas.drawCircle(c + Offset(math.cos(a), math.sin(a)) * r * 0.55, r * 0.42, paint);
+      }
+      canvas.drawCircle(c, r * 0.32, Paint()..color = Color.lerp(color, const Color(0xFFFFFFFF), 0.55)!);
+    default: // bulină
+      canvas.drawCircle(c, r * 0.8, paint);
+  }
+}
+
+class _StampIcon extends CustomPainter {
+  _StampIcon(this.kind, this.color);
+
+  final String kind;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) => paintStamp(canvas, kind, size.center(Offset.zero), size.shortestSide, color);
+
+  @override
+  bool shouldRepaint(_StampIcon old) => old.kind != kind || old.color != color;
 }
 
 class _ToolButton extends StatelessWidget {

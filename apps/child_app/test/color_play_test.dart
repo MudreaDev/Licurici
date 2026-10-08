@@ -65,6 +65,14 @@ void main() {
         await tester.tapAt(at(x, y));
         await settle(tester, 3);
       }
+      // Ștampile: o stea și o inimioară pe cer, o floare pe iarbă.
+      for (final (stamp, color, x, y) in [('star', 2, 120.0, 260.0), ('heart', 8, 640.0, 200.0), ('flower', 0, 600.0, 560.0)]) {
+        await tester.tap(find.byKey(ValueKey('stamp-$stamp')));
+        await tester.tap(find.byKey(ValueKey('color-$color')));
+        await settle(tester, 1);
+        await tester.tapAt(at(x, y));
+        await settle(tester, 2);
+      }
       if (shots) await expectLater(find.byType(ColoringScreen), matchesGoldenFile('shots/coloram-casa-$device.png'));
       await tester.tap(find.byKey(const ValueKey('done')));
       await settleUntil(tester, find.byKey(const ValueKey('draw-again')));
