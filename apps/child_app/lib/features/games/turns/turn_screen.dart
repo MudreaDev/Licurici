@@ -309,7 +309,7 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                                 duration: motion.d(200),
                                 child: _Pulse(
                                   enabled: motion.movement && childTurn,
-                                  child: _Block(color: nextColor, size: side * 0.22),
+                                  child: _Block(color: nextColor, size: side * 0.22, mine: true),
                                 ),
                               ),
                               if (_who == _Who.licurici)
@@ -328,7 +328,13 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     for (var i = _placed - 1; i >= 0; i--)
-                      _Block(key: ValueKey('turn-block-$_tower-$i'), color: Color(_colors[i]), size: block, drop: motion.movement),
+                      _Block(
+                        key: ValueKey('turn-block-$_tower-$i'),
+                        color: Color(_colors[i]),
+                        size: block,
+                        drop: motion.movement,
+                        mine: widget.game.childPlaces(_level, i),
+                      ),
                     Container(
                       width: block * 2.6,
                       height: block * 0.35,
@@ -358,7 +364,7 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                     AnimatedOpacity(
                       opacity: _who == _Who.licurici && !_flying ? 1 : 0,
                       duration: motion.d(200),
-                      child: _Block(color: nextColor, size: side * 0.22),
+                      child: _Block(color: nextColor, size: side * 0.22, mine: false),
                     ),
                   ],
                 ),
@@ -423,11 +429,14 @@ class _Badge extends StatelessWidget {
 
 /// Un cub de jucărie: fața colorată, muchia de sus luminată, umbra jos.
 class _Block extends StatelessWidget {
-  const _Block({super.key, required this.color, required this.size, this.drop = false});
+  const _Block({super.key, required this.color, required this.size, required this.mine, this.drop = false});
 
   final Color color;
   final double size;
   final bool drop;
+
+  /// Cubul copilului (steluță) sau al lui Licurici (lună): în turn se vede cine l-a pus.
+  final bool mine;
 
   @override
   Widget build(BuildContext context) {
@@ -445,10 +454,10 @@ class _Block extends StatelessWidget {
         border: Border.all(color: shade(color, 0.3), width: 2),
       ),
       child: Center(
-        child: Container(
-          width: size * 0.5,
-          height: size * 0.5,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.35)),
+        child: Icon(
+          mine ? Icons.star_rounded : Icons.nightlight_round,
+          size: size * 0.6,
+          color: Colors.white.withValues(alpha: 0.85),
         ),
       ),
     );
