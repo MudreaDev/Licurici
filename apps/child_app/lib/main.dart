@@ -41,6 +41,7 @@ import 'features/album/album_screen.dart';
 import 'features/aquarium/aquarium_screen.dart';
 import 'features/aquarium/coloring_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/games/track/track_screen.dart';
 import 'features/parent/parent_screen.dart';
 import 'features/games/sequence/simon_screen.dart';
 import 'features/settings/settings.dart';
@@ -277,6 +278,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/cauta',
         pageBuilder: (context, state) =>
             _fade(context, state, const SearchScreen()),
+      ),
+      GoRoute(
+        path: '/urmareste-pestele',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const TrackScreen()),
       ),
       GoRoute(
         path: '/semaforul',

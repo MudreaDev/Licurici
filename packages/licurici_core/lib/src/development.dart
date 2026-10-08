@@ -72,6 +72,8 @@ const List<Ladder> ladders = [
     Step('ATN1', 'Se orientează spre un stimul care apare în centru', games: ['prinde-licuriciul']),
     Step('ATN2', 'Găsește stimulul oriunde pe ecran, inclusiv la margini',
         games: ['prinde-licuriciul', 'cauta']),
+    Step('ATN2b', 'Urmărește cu privirea un obiect care se mișcă, chiar printre altele asemănătoare',
+        games: ['urmareste-pestele']),
     Step('ATN3', 'Urmărește privirea și gestul cuiva spre un obiect', games: ['unde-se-uita']),
     Step('ATN4', 'Urmărește doar privirea (fără gest)', games: ['unde-se-uita']),
     Step('ATN5', 'Observă ce s-a schimbat într-o scenă (a apărut, s-a înlocuit, a dispărut)',

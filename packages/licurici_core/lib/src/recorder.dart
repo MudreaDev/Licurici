@@ -28,6 +28,7 @@ import 'sorting.dart';
 import 'spot_diff.dart';
 import 'switching.dart';
 import 'trace.dart';
+import 'tracking.dart';
 import 'waiting.dart';
 import 'trial.dart';
 
@@ -516,6 +517,32 @@ class SessionRecorder {
         targetId: f.round.target.word,
         chosenId: f.firstWrong,
         offTargetTaps: f.wrongTaps,
+      ));
+    }
+  }
+
+  /// Un nivel `urmareste-pestele`: câte o încercare pe rundă. Corectă = a atins peștele lui
+  /// după oprire; alegerea greșită = pierderea urmăririi (`chosenId`); atingerile din timpul
+  /// înotului = `offTargetTaps`; dificultatea = numărul de pești; setul = asemănarea.
+  void trackLevel(TrackResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final r in result.responses) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: r.correct,
+        promptLevel: PromptLevel.p0,
+        attempts: 1,
+        latencyMs: r.rtMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: r.trial.fish[r.trial.target].species,
+        stimulusSet: level.axes.similarity.name,
+        difficulty: level.axes.fish.toDouble(),
+        targetId: 'peste${r.trial.target}',
+        chosenId: r.chosen == null ? null : 'peste${r.chosen}',
+        offTargetTaps: r.earlyTaps,
       ));
     }
   }

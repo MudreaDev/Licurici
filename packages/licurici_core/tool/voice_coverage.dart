@@ -26,6 +26,14 @@ const uiPhrases = [
   'Bravo!',
   'Mai încearcă',
   'Ai terminat! Bravo!',
+  // Urmărește peștele
+  'Urmărește peștele!',
+  'Acesta e peștele tău. Urmărește-l!',
+  'Urmărește-l!',
+  'Atinge peștele!',
+  'Unde e peștele tău?',
+  'Așteaptă să se oprească.',
+  'Uite-l pe al tău!',
   // Felinarele (simon)
   'Rândul tău',
   'Atinge-le invers, de la ultimul.',
