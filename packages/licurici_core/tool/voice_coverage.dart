@@ -126,6 +126,12 @@ void main(List<String> args) {
   for (final t in traceTrips) {
     add(t.says, 'traseaza');
   }
+  for (final g in writingGames) {
+    for (final glyph in g.allGlyphs) {
+      add(g.instructionFor(glyph), g.id);
+      add(g.praiseFor(glyph), g.id);
+    }
+  }
   for (final g in orderGames) {
     add(g.instruction, g.id);
     for (final story in g.stories) {

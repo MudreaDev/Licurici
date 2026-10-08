@@ -166,6 +166,8 @@ const List<Ladder> ladders = [
   ]),
   Ladder(Domain.pac, [
     Step('PAC-N2', 'Numără până la 5', games: ['numaram']),
+    Step('PAC-N3', 'Scrie cifrele urmărind conturul, în ordinea corectă a trăsăturilor',
+        games: ['scriem-cifrele']),
     Step('PAC-N4', 'Compară cantități (mai mult / mai puțin)', games: ['comparam']),
     Step('PAC-N6', 'Adună cu obiecte', games: ['adunam']),
     Step('PAC-N7', 'Scade cu obiecte', games: ['scadem']),
@@ -179,6 +181,8 @@ const List<Ladder> ladders = [
     Step('PAC-T1', 'Citește ceasul (ore, jumătăți, sferturi)', games: ['ceasul']),
     Step('PAC-T2', 'Numără banii (lei)', games: ['bani']),
     Step('PAC-L1', 'Recunoaște literele', games: ['alfabetul']),
+    Step('PAC-L4', 'Scrie literele de tipar urmărind conturul, în ordinea corectă a trăsăturilor',
+        games: ['scriem-literele']),
     Step('PAC-L2', 'Desparte cuvintele în silabe', games: ['silabe']),
     Step('PAC-L3', 'Citește cuvinte simple', games: ['cuvinte']),
     Step('PAC-L6', 'Singular și plural', games: ['plural']),

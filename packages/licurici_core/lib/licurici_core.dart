@@ -33,6 +33,7 @@ export 'src/spot_diff.dart';
 export 'src/switching.dart';
 export 'src/trace.dart';
 export 'src/tracking.dart';
+export 'src/writing.dart';
 export 'src/waiting.dart';
 export 'src/breathing.dart';
 export 'src/shell.dart';

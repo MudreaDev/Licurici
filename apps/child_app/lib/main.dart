@@ -42,6 +42,7 @@ import 'features/aquarium/aquarium_screen.dart';
 import 'features/aquarium/coloring_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/games/track/track_screen.dart';
+import 'features/games/write/write_screen.dart';
 import 'features/parent/parent_screen.dart';
 import 'features/games/sequence/simon_screen.dart';
 import 'features/settings/settings.dart';
@@ -278,6 +279,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/cauta',
         pageBuilder: (context, state) =>
             _fade(context, state, const SearchScreen()),
+      ),
+      GoRoute(
+        path: '/scrie/:id',
+        redirect: (context, state) =>
+            writingGameById(state.pathParameters['id']!) == null ? '/' : null,
+        pageBuilder: (context, state) => _fade(
+          context,
+          state,
+          WriteScreen(
+            key: ValueKey(state.pathParameters['id']),
+            game: writingGameById(state.pathParameters['id']!)!,
+          ),
+        ),
       ),
       GoRoute(
         path: '/urmareste-pestele',

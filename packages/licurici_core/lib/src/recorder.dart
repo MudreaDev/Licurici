@@ -29,6 +29,7 @@ import 'spot_diff.dart';
 import 'switching.dart';
 import 'trace.dart';
 import 'tracking.dart';
+import 'writing.dart';
 import 'waiting.dart';
 import 'trial.dart';
 
@@ -543,6 +544,30 @@ class SessionRecorder {
         targetId: 'peste${r.trial.target}',
         chosenId: r.chosen == null ? null : 'peste${r.chosen}',
         offTargetTaps: r.earlyTaps,
+      ));
+    }
+  }
+
+  /// Un nivel `scriem-cifrele` / `scriem-literele`: câte o încercare pe semn. Corectă = toate
+  /// trăsăturile duse la capăt fără ieșiri; încercările = ieșiri + 1; stimulul = semnul;
+  /// dificultatea = cât de îngust e drumul (1 / lățime). Cu puncte de ghidaj = ajutor P3.
+  void writingLevel(WritingResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final r in result.runs) {
+      add(Trial(
+        stepId: step,
+        gameId: level.gameId,
+        correct: r.clean,
+        promptLevel: level.axes.guide == TraceGuide.dots ? PromptLevel.p3 : PromptLevel.p0,
+        attempts: r.exits + 1,
+        latencyMs: r.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: r.glyph.char,
+        difficulty: 1 / level.axes.width,
+        targetId: r.glyph.char,
+        offTargetTaps: r.exits,
       ));
     }
   }

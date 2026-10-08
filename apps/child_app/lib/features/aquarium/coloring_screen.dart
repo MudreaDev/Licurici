@@ -237,8 +237,9 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
                           }
                         },
                         onPointerMove: (e) {
-                          if (_tool == _Tool.brush && _stroke.isNotEmpty)
+                          if (_tool == _Tool.brush && _stroke.isNotEmpty) {
                             setState(() => _stroke.add(toBox(e.localPosition)));
+                          }
                         },
                         onPointerUp: (_) => _commitStroke(),
                         onPointerCancel: (_) => _commitStroke(),
