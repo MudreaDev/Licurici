@@ -55,7 +55,7 @@ void main() {
         if (t % 300 == 0) a.tap(Point(0.8, 0.5));
         for (final f in a.fish) {
           expect(f.pos.x, inInclusiveRange(0, a.width));
-          expect(f.pos.y, inInclusiveRange(Aquarium.top, Aquarium.bottom));
+          expect(f.pos.y, inInclusiveRange(Aquarium.top, Aquarium.floorAt(f.z)));
           expect(f.facing, inInclusiveRange(-1, 1));
         }
       }
@@ -68,7 +68,7 @@ void main() {
       a
         ..add(near)
         ..add(far);
-      final tap = const Point(0.8, 0.5);
+      final tap = const Point(0.75, 0.5);
       final before = _dist(near.pos, tap);
       a.tap(tap);
       expect(near.mode, FishMode.flee);
@@ -164,7 +164,7 @@ void main() {
       final a = Aquarium(width: 1.6, seed: 8);
       final f = _fish('z', const Point(0.85, 0.5))..z = 0.2;
       a.add(f);
-      a.tap(const Point(0.8, 0.5));
+      a.tap(const Point(0.75, 0.5));
       for (var t = 0; t < 40; t++) {
         a.step(1 / 60);
       }
@@ -194,6 +194,53 @@ void main() {
       expect(maxRate, greaterThan(1));
       expect(f.turnRate.abs(), lessThan(0.3));
       expect(f.thrust, inInclusiveRange(0, 1));
+    });
+
+    test('atins chiar pe el, peștele se învârte bucuros (nu fuge); vecinii fug', () {
+      final a = Aquarium(width: 1.6, seed: 2);
+      final hit = _fish('atins', const Point(0.8, 0.5));
+      final near = _fish('vecin', const Point(1.0, 0.5));
+      a
+        ..add(hit)
+        ..add(near)
+        ..tap(const Point(0.8, 0.5));
+      expect(hit.mode, FishMode.spin);
+      expect(near.mode, FishMode.flee);
+      expect(a.drainEvents().whereType<FishTickled>().single.fishId, 'atins');
+      final yaw0 = hit.yaw;
+      var turned = 0.0;
+      for (var t = 0; t < 45; t++) {
+        final before = hit.yaw;
+        a.step(1 / 60);
+        var d = hit.yaw - before;
+        if (d > pi) d -= 2 * pi;
+        if (d < -pi) d += 2 * pi;
+        turned += d;
+      }
+      expect(turned.abs(), greaterThan(pi)); // o întoarcere mare, nu un tremur
+      expect(yaw0, isNotNull);
+      for (var t = 0; t < 60; t++) {
+        a.step(1 / 60);
+      }
+      expect(hit.mode, isNot(FishMode.spin));
+    });
+
+    test('caută pe fund: coboară, ciugulește (capul în jos), apoi pleacă', () {
+      final a = Aquarium(width: 1.6, seed: 11);
+      final f = _fish('f', const Point(0.8, 0.5))..z = 0.4;
+      a.add(f);
+      a.forage(f); // ca și cum ar fi ales singur
+      var pecks = 0;
+      var maxNod = 0.0;
+      for (var t = 0; t < 60 * 9; t++) {
+        a.step(1 / 60);
+        pecks += a.drainEvents().whereType<FishPecked>().length;
+        maxNod = max(maxNod, f.nod);
+        expect(f.pos.y, lessThanOrEqualTo(Aquarium.floorAt(f.z)));
+      }
+      expect(pecks, greaterThan(1));
+      expect(maxNod, greaterThan(0.3));
+      expect(f.mode, isNot(FishMode.forage));
     });
   });
 }

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/animation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:licurici_core/licurici_core.dart';
 
@@ -18,7 +19,7 @@ class TankFx {
   final double born;
 }
 
-enum TankFxKind { ate, tap }
+enum TankFxKind { ate, tap, sand, joy }
 
 /// Peștii, umbrele lor pe nisip, mâncarea și efectele. Fiecare pește e desenat ca un corp
 /// în spațiu de [FishRenderer] (plasă pe o coloană vertebrală 3D, ADR-028).
@@ -107,6 +108,29 @@ class TankPainter extends CustomPainter {
               ..strokeWidth = h * 0.006 * (1 - k)
               ..color = Color.fromRGBO(255, 255, 255, 0.7 * (1 - k)),
           );
+        case TankFxKind.sand:
+          // Norișorul de nisip ridicat de ciugulit: câteva fire care se ridică și se așază.
+          final r = math.Random(e.born.hashCode);
+          final k = (age / 1.2).clamp(0.0, 1.0);
+          for (var i = 0; i < 7; i++) {
+            final a = -math.pi * (0.15 + 0.7 * r.nextDouble());
+            final d = h * (0.01 + 0.03 * r.nextDouble()) * Curves.easeOut.transform(k);
+            final o = Offset(math.cos(a) * d * 1.6, math.sin(a) * d - h * 0.004 * math.sin(k * math.pi));
+            canvas.drawCircle(c + o, h * (0.002 + 0.002 * r.nextDouble()), Paint()..color = Color.fromRGBO(226, 204, 160, 0.8 * (1 - k)));
+          }
+          canvas.drawOval(
+            Rect.fromCenter(center: c, width: h * 0.06 * (0.6 + k), height: h * 0.018 * (0.6 + k)),
+            Paint()..color = Color.fromRGBO(236, 218, 178, 0.35 * (1 - k)),
+          );
+        case TankFxKind.joy:
+          // Bucuria: bule mari care urcă în spirală.
+          final r = math.Random(e.born.hashCode);
+          for (var i = 0; i < 7; i++) {
+            final k = ((age - i * 0.08) / 1.4).clamp(0.0, 1.0);
+            if (k <= 0) continue;
+            final o = Offset(math.sin(k * 7 + i) * h * 0.025, -k * h * (0.12 + r.nextDouble() * 0.06));
+            paintBubble(canvas, c + o, h * (0.008 + r.nextDouble() * 0.008), 1 - k);
+          }
         case TankFxKind.ate:
           final r = math.Random(e.born.hashCode);
           for (var i = 0; i < 5; i++) {

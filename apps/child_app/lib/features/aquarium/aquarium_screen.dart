@@ -86,9 +86,15 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     if (g != null) sim.gather(g);
     sim.step(dt);
     for (final e in sim.drainEvents()) {
-      if (e is FishAte) {
-        _fx.add(TankFx(e.at, TankFxKind.ate, _time.value));
-        ref.read(sfxProvider).play(Sfx.tap);
+      switch (e) {
+        case FishAte():
+          _fx.add(TankFx(e.at, TankFxKind.ate, _time.value));
+          ref.read(sfxProvider).play(Sfx.tap);
+        case FishPecked():
+          _fx.add(TankFx(e.at, TankFxKind.sand, _time.value));
+        case FishTickled():
+          _fx.add(TankFx(e.at, TankFxKind.joy, _time.value));
+          ref.read(sfxProvider).play(Sfx.star);
       }
     }
     _fx.removeWhere((e) => _time.value - e.born > 1.6);

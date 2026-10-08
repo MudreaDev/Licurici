@@ -18,7 +18,19 @@ library;
 import 'dart:math';
 
 /// Ce face peștele acum.
-enum FishMode { wander, rest, flee, gather, food }
+enum FishMode {
+  wander,
+  rest,
+  flee,
+  gather,
+  food,
+
+  /// Caută de mâncare pe fund: coboară, ciugulește nisipul.
+  forage,
+
+  /// A fost atins chiar pe el: se învârte o dată, bucuros.
+  spin,
+}
 
 /// Cât de mic pare un pește la adâncimea [z] (perspectivă).
 double depthScale(double z) => 1 - 0.42 * z.clamp(0.0, 1.0);
@@ -100,6 +112,7 @@ class SwimmingFish {
 
   double _timer = 0;
   double _burst = 0;
+  double _peck = 0;
   Point<double> _offset = const Point(0, 0);
 
   /// Cât de mic pare la adâncimea lui.
@@ -111,8 +124,11 @@ class SwimmingFish {
   /// Cât de repede merge față de viteza obișnuită (pentru ritmul cozii).
   double get effort => (speed / cruise).clamp(0.0, 3.0);
 
+  /// Cât își apleacă singur capul (ciugulește): se adaugă la înclinare.
+  double nod = 0;
+
   /// Înclinarea corpului (radiani, pozitiv = cu capul în jos), după urcare/coborâre.
-  double get tilt => atan2(climb, max(speed, 0.02)).clamp(-0.5, 0.5);
+  double get tilt => (atan2(climb, max(speed, 0.02)).clamp(-0.5, 0.5) + nod).clamp(-0.6, 0.7);
 
   /// Gura (unde mănâncă), pe ecran.
   Point<double> get mouth => Point(pos.x + facing * apparentLength * 0.45, pos.y + sin(tilt) * apparentLength * 0.4);
@@ -143,6 +159,18 @@ class FishAte extends AquariumEvent {
   final String fishId;
 }
 
+/// Un pește a ciugulit nisipul (un norișor de nisip).
+class FishPecked extends AquariumEvent {
+  const FishPecked(super.at, this.z);
+  final double z;
+}
+
+/// Un pește a fost atins chiar pe el și se învârte bucuros.
+class FishTickled extends AquariumEvent {
+  const FishTickled(super.at, this.fishId);
+  final String fishId;
+}
+
 class Aquarium {
   Aquarium({required this.width, int seed = 0}) : _rng = Random(seed);
 
@@ -158,8 +186,12 @@ class Aquarium {
   /// Cât urcă fundul pe ecran de la geam până la peretele din spate (perspectivă).
   static const double floorRise = 0.07;
 
-  /// Fundul (pe ecran) la adâncimea [z].
+  /// Cât de jos poate înota de obicei (pe ecran) la adâncimea [z].
   static double bottomAt(double z) => bottom - floorRise * z.clamp(0.0, 1.0);
+
+  /// Nisipul (pe ecran) la adâncimea [z]: jos lângă geam, tot mai sus spre spate (aceeași
+  /// perspectivă ca fundul desenat).
+  static double floorAt(double z) => 0.985 - 0.21 * z.clamp(0.0, 1.0);
 
   final Random _rng;
   final fish = <SwimmingFish>[];
@@ -189,9 +221,44 @@ class Aquarium {
 
   void remove(String id) => fish.removeWhere((f) => f.id == id);
 
-  /// Atingere scurtă: peștii din apropiere fug de deget (și spre fundal).
-  void tap(Point<double> at) {
+  /// Peștele coboară să caute de mâncare pe fund, lângă locul unde e.
+  void forage(SwimmingFish f) {
+    f.mode = FishMode.forage;
+    f._timer = 2.5 + _rng.nextDouble() * 2.5; // cât ciugulește (se numără doar pe fund)
+    f._peck = 0.3;
+    // Nu chiar lângă geam: acolo fundul e sub butoane.
+    final z = f.z.clamp(0.45, 0.85);
+    final x = (f.pos.x + (_rng.nextDouble() - 0.5) * 0.4).clamp(0.1, width - 0.1);
+    f
+      ..targetZ = z
+      ..target = Point(x, floorAt(z) - f.length * depthScale(z) * 0.24);
+  }
+
+  /// Peștele de sub deget (cel mai din față), dacă degetul e chiar pe el.
+  SwimmingFish? fishAt(Point<double> at) {
+    SwimmingFish? best;
     for (final f in fish) {
+      if (_len(f.pos - at) > f.apparentLength * 0.42) continue;
+      if (best == null || f.z < best.z) best = f;
+    }
+    return best;
+  }
+
+  /// Atingere scurtă: peștele atins chiar pe el se învârte bucuros (peștele-balon se umflă);
+  /// ceilalți din apropiere fug de deget (și spre fundal).
+  void tap(Point<double> at) {
+    final hit = fishAt(at);
+    if (hit != null && !hit.puffs) {
+      hit
+        ..mode = FishMode.spin
+        .._timer = 0.75
+        ..turnRate = (cos(hit.yaw) >= 0 ? 1 : -1) * 8.5
+        ..joy = 1
+        ..thrust = 0.9;
+      _events.add(FishTickled(hit.pos, hit.id));
+    }
+    for (final f in fish) {
+      if (identical(f, hit) && !f.puffs) continue;
       final d = f.pos - at;
       final dist = _len(d);
       if (dist > fleeRadius) continue;
@@ -300,7 +367,33 @@ class Aquarium {
       f.mode = FishMode.wander;
     }
 
+    if (f.mode != FishMode.forage) f.nod = max(0, f.nod - dt * 1.5);
     switch (f.mode) {
+      case FishMode.spin:
+        if (f._timer <= 0) {
+          f.mode = FishMode.wander;
+          f.target = _randomSpot(near: f.pos);
+          f.targetZ = _randomZ(near: f.z);
+        }
+      case FishMode.forage:
+        if (_nearestFood(f) != null) {
+          f.mode = FishMode.food;
+        } else if (_len(f.target - f.pos) >= 0.05) {
+          f._timer += dt; // pe drum: timpul de ciugulit încă nu curge
+        } else {
+          // Pe fund: ciugulește (capul în jos, bătăi scurte), apoi pleacă.
+          f._peck -= dt;
+          f.nod = 0.42 + 0.14 * sin(_time * 9);
+          if (f._peck <= 0) {
+            f._peck = 0.55 + _rng.nextDouble() * 0.5;
+            _events.add(FishPecked(Point(f.mouth.x, floorAt(f.z) - 0.005), f.z));
+          }
+          if (f._timer <= 0) {
+            f.mode = FishMode.wander;
+            f.target = _randomSpot(near: f.pos);
+            f.targetZ = _randomZ(near: f.z);
+          }
+        }
       case FishMode.flee:
         if (f._timer <= 0) {
           f.mode = FishMode.wander;
@@ -338,12 +431,20 @@ class Aquarium {
             f.targetZ = _randomZ(near: f.z);
           }
         } else if (_len(f.target - f.pos) < 0.06 && (f.targetZ - f.z).abs() < 0.12) {
-          // Uneori se oprește puțin, ca un pește adevărat.
-          if (_rng.nextDouble() < 0.35) {
+          // Ca un pește adevărat: uneori se oprește, uneori caută pe fund, uneori vine la
+          // geam să se uite la copil.
+          final roll = _rng.nextDouble();
+          if (roll < 0.3) {
             f.mode = FishMode.rest;
             f._timer = 1.5 + _rng.nextDouble() * 2.5;
             f.target = f.pos;
             f.targetZ = f.z;
+          } else if (roll < 0.45) {
+            forage(f);
+          } else if (roll < 0.55) {
+            // La geam, aproape de mijloc: mare și clar.
+            f.target = _clamp(Point(width * (0.3 + _rng.nextDouble() * 0.4), 0.35 + _rng.nextDouble() * 0.2));
+            f.targetZ = 0.02;
           } else {
             f.target = _randomSpot(near: f.pos);
             f.targetZ = _randomZ(near: f.z);
@@ -401,8 +502,13 @@ class Aquarium {
       FishMode.gather => 2.6,
       _ => 2.6,
     };
-    final wantRate = (diff * 3.2).clamp(-maxTurn, maxTurn);
-    f.turnRate += (wantRate - f.turnRate) * min(1.0, dt * (f.mode == FishMode.flee ? 14 : 5));
+    if (f.mode == FishMode.spin) {
+      // Învârtirea: viteza de rotire scade lin, fără să o tragă direcția.
+      f.turnRate *= 1 - min(1.0, dt * 0.8);
+    } else {
+      final wantRate = (diff * 3.2).clamp(-maxTurn, maxTurn);
+      f.turnRate += (wantRate - f.turnRate) * min(1.0, dt * (f.mode == FishMode.flee ? 14 : 5));
+    }
     f.yaw = _wrap(f.yaw + f.turnRate * dt);
 
     // 3. Viteza: impuls din coadă și alunecare. Încetinește în viraje strânse și la sosire.
@@ -412,6 +518,8 @@ class Aquarium {
       FishMode.gather => cruise * 1.1,
       FishMode.rest => cruise * 0.06,
       FishMode.wander => cruise,
+      FishMode.forage => cruise * 0.7,
+      FishMode.spin => cruise * 0.5,
     };
     if (f.mode == FishMode.wander) {
       // Plimbare în reprize: câteva bătăi de coadă, apoi plutește.
@@ -437,7 +545,7 @@ class Aquarium {
     f.thrust += (max(push, hold) - f.thrust) * min(1.0, dt * 4);
 
     // 4. Sus–jos: urcă și coboară mai încet decât înaintează (nu înoată vertical).
-    final wantClimb = (dy * 2.4).clamp(-cruise * 1.4, cruise * 1.4) * (f.mode == FishMode.rest ? 0.4 : 1);
+    final wantClimb = (dy * 2.4).clamp(-cruise * 1.4, cruise * 1.4) * (f.mode == FishMode.rest || f.mode == FishMode.spin ? 0.4 : 1);
     f.climb += (wantClimb - f.climb) * min(1.0, dt * (f.mode == FishMode.flee ? 3.5 : 1.8));
 
     // 5. Mișcarea: pe ecran, depărtarea micșorează pașii.
@@ -454,7 +562,7 @@ class Aquarium {
     if ((x < lox && vx < 0) || (x > hix && vx > 0)) f.speed *= 0.6;
     x = x.clamp(lox, hix).toDouble();
     if (!(f.mode == FishMode.flee && y < top)) {
-      final lo = top + my, hi = bottomAt(f.z) - my;
+      final lo = top + my, hi = f.mode == FishMode.forage ? floorAt(f.z) - my * 0.8 : bottomAt(f.z) - my;
       if (y < lo || y > hi) f.climb *= 0.5;
       y = y.clamp(lo, max(lo, hi)).toDouble();
     }
