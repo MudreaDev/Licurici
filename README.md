@@ -63,7 +63,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 09.10.2026.** **Sesiunea a noua (Claude, 08–09.10) — pe scurt:** **acvariul refăcut** (pești 3D cu fizică reală, recif bogat în perspectivă, viață ambientală, comportamente noi), 3 modele noi de pești de colorat (7 în total), **9 jocuri noi** (88 în aplicație): Urmărește peștele, Scriem cifrele, Scriem literele, Sus-jos-stânga-dreapta, Zilele și lunile, Forma ascunsă, Colorăm, Rândul meu-rândul tău, Licuricii din grădină (Corsi); vocea 100%. Detalii mai jos.
+**Ultima actualizare: 09.10.2026.** **Sesiunea a noua (Claude, 08–09.10) — pe scurt:** **acvariul refăcut** (pești 3D cu fizică reală, recif bogat în perspectivă, viață ambientală, comportamente noi), 3 modele noi de pești de colorat (7 în total), **10 jocuri noi** (89 în aplicație): Urmărește peștele, Scriem cifrele, Scriem literele, Sus-jos-stânga-dreapta, Zilele și lunile, Forma ascunsă, Colorăm, Rândul meu-rândul tău, Licuricii din grădină (Corsi), Ascultă și fă; **Harta mea** (felinarele treptelor stăpânite); **planul de jocuri al copilului** (pe tabletă și din panou, de părinte sau specialist, sincronizat); vocea 100%. Detalii mai jos.
 
 **Sesiunea a opta (Claude, 06–08.10) — pe scurt:** acvariul complet (pe ecran și pe hârtie, cu scanare), pușculița cu stele, **toate jocurile din prototip portate** (79 în aplicație, inclusiv Explorările), most-to-least pe trepte noi, telefonul mic reorganizat (stimulul are toată înălțimea), GDPR: ștergerea contului, ștergerea datelor de pe tabletă, exportul ca fișier, 2FA, blocare după 5 parole greșite, retenția automată (sesiuni 24 luni, dovezile consimțământului 3 ani, partajări expirate), jurnal fără date personale, **ciornele celor 9 documente din `docs/gdpr/`**. Verificat la final: core 436 de teste, aplicația 191, backend 57, panoul 15; analyze curat; build web (aplicație + panou) și APK OK.
 
@@ -87,7 +87,11 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 - ✅ **Colorăm** (MOT5, `features/coloring/`): ecranul de colorat e acum generic (`ColoringPage`: pești sau desene); 7 pagini desenate din cod (casa, floarea, mașina, fluturele, curcubeul, racheta, pisica), la „Gata!” desenul într-o ramă; **„Desenele mele”** rămân doar pe tabletă (`DrawingStore`, ultimele 24) și se șterg cu „Șterge datele de pe tabletă”. Fără încercări notate (creație).
 - ✅ **Rândul meu, rândul tău** (EMO7, `turns.dart` + `features/games/turns/`): turnul construit pe rând cu Licurici; atingerile în rândul lui se numără (o singură amintire blândă), de la nivelul 5 copilul dă rândul cu butonul („E rândul meu?” după 6 s = ajutor P2), Licurici ezită la niveluri mari.
 - ✅ **Licuricii din grădină** (FEX5b, sarcina Corsi, `SpatialSpanGame`): licurici identici pe flori împrăștiate se aprind pe rând; aceeași logică ca Felinarele (`SequenceGame` comun), florile cât mai mari fără să se atingă.
-- ✅ Vocea: 2148/2148 (edge-tts). Brief pentru cardurile noi: [docs/brief-codex-carduri-sesiunea9.md](docs/brief-codex-carduri-sesiunea9.md) (până atunci, emoji).
+- ✅ **Ascultă și fă** (LRC5, `instructions.dart` + `features/games/listen/`): „Atinge mărul, apoi mingea.” — 1 → 3 pași, 3 → 7 obiecte, ordinea spusă pe dos („Înainte de minge, atinge mărul.”), obiectele acoperite cât se spune instrucțiunea; numerele 1-2-3 pe obiectele atinse bine; ajutor: repetare (P2), apoi pozele în ordine (P3); „Mai spune o dată” oricând. Rostit pe bucăți („Atinge mărul” · „apoi mingea”), ~200 de clipuri în loc de mii.
+- ✅ **Harta mea** (`/harta`, `features/map/lantern_map_screen.dart`, plan §3 f, §6): cărarea de seară, câte o stație pe arie (ilustrația ariei, atingerea deschide jocurile ei) și câte un felinar pe treaptă: **aprins** = stăpânită, **pâlpâie** = începută, stins = încă nu. Un felinar nou de la ultima vizită: harta se derulează la el, Licurici îl sărbătorește („Ai aprins un felinar nou!”), o singură dată (`AppSettings.lanternsSeen`). Copilul nu vede niveluri, doar lumină.
+- ✅ **Planul de jocuri al copilului** (plan §5.1): pe tabletă, „Pentru părinți” → **„Jocurile copilului”** (comutatoare pe arii și pe jocuri); în panou, la fiecare copil, tabul **„Jocuri”** (specialistul sau părintele). Backend: `GET/PUT /children/:id/plan` (`children/plan.ts`, salvat în `child_settings.extra`, fără migrare; **e singurul lucru pe care specialistul îl poate schimba** — restul datelor rămân doar de citit pentru el; fiecare schimbare în `audit_log`). Tableta preia planul la sincronizare, „ultimul câștigă” după dată (`hiddenGamesAt`). Copilul vede doar jocurile alese, pe ecranul principal și în „Drumul de azi”. Teste: backend 61, panou 16, aplicația (sincronizare + ecran).
+- ✅ **Acvariu, încă:** vederea **din față** a peștelui (ambii ochi, gura care se deschide; desenul copilului întins pe corpul rotund) și din spate (coada care bate), când înoată spre copil sau dinspre el; **indicii pentru gesturi** (după câteva secunde fără atingere: mânuța „ține degetul pe apă”, apoi „atinge cufărul”), o dată pe vizită.
+- ✅ Vocea: 2360/2360 (edge-tts). Brief pentru cardurile noi: [docs/brief-codex-carduri-sesiunea9.md](docs/brief-codex-carduri-sesiunea9.md) (până atunci, emoji).
 - **De verificat pe dispozitiv:** fluiditatea acvariului pe o tabletă reală (în panoul browserului ascuns animațiile sunt încetinite, măsurarea nu e relevantă).
 
 **Sesiunea a opta — detalii:**
@@ -966,7 +970,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (88):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
+**Gata în Flutter (89):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
 🆕 simon / Felinarele (`sequence`), perechi (`memoryCards`), sortam (`dragDrop`), cucu-bau, respira, continua-sirul,
 🆕 **sesiunea a șaptea:** potriveste, arata-mi, corpul, intrusul, umbre, mingea-rosie, ce-se-aude, ce-imbrac, primul-sunet,
@@ -975,7 +979,7 @@ fa-ca-licuriciul (imitație), semaforul (așteptare), regula-se-schimba (DCCS), 
 (atenție comună), vorbeste (AAC), toba-magica (ritm), hraneste-pestii (tragere), atinge-si-vezi (cauză–efect),
 ce-s-a-schimbat, puzzle, unde-e-ursul, labirint, diferente, ce-face, orarul-meu, construieste, la-magazin, spune-propozitia, semne, numarul-lipsa, anotimpuri, habitate, silabe, cuvinte, plural, zeci, inmultim, impartim, ceasul,
 🆕 **sesiunea a opta:** bani, tabla, probleme, gramatica, simboluri, trecut, personalitati, engleza (`games/scoala2.dart`); explorare-stiinte, explorare-istorie, explorare-viata (`explore` — hartă cu opriri);
-🆕 **sesiunea a noua:** urmareste-pestele (`track`), scriem-cifrele, scriem-literele (`write`), pozitii, calendar, forma-ascunsa (`choice`), colorare (`color`), pe-rand (`turns`), licuricii (`sequence`, Corsi).
+🆕 **sesiunea a noua:** urmareste-pestele (`track`), scriem-cifrele, scriem-literele (`write`), pozitii, calendar, forma-ascunsa (`choice`), colorare (`color`), pe-rand (`turns`), licuricii (`sequence`, Corsi), asculta-si-fa (`listen`).
 Fiecare mecanică nouă are fișierul ei în `licurici_core/lib/src/` (logică pură, testată) și ecranul în
 `apps/child_app/lib/features/games/<mecanică>/`; catalogul (`catalog.dart`, `GameKind`) dă ruta.
 Fișiere acum: `packages/licurici_core/lib/src/games/{romana,matematica,forme,emotii,social}.dart` + registrul `games.dart`;
