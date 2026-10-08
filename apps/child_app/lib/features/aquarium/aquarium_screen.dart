@@ -84,7 +84,9 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     // Apa, foarte încet, cât stă copilul în acvariu.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _sfx = ref.read(sfxProvider)..ambient('ocean_loop');
+      final sfx = ref.read(sfxProvider);
+      _sfx = sfx;
+      sfx.ambient('ocean_loop');
     });
   }
 
