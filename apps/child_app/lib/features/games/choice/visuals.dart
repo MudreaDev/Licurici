@@ -63,6 +63,7 @@ class PromptVisuals extends StatelessWidget {
             TextVisual() => _BigText(v),
             SceneVisual() => _Scene(v.text),
             PatternVisual() => _Pattern(v, solved: solved),
+            ShelfVisual() => _Shelf(v, solved: solved),
           },
         ),
     ],
@@ -562,6 +563,76 @@ class _NotePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_NotePainter old) => old.value != value || old.color != color;
+}
+
+/// Dulapul cu compartimente (sus / jos / stânga / dreapta): lemn cald, fundul fiecărui
+/// compartiment mai deschis, obiectele pictate. La răspunsul corect compartimentul întrebat
+/// se luminează.
+class _Shelf extends StatelessWidget {
+  const _Shelf(this.visual, {required this.solved});
+
+  final ShelfVisual visual;
+  final bool solved;
+
+  @override
+  Widget build(BuildContext context) {
+    final k = VisualScale.of(context);
+    final cell = (visual.rows * visual.cols <= 2 ? 120.0 : 92.0) * k;
+    final frame = cell * 0.12;
+    return Container(
+      padding: EdgeInsets.all(frame),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(cell * 0.16),
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFC08A55), Color(0xFF9A6634)],
+        ),
+        boxShadow: const [BoxShadow(color: Color(0x33000000), blurRadius: 8, offset: Offset(0, 4))],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var r = 0; r < visual.rows; r++)
+            Padding(
+              padding: EdgeInsets.only(top: r == 0 ? 0 : frame),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var c = 0; c < visual.cols; c++)
+                    Padding(
+                      padding: EdgeInsets.only(left: c == 0 ? 0 : frame),
+                      child: _cell(r * visual.cols + c, cell),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _cell(int i, double size) {
+    final lit = solved && i == visual.target;
+    final art = visual.cells[i];
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: size,
+      height: size,
+      padding: EdgeInsets.all(size * 0.12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(size * 0.1),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: lit ? const [Color(0xFFFFF4C2), Color(0xFFFFE07A)] : const [Color(0xFF6E4524), Color(0xFFF3DEC0)],
+          stops: lit ? null : const [0, 0.18],
+        ),
+        border: lit ? Border.all(color: Tokens.sun, width: 3) : null,
+      ),
+      child: art == null ? null : StimulusArt(art, size: size * 0.76),
+    );
+  }
 }
 
 /// Ceasul: cadran crem cu cifre, acul mic (ora) gros și scurt, acul mare (minutele) subțire.

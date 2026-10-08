@@ -746,6 +746,76 @@ class UndeEUrsulGame extends ChoiceGame {
 }
 
 
+/// Sus, jos, stânga, dreapta (LRC6b, catalog #37 `pozitii`): un dulap cu obiecte în
+/// compartimente; „Ce e sus?” — copilul arată obiectul. Stânga și dreapta sunt ale copilului
+/// (cum se uită la ecran). Tier 1–2: sus / jos (2 rafturi); tier 3–4: stânga / dreapta;
+/// tier 5–6: crucea (sus, jos, stânga, dreapta, mijloc); de la tier 7: dulapul 3 × 3, cu
+/// colțurile („sus, în stânga”).
+class PozitiiGame extends ChoiceGame {
+  const PozitiiGame()
+      : super(
+          id: 'pozitii',
+          name: 'Sus, jos, stânga, dreapta',
+          emoji: '↔️',
+          description: 'Ce e sus? Ce e în stânga?',
+          subject: Subject.romana,
+          gradeCodes: 'G1',
+        );
+
+  /// Numele locului din dulapul [rows] × [cols], pentru compartimentul ([r], [c]).
+  static String place(int rows, int cols, int r, int c) {
+    final v = rows == 1 ? '' : (r == 0 ? 'sus' : (r == rows - 1 ? 'jos' : ''));
+    final h = cols == 1 ? '' : (c == 0 ? 'în stânga' : (c == cols - 1 ? 'în dreapta' : ''));
+    if (v.isEmpty && h.isEmpty) return 'în mijloc';
+    if (v.isEmpty) return h;
+    if (h.isEmpty) return v;
+    return '$v, $h';
+  }
+
+  @override
+  Lesson generate(GameContext ctx) {
+    final tier = ctx.difficulty.tier;
+    return Lesson(
+      title: name,
+      instruction: 'Ascultă și arată.',
+      rounds: [for (var i = 0; i < 8; i++) _round(ctx, tier, i)],
+    );
+  }
+
+  ChoiceRound _round(GameContext ctx, int tier, int i) {
+    final (rows, cols, cells) = switch (tier) {
+      <= 2 => (2, 1, [0, 1]),
+      <= 4 => (1, 2, [0, 1]),
+      // La trecere amestecăm și rundele vechi (sus / jos) printre cele noi.
+      <= 6 => i.isEven ? (3, 3, [1, 3, 4, 5, 7]) : (3, 3, [1, 3, 5, 7]),
+      _ => (3, 3, ctx.sample([0, 1, 2, 3, 4, 5, 6, 7, 8], 6)),
+    };
+    final things = ctx.sample(objectWords, cells.length);
+    final map = {for (final (k, cell) in cells.indexed) cell: things[k].emoji};
+    final target = ctx.pick(cells);
+    final where = place(rows, cols, target ~/ cols, target % cols);
+    // Variantele: obiectul întrebat + altele din dulap (cel mult 4 în total).
+    final others = ctx.sample([for (final c in cells) if (c != target) c], min(3, cells.length - 1));
+    return ChoiceRound(
+      prompt: 'Ce e $where?',
+      speak: ['Ce e $where?'],
+      hint: 'Uite ce e $where.',
+      stimulusId: where,
+      fixedChoices: true,
+      visuals: [ShelfVisual(rows, cols, map, target: target)],
+      choices: [
+        for (final c in [target, ...others]..shuffle(ctx.random))
+          Choice(
+            art: map[c],
+            id: place(rows, cols, c ~/ cols, c % cols),
+            speak: things[cells.indexOf(c)].word,
+            correct: c == target,
+          ),
+      ],
+    );
+  }
+}
+
 /// Acțiunile pentru „Ce face?”: iconița (ilustrația pictată `actions/…` în aplicație) și
 /// verbul („doarme”).
 const actions = [

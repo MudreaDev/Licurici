@@ -32,6 +32,7 @@ const List<GameSpec> allGames = [
   CeFaceGame(),
   AtributeGame(),
   UndeEUrsulGame(),
+  PozitiiGame(),
   PrimulSunetGame(),
   IntrusulGame(),
   UmbreGame(),

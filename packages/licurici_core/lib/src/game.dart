@@ -136,6 +136,18 @@ class PatternVisual extends Visual {
   final String answer;
 }
 
+/// Un dulap cu [rows] × [cols] compartimente; [cells] = ce stă în fiecare (indice
+/// rând × coloane + coloană → emoji). Pentru pozițiile sus / jos / stânga / dreapta.
+class ShelfVisual extends Visual {
+  const ShelfVisual(this.rows, this.cols, this.cells, {this.target});
+  final int rows;
+  final int cols;
+  final Map<int, String> cells;
+
+  /// Compartimentul întrebat (se luminează după răspunsul corect).
+  final int? target;
+}
+
 /// O scenă scurtă descrisă în cuvinte („Un copil a primit un cadou.”).
 class SceneVisual extends Visual {
   const SceneVisual(this.text);
