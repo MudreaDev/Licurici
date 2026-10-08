@@ -154,8 +154,15 @@ class SettingsNotifier extends Notifier<AppSettings> {
     _persist?.call(s);
   }
 
-  void setGrade(Grade grade) => _set(state.copyWith(grade: grade));
-  void setLevel(FreePlayLevel level) => _set(state.copyWith(level: level));
+  /// Clasa și nivelul de pornire schimbate de părinte: jocurile cu alegere pornesc iar de
+  /// acolo (treptele lor adaptive salvate se uită).
+  Map<String, int> get _withoutChoiceLevels {
+    final choice = {for (final g in allGames) g.id};
+    return {for (final e in state.levels.entries) if (!choice.contains(e.key)) e.key: e.value};
+  }
+
+  void setGrade(Grade grade) => _set(state.copyWith(grade: grade, levels: _withoutChoiceLevels));
+  void setLevel(FreePlayLevel level) => _set(state.copyWith(level: level, levels: _withoutChoiceLevels));
   void toggleCalm() => _set(state.copyWith(calm: !state.calm));
   void toggleVoice() => _set(state.copyWith(voice: !state.voice));
 
