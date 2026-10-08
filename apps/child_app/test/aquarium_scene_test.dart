@@ -40,7 +40,7 @@ void main() {
         sim.fish.add(f);
         owned[f.id] = OwnedFish(AquariumEntry(id: f.id, species: sp, created: DateTime(2026)), s, art);
       }
-      final time = ValueNotifier(12.0);
+      final time = ValueNotifier(18.0);
       final chest = ReefChest()..openedAt = 11.6;
       await tester.pumpWidget(
         Directionality(

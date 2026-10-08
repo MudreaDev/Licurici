@@ -161,6 +161,7 @@ class ReefAmbiencePainter extends CustomPainter {
 
     _school(canvas, size, t);
     _jellies(canvas, size, t);
+    _turtle(canvas, size, t);
 
     // Causticele pe fund: mai stinse în spate (lumina se pierde în apă).
     final floorArea = Rect.fromLTWH(0, h * 0.74, w, h * 0.26);
@@ -184,6 +185,7 @@ class ReefAmbiencePainter extends CustomPainter {
     }
 
     _chest(canvas, size, t);
+    _crab(canvas, size, t);
 
     // Un izvor de bule din nisip, în dreapta.
     final src = Offset(w * 0.79, h * floorY(w * 0.79, w, 0.55));
@@ -268,6 +270,31 @@ class ReefAmbiencePainter extends CustomPainter {
     }
   }
 
+  /// O țestoasă care trece prin depărtare, cam o dată pe minut, dând încet din labe.
+  void _turtle(Canvas canvas, Size size, double t) {
+    final w = size.width, h = size.height;
+    const period = 64.0, cross = 30.0;
+    final u = (t + 20) % period;
+    if (u > cross) return;
+    final pass = ((t + 20) ~/ period).isEven;
+    final k = u / cross;
+    final x = pass ? -0.12 * w + k * 1.24 * w : 1.12 * w - k * 1.24 * w;
+    final y = h * (0.3 + 0.04 * math.sin(t * 0.3));
+    paintTurtle(canvas, Offset(x, y), h * 0.15, t, dir: pass ? 1 : -1, fog: 0.42);
+  }
+
+  /// Un crab care se plimbă într-o parte și în alta pe nisip și își ridică uneori cleștii.
+  void _crab(Canvas canvas, Size size, double t) {
+    final w = size.width, h = size.height;
+    // Mers lateral cu opriri: poziția urmează o curbă lină, cu pauze.
+    final phase = t * 0.12;
+    final walk = math.sin(phase) + 0.25 * math.sin(phase * 2.7);
+    final moving = (math.cos(phase) + 0.67 * math.cos(phase * 2.7)).abs() > 0.25;
+    final x = w * (0.36 + 0.09 * walk);
+    final base = Offset(x, h * floorY(x, w, 0.12));
+    paintCrab(canvas, base, h * 0.05, t, walking: moving);
+  }
+
   /// Două meduze care urcă încet, pulsând.
   void _jellies(Canvas canvas, Size size, double t) {
     final w = size.width, h = size.height;
@@ -346,6 +373,143 @@ void paintKelp(Canvas canvas, Offset base, double height, double width, double t
       ..style = PaintingStyle.stroke
       ..strokeWidth = width * 0.14
       ..color = lighten(col, 0.35).withValues(alpha: 0.4),
+  );
+}
+
+/// Țestoasa văzută din profil: carapace cu plăci, cap, labe care vâslesc.
+void paintTurtle(Canvas canvas, Offset c, double len, double t, {int dir = 1, double fog = 0}) {
+  canvas.save();
+  canvas.translate(c.dx, c.dy);
+  canvas.scale(dir.toDouble(), 1);
+  final skin = fogged(const Color(0xFF9CC17A), fog), skinDark = fogged(const Color(0xFF6E9A55), fog);
+  final shell = fogged(const Color(0xFF5E8C4A), fog), plate = fogged(const Color(0xFF86B266), fog);
+  final stroke = math.sin(t * 1.6);
+  Path flipper(Offset root, double l, double angle, double width) {
+    final tip = root + Offset(math.cos(angle), math.sin(angle)) * l;
+    final n = Offset(-math.sin(angle), math.cos(angle)) * width;
+    final d = Offset(math.cos(angle), math.sin(angle)) * l;
+    // O vâslă: îngustă la încheietură, lată la mijloc, rotunjită la vârf.
+    return Path()
+      ..moveTo(root.dx - n.dx, root.dy - n.dy)
+      ..cubicTo(root.dx - n.dx * 1.6 + d.dx * 0.45, root.dy - n.dy * 1.6 + d.dy * 0.45, tip.dx - n.dx * 1.1, tip.dy - n.dy * 1.1, tip.dx, tip.dy)
+      ..cubicTo(tip.dx + n.dx * 0.9, tip.dy + n.dy * 0.9, root.dx + n.dx * 1.4 + d.dx * 0.5, root.dy + n.dy * 1.4 + d.dy * 0.5, root.dx + n.dx, root.dy + n.dy)
+      ..close();
+  }
+
+  // Labele din spate (în spatele carapacei).
+  canvas.drawPath(flipper(Offset(-len * 0.28, len * 0.1), len * 0.28, 2.5 + stroke * 0.25, len * 0.06), Paint()..color = skinDark);
+  canvas.drawPath(flipper(Offset(len * 0.18, len * 0.08), len * 0.42, 1.9 + stroke * 0.55, len * 0.08), Paint()..color = skinDark);
+  // Capul și coada.
+  canvas.drawOval(Rect.fromCenter(center: Offset(len * 0.5, -len * 0.02), width: len * 0.26, height: len * 0.17), Paint()..color = skin);
+  canvas.drawCircle(Offset(len * 0.56, -len * 0.05), len * 0.022, Paint()..color = fogged(const Color(0xFF1E2A22), fog));
+  canvas.drawPath(
+    Path()
+      ..moveTo(-len * 0.4, len * 0.02)
+      ..lineTo(-len * 0.52, len * 0.06)
+      ..lineTo(-len * 0.4, len * 0.08)
+      ..close(),
+    Paint()..color = skin,
+  );
+  // Carapacea: o cupolă cu plăci.
+  final dome = Rect.fromCenter(center: Offset.zero, width: len * 0.8, height: len * 0.5);
+  final body = Path()
+    ..addArc(dome, math.pi, math.pi)
+    ..quadraticBezierTo(0, len * 0.16, -len * 0.4, 0)
+    ..close();
+  canvas.drawPath(body, Paint()..shader = ui.Gradient.linear(dome.topCenter, dome.center + Offset(0, len * 0.12), [lighten(shell, 0.15), shell]));
+  canvas.save();
+  canvas.clipPath(body);
+  final line = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = len * 0.02
+    ..color = darken(shell, 0.25);
+  // Plăcile: un rând de hexagoane pe spate, marginea mai deschisă jos.
+  canvas.drawPath(
+    Path()
+      ..addArc(dome.deflate(len * 0.035), math.pi, math.pi)
+      ..close(),
+    line,
+  );
+  for (final x in [-0.22, 0.0, 0.22]) {
+    final c0 = Offset(len * x, -len * 0.13);
+    final hex = Path();
+    for (var i = 0; i < 6; i++) {
+      final a = i * math.pi / 3;
+      final q = c0 + Offset(math.cos(a) * len * 0.1, math.sin(a) * len * 0.075);
+      i == 0 ? hex.moveTo(q.dx, q.dy) : hex.lineTo(q.dx, q.dy);
+    }
+    hex.close();
+    canvas.drawPath(hex, Paint()..color = plate);
+    canvas.drawPath(hex, line);
+  }
+  canvas.restore();
+  // Laba din față (peste carapace).
+  canvas.drawPath(flipper(Offset(len * 0.22, len * 0.04), len * 0.46, 2.1 - stroke * 0.6, len * 0.085), Paint()..color = skin);
+  canvas.restore();
+}
+
+/// Crabul: carapace lată, ochi pe codițe, picioare care pășesc, clești care se ridică.
+void paintCrab(Canvas canvas, Offset base, double size, double t, {bool walking = true}) {
+  const red = Color(0xFFE5603E), dark = Color(0xFFB8432A), light = Color(0xFFF59A7A);
+  final step = walking ? math.sin(t * 12) : 0.0;
+  final up = math.sin(t * 0.7) > 0.85 ? 1.0 : 0.0; // din când în când ridică cleștii
+  final body = base - Offset(0, size * 0.55 + step.abs() * size * 0.04);
+  paintContactShadow(canvas, base, size * 2.6, alpha: 0.3);
+  final leg = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeCap = StrokeCap.round
+    ..strokeWidth = size * 0.1
+    ..color = dark;
+  for (final side in [-1.0, 1.0]) {
+    for (var i = 0; i < 3; i++) {
+      final lift = (i.isEven ? step : -step) * size * 0.12;
+      final root = body + Offset(side * size * (0.35 + i * 0.12), size * 0.1);
+      final knee = root + Offset(side * size * 0.35, -size * 0.12 - lift);
+      final foot = Offset(base.dx + side * size * (0.75 + i * 0.22), base.dy - math.max(0.0, lift));
+      canvas.drawPath(
+        Path()
+          ..moveTo(root.dx, root.dy)
+          ..lineTo(knee.dx, knee.dy)
+          ..lineTo(foot.dx, foot.dy),
+        leg,
+      );
+    }
+    // Brațul și cleștele.
+    final shoulder = body + Offset(side * size * 0.45, -size * 0.1);
+    final hand = shoulder + Offset(side * size * 0.35, -size * (0.35 + 0.45 * up));
+    canvas.drawLine(shoulder, hand, leg..strokeWidth = size * 0.13);
+    final open = 0.3 + 0.25 * math.sin(t * 3) * up;
+    canvas.save();
+    canvas.translate(hand.dx, hand.dy);
+    canvas.rotate(side * (-0.4 - 0.5 * up));
+    canvas.drawPath(
+      Path()..addArc(Rect.fromCenter(center: Offset.zero, width: size * 0.5, height: size * 0.44), math.pi + open, 2 * math.pi - open * 2),
+      Paint()..color = red,
+    );
+    canvas.drawOval(Rect.fromCenter(center: Offset(-size * 0.06, -size * 0.06), width: size * 0.16, height: size * 0.1), Paint()..color = light);
+    canvas.restore();
+  }
+  // Carapacea.
+  final shell = Rect.fromCenter(center: body, width: size * 1.25, height: size * 0.8);
+  canvas.drawOval(shell, Paint()..shader = ui.Gradient.radial(body - Offset(size * 0.2, size * 0.2), size * 0.8, [light, red, dark], [0, 0.5, 1]));
+  // Ochii pe codițe.
+  for (final side in [-1.0, 1.0]) {
+    final eye = body + Offset(side * size * 0.2, -size * 0.55);
+    canvas.drawLine(body + Offset(side * size * 0.15, -size * 0.3), eye, leg..strokeWidth = size * 0.07);
+    canvas.drawCircle(eye, size * 0.11, Paint()..color = const Color(0xFFFFFFFF));
+    canvas.drawCircle(eye + Offset(0, size * 0.02), size * 0.06, Paint()..color = const Color(0xFF1E1E26));
+  }
+  // Zâmbetul.
+  canvas.drawArc(
+    Rect.fromCenter(center: body + Offset(0, size * 0.05), width: size * 0.3, height: size * 0.18),
+    0.3,
+    math.pi - 0.6,
+    false,
+    Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size * 0.05
+      ..strokeCap = StrokeCap.round
+      ..color = dark,
   );
 }
 
