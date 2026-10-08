@@ -312,6 +312,56 @@ Future<ui.Image> paintGiftDrawing(FishSpecies s, {int seed = 1}) {
         Paint()..color = const Color(0xFF1F2340),
       );
       c.restore();
+    case 'fluture':
+      for (final f in fins) {
+        fill(f, const Color(0xFFF7D23E));
+        edge(f, const Color(0xFFF08A24), 26);
+      }
+      fill(curvePath(s.fins[2]), const Color(0xFFFFF3C4));
+      fill(body, const Color(0xFFFBE27A));
+      c.save();
+      c.clipPath(body);
+      // Dunga neagră prin ochi și „ochiul” fals de lângă coadă (sperie prădătorii).
+      fill(Path()..addOval(Rect.fromCenter(center: const Offset(812, 300), width: 56, height: 420)), const Color(0xFF2E2E36));
+      for (final (x, w) in [(520.0, 22.0), (600.0, 22.0), (680.0, 20.0)]) {
+        c.drawLine(Offset(x, 140), Offset(x - 90, 470), Paint()
+          ..color = const Color(0x55F08A24)
+          ..strokeWidth = w);
+      }
+      c.drawCircle(const Offset(392, 236), 38, Paint()..color = const Color(0xFFFFFFFF));
+      c.drawCircle(const Offset(392, 236), 28, Paint()..color = const Color(0xFF2E2E36));
+      c.restore();
+    case 'papagal':
+      for (final f in fins) {
+        fill(f, const Color(0xFFE86FA0));
+        edge(f, const Color(0xFF7A5BD0), 22);
+      }
+      fill(body, const Color(0xFF3CC3A8));
+      c.save();
+      c.clipPath(body);
+      fill(Path()..addOval(const Rect.fromLTRB(760, 120, 1000, 480)), const Color(0xFF7FDCC4));
+      fill(Path()..addOval(const Rect.fromLTRB(880, 250, 990, 360)), const Color(0xFFF6E7C8));
+      for (final (x, y) in [(470.0, 235.0), (630.0, 235.0), (550.0, 300.0), (390.0, 300.0), (480.0, 365.0)]) {
+        c.drawCircle(Offset(x, y), 22, Paint()..color = const Color(0xAAF7B2D2));
+      }
+      c.restore();
+    case 'rechin':
+      for (final f in fins) {
+        fill(f, const Color(0xFF5F86A6));
+      }
+      fill(body, const Color(0xFF7FA6C2));
+      c.save();
+      c.clipPath(body);
+      fill(
+        Path()
+          ..moveTo(960, 340)
+          ..cubicTo(800, 360, 500, 360, 220, 318)
+          ..lineTo(220, 420)
+          ..lineTo(960, 420)
+          ..close(),
+        const Color(0xFFF2F5F7),
+      );
+      c.restore();
     default: // clovn
       for (final f in fins) {
         fill(f, const Color(0xFFF58A1F));

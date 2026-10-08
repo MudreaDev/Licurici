@@ -237,7 +237,8 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
                           }
                         },
                         onPointerMove: (e) {
-                          if (_tool == _Tool.brush && _stroke.isNotEmpty) setState(() => _stroke.add(toBox(e.localPosition)));
+                          if (_tool == _Tool.brush && _stroke.isNotEmpty)
+                            setState(() => _stroke.add(toBox(e.localPosition)));
                         },
                         onPointerUp: (_) => _commitStroke(),
                         onPointerCancel: (_) => _commitStroke(),
@@ -301,7 +302,10 @@ class _ColoringScreenState extends ConsumerState<ColoringScreen> {
                   child: Container(
                     width: (8 + s * 0.45) * tool / 52,
                     height: (8 + s * 0.45) * tool / 52,
-                    decoration: BoxDecoration(color: _color == Colors.white ? Tokens.line : _color, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                      color: _color == Colors.white ? Tokens.line : _color,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
               _ToolButton(
@@ -387,7 +391,10 @@ void floodFill(Uint8List px, Uint8List walls, int w, int h, int x0, int y0, Colo
     for (var i = 0; i < mask.length; i++) {
       if (mask[i] == 1 || walls[i] == 0) continue;
       final x = i % w;
-      if ((x > 0 && mask[i - 1] == 1) || (x < w - 1 && mask[i + 1] == 1) || (i >= w && mask[i - w] == 1) || (i + w < mask.length && mask[i + w] == 1)) {
+      if ((x > 0 && mask[i - 1] == 1) ||
+          (x < w - 1 && mask[i + 1] == 1) ||
+          (i >= w && mask[i - w] == 1) ||
+          (i + w < mask.length && mask[i + w] == 1)) {
         grow.add(i);
       }
     }
@@ -513,36 +520,60 @@ class _Picker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compact = AppLayout.of(context).compact;
+    final gap = compact ? 10.0 : 18.0;
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Center(
-        child: Wrap(
-          spacing: compact ? 12 : 20,
-          runSpacing: compact ? 12 : 20,
-          alignment: WrapAlignment.center,
-          children: [
-            for (final s in fishSpecies)
-              CandyPressable(
-                key: ValueKey('species-${s.id}'),
-                color: Colors.white,
-                radius: 26,
-                lip: 6,
-                width: compact ? 180 : 250,
-                height: compact ? 130 : 180,
-                semanticLabel: s.name,
-                onTap: () => onPick(s),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Expanded(child: CustomPaint(painter: _ThumbPainter(s), size: Size.infinite)),
-                      Text(s.name, style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Tokens.ink)),
-                    ],
+      padding: const EdgeInsets.all(12),
+      child: LayoutBuilder(
+        builder: (context, box) {
+          // Cartonașele cât mai mari, toate pe ecran: alegem câte pe rând.
+          var best = (0.0, 1);
+          for (var cols = 2; cols <= fishSpecies.length; cols++) {
+            final rows = (fishSpecies.length / cols).ceil();
+            final w = math.min(
+              (box.maxWidth - gap * (cols - 1)) / cols,
+              ((box.maxHeight - gap * (rows - 1)) / rows) * 1.4,
+            );
+            if (w > best.$1) best = (w, cols);
+          }
+          final w = math.min(best.$1, 260.0), h = w / 1.4;
+          return Center(
+            child: Wrap(
+              spacing: gap,
+              runSpacing: gap,
+              alignment: WrapAlignment.center,
+              children: [
+                for (final s in fishSpecies)
+                  CandyPressable(
+                    key: ValueKey('species-${s.id}'),
+                    color: Colors.white,
+                    radius: 22,
+                    lip: 5,
+                    width: w,
+                    height: h,
+                    semanticLabel: s.name,
+                    onTap: () => onPick(s),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: CustomPaint(painter: _ThumbPainter(s), size: Size.infinite),
+                          ),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              s.name,
+                              style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Tokens.ink),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-          ],
-        ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

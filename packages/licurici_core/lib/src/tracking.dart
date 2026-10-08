@@ -75,7 +75,7 @@ typedef TrackPoint = ({double x, double y, double z});
 class TrackFish {
   const TrackFish({required this.species, required this.hue, required this.path});
 
-  /// Modelul peștelui (`clovn`, `inger`, `balon`, `chirurg`).
+  /// Modelul peștelui (unul din [trackSpecies]).
   final String species;
 
   /// Rotirea culorii (grade); 0 = culorile obișnuite.
@@ -151,7 +151,7 @@ class TrackResult {
 }
 
 /// Modelele care pot înota în joc (aceleași ca în acvariu).
-const trackSpecies = ['clovn', 'inger', 'chirurg', 'balon'];
+const trackSpecies = ['clovn', 'inger', 'chirurg', 'balon', 'fluture', 'papagal', 'rechin'];
 
 class TrackGame {
   const TrackGame();

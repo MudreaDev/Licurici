@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:licurici/app/theme.dart';
+import 'package:licurici_core/licurici_core.dart' show fishSpecies;
 import 'package:licurici/features/aquarium/aquarium_screen.dart';
 import 'package:licurici/features/aquarium/aquarium_store.dart';
 import 'package:licurici/features/aquarium/coloring_screen.dart';
@@ -90,6 +91,13 @@ void main() {
       // Colorez: aleg peștele-chirurg și umplu fiecare zonă cu găleata, altă culoare.
       await tester.tap(find.byKey(const ValueKey('color-fish')));
       await settleUntil(tester, find.byKey(const ValueKey('species-chirurg')));
+      // Toate modelele încap pe ecran.
+      for (final s in fishSpecies) {
+        final r = tester.getRect(find.byKey(ValueKey('species-${s.id}')));
+        expect(r.bottom, lessThanOrEqualTo(tester.view.physicalSize.height));
+        expect(r.right, lessThanOrEqualTo(tester.view.physicalSize.width));
+      }
+      if (shots) await expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/coloreaza-alege-$device.png'));
       await tester.tap(find.byKey(const ValueKey('species-chirurg')));
       await settleUntil(tester, find.byKey(const ValueKey('sheet')));
       await tester.tap(find.byKey(const ValueKey('fill')));
