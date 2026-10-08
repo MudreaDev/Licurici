@@ -62,6 +62,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   Duration _last = Duration.zero;
   double _height = 1;
   bool _greeted = false;
+  SoundEffects? _sfx;
 
   /// Indiciile pentru gesturi (o dată pe vizită): după câteva secunde fără nicio atingere,
   /// o mânuță arată ce se poate face.
@@ -80,10 +81,16 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     super.initState();
     _ticker.start();
     unawaited(Caustics.load());
+    // Apa, foarte încet, cât stă copilul în acvariu.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _sfx = ref.read(sfxProvider)..ambient('ocean_loop');
+    });
   }
 
   @override
   void dispose() {
+    _sfx?.ambient(null);
     _ticker.dispose();
     _time.dispose();
     _ambient.dispose();
@@ -110,12 +117,12 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
       switch (e) {
         case FishAte():
           _fx.add(TankFx(e.at, TankFxKind.ate, _time.value));
-          ref.read(sfxProvider).play(Sfx.tap);
+          ref.read(sfxProvider).play(Sfx.bubble);
         case FishPecked():
           _fx.add(TankFx(e.at, TankFxKind.sand, _time.value));
         case FishTickled():
           _fx.add(TankFx(e.at, TankFxKind.joy, _time.value));
-          ref.read(sfxProvider).play(Sfx.star);
+          ref.read(sfxProvider).play(Sfx.bubble);
       }
     }
     _fx.removeWhere((e) => _time.value - e.born > 1.6);
@@ -345,7 +352,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                           if (ReefChest.hitRect(_size).contains(d.localPosition)) {
                             _usedChest = true;
                             _chest.open(_ambient.value);
-                            ref.read(sfxProvider).play(Sfx.star);
+                            ref.read(sfxProvider).play(Sfx.bubble);
                           }
                           final p = _toTank(d.localPosition);
                           _sim!.tap(p);

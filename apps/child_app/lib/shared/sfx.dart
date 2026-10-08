@@ -21,6 +21,9 @@ enum Sfx {
 
   /// Abțibildul nou.
   sticker,
+
+  /// O bulă („blup”) — acvariul.
+  bubble,
 }
 
 abstract interface class SoundEffects {
@@ -34,6 +37,10 @@ abstract interface class SoundEffects {
   /// Toba [which] (0 = joasă, 1 = înaltă) — sunetul jocului „Toba magică”; ca notele, se
   /// aude și în modul calm, mai încet.
   void drum(int which);
+
+  /// Sunetul de fundal al unui loc (ex. `ocean_loop` în acvariu), în buclă, foarte încet;
+  /// null îl oprește. Niciodată în modul calm.
+  void ambient(String? loop);
 }
 
 class SilentSfx implements SoundEffects {
@@ -44,6 +51,8 @@ class SilentSfx implements SoundEffects {
   void note(int degree) {}
   @override
   void drum(int which) {}
+  @override
+  void ambient(String? loop) {}
 }
 
 /// Câteva playere refolosite pe rând, în modul cu latență mică: sunetele scurte se pot
@@ -99,10 +108,35 @@ class _Sfx implements SoundEffects {
     _ref.read(settingsProvider).calm ? 0.45 : 0.85,
   );
 
+  AudioPlayer? _loop;
+  String? _loopName;
+
+  @override
+  void ambient(String? loop) {
+    if (loop == _loopName) return;
+    _loopName = loop;
+    final old = _loop;
+    _loop = null;
+    old?.stop().catchError((_) {});
+    old?.dispose().catchError((_) {});
+    if (loop == null || _ref.read(settingsProvider).calm) return;
+    try {
+      final p = AudioPlayer()..audioCache = AudioCache(prefix: '');
+      _loop = p;
+      p.setReleaseMode(ReleaseMode.loop).catchError((_) {});
+      p
+          .play(AssetSource('packages/$contentPackage/audio/sfx/$loop.wav'), volume: 0.22)
+          .catchError((Object e) => debugPrint('buclă $loop: $e'));
+    } on Object catch (e) {
+      debugPrint('buclă $loop: $e');
+    }
+  }
+
   void dispose() {
     for (final p in _pool) {
       p.dispose();
     }
+    _loop?.dispose();
   }
 }
 

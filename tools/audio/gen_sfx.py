@@ -53,11 +53,12 @@ def mix(*parts):
     return out
 
 
-def save(name, signal, gain=0.5):
+def save(name, signal, gain=0.5, pad=True):
     peak = np.max(np.abs(signal)) or 1
     data = (signal / peak * gain * 32767).astype(np.int16)
-    # 15 ms de liniște la capăt, ca playerul să nu taie coada
-    data = np.concatenate([data, np.zeros(int(0.015 * RATE), dtype=np.int16)])
+    # 15 ms de liniște la capăt, ca playerul să nu taie coada (nu și la bucle: s-ar auzi pauza)
+    if pad:
+        data = np.concatenate([data, np.zeros(int(0.015 * RATE), dtype=np.int16)])
     os.makedirs(OUT, exist_ok=True)
     with wave.open(os.path.join(OUT, name + '.wav'), 'wb') as w:
         w.setnchannels(1)
@@ -99,3 +100,41 @@ def drum(freq, dur=0.45, drop=0.35, noise=0.12):
 # Toba magică: două tobe, una joasă și una mai sus (bongo), blânde.
 save('drum_0', drum(150), gain=0.6)
 save('drum_1', drum(260, dur=0.35), gain=0.55)
+
+
+# Acvariul: bula („blup”) — glisando scurt în sus, ca o bulă care urcă.
+def bubble(f0=320, f1=980, dur=0.07):
+    n = int(dur * RATE)
+    t = np.arange(n) / RATE
+    f = f0 + (f1 - f0) * (t / dur) ** 0.6
+    phase = 2 * np.pi * np.cumsum(f) / RATE
+    return np.sin(phase) * env(n, attack=0.002, decay=30)
+
+
+save('bubble', mix((0.0, bubble()), (0.09, bubble(380, 1150, 0.06) * 0.6)), gain=0.45)
+
+
+# Apa, în buclă (10 s): zgomot „maro” (jos, moale) care urcă și coboară ca valurile, cu bule
+# rare. Capetele se îmbină (fade încrucișat), deci bucla nu „sare”.
+def ocean(dur=10.0, seed=7):
+    rng = np.random.default_rng(seed)
+    n = int(dur * RATE)
+    brown = np.cumsum(rng.standard_normal(n + RATE))
+    brown -= np.convolve(brown, np.ones(2000) / 2000, mode='same')  # fără derivă lentă
+    k = np.ones(18) / 18
+    brown = np.convolve(brown, k, mode='same')  # doar frecvențele joase
+    t = np.arange(n + RATE) / RATE
+    swell = 0.55 + 0.45 * np.sin(2 * np.pi * t / dur * 2) ** 2  # două „valuri” pe buclă
+    sig = brown * swell
+    for at in rng.uniform(0.3, dur, 9):  # bule rare, foarte încet
+        i = int(at * RATE)
+        b = bubble(rng.uniform(260, 420), rng.uniform(800, 1200), 0.06) * np.std(sig) * 0.9
+        sig[i:i + len(b)] += b
+    head, tail = sig[:RATE], sig[n:n + RATE]
+    fade = np.linspace(0, 1, RATE)
+    loop = sig[:n].copy()
+    loop[:RATE] = head * fade + tail * (1 - fade)
+    return loop
+
+
+save('ocean_loop', ocean(), gain=0.3, pad=False)
