@@ -10,6 +10,7 @@ import 'package:licurici/features/aquarium/aquarium_screen.dart';
 import 'package:licurici/features/aquarium/aquarium_store.dart';
 import 'package:licurici/features/aquarium/coloring_screen.dart';
 import 'package:licurici/features/settings/settings.dart';
+import 'package:licurici/shared/stimulus_art.dart';
 import 'package:licurici/shared/voice.dart';
 
 import 'layout_test.dart' show devices, loadFonts, settle, settleUntil, shots;
@@ -74,6 +75,15 @@ void main() {
       expect(container.read(aquariumProvider).value, hasLength(1));
       expect(container.read(aquariumProvider).value!.single.entry.gift, isTrue);
       if (shots) await expectLater(find.byType(AquariumScreen), matchesGoldenFile('shots/acvariu-$device.png'));
+
+      // Fără nicio atingere câteva secunde: mânuța arată „ține degetul pe apă”.
+      final hand = find.byWidgetPredicate((w) => w is StimulusArt && w.emoji == '👆');
+      expect(hand, findsNothing);
+      for (var i = 0; i < 40 && hand.evaluate().isEmpty; i++) {
+        await tester.pump(const Duration(milliseconds: 250));
+      }
+      expect(hand, findsOneWidget);
+      if (shots) await expectLater(find.byType(AquariumScreen), matchesGoldenFile('shots/acvariu-indiciu-$device.png'));
 
       // Atingere, apăsare lungă și mâncare: nimic nu se strică.
       final tank = tester.getCenter(find.byType(AquariumScreen));

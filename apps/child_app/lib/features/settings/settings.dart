@@ -14,6 +14,7 @@ class AppSettings {
     this.stars = startStars,
     this.hiddenGames = const {},
     this.lanternsSeen = 0,
+    this.hiddenGamesAt,
   });
 
   final Grade grade;
@@ -43,6 +44,10 @@ class AppSettings {
   /// §5.1). Copilul vede doar restul; un joc nou apare de la sine.
   final Set<String> hiddenGames;
 
+  /// Când s-a schimbat ultima dată lista de jocuri (pe tabletă sau venită de pe server):
+  /// la sincronizare câștigă alegerea mai nouă (ADR-011, „ultimul câștigă”).
+  final DateTime? hiddenGamesAt;
+
   /// Câte felinare aprinse a văzut copilul pe hartă (pentru sărbătoarea unui felinar nou).
   final int lanternsSeen;
 
@@ -59,6 +64,7 @@ class AppSettings {
     'stars': stars,
     'hiddenGames': hiddenGames.toList()..sort(),
     'lanternsSeen': lanternsSeen,
+    if (hiddenGamesAt != null) 'hiddenGamesAt': hiddenGamesAt!.toIso8601String(),
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -78,6 +84,7 @@ class AppSettings {
         if (g is String) g,
     },
     lanternsSeen: (j['lanternsSeen'] as num?)?.toInt() ?? 0,
+    hiddenGamesAt: DateTime.tryParse(j['hiddenGamesAt'] as String? ?? ''),
   );
 
   AppSettings copyWith({
@@ -90,6 +97,7 @@ class AppSettings {
     int? stars,
     Set<String>? hiddenGames,
     int? lanternsSeen,
+    DateTime? hiddenGamesAt,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -100,6 +108,7 @@ class AppSettings {
     stars: stars ?? this.stars,
     hiddenGames: hiddenGames ?? this.hiddenGames,
     lanternsSeen: lanternsSeen ?? this.lanternsSeen,
+    hiddenGamesAt: hiddenGamesAt ?? this.hiddenGamesAt,
   );
 }
 
@@ -155,7 +164,15 @@ class SettingsNotifier extends Notifier<AppSettings> {
     final next = {...state.hiddenGames};
     visible ? next.removeAll(ids) : next.addAll(ids);
     if (next.length >= catalog.length) return;
-    _set(state.copyWith(hiddenGames: next));
+    _set(state.copyWith(hiddenGames: next, hiddenGamesAt: DateTime.now().toUtc()));
+  }
+
+  /// Planul venit de pe server (ales de părinte în panou sau de specialist).
+  void applyPlan(Set<String> hidden, DateTime at) {
+    final known = {for (final e in catalog) e.id};
+    final next = hidden.where(known.contains).toSet();
+    if (next.length >= catalog.length) return;
+    _set(state.copyWith(hiddenGames: next, hiddenGamesAt: at));
   }
 
   void setLanternsSeen(int n) => _set(state.copyWith(lanternsSeen: n));

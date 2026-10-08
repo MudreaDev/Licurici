@@ -105,6 +105,19 @@ class ApiClient {
     body: {'email': email, 'days': days},
   );
 
+  /// Planul de jocuri al copilului (plan §5.1): jocurile pe care nu le vede pe tabletă.
+  Future<({Set<String> hidden, DateTime? updatedAt, String? updatedBy})> plan(String childId) async =>
+      _plan((await _send('GET', '/children/$childId/plan')) as Map);
+
+  Future<({Set<String> hidden, DateTime? updatedAt, String? updatedBy})> setPlan(String childId, Set<String> hidden) async =>
+      _plan((await _send('PUT', '/children/$childId/plan', body: {'hiddenGames': hidden.toList()..sort()})) as Map);
+
+  ({Set<String> hidden, DateTime? updatedAt, String? updatedBy}) _plan(Map j) => (
+    hidden: {for (final g in (j['hiddenGames'] as List? ?? const [])) g as String},
+    updatedAt: DateTime.tryParse(j['updatedAt'] as String? ?? ''),
+    updatedBy: j['updatedBy'] as String?,
+  );
+
   /// Exportul complet al datelor (GDPR art. 15, 20), ca text JSON.
   Future<String> exportData() async => const JsonEncoder.withIndent(
     '  ',

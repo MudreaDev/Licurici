@@ -10,6 +10,7 @@ import { TokenService } from '../auth/tokens';
 import { ChildAccess } from '../children/access';
 import { ChildrenService } from '../children/children';
 import { CommonModule } from '../common.module';
+import { GamePlanService } from '../children/plan';
 import { SharingService } from '../children/sharing';
 import { DomainErrorFilter } from '../common/domain-error.filter';
 import { ConsentService } from '../consents/consents';
@@ -56,6 +57,11 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
       provide: SharingService,
       inject: [ChildAccess, ConsentService, PrismaRepos],
       useFactory: (a: ChildAccess, c: ConsentService, r: PrismaRepos) => new SharingService(a, c, r.sharing),
+    },
+    {
+      provide: GamePlanService,
+      inject: [ChildAccess, PrismaRepos],
+      useFactory: (a: ChildAccess, r: PrismaRepos) => new GamePlanService(a, r.plan),
     },
     {
       provide: GdprService,

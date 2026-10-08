@@ -39,6 +39,8 @@ const uiPhrases = [
   'Colorează cum vrei tu.',
   'Ce desen frumos!',
   'Joacă un joc și câștigi stele pentru mâncare.',
+  'Ține degetul pe apă: peștii vin la tine.',
+  'Atinge cufărul cu comori!',
   'Îl caut pe peștele tău.',
   'Nu văd fișa. Fă poza de sus, cu toată foaia.',
   'Încearcă o poză mai clară.',

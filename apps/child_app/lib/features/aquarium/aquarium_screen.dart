@@ -15,6 +15,7 @@ import '../../app/theme.dart';
 import '../../shared/mascot.dart';
 import '../../shared/motion.dart';
 import '../../shared/sfx.dart';
+import '../../shared/stimulus_art.dart';
 import '../../shared/top_bar.dart';
 import '../../shared/ui/candy.dart';
 import '../../shared/voice.dart';
@@ -55,6 +56,13 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   Duration _last = Duration.zero;
   double _height = 1;
   bool _greeted = false;
+
+  /// Indiciile pentru gesturi (o dată pe vizită): după câteva secunde fără nicio atingere,
+  /// o mânuță arată ce se poate face.
+  double _wall = 0, _idleSince = 0;
+  _Hint? _hint;
+  double _hintAt = 0;
+  bool _usedGather = false, _usedChest = false, _hintedGather = false, _hintedChest = false;
   int _broke = 0;
   bool _scanning = false;
 
@@ -78,8 +86,11 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   }
 
   void _tick(Duration elapsed) {
-    final dt = math.min(0.05, (elapsed - _last).inMicroseconds / 1e6);
+    final raw = (elapsed - _last).inMicroseconds / 1e6;
+    final dt = math.min(0.05, raw);
     _last = elapsed;
+    // Timpul „de ceas” (pentru indicii): nu se taie la 50 ms ca pasul simulării.
+    _wall += math.min(raw, 1.0);
     final sim = _sim;
     if (sim == null) return;
     final g = _gather.value;
@@ -99,6 +110,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     }
     _fx.removeWhere((e) => _time.value - e.born > 1.6);
     _time.value += dt;
+    _hints();
     // În modul calm fundalul stă; peștii înoată mai departe.
     if (MotionPolicy.of(context, ref).ambient) _ambient.value += dt;
   }
@@ -244,6 +256,36 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     return retry ?? false;
   }
 
+  /// Arată (sau ascunde) indiciul potrivit.
+  void _hints() {
+    if (_hint != null) {
+      if (_wall - _hintAt > 4.5) setState(() => _hint = null);
+      return;
+    }
+    final idle = _wall - _idleSince;
+    if (!_usedGather && !_hintedGather && idle > 7) {
+      _hintedGather = true;
+      _showHint(_Hint.gather, 'Ține degetul pe apă: peștii vin la tine.');
+    } else if (!_usedChest && !_hintedChest && _hintedGather && idle > 9) {
+      _hintedChest = true;
+      _showHint(_Hint.chest, 'Atinge cufărul cu comori!');
+    }
+  }
+
+  void _showHint(_Hint h, String says) {
+    setState(() {
+      _hint = h;
+      _hintAt = _wall;
+    });
+    ref.read(voiceProvider).say([says]);
+  }
+
+  /// Copilul a atins ecranul: indiciul pleacă, numărătoarea reîncepe.
+  void _touched() {
+    _idleSince = _wall;
+    if (_hint != null) setState(() => _hint = null);
+  }
+
   void _greet(List<OwnedFish> fish) {
     if (_greeted) return;
     _greeted = true;
@@ -282,7 +324,9 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                     : GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTapUp: (d) {
+                          _touched();
                           if (ReefChest.hitRect(_size).contains(d.localPosition)) {
+                            _usedChest = true;
                             _chest.open(_ambient.value);
                             ref.read(sfxProvider).play(Sfx.star);
                           }
@@ -290,7 +334,11 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                           _sim!.tap(p);
                           _fx.add(TankFx(p, TankFxKind.tap, _time.value));
                         },
-                        onLongPressStart: (d) => _gather.value = _toTank(d.localPosition),
+                        onLongPressStart: (d) {
+                          _touched();
+                          _usedGather = true;
+                          _gather.value = _toTank(d.localPosition);
+                        },
                         onLongPressMoveUpdate: (d) => _gather.value = _toTank(d.localPosition),
                         onLongPressEnd: (_) {
                           _gather.value = null;
@@ -308,6 +356,12 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                         ),
                       ),
               ),
+              if (_hint case final h?)
+                _HandHint(
+                  key: ValueKey(h),
+                  at: h == _Hint.chest ? ReefChest.hitRect(_size).center : Offset(_size.width * 0.5, _size.height * 0.45),
+                  hold: h == _Hint.gather,
+                ),
               SafeArea(
                 child: Column(
                   children: [
@@ -383,6 +437,68 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
       ),
     );
   }
+}
+
+enum _Hint { gather, chest }
+
+/// Mânuța care arată un gest: apasă și ține (cu un cerc care crește) sau atinge scurt.
+class _HandHint extends StatefulWidget {
+  const _HandHint({super.key, required this.at, required this.hold});
+
+  final Offset at;
+  final bool hold;
+
+  @override
+  State<_HandHint> createState() => _HandHintState();
+}
+
+class _HandHintState extends State<_HandHint> with SingleTickerProviderStateMixin {
+  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+    child: AnimatedBuilder(
+      animation: _c,
+      builder: (context, _) {
+        final k = _c.value;
+        // Coboară, apasă (ține sau atinge), se ridică.
+        final press = widget.hold ? (k < 0.2 ? k / 0.2 : (k < 0.8 ? 1.0 : (1 - k) / 0.2)) : math.sin(k * math.pi).clamp(0.0, 1.0);
+        final ring = widget.hold ? ((k - 0.2) / 0.6).clamp(0.0, 1.0) : 0.0;
+        return Stack(
+          children: [
+            if (widget.hold)
+              Positioned(
+                left: widget.at.dx - 60,
+                top: widget.at.dy - 60,
+                width: 120,
+                height: 120,
+                child: Center(
+                  child: Container(
+                    width: 30 + 90 * ring,
+                    height: 30 + 90 * ring,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.8 * (1 - ring * 0.6)), width: 4),
+                    ),
+                  ),
+                ),
+              ),
+            Positioned(
+              left: widget.at.dx - 30,
+              top: widget.at.dy - 28 + 18 * (1 - press),
+              child: Transform.scale(scale: 1 - 0.1 * press, child: const StimulusArt('👆', size: 76)),
+            ),
+          ],
+        );
+      },
+    ),
+  );
 }
 
 /// Licurici, la prima vizită: „Ți-am adus un pește!”.

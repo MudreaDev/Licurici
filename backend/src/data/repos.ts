@@ -2,6 +2,7 @@ import type { UserRepo } from '../auth/auth.service';
 import type { Role } from '../auth/tokens';
 import type { ChildRepo } from '../children/access';
 import type { ChildrenRepo } from '../children/children';
+import type { PlanRepo } from '../children/plan';
 import type { SharingRepo } from '../children/sharing';
 import type { GdprRepo } from '../gdpr/gdpr';
 import { type ConsentStore, consentPurposes } from '../consents/consents';
@@ -189,6 +190,32 @@ export class PrismaRepos {
         // Partajările vechi fără termen sunt afișate ca expirând „acum” — trebuie reînnoite.
         expiresAt: l.expiresAt ?? new Date(0),
       })),
+    audit: async (actorId, action, targetId) => {
+      await this.db.auditLog.create({ data: { actorId, action, targetId } });
+    },
+  };
+
+  /** Planul de jocuri stă în `child_settings.extra.plan` (fără tabel nou). */
+  readonly plan: PlanRepo = {
+    read: async (childId) => {
+      const row = await this.db.childSettings.findUnique({ where: { childId }, select: { extra: true } });
+      const plan = (row?.extra as { plan?: { hiddenGames?: string[]; updatedAt?: string; updatedBy?: string } } | null)?.plan;
+      if (!plan) return null;
+      return {
+        hiddenGames: Array.isArray(plan.hiddenGames) ? plan.hiddenGames : [],
+        updatedAt: plan.updatedAt ? new Date(plan.updatedAt) : null,
+        updatedBy: plan.updatedBy === 'THERAPIST' ? 'THERAPIST' : plan.updatedBy === 'PARENT' ? 'PARENT' : null,
+      };
+    },
+    write: async (childId, plan) => {
+      const row = await this.db.childSettings.findUnique({ where: { childId }, select: { extra: true } });
+      const extra = { ...((row?.extra as Record<string, unknown> | null) ?? {}), plan: { ...plan, updatedAt: plan.updatedAt?.toISOString() } };
+      await this.db.childSettings.upsert({
+        where: { childId },
+        create: { childId, extra, updatedAt: plan.updatedAt ?? new Date() },
+        update: { extra },
+      });
+    },
     audit: async (actorId, action, targetId) => {
       await this.db.auditLog.create({ data: { actorId, action, targetId } });
     },

@@ -1,4 +1,5 @@
 import 'api.dart';
+import 'game_plan.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -161,7 +162,7 @@ class _ChildDetail extends StatelessWidget {
   final ChildHistory history;
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 4,
+    length: 5,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -197,6 +198,7 @@ class _ChildDetail extends StatelessWidget {
             Tab(text: 'Progres'),
             Tab(text: 'Sesiuni'),
             Tab(text: 'Confuzii'),
+            Tab(text: 'Jocuri'),
           ],
         ),
         Expanded(
@@ -211,6 +213,7 @@ class _ChildDetail extends StatelessWidget {
                   child: ConfusionBars(aggregateConfusions(history)),
                 ),
               ),
+              _TabBody(child: GamePlanPanel(key: ValueKey('plan-${history.child.id}'), history: history)),
             ],
           ),
         ),

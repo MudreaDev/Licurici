@@ -17,6 +17,8 @@ class FakeServer {
   final consents = <String>[];
   bool hasChild = false;
   bool down = false;
+  Map<String, Object?> plan = {'hiddenGames': <String>[], 'updatedAt': null, 'updatedBy': null};
+  final planPuts = <List<String>>[];
 
   http.Response json(Object body, [int status = 200]) =>
       http.Response.bytes(utf8.encode(jsonEncode(body)), status);
@@ -60,6 +62,13 @@ class FakeServer {
           .cast<Map<String, dynamic>>();
       received.addAll(sessions);
       return json({'accepted': sessions.length});
+    }
+    if (path == '/children/$serverChild/plan' && r.method == 'GET') return json(plan);
+    if (path == '/children/$serverChild/plan' && r.method == 'PUT') {
+      final hidden = ((body as Map)['hiddenGames'] as List).cast<String>();
+      planPuts.add(hidden);
+      plan = {'hiddenGames': hidden, 'updatedAt': '2026-10-09T10:00:00.000Z', 'updatedBy': 'PARENT'};
+      return json(plan);
     }
     return json({'statusCode': 404, 'message': 'Nu există.'}, 404);
   }
@@ -176,4 +185,35 @@ void main() {
       expect(await store.unsyncedIds(), hasLength(demo.length));
     },
   );
+
+  test('planul de jocuri: cel de pe server, mai nou, vine pe tabletă; cel de pe tabletă, mai nou, pleacă', () async {
+    final server = FakeServer()..hasChild = true;
+    final store = MemorySessionStore();
+    SyncClient client() => SyncClient(client: MockClient(server.handle), baseUrl: 'http://api/api/v1');
+    // 1. Specialistul a ales în panou; tableta nu a schimbat nimic.
+    server.plan = {'hiddenGames': ['pescarul', 'simon'], 'updatedAt': '2026-10-09T08:00:00.000Z', 'updatedBy': 'THERAPIST'};
+    Set<String>? applied;
+    await client().run(
+      store: store,
+      email: 'ana@example.md',
+      password: 'parola-lunga-1',
+      consent: true,
+      plan: (hidden: <String>{}, at: null),
+      onPlan: (h, at) => applied = h,
+    );
+    expect(applied, {'pescarul', 'simon'});
+    expect(server.planPuts, isEmpty);
+    // 2. Părintele a schimbat pe tabletă, după: lista de pe tabletă urcă pe server.
+    applied = null;
+    await client().run(
+      store: store,
+      email: 'ana@example.md',
+      password: 'parola-lunga-1',
+      consent: true,
+      plan: (hidden: {'cauta'}, at: DateTime.utc(2026, 10, 9, 9)),
+      onPlan: (h, at) => applied = h,
+    );
+    expect(applied, isNull);
+    expect(server.planPuts.single, ['cauta']);
+  });
 }

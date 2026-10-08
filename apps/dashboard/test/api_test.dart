@@ -31,6 +31,7 @@ class FakeBackend {
   bool totp = false;
   bool totpRequired = false;
   final sessions = demoChildren().first.sessions;
+  Map<String, Object?> plan = {'hiddenGames': <String>[], 'updatedAt': null, 'updatedBy': null};
 
   http.Response json(Object body, [int status = 200]) => http.Response.bytes(
     utf8.encode(jsonEncode(body)),
@@ -116,6 +117,13 @@ class FakeBackend {
         consents[b['purpose'] as String] = b['granted'] as bool;
       }
       return json(consents);
+    }
+    if (path == '/children/$childId/plan') {
+      if (r.method == 'PUT') {
+        final b = jsonDecode(r.body) as Map;
+        plan = {'hiddenGames': b['hiddenGames'], 'updatedAt': '2026-10-09T09:00:00.000Z', 'updatedBy': 'THERAPIST'};
+      }
+      return json(plan);
     }
     if (path == '/children/$childId/share') {
       if (r.method == 'POST') {
@@ -451,5 +459,28 @@ void main() {
     await tester.pumpAndSettle();
     expect(backend.totp, isTrue);
     expect(find.text('Opresc'), findsOneWidget);
+  });
+
+  testWidgets('specialistul scoate o arie din jocurile copilului și salvează pe server', (tester) async {
+    final backend = FakeBackend();
+    await pumpDashboard(tester, backend);
+    await signIn(tester, 'parola-lunga-1');
+    await tester.tap(find.text('Sunt specialist'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ilinca').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Jocuri'));
+    await tester.pumpAndSettle();
+    expect(find.text('Copilul vede toate jocurile.'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('plan-domain-FEX')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const ValueKey('plan-save')));
+    await tester.tap(find.byKey(const ValueKey('plan-save')));
+    await tester.pumpAndSettle();
+    expect(backend.calls.last, 'PUT /children/$childId/plan');
+    final hidden = (backend.plan['hiddenGames']! as List).cast<String>();
+    expect(hidden, containsAll(['pescarul', 'simon', 'semaforul']));
+    expect(hidden, isNot(contains('emotii')));
+    expect(find.textContaining('Tableta preia lista'), findsOneWidget);
   });
 }

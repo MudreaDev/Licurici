@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Inject, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Inject, Param, ParseUUIDPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
 
@@ -6,6 +6,7 @@ import { AuthService, loginSchema, registerSchema } from '../auth/auth.service';
 import { AuthGuard, CurrentUser } from '../auth/guard';
 import type { AuthUser } from '../auth/tokens';
 import { ChildrenService } from '../children/children';
+import { GamePlanService } from '../children/plan';
 import { SharingService } from '../children/sharing';
 import { ConsentService } from '../consents/consents';
 import { GdprService } from '../gdpr/gdpr';
@@ -57,7 +58,19 @@ export class ChildrenController {
     @Inject(SummaryFlow) private readonly summaries: SummaryFlow,
     @Inject(SharingService) private readonly sharing: SharingService,
     @Inject(GdprService) private readonly gdpr: GdprService,
+    @Inject(GamePlanService) private readonly plan: GamePlanService,
   ) {}
+
+  /** Planul de jocuri (plan §5.1): părintele sau specialistul cu partajare activă aleg ce vede copilul. */
+  @Get(':childId/plan')
+  getPlan(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string) {
+    return this.plan.get(user, childId);
+  }
+
+  @Put(':childId/plan')
+  putPlan(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string, @Body() body: unknown) {
+    return this.plan.put(user, childId, body);
+  }
 
   /** Ștergerea profilului copilului (GDPR art. 17): acces tăiat acum, ștergere definitivă în 7 zile. */
   @Delete(':childId')

@@ -36,11 +36,17 @@ class SyncClient {
   static const batchSize = 50;
 
   /// Rulează toată sincronizarea; întoarce câte sesiuni au fost trimise.
+  ///
+  /// Apoi planul de jocuri (plan §5.1): dacă pe server e o alegere mai nouă decât [plan]
+  /// (făcută în panou de părinte sau de specialist), vine pe tabletă prin [onPlan]; dacă cea
+  /// de pe tabletă e mai nouă, pleacă pe server. „Ultimul câștigă”, după dată (ADR-011).
   Future<int> run({
     required SessionStore store,
     required String email,
     required String password,
     required bool consent,
+    ({Set<String> hidden, DateTime? at})? plan,
+    void Function(Set<String> hidden, DateTime at)? onPlan,
   }) async {
     if (!consent) {
       throw const SyncException(
@@ -84,7 +90,23 @@ class SyncClient {
         for (final p in batch) (p['record']! as Map)['id'] as String,
       ]);
     }
+    if (plan != null) await _syncPlan(childId, plan, onPlan);
     return payload.length;
+  }
+
+  Future<void> _syncPlan(
+    String childId,
+    ({Set<String> hidden, DateTime? at}) local,
+    void Function(Set<String> hidden, DateTime at)? onPlan,
+  ) async {
+    final server = await _call('GET', '/children/$childId/plan') as Map;
+    final at = DateTime.tryParse(server['updatedAt'] as String? ?? '');
+    final hidden = {for (final g in (server['hiddenGames'] as List? ?? const [])) g as String};
+    if (at != null && (local.at == null || at.isAfter(local.at!))) {
+      onPlan?.call(hidden, at);
+    } else if (local.at != null && (at == null || local.at!.isAfter(at))) {
+      await _call('PUT', '/children/$childId/plan', {'hiddenGames': (local.hidden.toList()..sort())});
+    }
   }
 
   /// Primul copil al părintelui; dacă nu are, se creează profilul (doar o poreclă implicită).

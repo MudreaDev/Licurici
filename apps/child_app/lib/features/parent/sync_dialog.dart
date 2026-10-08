@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../settings/settings.dart';
+
 import '../../data/session.dart';
 import '../../data/sync.dart';
 
@@ -45,6 +47,11 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
             email: _email.text,
             password: _password.text,
             consent: _consent,
+            plan: (
+              hidden: ref.read(settingsProvider).hiddenGames,
+              at: ref.read(settingsProvider).hiddenGamesAt,
+            ),
+            onPlan: ref.read(settingsProvider.notifier).applyPlan,
           );
       if (!mounted) return;
       Navigator.of(context).pop();
