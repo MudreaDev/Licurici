@@ -6,11 +6,13 @@ import type { MailJob } from '../auth/email-flows';
 import { ENV, type Env } from '../config/env';
 import { PrismaService } from '../prisma/prisma.service';
 import { Queues } from '../queues/queues';
-import { mailLink, renderMail, SmtpMailProvider, type MailProvider } from './mail';
+import type { SessionFacts } from '../reports/session-summary';
+import { weeklyDigest, type WeeklyDigest } from '../reports/weekly';
+import { mailLink, renderMail, renderWeekly, SmtpMailProvider, type Mail, type MailProvider } from './mail';
 
 /**
- * Coada `mail`: e-mailurile tranzacționale (confirmarea adresei, parola nouă).
- * Fără `SMTP_URL` job-ul se încheie fără trimitere (dezvoltare fără Mailpit).
+ * Coada `mail`: e-mailurile tranzacționale (confirmarea adresei, parola nouă) și raportul
+ * săptămânal. Fără `SMTP_URL` job-ul se încheie fără trimitere (dezvoltare fără Mailpit).
  * Retry cu backoff din `defaultJobOptions`; un cont șters între timp nu mai primește nimic.
  */
 @Processor(Queues.mail)
@@ -27,15 +29,51 @@ export class MailProcessor extends WorkerHost {
   }
 
   async process(job: Job<MailJob>): Promise<{ sent: boolean }> {
-    const { kind, userId, token } = job.data;
-    const user = await this.prisma.user.findFirst({ where: { id: userId, deletedAt: null }, select: { email: true } });
+    const data = job.data;
+    const user = await this.prisma.user.findFirst({
+      where: { id: data.userId, deletedAt: null },
+      select: { email: true },
+    });
     if (!user || !this.provider) {
-      this.log.warn(`e-mail ${kind} netrimis (${user ? 'SMTP_URL lipsă' : 'cont inexistent'})`);
+      this.log.warn(`e-mail ${data.kind} netrimis (${user ? 'SMTP_URL lipsă' : 'cont inexistent'})`);
       return { sent: false };
     }
-    await this.provider.send(renderMail(kind, user.email, mailLink(this.env.APP_URL, kind, token)));
+    const mail: Mail | null =
+      data.kind === 'weekly-report'
+        ? await this.weekly(data.userId, user.email)
+        : renderMail(data.kind, user.email, mailLink(this.env.APP_URL, data.kind, data.token));
+    if (!mail) return { sent: false };
+    await this.provider.send(mail);
     // Fără adresă în log (README §13.4).
-    this.log.log(`e-mail ${kind} trimis`);
+    this.log.log(`e-mail ${data.kind} trimis`);
     return { sent: true };
+  }
+
+  /** Raportul: doar dacă acordul e încă dat și măcar un copil a avut sesiuni în ultimele 7 zile. */
+  private async weekly(userId: string, email: string): Promise<Mail | null> {
+    const consent = await this.prisma.consent.findFirst({
+      where: { userId, purpose: 'WEEKLY_REPORT' },
+      orderBy: { at: 'desc' },
+    });
+    if (!consent?.granted) return null;
+    const now = new Date();
+    const since = new Date(now.getTime() - 14 * 24 * 3600 * 1000);
+    const children = await this.prisma.child.findMany({
+      where: { parentId: userId, deletedAt: null },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        therapySessions: { where: { startedAt: { gte: since } }, select: { startedAt: true, facts: true } },
+      },
+    });
+    const digests = children
+      .map((c) =>
+        weeklyDigest(
+          c.nickname,
+          c.therapySessions.map((s) => ({ startedAt: s.startedAt, facts: s.facts as unknown as SessionFacts })),
+          now,
+        ),
+      )
+      .filter((d): d is WeeklyDigest => d != null);
+    return digests.length ? renderWeekly(email, digests, this.env.APP_URL) : null;
   }
 }

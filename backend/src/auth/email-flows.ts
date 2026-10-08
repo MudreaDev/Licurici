@@ -9,16 +9,14 @@ import { credentialsSchema, type LoginAttempts, type UserRepo } from './auth.ser
 import { hashPassword } from './passwords';
 import type { AuthUser, TokenService, TokenStore } from './tokens';
 
-/** Ce fel de e-mail trimite worker-ul (coada `mail`). */
+/** E-mailurile cu legătură (token) pe care le trimite worker-ul (coada `mail`). */
 export type MailKind = 'verify-email' | 'reset-password';
 
-/** Job-ul din coada `mail`: doar id-ul contului și tokenul; adresa o citește worker-ul din bază,
- *  ca în Redis să nu stea e-mailuri. */
-export interface MailJob {
-  kind: MailKind;
-  userId: string;
-  token: string;
-}
+/** Job-ul din coada `mail`: doar id-ul contului (și tokenul sau săptămâna); adresa o citește
+ *  worker-ul din bază, ca în Redis să nu stea e-mailuri. */
+export type MailJob =
+  | { kind: MailKind; userId: string; token: string }
+  | { kind: 'weekly-report'; userId: string; week: string };
 
 export interface MailOutbox {
   enqueue(job: MailJob): Promise<void>;

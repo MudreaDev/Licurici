@@ -23,7 +23,7 @@ const consentTexts = {
   ),
   'WEEKLY_REPORT': (
     'Raport săptămânal',
-    'Primești pe e-mail un rezumat al săptămânii.',
+    'Lunea dimineața, pe e-mail: câte sesiuni, cât a lucrat singur și ce a exersat (adresa trebuie confirmată).',
   ),
   'PUSH_NOTIFICATIONS': ('Notificări', 'Primești notificări pe telefon.'),
 };

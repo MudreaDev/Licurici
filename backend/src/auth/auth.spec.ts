@@ -199,11 +199,13 @@ describe('AuthService', () => {
   });
 });
 
+type TokenMail = Extract<MailJob, { token: string }>;
+
 describe('EmailFlows (confirmarea adresei, parola nouă)', () => {
   function flows() {
     const base = setup();
-    const sent: MailJob[] = [];
-    const mail = new EmailFlows(base.users, base.store, base.tokens, { enqueue: async (j) => void sent.push(j) });
+    const sent: TokenMail[] = [];
+    const mail = new EmailFlows(base.users, base.store, base.tokens, { enqueue: async (j) => void sent.push(j as TokenMail) });
     const auth = new AuthService(base.users, base.tokens, undefined, undefined, (id) => mail.requestVerification({ id }));
     return { ...base, sent, mail, auth };
   }
@@ -258,8 +260,8 @@ describe('EmailFlows (confirmarea adresei, parola nouă)', () => {
       expire: async () => 1,
       del: async (k) => (counts.delete(k) ? 1 : 0),
     };
-    const sent: MailJob[] = [];
-    const mail = new EmailFlows(base.users, base.store, base.tokens, { enqueue: async (j) => void sent.push(j) }, limits);
+    const sent: TokenMail[] = [];
+    const mail = new EmailFlows(base.users, base.store, base.tokens, { enqueue: async (j) => void sent.push(j as TokenMail) }, limits);
     await base.auth.register(creds);
     for (let i = 0; i < MAILS_PER_HOUR; i++) await mail.requestVerification({ id: 'u1' });
     await expect(mail.requestVerification({ id: 'u1' })).rejects.toBeInstanceOf(RateLimitedError);

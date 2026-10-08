@@ -4,11 +4,19 @@ import { CommonModule } from './common.module';
 import { GdprProcessor } from './gdpr/gdpr.processor';
 import { RetentionScheduler } from './gdpr/retention.scheduler';
 import { MailProcessor } from './mail/mail.processor';
+import { WeeklyReportProcessor, WeeklyReportScheduler } from './reports/weekly.scheduler';
 import { StatsProcessor } from './stats/stats.processor';
 
 /** Procesul worker: consumă cozile BullMQ. Scalare: `docker compose up --scale worker=N`. */
 @Module({
   imports: [CommonModule],
-  providers: [StatsProcessor, GdprProcessor, RetentionScheduler, MailProcessor],
+  providers: [
+    StatsProcessor,
+    GdprProcessor,
+    RetentionScheduler,
+    MailProcessor,
+    WeeklyReportScheduler,
+    WeeklyReportProcessor,
+  ],
 })
 export class WorkerModule {}

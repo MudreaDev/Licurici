@@ -1133,7 +1133,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 ### Sprint 5 · 23 nov – 6 dec — Dashboard + timp real
 - [x] Dashboard Flutter Web: login, copii, statistici pe abilități (grafice), setări senzoriale la distanță
 - [ ] WebSocket live (Socket.IO + Redis adapter), prezență
-- [ ] Raport săptămânal (cron BullMQ → e-mail)
+- [x] Raport săptămânal (cron BullMQ → e-mail) — lunea 08:00, coada `reports` → `mail`, doar cu acordul `WEEKLY_REPORT` și adresa confirmată (`reports/weekly.ts`)
 - [x] Partajare cu terapeut (invitație, `CARE_LINK`, audit)
 - [x] +12 jocuri (restul `choice` din S1 + explorare-stiinte, explorare-istorie, explorare-viata)
 
