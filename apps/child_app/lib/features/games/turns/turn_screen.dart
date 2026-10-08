@@ -15,6 +15,7 @@ import '../../../shared/mascot.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/reward_finish.dart';
 import '../../../shared/sfx.dart';
+import '../../../shared/stimulus_art.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
@@ -55,6 +56,9 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
   int _burst = 0;
   bool _thinking = false;
   bool _flying = false;
+
+  /// Mânuța care arată cubul, când copilul nu face nimic în rândul lui.
+  bool _nudge = false;
   TurnResult? _result;
   String? _sticker;
 
@@ -114,6 +118,12 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
         ..reset()
         ..start();
       ref.read(voiceProvider).say(['Rândul tău.']);
+      final placed = _placed;
+      _after(6000, () {
+        if (_who != _Who.child || _placed != placed || _flying) return;
+        setState(() => _nudge = true);
+        ref.read(voiceProvider).say(['Atinge cubul tău.']);
+      });
     } else {
       _licuriciTurn();
     }
@@ -135,6 +145,7 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
     if (_flying) return;
     switch (_who) {
       case _Who.child:
+        _nudge = false;
         _placeMs = _clock.elapsedMilliseconds;
         _place(byChild: true);
       case _Who.licurici:
@@ -316,6 +327,15 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                                 ),
                                 if (_who == _Who.licurici)
                                   Icon(Icons.front_hand_rounded, size: side * 0.3, color: const Color(0xCC8A9BB0)),
+                                if (_nudge && childTurn)
+                                  Positioned(
+                                    right: side * 0.02,
+                                    bottom: side * 0.02,
+                                    child: IgnorePointer(
+                                      key: const ValueKey('turn-nudge'),
+                                      child: StimulusArt('👆', size: side * 0.3),
+                                    ),
+                                  ),
                               ],
                             ),
                           ),

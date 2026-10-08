@@ -36,6 +36,7 @@ const uiPhrases = [
   'Spune-mi când e rândul meu.',
   'E rândul meu?',
   'Am construit împreună!',
+  'Atinge cubul tău.',
   // Colorăm
   'Alege un desen.',
   'Colorează cum vrei tu.',
