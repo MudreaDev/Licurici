@@ -17,7 +17,9 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final causeLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('atinge-si-vezi'));
+final causeLevelProvider = NotifierProvider<GameLevel, int>(
+  () => GameLevel('atinge-si-vezi'),
+);
 
 /// Atinge și vezi (COG1): obiectele de pe pajiște reacționează la atingere — fiecare în felul
 /// lui, cu sunet. Nu există greșeli; după 10 reacții vine finalul cu abțibildul. Atingerile pe
@@ -227,40 +229,44 @@ class _CauseScreenState extends ConsumerState<CauseScreen>
               top: (o.y * h - side / 2).clamp(0.0, h - side),
               width: side,
               height: side,
-              child: GestureDetector(
-                key: ValueKey('cause-object-$i'),
-                behavior: HitTestBehavior.opaque,
-                onTapDown: (_) => _touchObject(i, motion),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    AnimatedBuilder(
-                      animation: _controllers[i],
-                      builder: (context, child) => _react(
-                        o.object.reaction,
-                        _controllers[i].value,
-                        side,
-                        motion,
-                        child!,
+              child: Semantics(
+                button: true,
+                label: 'Obiectul ${i + 1}',
+                child: GestureDetector(
+                  key: ValueKey('cause-object-$i'),
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (_) => _touchObject(i, motion),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      AnimatedBuilder(
+                        animation: _controllers[i],
+                        builder: (context, child) => _react(
+                          o.object.reaction,
+                          _controllers[i].value,
+                          side,
+                          motion,
+                          child!,
+                        ),
+                        child: StimulusArt(o.object.emoji, size: side),
                       ),
-                      child: StimulusArt(o.object.emoji, size: side),
-                    ),
-                    if (motion.particles)
-                      Positioned(
-                        left: -side / 2,
-                        top: -side / 2,
-                        width: side * 2,
-                        height: side * 2,
-                        child: IgnorePointer(
-                          child: StarBurst(
-                            trigger: _bursts[i] ?? 0,
-                            count: o.object.reaction == CauseReaction.spin
-                                ? 14
-                                : 8,
+                      if (motion.particles)
+                        Positioned(
+                          left: -side / 2,
+                          top: -side / 2,
+                          width: side * 2,
+                          height: side * 2,
+                          child: IgnorePointer(
+                            child: StarBurst(
+                              trigger: _bursts[i] ?? 0,
+                              count: o.object.reaction == CauseReaction.spin
+                                  ? 14
+                                  : 8,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -21,7 +21,9 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final imitationLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('fa-ca-licuriciul'));
+final imitationLevelProvider = NotifierProvider<GameLevel, int>(
+  () => GameLevel('fa-ca-licuriciul'),
+);
 
 enum _Phase { demo, turn, done }
 
@@ -372,38 +374,44 @@ class _ImitationScreenState extends ConsumerState<ImitationScreen>
                   enabled: motion.movement,
                   hopTick: _hop[i] ?? 0,
                   shakeTick: _shake[i] ?? 0,
-                  child: GestureDetector(
-                    key: ValueKey('imitation-object-$i'),
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () =>
-                        _perform(ImitationAction(ImitationKind.tap, i)),
-                    onPanStart: _phase != _Phase.turn
-                        ? null
-                        : (_) => setState(() {
-                            _dragging = i;
-                            _dragOffset = Offset.zero;
-                          }),
-                    onPanUpdate: _phase != _Phase.turn
-                        ? null
-                        : (d) => setState(() => _dragOffset += d.delta),
-                    onPanEnd: _phase != _Phase.turn
-                        ? null
-                        : (_) {
-                            final end = objCenter(i) + _dragOffset;
-                            final moved = _dragOffset.distance;
-                            setState(() {
-                              _dragging = null;
+                  child: Semantics(
+                    button: true,
+                    label: 'Obiectul ${i + 1}',
+                    child: GestureDetector(
+                      key: ValueKey('imitation-object-$i'),
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () =>
+                          _perform(ImitationAction(ImitationKind.tap, i)),
+                      onPanStart: _phase != _Phase.turn
+                          ? null
+                          : (_) => setState(() {
+                              _dragging = i;
                               _dragOffset = Offset.zero;
-                            });
-                            if (basket &&
-                                (end - basketCenter).distance <
-                                    basketSide * 0.75) {
-                              _perform(ImitationAction(ImitationKind.drag, i));
-                            } else if (moved < 24) {
-                              _perform(ImitationAction(ImitationKind.tap, i));
-                            }
-                          },
-                    child: StimulusArt(_r.objects[i], size: side),
+                            }),
+                      onPanUpdate: _phase != _Phase.turn
+                          ? null
+                          : (d) => setState(() => _dragOffset += d.delta),
+                      onPanEnd: _phase != _Phase.turn
+                          ? null
+                          : (_) {
+                              final end = objCenter(i) + _dragOffset;
+                              final moved = _dragOffset.distance;
+                              setState(() {
+                                _dragging = null;
+                                _dragOffset = Offset.zero;
+                              });
+                              if (basket &&
+                                  (end - basketCenter).distance <
+                                      basketSide * 0.75) {
+                                _perform(
+                                  ImitationAction(ImitationKind.drag, i),
+                                );
+                              } else if (moved < 24) {
+                                _perform(ImitationAction(ImitationKind.tap, i));
+                              }
+                            },
+                      child: StimulusArt(_r.objects[i], size: side),
+                    ),
                   ),
                 ),
               ),

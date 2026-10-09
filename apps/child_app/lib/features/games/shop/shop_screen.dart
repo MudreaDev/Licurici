@@ -19,7 +19,9 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final shopLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('la-magazin'));
+final shopLevelProvider = NotifierProvider<GameLevel, int>(
+  () => GameLevel('la-magazin'),
+);
 
 /// La magazin (AUT5): lista cu poze în stânga (bifă la ce s-a cumpărat), rafturile în dreapta,
 /// coșul jos. Atingi un produs de pe listă → intră în coș. Un produs care nu e pe listă doar se
@@ -294,14 +296,18 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 child: Juice(
                   enabled: motion.movement,
                   shakeTick: _shake[o.emoji] ?? 0,
-                  child: GestureDetector(
-                    key: ValueKey('shop-item-${o.emoji}'),
-                    behavior: HitTestBehavior.opaque,
-                    onTapDown: (_) => _pick(o),
-                    child: StimulusArt(
-                      o.emoji,
-                      size: side,
-                      semanticLabel: o.word,
+                  child: Semantics(
+                    button: true,
+                    label: o.word,
+                    child: GestureDetector(
+                      key: ValueKey('shop-item-${o.emoji}'),
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (_) => _pick(o),
+                      child: StimulusArt(
+                        o.emoji,
+                        size: side,
+                        semanticLabel: o.word,
+                      ),
                     ),
                   ),
                 ),

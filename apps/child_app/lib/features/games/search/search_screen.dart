@@ -20,7 +20,9 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final searchLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('cauta'));
+final searchLevelProvider = NotifierProvider<GameLevel, int>(
+  () => GameLevel('cauta'),
+);
 
 /// Caută (ATN2): obiectele sunt împrăștiate pe pajiște; în colț se vede ce căutăm. Atingerea
 /// altui obiect doar îl clatină; ținta găsită sare, cu steluțe. După 8 s fără găsire, ținta
@@ -318,29 +320,33 @@ class _SearchObject extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    behavior: HitTestBehavior.opaque,
-    onTapDown: (_) => onTap(),
-    child: Juice(
-      enabled: motion.movement,
-      shakeTick: shakeTick,
-      popTick: found ? 1 : 0,
-      pulse: hint,
-      child: AnimatedScale(
-        scale: found ? 1.3 : 1,
-        duration: motion.d(300),
-        curve: Curves.easeOutBack,
-        child: Transform.rotate(
-          angle: motion.movement && !found ? item.tilt : 0,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: found ? Tokens.sun.withValues(alpha: 0.35) : null,
-            ),
-            child: StimulusArt(
-              item.object.emoji,
-              size: side,
-              semanticLabel: item.object.word,
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: item.object.word,
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: (_) => onTap(),
+      child: Juice(
+        enabled: motion.movement,
+        shakeTick: shakeTick,
+        popTick: found ? 1 : 0,
+        pulse: hint,
+        child: AnimatedScale(
+          scale: found ? 1.3 : 1,
+          duration: motion.d(300),
+          curve: Curves.easeOutBack,
+          child: Transform.rotate(
+            angle: motion.movement && !found ? item.tilt : 0,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: found ? Tokens.sun.withValues(alpha: 0.35) : null,
+              ),
+              child: StimulusArt(
+                item.object.emoji,
+                size: side,
+                semanticLabel: item.object.word,
+              ),
             ),
           ),
         ),

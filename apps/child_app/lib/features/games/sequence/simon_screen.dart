@@ -30,6 +30,7 @@ class SimonScreen extends ConsumerStatefulWidget {
     this.initialLevel,
   });
   final SequenceGame game;
+
   /// Nivelul de pornire; implicit, cel la care a ajuns copilul data trecută (salvat pe tabletă).
   final int? initialLevel;
 
@@ -59,7 +60,10 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _speaker = ref.read(voiceProvider);
-    _sessionLevel = widget.initialLevel ?? ref.read(settingsProvider).levels[widget.game.id] ?? 1;
+    _sessionLevel =
+        widget.initialLevel ??
+        ref.read(settingsProvider).levels[widget.game.id] ??
+        1;
     _nextSessionLevel = _sessionLevel;
     _level = widget.game.generate(_sessionLevel);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -159,7 +163,9 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
         _round++;
         if (_round == 5) {
           _nextSessionLevel = next;
-          ref.read(settingsProvider.notifier).setGameLevel(widget.game.id, next);
+          ref
+              .read(settingsProvider.notifier)
+              .setGameLevel(widget.game.id, next);
           _phase = _Phase.finished;
           _sticker = ref.read(settingsProvider.notifier).awardSticker();
         } else {
@@ -320,16 +326,39 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
                                   );
                                   if (_level.positions case final spots?) {
                                     // Licuricii din grădină: florile stau împrăștiate.
-                                    final area = Size(constraints.maxWidth, constraints.maxHeight - (intro ? 80 : 0));
+                                    final area = Size(
+                                      constraints.maxWidth,
+                                      constraints.maxHeight - (intro ? 80 : 0),
+                                    );
                                     // Cât mai mari, dar fără să se atingă: după cele mai apropiate două flori.
                                     var near = double.infinity;
                                     for (var i = 0; i < spots.length; i++) {
-                                      for (var j = i + 1; j < spots.length; j++) {
-                                        final d = Offset((spots[i].x - spots[j].x) * area.width, (spots[i].y - spots[j].y) * area.height).distance;
+                                      for (
+                                        var j = i + 1;
+                                        j < spots.length;
+                                        j++
+                                      ) {
+                                        final d = Offset(
+                                          (spots[i].x - spots[j].x) *
+                                              area.width,
+                                          (spots[i].y - spots[j].y) *
+                                              area.height,
+                                        ).distance;
                                         near = math.min(near, d);
                                       }
                                     }
-                                    final r = (near * 0.92).clamp(52.0, math.max(52.0, math.min(150.0, area.shortestSide * 0.36))).toDouble();
+                                    final r = (near * 0.92)
+                                        .clamp(
+                                          52.0,
+                                          math.max(
+                                            52.0,
+                                            math.min(
+                                              150.0,
+                                              area.shortestSide * 0.36,
+                                            ),
+                                          ),
+                                        )
+                                        .toDouble();
                                     return Column(
                                       children: [
                                         SizedBox.fromSize(
@@ -338,15 +367,33 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
                                             children: [
                                               for (final pad in _level.pads)
                                                 Positioned(
-                                                  left: spots[pad.index].x * area.width - r / 2,
-                                                  top: spots[pad.index].y * area.height - r / 2,
+                                                  left:
+                                                      spots[pad.index].x *
+                                                          area.width -
+                                                      r / 2,
+                                                  top:
+                                                      spots[pad.index].y *
+                                                          area.height -
+                                                      r / 2,
                                                   width: r,
                                                   height: r,
-                                                  child: GestureDetector(
-                                                    key: ValueKey('simon-pad-${pad.index}'),
-                                                    behavior: HitTestBehavior.opaque,
-                                                    onTap: () => _tap(pad.index),
-                                                    child: _GardenFirefly(lit: _lit == pad.index, motion: motion),
+                                                  child: Semantics(
+                                                    button: true,
+                                                    label:
+                                                        'Licuriciul ${pad.index + 1}',
+                                                    child: GestureDetector(
+                                                      key: ValueKey(
+                                                        'simon-pad-${pad.index}',
+                                                      ),
+                                                      behavior: HitTestBehavior
+                                                          .opaque,
+                                                      onTap: () =>
+                                                          _tap(pad.index),
+                                                      child: _GardenFirefly(
+                                                        lit: _lit == pad.index,
+                                                        motion: motion,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                             ],
@@ -494,29 +541,65 @@ class _FireflyFlower extends CustomPainter {
         r,
         Paint()
           ..shader = RadialGradient(
-            colors: const [Color(0xCCFFF3A0), Color(0x55FFE07A), Color(0x00FFE07A)],
+            colors: const [
+              Color(0xCCFFF3A0),
+              Color(0x55FFE07A),
+              Color(0x00FFE07A),
+            ],
             stops: const [0, 0.45, 1],
           ).createShader(Rect.fromCircle(center: c, radius: r)),
       );
     }
     // Petalele.
-    final petal = Paint()..color = lit ? const Color(0xFFF9D5E5) : const Color(0xFF8C7FB8);
+    final petal = Paint()
+      ..color = lit ? const Color(0xFFF9D5E5) : const Color(0xFF8C7FB8);
     for (var i = 0; i < 6; i++) {
       final a = i * math.pi / 3;
       canvas.save();
-      canvas.translate(c.dx + math.cos(a) * r * 0.46, c.dy + math.sin(a) * r * 0.46);
+      canvas.translate(
+        c.dx + math.cos(a) * r * 0.46,
+        c.dy + math.sin(a) * r * 0.46,
+      );
       canvas.rotate(a);
-      canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: r * 0.72, height: r * 0.46), petal);
+      canvas.drawOval(
+        Rect.fromCenter(center: Offset.zero, width: r * 0.72, height: r * 0.46),
+        petal,
+      );
       canvas.restore();
     }
-    canvas.drawCircle(c, r * 0.28, Paint()..color = lit ? const Color(0xFFFFD45E) : const Color(0xFF5E5486));
+    canvas.drawCircle(
+      c,
+      r * 0.28,
+      Paint()..color = lit ? const Color(0xFFFFD45E) : const Color(0xFF5E5486),
+    );
     // Licuriciul: corpul și lumina din coadă.
     final body = c + Offset(0, -r * 0.07);
-    canvas.drawOval(Rect.fromCenter(center: body, width: r * 0.3, height: r * 0.42), Paint()..color = const Color(0xFF3E4A5C));
-    canvas.drawCircle(body + Offset(0, r * 0.17), r * (lit ? 0.2 : 0.14), Paint()..color = lit ? const Color(0xFFFFF6B0) : const Color(0xFF9A9468));
+    canvas.drawOval(
+      Rect.fromCenter(center: body, width: r * 0.3, height: r * 0.42),
+      Paint()..color = const Color(0xFF3E4A5C),
+    );
+    canvas.drawCircle(
+      body + Offset(0, r * 0.17),
+      r * (lit ? 0.2 : 0.14),
+      Paint()..color = lit ? const Color(0xFFFFF6B0) : const Color(0xFF9A9468),
+    );
     final wing = Paint()..color = const Color(0x88E8F1FF);
-    canvas.drawOval(Rect.fromCenter(center: body + Offset(-r * 0.18, -r * 0.11), width: r * 0.28, height: r * 0.17), wing);
-    canvas.drawOval(Rect.fromCenter(center: body + Offset(r * 0.18, -r * 0.11), width: r * 0.28, height: r * 0.17), wing);
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: body + Offset(-r * 0.18, -r * 0.11),
+        width: r * 0.28,
+        height: r * 0.17,
+      ),
+      wing,
+    );
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: body + Offset(r * 0.18, -r * 0.11),
+        width: r * 0.28,
+        height: r * 0.17,
+      ),
+      wing,
+    );
   }
 
   @override

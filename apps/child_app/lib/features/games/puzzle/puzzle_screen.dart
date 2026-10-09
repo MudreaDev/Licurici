@@ -19,7 +19,9 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final puzzleLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('puzzle'));
+final puzzleLevelProvider = NotifierProvider<GameLevel, int>(
+  () => GameLevel('puzzle'),
+);
 
 /// Puzzle (POT7): piesele unei ilustrații pictate, amestecate în stânga; rama în dreapta, cu
 /// modelul estompat (la nivelurile mici). Piesa se trage la locul ei — sau se atinge piesa,
@@ -271,19 +273,23 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
                             width: pw * scale,
                             height: ph * scale,
                           ),
-                          child: GestureDetector(
-                            onTap: () => setState(
-                              () => _selected = _selected == p.index
-                                  ? null
-                                  : p.index,
-                            ),
-                            child: _Piece(
-                              image: image,
-                              piece: p,
-                              round: _r,
-                              w: pw * scale,
-                              h: ph * scale,
-                              selected: _selected == p.index,
+                          child: Semantics(
+                            button: true,
+                            label: 'Piesa ${p.index + 1}',
+                            child: GestureDetector(
+                              onTap: () => setState(
+                                () => _selected = _selected == p.index
+                                    ? null
+                                    : p.index,
+                              ),
+                              child: _Piece(
+                                image: image,
+                                piece: p,
+                                round: _r,
+                                w: pw * scale,
+                                h: ph * scale,
+                                selected: _selected == p.index,
+                              ),
                             ),
                           ),
                         ),
@@ -325,32 +331,36 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
                         height: ph,
                         child: DragTarget<int>(
                           onAcceptWithDetails: (d) => _put(d.data, p.index),
-                          builder: (context, hover, _) => GestureDetector(
-                            key: ValueKey('puzzle-slot-${p.index}'),
-                            behavior: HitTestBehavior.opaque,
-                            onTap: _selected == null
-                                ? null
-                                : () => _put(_selected!, p.index),
-                            child: _placed.contains(p.index)
-                                ? _Piece(
-                                    image: image,
-                                    piece: p,
-                                    round: _r,
-                                    w: pw,
-                                    h: ph,
-                                    flat: _done,
-                                  )
-                                : DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      color: hover.isNotEmpty
-                                          ? Tokens.sun.withValues(alpha: 0.3)
-                                          : null,
-                                      border: Border.all(
-                                        color: const Color(0x66A9A3D1),
-                                        width: 1.5,
+                          builder: (context, hover, _) => Semantics(
+                            button: true,
+                            label: 'Locul ${p.index + 1}',
+                            child: GestureDetector(
+                              key: ValueKey('puzzle-slot-${p.index}'),
+                              behavior: HitTestBehavior.opaque,
+                              onTap: _selected == null
+                                  ? null
+                                  : () => _put(_selected!, p.index),
+                              child: _placed.contains(p.index)
+                                  ? _Piece(
+                                      image: image,
+                                      piece: p,
+                                      round: _r,
+                                      w: pw,
+                                      h: ph,
+                                      flat: _done,
+                                    )
+                                  : DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        color: hover.isNotEmpty
+                                            ? Tokens.sun.withValues(alpha: 0.3)
+                                            : null,
+                                        border: Border.all(
+                                          color: const Color(0x66A9A3D1),
+                                          width: 1.5,
+                                        ),
                                       ),
                                     ),
-                                  ),
+                            ),
                           ),
                         ),
                       ),

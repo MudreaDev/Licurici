@@ -21,7 +21,9 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final rhythmLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('toba-magica'));
+final rhythmLevelProvider = NotifierProvider<GameLevel, int>(
+  () => GameLevel('toba-magica'),
+);
 
 enum _Phase { listen, play, done }
 
@@ -314,15 +316,19 @@ class _RhythmScreenState extends ConsumerState<RhythmScreen>
                   Juice(
                     enabled: motion.movement,
                     popTick: _hop[d],
-                    child: GestureDetector(
-                      key: ValueKey('rhythm-drum-$d'),
-                      behavior: HitTestBehavior.opaque,
-                      onTapDown: (_) => _tap(d),
-                      // Toba mare sună jos, cea mică sus: se deosebesc și ca formă.
-                      child: _Drum(
-                        side: d == 0 ? side : side * 0.78,
-                        tint: d == 1,
-                        dim: listening,
+                    child: Semantics(
+                      button: true,
+                      label: 'Toba ${d + 1}',
+                      child: GestureDetector(
+                        key: ValueKey('rhythm-drum-$d'),
+                        behavior: HitTestBehavior.opaque,
+                        onTapDown: (_) => _tap(d),
+                        // Toba mare sună jos, cea mică sus: se deosebesc și ca formă.
+                        child: _Drum(
+                          side: d == 0 ? side : side * 0.78,
+                          tint: d == 1,
+                          dim: listening,
+                        ),
                       ),
                     ),
                   ),

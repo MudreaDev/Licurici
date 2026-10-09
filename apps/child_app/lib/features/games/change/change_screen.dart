@@ -20,7 +20,9 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final changeLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('ce-s-a-schimbat'));
+final changeLevelProvider = NotifierProvider<GameLevel, int>(
+  () => GameLevel('ce-s-a-schimbat'),
+);
 
 enum _Phase { look, cover, answer, done }
 
@@ -303,16 +305,20 @@ class _ChangeScreenState extends ConsumerState<ChangeScreen>
                               !disappear &&
                               _phase == _Phase.answer &&
                               it.object == _r.target,
-                          child: GestureDetector(
-                            key: ValueKey('change-item-${it.object.emoji}'),
-                            behavior: HitTestBehavior.opaque,
-                            onTapDown: disappear
-                                ? null
-                                : (_) => _pick(it.object),
-                            child: StimulusArt(
-                              it.object.emoji,
-                              size: side,
-                              semanticLabel: it.object.word,
+                          child: Semantics(
+                            button: true,
+                            label: it.object.word,
+                            child: GestureDetector(
+                              key: ValueKey('change-item-${it.object.emoji}'),
+                              behavior: HitTestBehavior.opaque,
+                              onTapDown: disappear
+                                  ? null
+                                  : (_) => _pick(it.object),
+                              child: StimulusArt(
+                                it.object.emoji,
+                                size: side,
+                                semanticLabel: it.object.word,
+                              ),
                             ),
                           ),
                         ),

@@ -18,7 +18,9 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final diffLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('diferente'));
+final diffLevelProvider = NotifierProvider<GameLevel, int>(
+  () => GameLevel('diferente'),
+);
 
 /// Găsește diferențele (POT8): două „poze” una lângă alta; copilul atinge în a doua locurile
 /// diferite. Fiecare diferență găsită se încercuiește în ambele poze. Atingerea pe un loc la
@@ -246,33 +248,41 @@ class _DiffScreenState extends ConsumerState<DiffScreen> {
                 top: (cell ~/ _s.cols) * ch,
                 width: cw,
                 height: ch,
-                child: GestureDetector(
-                  key: interactive ? ValueKey('diff-cell-$cell') : null,
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: interactive ? (_) => _tap(cell) : null,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      if (items[cell] case final o?)
-                        StimulusArt(o.emoji, size: side, semanticLabel: o.word),
-                      if (_found.contains(cell))
-                        Container(
-                          width: side * 1.25,
-                          height: side * 1.25,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Tokens.good, width: 4),
+                child: Semantics(
+                  button: true,
+                  label: 'Căsuța ${cell + 1}',
+                  child: GestureDetector(
+                    key: interactive ? ValueKey('diff-cell-$cell') : null,
+                    behavior: HitTestBehavior.opaque,
+                    onTapDown: interactive ? (_) => _tap(cell) : null,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        if (items[cell] case final o?)
+                          StimulusArt(
+                            o.emoji,
+                            size: side,
+                            semanticLabel: o.word,
                           ),
-                        ),
-                      if (interactive && motion != null && motion.particles)
-                        Positioned.fill(
-                          child: IgnorePointer(
-                            child: _found.contains(cell)
-                                ? StarBurst(trigger: _burst, count: 8)
-                                : const SizedBox.shrink(),
+                        if (_found.contains(cell))
+                          Container(
+                            width: side * 1.25,
+                            height: side * 1.25,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Tokens.good, width: 4),
+                            ),
                           ),
-                        ),
-                    ],
+                        if (interactive && motion != null && motion.particles)
+                          Positioned.fill(
+                            child: IgnorePointer(
+                              child: _found.contains(cell)
+                                  ? StarBurst(trigger: _burst, count: 8)
+                                  : const SizedBox.shrink(),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
