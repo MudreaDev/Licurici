@@ -10,6 +10,7 @@ const { io } = require('socket.io-client');
 const { LiveAccess } = require('../../dist/live/live.js');
 const { LiveGateway } = require('../../dist/live/live.gateway.js');
 const { RedisIoAdapter } = require('../../dist/live/redis-io.adapter.js');
+const { REDIS } = require('../../dist/redis/redis.module.js');
 
 const CHILD = '0190a1b2-0000-7000-8000-000000000001';
 const OTHER = '0190a1b2-0000-7000-8000-000000000002';
@@ -19,7 +20,8 @@ const access = new LiveAccess(
 );
 
 class SmokeModule {}
-Module({ providers: [{ provide: LiveAccess, useValue: access }, LiveGateway] })(SmokeModule);
+const redis = { get: async (k) => (k === `presence:${CHILD}` ? '1' : null) };
+Module({ providers: [{ provide: LiveAccess, useValue: access }, { provide: REDIS, useValue: redis }, LiveGateway] })(SmokeModule);
 
 const app = await NestFactory.create(SmokeModule, { logger: false });
 app.useWebSocketAdapter(new RedisIoAdapter(app, 'redis://localhost:1', ['http://localhost:8080']));
@@ -36,7 +38,7 @@ assert.equal(bad.connected, false, 'tokenul greșit trebuie respins');
 const s = io(url, opts('tok-ana'));
 await new Promise((r) => s.on('connect', r));
 await wait(50);
-assert.deepEqual(await s.emitWithAck('watch', { childId: CHILD }), { ok: true });
+assert.deepEqual(await s.emitWithAck('watch', { childId: CHILD }), { ok: true, playing: true });
 assert.deepEqual(await s.emitWithAck('watch', { childId: OTHER }), { ok: false });
 const got = [];
 s.on('session.synced', (e) => got.push(e));

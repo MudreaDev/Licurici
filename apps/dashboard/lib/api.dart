@@ -351,6 +351,11 @@ class ServerChildren extends Notifier<List<ChildHistory>> {
           ref.invalidate(planChangesProvider(id));
           return;
         }
+        if (type == 'presence') {
+          ref.read(playingProvider.notifier).set(id, data['playing'] == true);
+          return;
+        }
+        ref.read(playingProvider.notifier).set(id, false);
         await refresh();
         final name = state.where((h) => h.child.id == id).firstOrNull?.child.nickname;
         final n = (data['count'] as num?)?.toInt() ?? 1;

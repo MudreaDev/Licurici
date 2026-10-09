@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
 
+import 'auto_sync.dart';
 import 'local_db.dart';
 
 /// Unde se păstrează sesiunile. În aplicație: Drift (ADR-004), setat în `main()`;
@@ -90,7 +93,10 @@ class SessionController extends Notifier<SessionRecorder?> {
   SessionRecorder _open() => state ??= SessionRecorder(childId: localChildId);
 
   void start({Mood? moodBefore}) {
+    final isNew = state == null;
     final r = _open();
+    // „Se joacă acum” în panou (doar dacă părintele a pornit trimiterea automată).
+    if (isNew) unawaited(ref.read(autoSyncProvider.notifier).announcePlaying());
     r.moodBefore ??= moodBefore;
     state = r;
   }

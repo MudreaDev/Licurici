@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
@@ -46,14 +47,21 @@ class SocketLiveChannel implements LiveChannel {
 
     socket.onConnect((_) {
       for (final id in ids) {
-        socket.emit('watch', {'childId': id});
+        // Răspunsul spune și dacă copilul se joacă chiar acum.
+        socket.emitWithAck(
+          'watch',
+          {'childId': id},
+          ack: (res) {
+            if (res is Map && res['ok'] == true) onEvent('presence', {'childId': id, 'playing': res['playing'] == true});
+          },
+        );
       }
     });
     // Serverul închide conexiunea când tokenul de acces (15 min) a expirat: luăm unul nou.
     socket.onDisconnect((reason) {
       if (reason == 'io server disconnect') Future<void>.delayed(const Duration(seconds: 2), connect);
     });
-    for (final type in ['session.synced', 'plan.changed']) {
+    for (final type in ['session.synced', 'plan.changed', 'presence']) {
       socket.on(type, (data) {
         if (data is Map) onEvent(type, data.cast<String, dynamic>());
       });
@@ -84,3 +92,34 @@ class LiveNotice extends Notifier<({String text, int n})?> {
 }
 
 final liveNoticeProvider = NotifierProvider<LiveNotice, ({String text, int n})?>(LiveNotice.new);
+
+/// Copiii care se joacă acum (după canalul live).
+class Playing extends Notifier<Set<String>> {
+  @override
+  Set<String> build() => const {};
+
+  void set(String childId, bool playing) =>
+      state = playing ? {...state, childId} : ({...state}..remove(childId));
+}
+
+final playingProvider = NotifierProvider<Playing, Set<String>>(Playing.new);
+
+/// Insigna „Se joacă acum”.
+class PlayingBadge extends ConsumerWidget {
+  const PlayingBadge({super.key, required this.childId});
+
+  final String childId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (!ref.watch(playingProvider).contains(childId)) return const SizedBox.shrink();
+    return Chip(
+      key: ValueKey('playing-$childId'),
+      avatar: const Icon(Icons.sports_esports_rounded, size: 18, color: Color(0xFF2E7D4F)),
+      label: const Text('Se joacă acum'),
+      backgroundColor: const Color(0xFFE2F3E8),
+      side: BorderSide.none,
+      visualDensity: VisualDensity.compact,
+    );
+  }
+}

@@ -27,6 +27,7 @@ import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
 import { LiveAccess } from '../live/live';
 import { LiveGateway } from '../live/live.gateway';
+import { PresenceService } from '../live/presence';
 import { AuthController, ChildrenController, ConsentsController, MeController } from './controllers';
 
 /**
@@ -99,9 +100,15 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
     },
     {
       provide: SyncService,
-      inject: [ChildAccess, PrismaRepos, ConsentService, LiveGateway],
-      useFactory: (a: ChildAccess, r: PrismaRepos, c: ConsentService, live: LiveGateway) =>
-        new SyncService(a, r.sessions, c, live),
+      inject: [ChildAccess, PrismaRepos, ConsentService, LiveGateway, PresenceService],
+      useFactory: (a: ChildAccess, r: PrismaRepos, c: ConsentService, live: LiveGateway, presence: PresenceService) =>
+        new SyncService(a, r.sessions, c, {
+          publish: (e) => {
+            live.publish(e);
+            // Sesiunea a ajuns pe server: copilul a terminat.
+            if (e.type === 'session.synced') void presence.stop(e.childId).catch(() => undefined);
+          },
+        }),
     },
     {
       provide: SummaryFlow,
@@ -128,6 +135,12 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
       provide: LiveAccess,
       inject: [TokenService, ChildAccess],
       useFactory: (t: TokenService, a: ChildAccess) => new LiveAccess(t, a),
+    },
+    {
+      provide: PresenceService,
+      inject: [ChildAccess, ConsentService, REDIS, LiveGateway],
+      useFactory: (a: ChildAccess, c: ConsentService, redis: Redis, live: LiveGateway) =>
+        new PresenceService(a, c, redis, live),
     },
     LiveGateway,
     AuthGuard,

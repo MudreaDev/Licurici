@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 import 'data.dart';
+import 'live.dart';
 import 'shared.dart';
 import 'progress.dart';
 
@@ -108,12 +109,19 @@ class _ChildrenList extends StatelessWidget {
                 : null,
             child: ListTile(
               contentPadding: const EdgeInsets.all(16),
-              title: Text(
-                h.child.nickname,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 19,
-                ),
+              title: Wrap(
+                spacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    h.child.nickname,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 19,
+                    ),
+                  ),
+                  PlayingBadge(childId: h.child.id),
+                ],
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

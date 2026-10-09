@@ -11,6 +11,8 @@ import type { Server, Socket } from 'socket.io';
 
 import type { AuthUser } from '../auth/tokens';
 import { LiveAccess, type LiveEvent, type LiveEvents, childRoom } from './live';
+import { REDIS } from '../redis/redis.module';
+import { presenceKey, type PresenceStore } from './presence';
 
 /**
  * Canalul live al panoului (ADR-010, README §8): Socket.IO pe `/api/v1/live`, camere
@@ -25,7 +27,11 @@ export class LiveGateway implements OnGatewayConnection, LiveEvents {
 
   @WebSocketServer() server?: Server;
 
-  constructor(@Inject(LiveAccess) private readonly access: LiveAccess) {}
+  constructor(
+    @Inject(LiveAccess) private readonly access: LiveAccess,
+    // Direct din Redis (nu prin PresenceService, care publică prin acest gateway).
+    @Inject(REDIS) private readonly store: Pick<PresenceStore, 'get'>,
+  ) {}
 
   handleConnection(client: Socket): void {
     const user = this.access.connect(client.handshake.auth?.token);
@@ -37,12 +43,17 @@ export class LiveGateway implements OnGatewayConnection, LiveEvents {
   }
 
   @SubscribeMessage('watch')
-  async watch(@ConnectedSocket() client: Socket, @MessageBody() body: { childId?: unknown }): Promise<{ ok: boolean }> {
+  async watch(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { childId?: unknown },
+  ): Promise<{ ok: boolean; playing?: boolean }> {
     const user = (client.data as { user?: AuthUser }).user;
     const room = user ? await this.access.canWatch(user, body?.childId) : null;
     if (!room) return { ok: false };
     await client.join(room);
-    return { ok: true };
+    // Starea de acum, ca panoul deschis în timpul unei sesiuni să o vadă imediat.
+    const playing = (await this.store.get(presenceKey(body.childId as string)).catch(() => null)) != null;
+    return { ok: true, playing };
   }
 
   publish(event: LiveEvent): void {

@@ -25,7 +25,15 @@ class AutoSyncState {
 /// outbox. Dacă serverul refuză sesiunea păstrată (parolă schimbată, cont șters), se oprește
 /// singură, iar „Pentru părinți” cere reconectarea.
 class AutoSync extends Notifier<AutoSyncState> {
-  bool _running = false;
+  /// Apelurile către server merg pe rând: fiecare rotește refresh tokenul, iar două în paralel
+  /// ar folosi același token (al doilea ar fi refuzat și trimiterea s-ar opri).
+  Future<void> _tail = Future.value();
+
+  Future<T> _serial<T>(Future<T> Function() task) {
+    final run = _tail.then((_) => task());
+    _tail = run.then<void>((_) {}, onError: (_) {});
+    return run;
+  }
 
   @override
   AutoSyncState build() {
@@ -49,13 +57,30 @@ class AutoSync extends Notifier<AutoSyncState> {
     state = const AutoSyncState();
   }
 
+  /// „Se joacă acum” în panou, la începutul sesiunii. Fără rețea sau fără trimitere automată, nimic.
+  Future<void> announcePlaying() => _serial(() async {
+    final vault = ref.read(tokenVaultProvider);
+    final token = await vault.read();
+    if (token == null) return;
+    try {
+      await ref.read(syncClientProvider).announcePlaying(refreshToken: token, onRefreshToken: vault.write);
+    } on SyncException catch (e) {
+      if (e.signedOut) await _signedOut();
+    }
+  });
+
+  Future<void> _signedOut() async {
+    await ref.read(tokenVaultProvider).write(null);
+    state = const AutoSyncState(problem: 'Conectarea a expirat (sau parola s-a schimbat). Trimite din nou manual.');
+  }
+
   /// Încearcă acum (fără să aștepte nimeni rezultatul). Întoarce câte sesiuni au plecat.
-  Future<int> trigger() async {
-    if (_running) return 0;
+  Future<int> trigger() => _serial(_trigger);
+
+  Future<int> _trigger() async {
     final vault = ref.read(tokenVaultProvider);
     final token = await vault.read();
     if (token == null) return 0;
-    _running = true;
     try {
       final settings = ref.read(settingsProvider);
       final n = await ref.read(syncClientProvider).run(
@@ -70,8 +95,7 @@ class AutoSync extends Notifier<AutoSyncState> {
       return n;
     } on SyncException catch (e) {
       if (e.signedOut) {
-        await vault.write(null);
-        state = const AutoSyncState(problem: 'Conectarea a expirat (sau parola s-a schimbat). Trimite din nou manual.');
+        await _signedOut();
       } else {
         state = AutoSyncState(
           enabled: true,
@@ -82,8 +106,6 @@ class AutoSync extends Notifier<AutoSyncState> {
         );
       }
       return 0;
-    } finally {
-      _running = false;
     }
   }
 }

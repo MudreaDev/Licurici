@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 import 'ask_panel.dart';
 import 'data.dart';
+import 'live.dart';
 import 'game_plan.dart';
 import 'shared.dart';
 
@@ -44,9 +45,16 @@ class _ParentPageState extends ConsumerState<ParentPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        'Bun venit! Cum a fost pentru ${history.child.nickname}?',
-                        style: Theme.of(context).textTheme.headlineMedium,
+                      Wrap(
+                        spacing: 12,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            'Bun venit! Cum a fost pentru ${history.child.nickname}?',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                          PlayingBadge(childId: history.child.id),
+                        ],
                       ),
                       const SizedBox(height: 8),
                       const Text(

@@ -4,7 +4,8 @@ import type { ChildAccess } from '../children/access';
 /** Evenimentele trimise panoului (ADR-010: WebSocket doar pentru dashboard). */
 export type LiveEvent =
   | { type: 'session.synced'; childId: string; count: number }
-  | { type: 'plan.changed'; childId: string; by: 'PARENT' | 'THERAPIST' };
+  | { type: 'plan.changed'; childId: string; by: 'PARENT' | 'THERAPIST' }
+  | { type: 'presence'; childId: string; playing: boolean };
 
 /** Cine anunță: serviciile de domeniu nu știu de Socket.IO (în teste, o listă). */
 export interface LiveEvents {

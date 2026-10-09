@@ -12,6 +12,7 @@ import { SharingService } from '../children/sharing';
 import { ConsentService } from '../consents/consents';
 import { GdprService } from '../gdpr/gdpr';
 import { parseWith } from '../common/validation';
+import { PresenceService } from '../live/presence';
 import { AskFlow } from '../reports/ask';
 import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
@@ -85,12 +86,20 @@ export class ChildrenController {
     @Inject(GdprService) private readonly gdpr: GdprService,
     @Inject(GamePlanService) private readonly plan: GamePlanService,
     @Inject(AskFlow) private readonly questions: AskFlow,
+    @Inject(PresenceService) private readonly presence: PresenceService,
   ) {}
 
   /** Planul de jocuri (plan §5.1): părintele sau specialistul cu partajare activă aleg ce vede copilul. */
   @Get(':childId/plan')
   getPlan(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string) {
     return this.plan.get(user, childId);
+  }
+
+  /** Tableta anunță începutul unei sesiuni („se joacă acum” în panou). */
+  @Post(':childId/presence')
+  @HttpCode(204)
+  async presenceStart(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string): Promise<void> {
+    await this.presence.start(user, childId);
   }
 
   @Put(':childId/plan')

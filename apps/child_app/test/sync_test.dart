@@ -27,6 +27,7 @@ class FakeServer {
   /// Refresh tokenul valabil acum (rotit la fiecare folosire, ca pe server).
   String validRefresh = 'r' * 30;
   int rotations = 0;
+  int presence = 0;
   Object? lastPutLevels;
 
   http.Response json(Object body, [int status = 200]) =>
@@ -85,6 +86,10 @@ class FakeServer {
           .cast<Map<String, dynamic>>();
       received.addAll(sessions);
       return json({'accepted': sessions.length});
+    }
+    if (path == '/children/$serverChild/presence') {
+      presence++;
+      return http.Response('', 204);
     }
     if (path == '/children/$serverChild/plan' && r.method == 'GET') return json(plan);
     if (path == '/children/$serverChild/plan' && r.method == 'PUT') {
@@ -327,5 +332,31 @@ void main() {
     await expectLater(go(), throwsA(isA<SyncException>().having((e) => e.needsTotp, 'needsTotp', isTrue)));
     await expectLater(go(code: '000000'), throwsA(isA<SyncException>().having((e) => e.needsTotp, 'needsTotp', isFalse)));
     expect(await go(code: '123456'), 1);
+  });
+
+  test('„se joacă acum” și trimiterea, pornite deodată, merg pe rând (același token nu se folosește de două ori)', () async {
+    final server = FakeServer()..hasChild = true;
+    final store = MemorySessionStore();
+    final vault = MemoryTokenVault();
+    final container = ProviderContainer(
+      overrides: [
+        syncClientProvider.overrideWithValue(SyncClient(client: MockClient(server.handle), baseUrl: 'http://api/api/v1')),
+        sessionStoreProvider.overrideWithValue(store),
+        tokenVaultProvider.overrideWithValue(vault),
+      ],
+    );
+    addTearDown(container.dispose);
+    final auto = container.read(autoSyncProvider.notifier);
+    await auto.enable(server.validRefresh);
+    await store.save(local().first);
+    final a = auto.announcePlaying();
+    final sent = auto.trigger();
+    final b = auto.announcePlaying();
+    await Future.wait([a, b]);
+    expect(await sent, 1);
+    expect(server.presence, 2);
+    expect(server.rotations, 3);
+    expect(container.read(autoSyncProvider).enabled, isTrue);
+    expect(await vault.read(), server.validRefresh);
   });
 }

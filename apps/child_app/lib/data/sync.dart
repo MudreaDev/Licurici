@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -57,7 +58,7 @@ class SyncClient {
     String? password,
     String? code,
     String? refreshToken,
-    void Function(String refreshToken)? onRefreshToken,
+    FutureOr<void> Function(String refreshToken)? onRefreshToken,
     required bool consent,
     ({Set<String> hidden, DateTime? at})? plan,
     void Function(Set<String> hidden, Map<String, int> levels, DateTime at)? onPlan,
@@ -72,7 +73,8 @@ class SyncClient {
         ? await _call('POST', '/auth/refresh', {'refreshToken': refreshToken}) as Map
         : await _call('POST', '/auth/login', {'email': email, 'password': password, 'code': ?code}) as Map;
     _token = pair['accessToken'] as String;
-    onRefreshToken?.call(pair['refreshToken'] as String);
+    // Tokenul vechi nu mai merge: cel nou se salvează înainte de orice altă cerere.
+    await onRefreshToken?.call(pair['refreshToken'] as String);
     // Acordul se dă (o dată, explicit) din fereastra „Trimite pe server”; la trimiterea
     // automată serverul verifică în continuare că nu a fost retras.
     if (refreshToken == null) {
@@ -115,6 +117,20 @@ class SyncClient {
       }
     }
     return payload.length;
+  }
+
+  /// „Se joacă acum”: anunță serverul că a început o sesiune (doar cu trimiterea automată).
+  Future<void> announcePlaying({
+    required String refreshToken,
+    required FutureOr<void> Function(String) onRefreshToken,
+  }) async {
+    _token = null;
+    final pair = await _call('POST', '/auth/refresh', {'refreshToken': refreshToken}) as Map;
+    _token = pair['accessToken'] as String;
+    await onRefreshToken(pair['refreshToken'] as String);
+    final kids = await _call('GET', '/children') as List;
+    if (kids.isEmpty) return;
+    await _call('POST', '/children/${(kids.first as Map)['id']}/presence');
   }
 
   Future<void> _syncPlan(
