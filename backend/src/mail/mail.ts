@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import { createTransport, type Transporter } from 'nodemailer';
 
 import type { MailKind } from '../auth/email-flows';
 import { digestLines, type WeeklyDigest } from '../reports/weekly';
@@ -16,13 +16,13 @@ export interface MailProvider {
 }
 
 export class SmtpMailProvider implements MailProvider {
-  private readonly transport: nodemailer.Transporter;
+  private readonly transport: Transporter;
 
   constructor(
     url: string,
     private readonly from: string,
   ) {
-    this.transport = nodemailer.createTransport(url);
+    this.transport = createTransport(url);
   }
 
   async send(mail: Mail): Promise<void> {
