@@ -21,5 +21,13 @@ void main() {
     expect(transferredLevel(b, const {}), isNull);
     expect(transferredLevel(b, {b: 9}), isNull); // doar frații contează
   });
+
+  test('rundele: specialistul poate doar scurta tura', () {
+    expect(cappedRounds(8, 4), 4);
+    expect(cappedRounds(5, 7), 5);
+    expect(cappedRounds(6, null), 6);
+    expect(roundsParam.appliesTo(GameKind.puzzle), isTrue);
+    expect(roundsParam.appliesTo(GameKind.maze), isFalse);
+  });
 }
 

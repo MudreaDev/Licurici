@@ -39,6 +39,9 @@ class ListenScreen extends ConsumerStatefulWidget {
 
 class _ListenScreenState extends ConsumerState<ListenScreen> {
   late InstructionLevel _level;
+
+  /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
+  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
   final _attempts = <InstructionAttempt>[];
   final _taps = <int>[];
   final _timers = <Timer>[];
@@ -150,7 +153,7 @@ class _ListenScreenState extends ConsumerState<ListenScreen> {
     ref.read(voiceProvider).say(['Bravo!']);
     setState(() => _burst++);
     _after(1500, () {
-      if (_index + 1 < _level.rounds.length) {
+      if (_index + 1 < _total) {
         setState(() => _index++);
         _beginRound();
       } else {
@@ -234,7 +237,7 @@ class _ListenScreenState extends ConsumerState<ListenScreen> {
                   size: layout.compact ? 56 : 72,
                   onTap: () => ref.read(voiceProvider).say(r.speak),
                 ),
-                _Dots(total: _level.rounds.length, done: _attempts.length),
+                _Dots(total: _total, done: _attempts.length),
               ],
             ),
           ),

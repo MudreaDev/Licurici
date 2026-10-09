@@ -39,6 +39,9 @@ class BuildScreen extends ConsumerStatefulWidget {
 
 class _BuildScreenState extends ConsumerState<BuildScreen> {
   late BuildLevel _level;
+
+  /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
+  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
   final _solves = <BuildSolve>[];
   final _placed = <int>{};
   final _shake = <int, int>{};
@@ -142,7 +145,7 @@ class _BuildScreenState extends ConsumerState<BuildScreen> {
     });
     _timer = Timer(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      if (_round + 1 < _level.rounds.length) {
+      if (_round + 1 < _total) {
         setState(() => _round++);
         _beginRound();
       } else {

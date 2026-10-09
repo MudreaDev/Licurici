@@ -39,6 +39,9 @@ class FeedScreen extends ConsumerStatefulWidget {
 class _FeedScreenState extends ConsumerState<FeedScreen>
     with SingleTickerProviderStateMixin {
   late FeedLevel _level;
+
+  /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
+  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
   late final Ticker _ticker = createTicker(_tick);
   final _feeds = <FeedAttempt>[];
   Duration _elapsed = Duration.zero;
@@ -144,7 +147,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
     });
     _timer = Timer(const Duration(milliseconds: 1400), () {
       if (!mounted) return;
-      if (_round + 1 < _level.rounds.length) {
+      if (_round + 1 < _total) {
         setState(() {
           _round++;
           _beginRound();
@@ -354,7 +357,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
             top: 4,
             child: Row(
               children: [
-                for (var i = 0; i < _level.rounds.length; i++)
+                for (var i = 0; i < _total; i++)
                   Container(
                     width: 12,
                     height: 12,

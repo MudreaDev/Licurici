@@ -47,6 +47,9 @@ class ImitationScreen extends ConsumerStatefulWidget {
 class _ImitationScreenState extends ConsumerState<ImitationScreen>
     with SingleTickerProviderStateMixin {
   late ImitationLevel _level;
+
+  /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
+  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
   late final _demo = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1400),
@@ -202,7 +205,7 @@ class _ImitationScreenState extends ConsumerState<ImitationScreen>
     ref.read(voiceProvider).say(['Bravo']);
     _timer = Timer(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
-      if (_round + 1 < _level.rounds.length) {
+      if (_round + 1 < _total) {
         setState(() {
           _round++;
           _resetRound();
@@ -459,7 +462,7 @@ class _ImitationScreenState extends ConsumerState<ImitationScreen>
           Positioned(
             right: 8,
             top: 4,
-            child: _RoundDots(total: _level.rounds.length, index: _round),
+            child: _RoundDots(total: _total, index: _round),
           ),
         ],
       );

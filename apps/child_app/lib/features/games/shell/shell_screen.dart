@@ -40,6 +40,9 @@ class ShellScreen extends ConsumerStatefulWidget {
 class _ShellScreenState extends ConsumerState<ShellScreen>
     with SingleTickerProviderStateMixin {
   late ShellLevel _level;
+
+  /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
+  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
   late final _move = AnimationController(vsync: this);
   int _round = 0;
   _Phase _phase = _Phase.show;
@@ -165,7 +168,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen>
     }
     Timer(const Duration(milliseconds: 1900), () {
       if (!mounted) return;
-      if (_round + 1 < _level.rounds.length) {
+      if (_round + 1 < _total) {
         _round++;
         _enterRound();
       } else {

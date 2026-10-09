@@ -38,6 +38,9 @@ class ShopScreen extends ConsumerStatefulWidget {
 
 class _ShopScreenState extends ConsumerState<ShopScreen> {
   late ShopLevel _level;
+
+  /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
+  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
   final _trips = <ShopTrip>[];
   final _bought = <String>{};
   final _shake = <String, int>{};
@@ -108,7 +111,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     ref.read(voiceProvider).say(['Ai cumpărat tot!']);
     _timer = Timer(const Duration(milliseconds: 1700), () {
       if (!mounted) return;
-      if (_round + 1 < _level.rounds.length) {
+      if (_round + 1 < _total) {
         setState(() {
           _round++;
           _bought.clear();

@@ -38,6 +38,9 @@ class OrderScreen extends ConsumerStatefulWidget {
 
 class _OrderScreenState extends ConsumerState<OrderScreen> {
   late OrderLevel _level;
+
+  /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
+  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
   final _attempts = <OrderAttempt>[];
   final _clock = Stopwatch();
   int _round = 0;
@@ -146,7 +149,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     );
     _timer = Timer(const Duration(milliseconds: 2200), () {
       if (!mounted) return;
-      if (_round + 1 < _level.rounds.length) {
+      if (_round + 1 < _total) {
         setState(() {
           _round++;
           _resetRound();

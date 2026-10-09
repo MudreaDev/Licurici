@@ -43,6 +43,9 @@ class ChangeScreen extends ConsumerStatefulWidget {
 class _ChangeScreenState extends ConsumerState<ChangeScreen>
     with SingleTickerProviderStateMixin {
   late ChangeLevel _level;
+
+  /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
+  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
   late final _lookBar = AnimationController(vsync: this);
   final _answers = <ChangeAnswer>[];
   final _timers = <Timer>[];
@@ -143,7 +146,7 @@ class _ChangeScreenState extends ConsumerState<ChangeScreen>
         _burst++;
       });
       _after(1500, () {
-        if (_round + 1 < _level.rounds.length) {
+        if (_round + 1 < _total) {
           setState(() => _round++);
           _beginRound();
         } else {

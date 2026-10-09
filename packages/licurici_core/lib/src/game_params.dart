@@ -42,8 +42,24 @@ const roundsParam = GameParam(
       '(altfel, câte dă nivelul — între 4 și 8).',
   min: 3,
   max: 8,
-  kinds: {GameKind.choice},
+  kinds: {
+    GameKind.choice,
+    GameKind.build,
+    GameKind.change,
+    GameKind.feed,
+    GameKind.gaze,
+    GameKind.imitation,
+    GameKind.listen,
+    GameKind.order,
+    GameKind.puzzle,
+    GameKind.search,
+    GameKind.shell,
+    GameKind.shop,
+  },
 );
+
+/// Câte runde rămân după alegerea specialistului (poate doar scurta tura, niciodată sub 1).
+int cappedRounds(int total, int? cap) => cap == null || cap >= total ? total : (cap < 1 ? 1 : cap);
 
 const gameParams = [startLevelParam, maxLevelParam, roundsParam];
 
