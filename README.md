@@ -61,18 +61,51 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 
 Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gata · 🔁 portat din prototip.
 
+### 0.0 👉 CE AI DE FĂCUT TU (Mihai) — lista se ține la zi la finalul fiecărei sesiuni
+
+Doar lucrurile pe care asistentul **nu le poate face** din repo (instalări, conturi, bani, fotografii, oameni, decizii).
+Bifează ce ai făcut; la final, întreabă-l pe Claude „ce a mai rămas?” — se uită aici.
+
+**Progres (09.10.2026, numărat din §21):** semestrul 1 — **30 din 38 de puncte (~80%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **32 din 46 (~70%)**; jocurile din catalogul pe arii — **52 din 52** (89 de jocuri în aplicație). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
+
+**A. Pe calculatorul tău (verificare)**
+- [ ] Instalează **Docker Desktop**. Apoi: `cp infra/.env.example infra/.env` (schimbă parolele) → `docker compose -f infra/docker-compose.yml up -d --build`.
+- [ ] Test cap-coadă în dev: cont nou în panou (`http://localhost:8080`) → e-mailul de confirmare în Mailpit (`http://localhost:8025`) → „Am uitat parola” → pe tabletă „Trimite pe server” cu bifa „trimite automat” (și cu 2FA pornită) → în panou apar „Se joacă acum” și „Sesiune nouă” → cozile în Bull Board (`http://localhost:3001`). Spune-i lui Claude ce n-a mers.
+- [ ] Instalează APK-ul (`apps/child_app/build/app/outputs/flutter-apk/app-release.apk`) pe o **tabletă reală**: fluiditatea acvariului, sunetul, landscape.
+- [ ] **Acvariul pe hârtie**: printează fișa („Acvariul meu” → 🖨), colorează, fotografiază în lumină diferită; dacă scanarea greșește des → ADR-030.
+
+**B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `python tools/art/convert_codex.py`
+- [ ] Fundalul acvariului: [docs/brief-codex-acvariu.md](docs/brief-codex-acvariu.md)
+- [ ] 11 carduri școlare: [docs/brief-codex-carduri-scolare.md](docs/brief-codex-carduri-scolare.md)
+- [ ] 8 carduri ale jocurilor noi: [docs/brief-codex-carduri-sesiunea9.md](docs/brief-codex-carduri-sesiunea9.md)
+
+**C. Conturi și servicii externe (pentru producție)**
+- [ ] Un **VPS în UE** + un **domeniu** (DNS: `api.<domeniu>`, `panou.<domeniu>`).
+- [ ] **Brevo**: cont, releul SMTP (`SMTP_URL`), SPF/DKIM pe domeniu.
+- [ ] **Cheie Anthropic** (`ANTHROPIC_API_KEY`) pentru rezumatele și întrebările AI (opțional).
+- [ ] **Sentry** în regiunea UE (`SENTRY_DSN`, opțional).
+- [ ] Cheia de backup: `age-keygen -o cheie.txt` pe calculatorul tău; cheia publică în `BACKUP_AGE_RECIPIENT`, cheia privată într-un manager de parole.
+- [ ] Primul deploy după [docs/operare.md](docs/operare.md); apoi testul de încărcare `k6 run tools/k6/sync.js` pe serverul de **test**.
+
+**D. Juridic și decizii**
+- [ ] Cu un jurist: documentele din `docs/gdpr/` + identitatea operatorului (toate `[…]`).
+- [ ] ADR-uri „Propus” de citit și acceptat sau respins: ADR-025…ADR-032.
+- [ ] Decizii: 2FA obligatorie pentru specialiști? · preț în stele pentru peștii noi? · Sentry și în aplicația copilului?
+
+**E. Universitate**
+- [ ] Demo pentru coordonator (§21, Sprint 6).
+- [ ] Testare cu copii / educatori — doar cu acord parental și regulile din §13.6.
+- [ ] Redactarea tezei (§23) — Claude poate scrie ciorne pe capitole, dacă îi ceri.
+- [ ] Ramura `feat/fundatia-terapeutica` → `git push` și PR spre `main` (sau cere-i lui Claude).
+
+
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
 **Ultima actualizare: 09.10.2026.** **Sesiunea a noua (Claude, 08–09.10) — pe scurt:** **acvariul refăcut** (pești 3D cu fizică reală, recif bogat în perspectivă, viață ambientală, comportamente noi), 3 modele noi de pești de colorat (7 în total), **10 jocuri noi** (89 în aplicație): Urmărește peștele, Scriem cifrele, Scriem literele, Sus-jos-stânga-dreapta, Zilele și lunile, Forma ascunsă, Colorăm, Rândul meu-rândul tău, Licuricii din grădină (Corsi), Ascultă și fă; **Harta mea** (felinarele treptelor stăpânite); **planul de jocuri al copilului** (pe tabletă și din panou, de părinte sau specialist, sincronizat); vocea 100%. **A doua parte:** „Primii pași” (chestionarul părintelui → setul de pornire), **confirmarea e-mailului, „Am uitat parola” și cont nou din panou** (coada `mail`, SMTP, ADR-032), **raportul săptămânal pe e-mail**, **trimiterea automată a sesiunilor** de pe tabletă, 2FA la sincronizare, „Drumul de azi” care rotește ariile, **contrast mare**, **„Întreabă despre progres”** (AI în panou), **canalul live WebSocket** (panoul se actualizează singur), CORS, Bull Board, imaginea Docker a panoului + `docker-compose.prod.yml` (Traefik, TLS, backup criptat), ghidul de ilustrații, teste de accesibilitate pe 33 de ecrane; **jocul „Construiește” lipsea din git** (ignorat de regula `build/`) — reparat. Detalii mai jos.
 
 **Sesiunea a opta (Claude, 06–08.10) — pe scurt:** acvariul complet (pe ecran și pe hârtie, cu scanare), pușculița cu stele, **toate jocurile din prototip portate** (79 în aplicație, inclusiv Explorările), most-to-least pe trepte noi, telefonul mic reorganizat (stimulul are toată înălțimea), GDPR: ștergerea contului, ștergerea datelor de pe tabletă, exportul ca fișier, 2FA, blocare după 5 parole greșite, retenția automată (sesiuni 24 luni, dovezile consimțământului 3 ani, partajări expirate), jurnal fără date personale, **ciornele celor 9 documente din `docs/gdpr/`**. Verificat la final: core 436 de teste, aplicația 191, backend 57, panoul 15; analyze curat; build web (aplicație + panou) și APK OK.
 
-**Urmează (după sesiunea 9):**
-1. **Utilizatorul:** Docker Desktop → `cp infra/.env.example infra/.env` (variabile noi: `SMTP_URL`, `MAIL_FROM`, `APP_URL`, `BULLBOARD_PASSWORD`, `PUBLIC_API_URL`) → `docker compose -f infra/docker-compose.yml up -d --build` → test cap-coadă: cont nou din panou (`http://localhost:8080`) → e-mailul de confirmare în Mailpit (`:8025`) → „Am uitat parola” → sincronizare de pe tabletă cu „trimite automat” → cozile în Bull Board (`:3001`). Imaginea panoului (`apps/dashboard/Dockerfile`) și `docker-compose.prod.yml` sunt **netestate** (fără Docker local).
-2. **Utilizatorul:** rularea Codex pe [docs/brief-codex-acvariu.md](docs/brief-codex-acvariu.md) (fundalul acvariului) și [docs/brief-codex-carduri-scolare.md](docs/brief-codex-carduri-scolare.md) (11 carduri).
-3. **Utilizatorul:** acvariul pe hârtie cu **fotografii reale** (fișa printată din „Acvariul meu” → 🖨 după poarta pentru adulți); dacă scanarea greșește des, vezi ADR-030 („Când am alege altfel”).
-4. **Utilizatorul + jurist:** verificarea documentelor din `docs/gdpr/` și completarea identității operatorului (`[…]`); ADR-030 → Acceptat.
-5. Tehnic rămas: criptarea volumului bazei de date și a câmpului e-mail (DPIA); Sentry în aplicația copilului (decizie: e un SDK în aplicația copilului); testele e2e cu Testcontainers (cer Docker); primul deploy după [docs/operare.md](docs/operare.md) + rularea k6; 2FA obligatorie pentru specialiști? (decizie); prețul în stele pentru peștii noi? (decizie).
+**Tehnic rămas (pentru Claude, în sesiunile următoare):** criptarea volumului bazei de date și a câmpului e-mail (DPIA); Sentry în aplicația copilului (decizie: e un SDK în aplicația copilului); testele e2e cu Testcontainers (cer Docker); primul deploy după [docs/operare.md](docs/operare.md) + rularea k6; 2FA obligatorie pentru specialiști? (decizie); prețul în stele pentru peștii noi? (decizie).
 
 **Sesiunea a noua (08–09.10) — detalii:**
 - ✅ **Fizica peștilor** (`licurici_core/lib/src/aquarium.dart`): adâncime `z` (perspectivă `depthScale`), direcție `yaw` rotită cu viteză unghiulară limitată și inerție (`turnRate` → corpul se îndoaie în viraj), viteza câștigată din coadă și pierdută prin frecare (`thrust`, reprize de înot + alunecare), urcare/coborâre mai lentă decât înaintarea. Fuga merge **spre fundal**, chemarea (apăsare lungă) aduce peștii **la geam**. Comportamente noi: **caută pe fund** (coboară, ciugulește cu capul în jos — norișori de nisip), **vine la geam** să se arate, **atins chiar pe el se învârte bucuros** (bule + sunet), peștele-balon tot se umflă. `autopilot = false` lasă un joc să-i dea ținta (fizica rămâne). 19 teste.

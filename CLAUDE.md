@@ -7,5 +7,6 @@
 - Orice tehnologie nouă → ADR în `docs/adr/` (README §7). Orice dată nouă despre copil → README §11 + §13.
 - Grafică: ilustrații ChatGPT → decupare pe straturi → **animație procedurală din cod** în Flutter (ADR-028). Fără Rive, fără Unity. Aplicația copilului e doar landscape (ADR-023).
 - Jocuri: README §15 (motor + animații) și §16 (catalog). La finalul fiecărei sarcini bifează progresul în README (§0, §16, §21).
+- **README §0.0 „Ce ai de făcut tu”**: la finalul fiecărei sesiuni actualizează lista (adaugă ce îi revine utilizatorului, bifează ce a confirmat că a făcut) și linia de progres (% din §21). Când utilizatorul întreabă „ce a mai rămas?”, răspunde din §0.0.
 - Commit-uri: mesaje simple și convenționale, fără atribuiri sau mențiuni despre unelte de AI.
 - Comunicarea cu utilizatorul: în română, concis.
