@@ -223,23 +223,27 @@ void main() {
     server.plan = {
       'hiddenGames': ['pescarul', 'simon'],
       'levels': {'emotii': 3},
+      'maxLevels': {'emotii': 5},
       'updatedAt': '2026-10-09T08:00:00.000Z',
       'updatedBy': 'THERAPIST',
     };
     Set<String>? applied;
     Map<String, int>? levels;
+    Map<String, int>? caps;
     await client().run(
       store: store,
       email: 'ana@example.md',
       password: 'parola-lunga-1',
       consent: true,
       plan: (hidden: <String>{}, at: null),
-      onPlan: (h, l, at) {
+      onPlan: (h, l, at, max) {
+        caps = max;
         applied = h;
         levels = l;
       },
     );
     expect(applied, {'pescarul', 'simon'});
+    expect(caps, {'emotii': 5});
     expect(levels, {'emotii': 3});
     expect(server.planPuts, isEmpty);
     // 2. Părintele a schimbat pe tabletă, după: lista de pe tabletă urcă pe server.
@@ -250,7 +254,7 @@ void main() {
       password: 'parola-lunga-1',
       consent: true,
       plan: (hidden: {'cauta'}, at: DateTime.utc(2026, 10, 9, 9)),
-      onPlan: (h, l, at) => applied = h,
+      onPlan: (h, l, at, _) => applied = h,
     );
     expect(applied, isNull);
     expect(server.planPuts.single, ['cauta']);

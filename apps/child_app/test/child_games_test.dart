@@ -44,6 +44,27 @@ void main() {
     expect(c2.read(settingsProvider).levels['semaforul'], 2);
   });
 
+  test('plafonul specialistului: nivelul nu urcă peste el, iar un nivel mai mare coboară la el', () {
+    final c = ProviderContainer();
+    addTearDown(c.dispose);
+    final p = NotifierProvider<GameLevel, int>(() => GameLevel('semaforul'));
+    c.read(p.notifier).setLevel(9);
+    expect(c.read(settingsProvider).levels['semaforul'], 9);
+    c.read(settingsProvider.notifier).applyPlan(const {}, const {}, DateTime.utc(2026, 10, 9), const {'semaforul': 6});
+    expect(c.read(settingsProvider).levels['semaforul'], 6);
+    expect(c.read(settingsProvider).levelOf('semaforul'), 6);
+    // Jocul adaptiv încearcă să urce: rămâne la plafon.
+    c.read(settingsProvider.notifier).setGameLevel('semaforul', 8);
+    expect(c.read(settingsProvider).levels['semaforul'], 6);
+    // Plafonul se păstrează la repornire.
+    final saved = AppSettings.fromJson(c.read(settingsProvider).toJson());
+    expect(saved.maxLevels, {'semaforul': 6});
+    // Specialistul scoate plafonul: nivelul poate urca din nou.
+    c.read(settingsProvider.notifier).applyPlan(const {}, const {}, DateTime.utc(2026, 10, 10), const {});
+    c.read(settingsProvider.notifier).setGameLevel('semaforul', 8);
+    expect(c.read(settingsProvider).levels['semaforul'], 8);
+  });
+
   testWidgets('adultul scoate o arie și un joc; copilul nu le mai vede', (tester) async {
     tester.view.physicalSize = const Size(1280, 800);
     tester.view.devicePixelRatio = 1;

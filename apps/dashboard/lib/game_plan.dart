@@ -20,8 +20,9 @@ class GamePlanPanel extends ConsumerStatefulWidget {
 class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   Set<String>? _hidden;
   Set<String> _saved = const {};
-  Map<String, int> _levels = {};
-  Map<String, int> _savedLevels = const {};
+  /// Valorile parametrilor pe joc (ADR-025), după id-ul parametrului: `start`, `max`.
+  Map<String, Map<String, int>> _params = {for (final p in gameParams) p.id: {}};
+  Map<String, Map<String, int>> _savedParams = const {};
   String? _info;
   String? _error;
   bool _busy = false;
@@ -46,8 +47,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
       setState(() {
         _hidden = {...plan.hidden};
         _saved = {...plan.hidden};
-        _levels = {...plan.levels};
-        _savedLevels = {...plan.levels};
+        _params = {'start': {...plan.levels}, 'max': {...plan.maxLevels}};
+        _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}};
         _info = plan.updatedAt == null
             ? 'Copilul vede toate jocurile.'
             : 'Ultima schimbare: ${plan.updatedAt!.toLocal().toString().substring(0, 16)}'
@@ -61,11 +62,13 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   Future<void> _save() async {
     setState(() => _busy = true);
     try {
-      final plan = await ref.read(apiClientProvider).setPlan(widget.history.child.id, _hidden!, levels: _levels);
+      final plan = await ref
+          .read(apiClientProvider)
+          .setPlan(widget.history.child.id, _hidden!, levels: _params['start']!, maxLevels: _params['max']!);
       if (!mounted) return;
       setState(() {
         _saved = {...plan.hidden};
-        _savedLevels = {...plan.levels};
+        _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}};
         _info = 'Salvat. Tableta preia lista la următoarea sincronizare.';
         _error = null;
       });
@@ -79,6 +82,34 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   static bool _sameSet(Set<String> a, Set<String> b) => a.length == b.length && a.containsAll(b);
   static bool _sameMap(Map<String, int> a, Map<String, int> b) =>
       a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
+
+  bool get _paramsSaved => gameParams.every((p) => _sameMap(_params[p.id]!, _savedParams[p.id] ?? const {}));
+
+  /// Limitele unei valori: pornirea nu trece de plafon, plafonul nu coboară sub pornire.
+  (int, int) _bounds(GameParam p, String game) => switch (p.id) {
+    'start' => (p.min, _params['max']![game] ?? p.max),
+    'max' => (_params['start']![game] ?? p.min, p.max),
+    _ => (p.min, p.max),
+  };
+
+  Widget _paramField(GameParam p, String game) {
+    final (lo, hi) = _bounds(p, game);
+    final value = _params[p.id]![game];
+    return Tooltip(
+      message: p.help,
+      child: DropdownButton<int?>(
+        key: ValueKey('plan-${p.id}-$game'),
+        value: value,
+        hint: Text('${p.label}: —'),
+        underline: const SizedBox.shrink(),
+        items: [
+          DropdownMenuItem<int?>(value: null, child: Text('${p.label}: —')),
+          for (var l = lo; l <= hi; l++) DropdownMenuItem<int?>(value: l, child: Text('${p.label} $l')),
+        ],
+        onChanged: (l) => setState(() => l == null ? _params[p.id]!.remove(game) : _params[p.id]![game] = l),
+      ),
+    );
+  }
 
   void _toggle(Iterable<String> ids, bool visible) {
     final next = {..._hidden!};
@@ -109,7 +140,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                 Text(
                   'Copilul vede doar jocurile bifate (pe ecranul principal și în „Drumul de azi”). '
                   'Scoate jocurile care nu îi folosesc acum sau care îl agită; datele lor rămân. '
-                  'Nivelul de pornire e opțional: implicit, jocul continuă adaptiv de unde a rămas copilul. '
+                  'Pentru fiecare joc poți alege, opțional, de unde pornește și până unde urcă (plafonul); '
+                  'implicit, jocul continuă adaptiv de unde a rămas copilul. '
                   'Fiecare schimbare apare în jurnal.',
                   style: text.bodyMedium,
                 ),
@@ -143,16 +175,10 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                           subtitle: Text('${g.description} · ${stepsForGame(g.id).map((s) => s.id).join(', ')}'),
                           value: !hidden.contains(g.id),
                           onChanged: (v) => _toggle([g.id], v ?? true),
-                          secondary: DropdownButton<int?>(
-                            key: ValueKey('plan-level-${g.id}'),
-                            value: _levels[g.id],
-                            hint: const Text('nivel: adaptiv'),
-                            underline: const SizedBox.shrink(),
-                            items: [
-                              const DropdownMenuItem<int?>(value: null, child: Text('nivel: adaptiv')),
-                              for (var l = 1; l <= 15; l++) DropdownMenuItem<int?>(value: l, child: Text('pornește de la $l')),
-                            ],
-                            onChanged: (l) => setState(() => l == null ? _levels.remove(g.id) : _levels[g.id] = l),
+                          // Parametrii pe joc, generați din schemă (ADR-025): pornire, plafon.
+                          secondary: Wrap(
+                            spacing: 8,
+                            children: [for (final p in gameParams) _paramField(p, g.id)],
                           ),
                         ),
                     ],
@@ -160,7 +186,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                 const SizedBox(height: 12),
                 FilledButton.icon(
                   key: const ValueKey('plan-save'),
-                  onPressed: _busy || (_sameSet(hidden, _saved) && _sameMap(_levels, _savedLevels)) ? null : _save,
+                  onPressed: _busy || (_sameSet(hidden, _saved) && _paramsSaved) ? null : _save,
                   icon: const Icon(Icons.save_rounded),
                   label: const Text('Salvează lista'),
                 ),

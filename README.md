@@ -107,7 +107,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 **Sesiunea a opta (06–08.10) — pe scurt:** acvariul complet (pe ecran și pe hârtie, cu scanare), pușculița cu stele, **toate jocurile din prototip portate** (79 în aplicație, inclusiv Explorările), most-to-least pe trepte noi, telefonul mic reorganizat (stimulul are toată înălțimea), GDPR: ștergerea contului, ștergerea datelor de pe tabletă, exportul ca fișier, 2FA, blocare după 5 parole greșite, retenția automată (sesiuni 24 luni, dovezile consimțământului 3 ani, partajări expirate), jurnal fără date personale, **ciornele celor 9 documente din `docs/gdpr/`**. Verificat la final: core 436 de teste, aplicația 191, backend 57, panoul 15; analyze curat; build web (aplicație + panou) și APK OK.
 
 **Aplicația copilului — ce mai rămâne (în sesiunile următoare):**
-1. **Parametri pe joc aleși de specialist** (`GameConfig`, ADR-025): limite pe axele de dificultate, câte runde, ce stimuli — azi specialistul alege doar ce jocuri vede copilul și nivelul de pornire.
+1. 🟨 **Parametri pe joc aleși de specialist** (`GameConfig`, ADR-025): ✅ nivelul de pornire și **plafonul de dificultate** pe orice joc (schema `game_params.dart`, formularul din panou generat din ea, aplicat pe tabletă); rămân parametrii specifici (câte runde, ce stimuli).
 2. **Adaptare între jocuri** (S2): progresul dintr-un joc să influențeze nivelul de pornire în jocurile înrudite (aceeași treaptă); recomandări „Drumul de azi” după oboseală și dispoziție.
 3. **Integrarea ilustrațiilor** când vin de la tine (fundalul pictat al acvariului, 19 carduri) + verificarea pe toate ecranele.
 4. **Ajustări după tableta reală**: fluiditatea acvariului, scanarea foii de hârtie, mărimea țintelor.

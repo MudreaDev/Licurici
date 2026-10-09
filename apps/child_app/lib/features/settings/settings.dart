@@ -17,6 +17,7 @@ class AppSettings {
     this.lanternsSeen = 0,
     this.hiddenGamesAt,
     this.levels = const {},
+    this.maxLevels = const {},
   });
 
   final Grade grade;
@@ -58,6 +59,12 @@ class AppSettings {
   /// nu de la 1. Doar pe tabletă.
   final Map<String, int> levels;
 
+  /// Plafonul de dificultate ales de specialist pe joc (ADR-025): nivelul nu urcă peste el.
+  final Map<String, int> maxLevels;
+
+  /// Nivelul cu care pornește jocul [gameId] (ținând cont de plafon), sau [fallback] prima dată.
+  int levelOf(String gameId, [int fallback = 1]) => capLevel(levels[gameId] ?? fallback, maxLevels[gameId]);
+
   /// Câte felinare aprinse a văzut copilul pe hartă (pentru sărbătoarea unui felinar nou).
   final int lanternsSeen;
 
@@ -77,6 +84,7 @@ class AppSettings {
     'lanternsSeen': lanternsSeen,
     if (hiddenGamesAt != null) 'hiddenGamesAt': hiddenGamesAt!.toIso8601String(),
     if (levels.isNotEmpty) 'levels': levels,
+    if (maxLevels.isNotEmpty) 'maxLevels': maxLevels,
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -102,6 +110,10 @@ class AppSettings {
       for (final MapEntry(:key, :value) in ((j['levels'] as Map?) ?? const {}).entries)
         if (key is String && value is num && value >= 1) key: value.toInt(),
     },
+    maxLevels: {
+      for (final MapEntry(:key, :value) in ((j['maxLevels'] as Map?) ?? const {}).entries)
+        if (key is String && value is num && value >= 1) key: value.toInt(),
+    },
   );
 
   AppSettings copyWith({
@@ -117,6 +129,7 @@ class AppSettings {
     int? lanternsSeen,
     DateTime? hiddenGamesAt,
     Map<String, int>? levels,
+    Map<String, int>? maxLevels,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -130,6 +143,7 @@ class AppSettings {
     lanternsSeen: lanternsSeen ?? this.lanternsSeen,
     hiddenGamesAt: hiddenGamesAt ?? this.hiddenGamesAt,
     levels: levels ?? this.levels,
+    maxLevels: maxLevels ?? this.maxLevels,
   );
 }
 
@@ -198,18 +212,29 @@ class SettingsNotifier extends Notifier<AppSettings> {
   }
 
   /// Planul venit de pe server (ales de părinte în panou sau de specialist): jocurile scoase
-  /// și, pentru unele jocuri, nivelul de pornire ales de specialist.
-  void applyPlan(Set<String> hidden, Map<String, int> levels, DateTime at) {
+  /// și, pentru unele jocuri, nivelul de pornire și plafonul alese de specialist. Plafonul
+  /// venit de pe server înlocuiește tot; nivelurile de acum se coboară sub el, dacă e nevoie.
+  void applyPlan(Set<String> hidden, Map<String, int> levels, DateTime at, [Map<String, int>? maxLevels]) {
     final known = {for (final e in catalog) e.id};
     final next = hidden.where(known.contains).toSet();
     if (next.length >= catalog.length) return;
-    _set(state.copyWith(hiddenGames: next, hiddenGamesAt: at, levels: {...state.levels, ...levels}));
+    final caps = maxLevels ?? state.maxLevels;
+    final merged = {...state.levels, ...levels};
+    _set(
+      state.copyWith(
+        hiddenGames: next,
+        hiddenGamesAt: at,
+        maxLevels: caps,
+        levels: {for (final MapEntry(:key, :value) in merged.entries) key: capLevel(value, caps[key])},
+      ),
+    );
   }
 
   /// Nivelul la care a ajuns copilul în jocul [gameId].
   void setGameLevel(String gameId, int level) {
-    if (state.levels[gameId] == level) return;
-    _set(state.copyWith(levels: {...state.levels, gameId: level < 1 ? 1 : level}));
+    final capped = capLevel(level, state.maxLevels[gameId]);
+    if (state.levels[gameId] == capped) return;
+    _set(state.copyWith(levels: {...state.levels, gameId: capped}));
   }
 
   void setLanternsSeen(int n) => _set(state.copyWith(lanternsSeen: n));
@@ -241,10 +266,10 @@ class GameLevel extends Notifier<int> {
   final String gameId;
 
   @override
-  int build() => ref.read(settingsProvider).levels[gameId] ?? 1;
+  int build() => ref.read(settingsProvider).levelOf(gameId);
 
   void setLevel(int level) {
-    state = level < 1 ? 1 : level;
+    state = capLevel(level, ref.read(settingsProvider).maxLevels[gameId]);
     ref.read(settingsProvider.notifier).setGameLevel(gameId, state);
   }
 

@@ -101,7 +101,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   void _start() {
     final s = ref.read(settingsProvider);
     // Treapta jocului: unde a rămas copilul data trecută; prima dată, din clasă.
-    _tier = s.levels[widget.game.id] ?? Difficulty.freePlay(s.grade, s.level).tier;
+    _tier = s.levelOf(widget.game.id, Difficulty.freePlay(s.grade, s.level).tier);
     _lesson = widget.game.build(
       GameContext(
         difficulty: Difficulty(_tier),

@@ -29,3 +29,11 @@ Un ecran de configurare scris de mână pentru fiecare joc; jocuri neconfigurabi
 
 ## Când am alege altfel
 Un editor vizual de jocuri pentru specialiști (creare de jocuri noi, nu doar configurare), dacă produsul crește și există o echipă.
+
+## Implementare (09.10.2026)
+- Parametrii comuni tuturor jocurilor adaptive sunt descriși ca date în `licurici_core/lib/src/game_params.dart`
+  (`gameParams`: `start` = nivelul de pornire, `max` = plafonul de dificultate). Panoul își generează câmpurile pe joc din
+  această listă; tableta îi aplică la fel peste tot (`AppSettings.levelOf`, `capLevel`).
+- Pe server, planul are `levels` și `maxLevels` (validare: pornirea ≤ plafon); ajung pe tabletă la sincronizare.
+- Parametrii specifici unui joc (câte runde, ce stimuli) și „câte un folder per joc” rămân de făcut.
+

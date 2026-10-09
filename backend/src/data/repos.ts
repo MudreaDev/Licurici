@@ -210,6 +210,7 @@ export class PrismaRepos {
       type Stored = {
         hiddenGames?: string[];
         levels?: Record<string, number>;
+        maxLevels?: Record<string, number>;
         updatedAt?: string;
         updatedBy?: string;
         history?: { at: string; by: string; hidden: number }[];
@@ -219,6 +220,7 @@ export class PrismaRepos {
       return {
         hiddenGames: Array.isArray(plan.hiddenGames) ? plan.hiddenGames : [],
         levels: plan.levels && typeof plan.levels === 'object' ? plan.levels : {},
+        maxLevels: plan.maxLevels && typeof plan.maxLevels === 'object' ? plan.maxLevels : {},
         updatedAt: plan.updatedAt ? new Date(plan.updatedAt) : null,
         updatedBy: plan.updatedBy === 'THERAPIST' ? 'THERAPIST' : plan.updatedBy === 'PARENT' ? 'PARENT' : null,
         history: (plan.history ?? []).map((h) => ({

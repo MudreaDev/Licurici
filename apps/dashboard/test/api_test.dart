@@ -161,6 +161,7 @@ class FakeBackend {
         plan = {
           'hiddenGames': b['hiddenGames'],
           'levels': b['levels'],
+          'maxLevels': b['maxLevels'],
           'updatedAt': '2026-10-09T09:00:00.000Z',
           'updatedBy': 'THERAPIST',
           'history': [
@@ -543,13 +544,19 @@ void main() {
     expect(find.text('Copilul vede toate jocurile.'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('plan-domain-FEX')));
     await tester.pumpAndSettle();
-    // Nivelul de pornire pentru „Emoții”: se deschide aria, apoi se alege nivelul 3.
+    // Pentru „Emoții”: pornește de la 3 și nu urcă peste 6 (câmpurile vin din schema parametrilor).
     await tester.tap(find.textContaining('EMO ·'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(const ValueKey('plan-level-emotii')));
-    await tester.tap(find.byKey(const ValueKey('plan-level-emotii')));
+    await tester.ensureVisible(find.byKey(const ValueKey('plan-start-emotii')));
+    await tester.tap(find.byKey(const ValueKey('plan-start-emotii')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('pornește de la 3').last);
+    await tester.tap(find.text('Pornește de la 3').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('plan-max-emotii')));
+    await tester.pumpAndSettle();
+    // Plafonul nu se poate pune sub pornire.
+    expect(find.text('Nu urcă peste 2'), findsNothing);
+    await tester.tap(find.text('Nu urcă peste 6').last);
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const ValueKey('plan-save')));
     await tester.tap(find.byKey(const ValueKey('plan-save')));
@@ -559,6 +566,7 @@ void main() {
     expect(hidden, containsAll(['pescarul', 'simon', 'semaforul']));
     expect(hidden, isNot(contains('emotii')));
     expect(backend.plan['levels'], {'emotii': 3});
+    expect(backend.plan['maxLevels'], {'emotii': 6});
     expect(find.textContaining('Tableta preia lista'), findsOneWidget);
   });
 

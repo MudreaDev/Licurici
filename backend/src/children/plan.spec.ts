@@ -33,6 +33,7 @@ describe('GamePlanService', () => {
     await expect(plan.get(parent, CHILD)).resolves.toEqual({
       hiddenGames: [],
       levels: {},
+      maxLevels: {},
       updatedAt: null,
       updatedBy: null,
       history: [],
@@ -68,6 +69,12 @@ describe('GamePlanService', () => {
     expect(p.levels).toEqual({ pescarul: 5, simon: 3 });
     await expect(plan.put(parent, CHILD, { hiddenGames: [], levels: { pescarul: 0 } })).rejects.toBeInstanceOf(ValidationError);
     await expect(plan.put(parent, CHILD, { hiddenGames: [], levels: { 'Nume Copil': 2 } })).rejects.toBeInstanceOf(ValidationError);
+    // Plafonul de dificultate: păstrat, iar pornirea nu poate fi peste el.
+    const capped = await plan.put(therapist, CHILD, { hiddenGames: [], levels: { simon: 3 }, maxLevels: { simon: 6, emotii: 4 } });
+    expect(capped.maxLevels).toEqual({ simon: 6, emotii: 4 });
+    await expect(
+      plan.put(therapist, CHILD, { hiddenGames: [], levels: { simon: 8 }, maxLevels: { simon: 6 } }),
+    ).rejects.toBeInstanceOf(ValidationError);
   });
 
   it('doar id-uri de joc, cel mult 200, fără alte câmpuri', async () => {

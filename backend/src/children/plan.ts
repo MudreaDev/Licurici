@@ -22,8 +22,17 @@ export const planSchema = z
       .record(gameId, z.number().int().min(1).max(40))
       .refine((r) => Object.keys(r).length <= 200)
       .default({}),
+    /** Plafonul de dificultate pe joc: jocul adaptiv nu urcă peste el (ADR-025). */
+    maxLevels: z
+      .record(gameId, z.number().int().min(1).max(40))
+      .refine((r) => Object.keys(r).length <= 200)
+      .default({}),
   })
-  .strict();
+  .strict()
+  .refine((p) => Object.entries(p.levels).every(([g, l]) => p.maxLevels[g] == null || l <= p.maxLevels[g]), {
+    message: 'nivelul de pornire nu poate fi peste plafon',
+    path: ['levels'],
+  });
 
 export interface PlanChange {
   at: Date;
@@ -36,6 +45,8 @@ export interface GamePlan {
   hiddenGames: string[];
   /** Nivelul de pornire pe joc (doar jocurile pentru care s-a ales). */
   levels: Record<string, number>;
+  /** Plafonul de dificultate pe joc (doar jocurile pentru care s-a ales). */
+  maxLevels: Record<string, number>;
   /** Când s-a schimbat ultima dată și de cine (rolul), ca tableta să știe dacă e mai nou. */
   updatedAt: Date | null;
   updatedBy: 'PARENT' | 'THERAPIST' | null;
@@ -65,19 +76,20 @@ export class GamePlanService {
 
   async get(user: AuthUser, childId: string): Promise<GamePlan> {
     await this.access.assert(user, childId, 'read');
-    return (await this.repo.read(childId)) ?? { hiddenGames: [], levels: {}, updatedAt: null, updatedBy: null, history: [] };
+    return (await this.repo.read(childId)) ?? { hiddenGames: [], levels: {}, maxLevels: {}, updatedAt: null, updatedBy: null, history: [] };
   }
 
   async put(user: AuthUser, childId: string, body: unknown): Promise<GamePlan> {
     // Citirea e suficientă ca drept: specialistul are voie aici (doar pentru plan).
     await this.access.assert(user, childId, 'read');
-    const { hiddenGames, levels } = parseWith(planSchema, body);
+    const { hiddenGames, levels, maxLevels } = parseWith(planSchema, body);
     const previous = await this.repo.read(childId);
     const by: PlanChange['by'] = user.role === 'THERAPIST' ? 'THERAPIST' : 'PARENT';
     const at = this.now();
     const plan: GamePlan = {
       hiddenGames,
       levels,
+      maxLevels,
       updatedAt: at,
       updatedBy: by,
       history: [...(previous?.history ?? []), { at, by, hidden: hiddenGames.length }].slice(-50),

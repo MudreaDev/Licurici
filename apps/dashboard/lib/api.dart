@@ -150,17 +150,29 @@ class ApiClient {
   /// Planul de jocuri al copilului (plan §5.1): jocurile pe care nu le vede pe tabletă.
   Future<GamePlan> plan(String childId) async => _plan((await _send('GET', '/children/$childId/plan')) as Map);
 
-  Future<GamePlan> setPlan(String childId, Set<String> hidden, {Map<String, int> levels = const {}}) async => _plan(
-    (await _send('PUT', '/children/$childId/plan', body: {'hiddenGames': hidden.toList()..sort(), 'levels': levels}))
+  Future<GamePlan> setPlan(
+    String childId,
+    Set<String> hidden, {
+    Map<String, int> levels = const {},
+    Map<String, int> maxLevels = const {},
+  }) async => _plan(
+    (await _send(
+          'PUT',
+          '/children/$childId/plan',
+          body: {'hiddenGames': hidden.toList()..sort(), 'levels': levels, 'maxLevels': maxLevels},
+        ))
         as Map,
   );
 
+  static Map<String, int> _numbers(Object? raw) => {
+    for (final MapEntry(:key, :value) in ((raw as Map?) ?? const {}).entries)
+      if (key is String && value is num) key: value.toInt(),
+  };
+
   GamePlan _plan(Map j) => (
     hidden: {for (final g in (j['hiddenGames'] as List? ?? const [])) g as String},
-    levels: {
-      for (final MapEntry(:key, :value) in ((j['levels'] as Map?) ?? const {}).entries)
-        if (key is String && value is num) key: value.toInt(),
-    },
+    levels: _numbers(j['levels']),
+    maxLevels: _numbers(j['maxLevels']),
     updatedAt: DateTime.tryParse(j['updatedAt'] as String? ?? ''),
     updatedBy: j['updatedBy'] as String?,
     changes: [
@@ -304,6 +316,7 @@ final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
 typedef GamePlan = ({
   Set<String> hidden,
   Map<String, int> levels,
+  Map<String, int> maxLevels,
   DateTime? updatedAt,
   String? updatedBy,
   List<DateTime> changes,

@@ -61,7 +61,7 @@ class SyncClient {
     FutureOr<void> Function(String refreshToken)? onRefreshToken,
     required bool consent,
     ({Set<String> hidden, DateTime? at})? plan,
-    void Function(Set<String> hidden, Map<String, int> levels, DateTime at)? onPlan,
+    void Function(Set<String> hidden, Map<String, int> levels, DateTime at, Map<String, int> maxLevels)? onPlan,
   }) async {
     if (!consent) {
       throw const SyncException(
@@ -136,20 +136,26 @@ class SyncClient {
   Future<void> _syncPlan(
     String childId,
     ({Set<String> hidden, DateTime? at}) local,
-    void Function(Set<String> hidden, Map<String, int> levels, DateTime at)? onPlan,
+    void Function(Set<String> hidden, Map<String, int> levels, DateTime at, Map<String, int> maxLevels)? onPlan,
   ) async {
     final server = await _call('GET', '/children/$childId/plan') as Map;
     final at = DateTime.tryParse(server['updatedAt'] as String? ?? '');
     final hidden = {for (final g in (server['hiddenGames'] as List? ?? const [])) g as String};
-    final levels = {
-      for (final MapEntry(:key, :value) in ((server['levels'] as Map?) ?? const {}).entries)
+    Map<String, int> numbers(Object? raw) => {
+      for (final MapEntry(:key, :value) in ((raw as Map?) ?? const {}).entries)
         if (key is String && value is num) key: value.toInt(),
     };
+    final levels = numbers(server['levels']);
+    final maxLevels = numbers(server['maxLevels']);
     if (at != null && (local.at == null || at.isAfter(local.at!))) {
-      onPlan?.call(hidden, levels, at);
+      onPlan?.call(hidden, levels, at, maxLevels);
     } else if (local.at != null && (at == null || local.at!.isAfter(at))) {
-      // Nivelurile de pornire le alege specialistul în panou: rămân cele de pe server.
-      await _call('PUT', '/children/$childId/plan', {'hiddenGames': (local.hidden.toList()..sort()), 'levels': levels});
+      // Nivelurile de pornire și plafoanele le alege specialistul în panou: rămân cele de pe server.
+      await _call('PUT', '/children/$childId/plan', {
+        'hiddenGames': (local.hidden.toList()..sort()),
+        'levels': levels,
+        'maxLevels': maxLevels,
+      });
     }
   }
 
