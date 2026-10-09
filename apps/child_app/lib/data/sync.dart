@@ -15,8 +15,14 @@ const apiUrl = String.fromEnvironment(
 const privacyPolicyVersion = '2026-10';
 
 class SyncException implements Exception {
-  const SyncException(this.message);
+  const SyncException(this.message, [this.status]);
   final String message;
+
+  /// Codul HTTP (null = fără răspuns de la server).
+  final int? status;
+
+  /// Sesiunea păstrată nu mai e valabilă (parolă schimbată, cont șters, token expirat).
+  bool get signedOut => status == 401;
   @override
   String toString() => message;
 }
@@ -24,7 +30,9 @@ class SyncException implements Exception {
 /// Trimiterea sesiunilor de pe tabletă pe server (ADR-011, outbox): doar cu contul părintelui și
 /// cu consimțământul lui; doar sesiunile netrimise; marcate trimise abia după confirmarea
 /// serverului (o cădere de rețea nu pierde nimic — se reîncearcă data viitoare, idempotent).
-/// Tokenurile nu se salvează pe dispozitiv: părintele se autentifică la fiecare sincronizare.
+/// Implicit tokenurile nu se salvează pe dispozitiv: părintele se autentifică la fiecare
+/// sincronizare. Dacă alege „trimite automat”, se păstrează doar refresh tokenul (rotit la
+/// fiecare folosire, `onRefreshToken`), niciodată parola.
 class SyncClient {
   SyncClient({http.Client? client, this.baseUrl = apiUrl})
     : _http = client ?? http.Client();
@@ -42,8 +50,10 @@ class SyncClient {
   /// de pe tabletă e mai nouă, pleacă pe server. „Ultimul câștigă”, după dată (ADR-011).
   Future<int> run({
     required SessionStore store,
-    required String email,
-    required String password,
+    String? email,
+    String? password,
+    String? refreshToken,
+    void Function(String refreshToken)? onRefreshToken,
     required bool consent,
     ({Set<String> hidden, DateTime? at})? plan,
     void Function(Set<String> hidden, Map<String, int> levels, DateTime at)? onPlan,
@@ -53,18 +63,21 @@ class SyncClient {
         'Bifează acordul pentru trimiterea sesiunilor.',
       );
     }
-    final login =
-        await _call('POST', '/auth/login', {
-              'email': email,
-              'password': password,
-            })
-            as Map;
-    _token = login['accessToken'] as String;
-    await _call('POST', '/consents', {
-      'purpose': 'SYNC',
-      'granted': true,
-      'policyVersion': privacyPolicyVersion,
-    });
+    _token = null;
+    final pair = refreshToken != null
+        ? await _call('POST', '/auth/refresh', {'refreshToken': refreshToken}) as Map
+        : await _call('POST', '/auth/login', {'email': email, 'password': password}) as Map;
+    _token = pair['accessToken'] as String;
+    onRefreshToken?.call(pair['refreshToken'] as String);
+    // Acordul se dă (o dată, explicit) din fereastra „Trimite pe server”; la trimiterea
+    // automată serverul verifică în continuare că nu a fost retras.
+    if (refreshToken == null) {
+      await _call('POST', '/consents', {
+        'purpose': 'SYNC',
+        'granted': true,
+        'policyVersion': privacyPolicyVersion,
+      });
+    }
     final childId = await _childId();
 
     final all = await store.all();
@@ -150,6 +163,7 @@ class SyncClient {
         data is Map && data['message'] is String
             ? data['message'] as String
             : 'Eroare ${res.statusCode}.',
+        res.statusCode,
       );
     }
     return data;

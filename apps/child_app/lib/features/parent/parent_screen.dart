@@ -12,6 +12,7 @@ import '../coloring/drawings_store.dart';
 import '../settings/settings.dart';
 import 'child_games_screen.dart';
 import 'sync_dialog.dart';
+import '../../data/auto_sync.dart';
 
 /// Rapoartele sesiunilor salvate pe dispozitiv (cele mai noi întâi), fiecare cu raportul
 /// sesiunii anterioare pentru comparație.
@@ -80,6 +81,7 @@ class ParentScreen extends ConsumerWidget {
               ),
             ),
             const _StartLevel(),
+            const _AutoSyncLine(),
             Expanded(
               child: reports.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -115,6 +117,48 @@ class ParentScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Starea trimiterii automate (doar când e pornită sau când a cerut reconectarea).
+class _AutoSyncLine extends ConsumerWidget {
+  const _AutoSyncLine();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(autoSyncProvider);
+    if (!s.enabled && s.problem == null) return const SizedBox.shrink();
+    final text = Theme.of(context).textTheme;
+    final at = s.lastAt;
+    final when = at == null
+        ? ''
+        : ' Ultima dată: ${at.hour.toString().padLeft(2, '0')}:${at.minute.toString().padLeft(2, '0')}'
+              '${s.lastSent > 0 ? ' (${s.lastSent} sesiuni)' : ''}.';
+    return Padding(
+      key: const ValueKey('auto-sync'),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
+      child: Row(
+        children: [
+          Icon(
+            s.problem == null ? Icons.cloud_done_rounded : Icons.cloud_off_rounded,
+            color: s.problem == null ? Tokens.mint : Tokens.gentle,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              s.problem ?? 'Sesiunile se trimit automat pe server.$when',
+              style: text.bodyMedium!.copyWith(color: Tokens.inkSoft),
+            ),
+          ),
+          if (s.enabled)
+            TextButton(
+              key: const ValueKey('auto-sync-off'),
+              onPressed: () => ref.read(autoSyncProvider.notifier).disable(),
+              child: const Text('Oprește'),
+            ),
+        ],
       ),
     );
   }

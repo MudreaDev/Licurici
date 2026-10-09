@@ -4,9 +4,12 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:licurici/data/auto_sync.dart';
 import 'package:licurici/data/local_db.dart';
 import 'package:licurici/data/session.dart';
 import 'package:licurici/data/sync.dart';
+import 'package:licurici/data/token_vault.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 const serverChild = '0190a1b2-0000-7000-8000-000000000001';
@@ -19,6 +22,10 @@ class FakeServer {
   bool down = false;
   Map<String, Object?> plan = {'hiddenGames': <String>[], 'updatedAt': null, 'updatedBy': null};
   final planPuts = <List<String>>[];
+
+  /// Refresh tokenul valabil acum (rotit la fiecare folosire, ca pe server).
+  String validRefresh = 'r' * 30;
+  int rotations = 0;
   Object? lastPutLevels;
 
   http.Response json(Object body, [int status = 200]) =>
@@ -39,6 +46,13 @@ class FakeServer {
               'statusCode': 401,
               'message': 'E-mail sau parolă greșită.',
             }, 401);
+    }
+    if (path == '/auth/refresh') {
+      if ((body as Map)['refreshToken'] != validRefresh) {
+        return json({'statusCode': 401, 'message': 'Sesiune expirată. Autentifică-te din nou.'}, 401);
+      }
+      validRefresh = 'n${++rotations}'.padRight(30, 'x');
+      return json({'accessToken': 'tok', 'refreshToken': validRefresh, 'expiresIn': 900});
     }
     expect(r.headers['authorization'], 'Bearer tok');
     if (path == '/consents') {
@@ -229,5 +243,67 @@ void main() {
     expect(server.planPuts.single, ['cauta']);
     // Nivelurile alese de specialist nu se pierd când urcă lista de pe tabletă.
     expect(server.lastPutLevels, {'emotii': 3});
+  });
+
+  test('trimiterea automată: cu refresh tokenul păstrat, după fiecare sesiune; se oprește singură dacă e refuzată', () async {
+    final server = FakeServer()..hasChild = true;
+    final store = MemorySessionStore();
+    final vault = MemoryTokenVault();
+    final container = ProviderContainer(
+      overrides: [
+        syncClientProvider.overrideWithValue(SyncClient(client: MockClient(server.handle), baseUrl: 'http://api/api/v1')),
+        sessionStoreProvider.overrideWithValue(store),
+        tokenVaultProvider.overrideWithValue(vault),
+      ],
+    );
+    addTearDown(container.dispose);
+    final auto = container.read(autoSyncProvider.notifier);
+    // Oprită: nu pleacă nimic.
+    await store.save(local().first);
+    expect(await auto.trigger(), 0);
+    expect(server.received, isEmpty);
+
+    // Părintele o pornește din fereastra „Trimite pe server” (refresh tokenul de la autentificare).
+    await auto.enable(server.validRefresh);
+    expect(await auto.trigger(), 1);
+    expect(server.received, hasLength(1));
+    expect(server.consents, isEmpty); // acordul s-a dat o dată, explicit
+    expect(await vault.read(), server.validRefresh); // tokenul rotit e cel păstrat
+    expect(container.read(autoSyncProvider).lastSent, 1);
+
+    await store.save(local()[1]);
+    expect(await auto.trigger(), 1);
+    expect(server.rotations, 2);
+
+    // Fără rețea: rămâne pornită, sesiunea așteaptă.
+    await store.save(local()[2]);
+    server.down = true;
+    expect(await auto.trigger(), 0);
+    expect(container.read(autoSyncProvider).enabled, isTrue);
+    expect(container.read(autoSyncProvider).problem, isNull);
+    expect(await store.unsyncedIds(), hasLength(1));
+
+    // Parola s-a schimbat pe server: tokenul nu mai merge → oprită, părintele e rugat să reconecteze.
+    server
+      ..down = false
+      ..validRefresh = 'altul'.padRight(30, 'y');
+    expect(await auto.trigger(), 0);
+    expect(await vault.read(), isNull);
+    expect(container.read(autoSyncProvider).enabled, isFalse);
+    expect(container.read(autoSyncProvider).problem, contains('Trimite din nou manual'));
+  });
+
+  test('fereastra „Trimite pe server” cu „trimite automat” dă refresh tokenul, fără parolă', () async {
+    final server = FakeServer()..hasChild = true;
+    String? kept;
+    await SyncClient(client: MockClient(server.handle), baseUrl: 'http://api/api/v1').run(
+      store: MemorySessionStore(),
+      email: 'ana@example.md',
+      password: 'parola-lunga-1',
+      consent: true,
+      onRefreshToken: (t) => kept = t,
+    );
+    expect(kept, 'r' * 30);
+    expect(server.consents, ['SYNC=true']);
   });
 }

@@ -12,6 +12,7 @@ import 'app/boot.dart';
 import 'app/theme.dart';
 import 'data/local_db.dart';
 import 'data/session.dart';
+import 'data/token_vault.dart';
 import 'features/domain/domain_screen.dart';
 import 'features/games/calm/breathing_screen.dart';
 import 'features/games/choice/choice_game_screen.dart';
@@ -82,6 +83,7 @@ Future<void> main() async {
       overrides: [
         if (db != null) ...[
           sessionStoreProvider.overrideWithValue(DriftSessionStore(db)),
+          tokenVaultProvider.overrideWithValue(SecureTokenVault()),
           settingsProvider.overrideWith(
             () => SettingsNotifier(
               settings,

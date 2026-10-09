@@ -1120,7 +1120,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [x] Auth părinte (e-mail + Argon2id, verificare e-mail prin Mailpit/Brevo), JWT + refresh în Redis, rate limit — + „Am uitat parola”, cont nou din panou (ADR-032)
 - [x] Poarta parentală + ecran consimțământ pe scopuri + tabel `consents`
 - [x] Profiluri copii (CRUD), sincronizarea sesiunilor idempotentă (id-ul sesiunii), setări LWW (ADR-011), planul de jocuri (ADR-031)
-- [ ] Sync client: outbox + workmanager + backoff — 🟨 outbox + sincronizare manuală/la pornire gata; workmanager lipsește
+- [x] Sync client: outbox + backoff — outbox (Drift) + trimitere automată opțională la finalul fiecărei sesiuni și la pornire (refresh token în stocarea securizată, `data/auto_sync.dart`); workmanager nu e necesar deocamdată (sesiunile pleacă în prim-plan)
 - [ ] Teste e2e (Testcontainers) pentru auth + sync + autorizare
 
 ### Sprint 4 · 9 – 22 nov — Mecanici + cozi

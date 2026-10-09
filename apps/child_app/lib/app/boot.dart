@@ -14,6 +14,7 @@ import '../shared/stimulus_art.dart';
 import '../shared/motion.dart';
 import '../shared/ui/candy.dart';
 import '../shared/voice.dart';
+import '../data/auto_sync.dart';
 import 'layout.dart';
 import 'theme.dart';
 
@@ -50,6 +51,8 @@ class BootNotifier extends Notifier<BootState> {
       // Rezervele OpenMoji ale cardurilor (ilustrațiile pictate le acoperă de obicei) se
       // pregătesc în fundal: pe web compilarea SVG-urilor ar ține copilul pe ecranul de pornire.
       () async => unawaited(precacheArt(catalog.map((g) => g.emoji))),
+      // Sesiunile rămase netrimise (de exemplu, fără internet data trecută) pleacă acum.
+      () async => unawaited(ref.read(autoSyncProvider.notifier).trigger()),
       // Sprint 2: deschiderea bazei locale Drift + migrările ei.
       // Mai târziu: verificarea pachetelor de conținut descărcate.
     ];

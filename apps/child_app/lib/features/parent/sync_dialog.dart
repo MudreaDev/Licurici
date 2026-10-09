@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../settings/settings.dart';
 
+import '../../data/auto_sync.dart';
 import '../../data/session.dart';
 import '../../data/sync.dart';
-
-final syncClientProvider = Provider<SyncClient>((ref) => SyncClient());
 
 /// „Trimite pe server”: contul părintelui + acord explicit (nebifat implicit), apoi doar
 /// sesiunile netrimise. Fără acord, nimic nu pleacă de pe tabletă.
@@ -24,6 +23,9 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _consent = false;
+
+  /// „Trimite automat de acum”: tableta păstrează doar refresh tokenul (nu parola).
+  bool _auto = false;
   bool _busy = false;
   String? _error;
 
@@ -39,6 +41,7 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
       _busy = true;
       _error = null;
     });
+    String? refresh;
     try {
       final n = await ref
           .read(syncClientProvider)
@@ -52,7 +55,9 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
               at: ref.read(settingsProvider).hiddenGamesAt,
             ),
             onPlan: ref.read(settingsProvider.notifier).applyPlan,
+            onRefreshToken: _auto ? (t) => refresh = t : null,
           );
+      if (refresh != null) await ref.read(autoSyncProvider.notifier).enable(refresh!);
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,6 +108,16 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
               title: const Text(
                 'Sunt de acord ca sesiunile copilului (rezultate, timpi, dispoziția aleasă; fără nume) '
                 'să fie trimise pe server, ca să le văd în panou. Pot retrage acordul oricând.',
+              ),
+            ),
+            CheckboxListTile(
+              key: const ValueKey('sync-auto'),
+              contentPadding: EdgeInsets.zero,
+              value: _auto,
+              onChanged: (v) => setState(() => _auto = v ?? false),
+              title: const Text(
+                'Trimite automat de acum înainte, la finalul fiecărei sesiuni. Tableta rămâne conectată '
+                '(fără să păstreze parola); opresc oricând din „Pentru părinți”.',
               ),
             ),
             if (_error != null)

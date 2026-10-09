@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +13,7 @@ import '../settings/settings.dart';
 import '../../shared/illustration.dart';
 import '../../shared/mascot.dart';
 import '../../shared/ui/candy.dart';
+import '../../data/auto_sync.dart';
 import '../../shared/voice.dart';
 
 /// „Cum te simți?” — copilul își alege singur dispoziția (plan §4: autoevaluare; e și un
@@ -43,6 +46,8 @@ Future<void> openGame(BuildContext context, WidgetRef ref, String route) async {
 Future<void> finishSession(BuildContext context, WidgetRef ref) async {
   final mood = await askMood(context, ref);
   await ref.read(sessionProvider.notifier).finish(moodAfter: mood);
+  // Dacă părintele a ales trimiterea automată, sesiunea pleacă acum (în fundal, fără erori pentru copil).
+  unawaited(ref.read(autoSyncProvider.notifier).trigger());
   ref.read(voiceProvider).say(['Ne vedem data viitoare!']);
   final all = ref.read(settingsProvider).stickers;
   final from = ref.read(_stickersAtStart).clamp(0, all.length);
