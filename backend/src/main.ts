@@ -4,6 +4,7 @@ import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { corsOrigins, ENV, type Env } from './config/env';
+import { RedisIoAdapter } from './live/redis-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -20,6 +21,10 @@ async function bootstrap() {
     allowedHeaders: ['content-type', 'authorization'],
     maxAge: 600,
   });
+  // Canalul live al panoului (Socket.IO + adapterul Redis, ADR-010).
+  const io = new RedisIoAdapter(app, env.REDIS_URL, corsOrigins(env));
+  await io.connect();
+  app.useWebSocketAdapter(io);
 
   if (env.NODE_ENV !== 'production') {
     const doc = new DocumentBuilder()

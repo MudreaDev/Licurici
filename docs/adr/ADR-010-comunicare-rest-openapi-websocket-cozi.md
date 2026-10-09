@@ -31,3 +31,12 @@ GraphQL; gRPC; Server-Sent Events (SSE); long polling; WebSocket pentru tot.
 - GraphQL dacă dashboard-ul ar avea multe ecrane cu nevoi de date foarte diferite.
 - gRPC dacă sistemul s-ar sparge în microservicii cu latență critică între ele.
 - SSE dacă sesiunea live ar deveni strict unidirecțională.
+
+## Implementare (09.10.2026)
+- REST fără client generat încă (clienții Dart sunt scriși de mână și testați pe aceleași forme de răspuns); sincronizarea
+  merge pe `POST /children/:id/sessions` (idempotent după id-ul sesiunii) în loc de `/sync/events`.
+- Socket.IO: `backend/src/live/` — calea `/api/v1/live`, doar transportul WebSocket, autentificare cu tokenul de acces la
+  conectare, `watch {childId}` → camera `child:{id}` după regula de acces din REST; evenimente `session.synced` și
+  `plan.changed` (doar id-uri și numere). Adapterul Redis (`@socket.io/redis-adapter`) leagă instanțele; fără Redis,
+  canalul merge într-o singură instanță.
+

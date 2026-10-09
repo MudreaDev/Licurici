@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:licurici_core/licurici_core.dart';
 
+import 'live.dart';
+
 /// Adresa API-ului (`--dart-define=API_URL=…`); implicit backend-ul local (README §18).
 const apiUrl = String.fromEnvironment(
   'API_URL',
@@ -38,6 +40,18 @@ class ApiClient {
   String? _refresh;
 
   bool get signedIn => _access != null;
+
+  /// Tokenul de acces valabil acum (pentru canalul live): o cerere mică îl reîmprospătează
+  /// dacă a expirat. null = nu mai suntem autentificați.
+  Future<String?> freshAccessToken() async {
+    if (_access == null) return null;
+    try {
+      await _send('GET', '/me');
+    } on Object {
+      // Rămâne tokenul curent; dacă nu e bun, serverul închide iar conexiunea.
+    }
+    return _access;
+  }
 
   Future<void> login(String email, String password, {String? code}) async {
     final r = await _send(
@@ -315,15 +329,47 @@ class ServerChildren extends Notifier<List<ChildHistory>> {
     final api = ref.read(apiClientProvider);
     await api.login(email, password, code: code);
     state = await api.children();
+    _openLive();
+  }
+
+  /// Reîncarcă copiii (după o veste live).
+  Future<void> refresh() async {
+    final api = ref.read(apiClientProvider);
+    if (!api.signedIn) return;
+    state = await api.children();
+  }
+
+  void _openLive() {
+    final api = ref.read(apiClientProvider);
+    ref.read(liveChannelProvider).open(
+      token: api.freshAccessToken,
+      childIds: state.map((h) => h.child.id),
+      onEvent: (type, data) async {
+        final id = data['childId'] as String?;
+        if (id == null) return;
+        if (type == 'plan.changed') {
+          ref.invalidate(planChangesProvider(id));
+          return;
+        }
+        await refresh();
+        final name = state.where((h) => h.child.id == id).firstOrNull?.child.nickname;
+        final n = (data['count'] as num?)?.toInt() ?? 1;
+        ref.read(liveNoticeProvider.notifier).show(
+          '${n == 1 ? 'Sesiune nouă' : '$n sesiuni noi'}${name == null ? '' : ' de la $name'}.',
+        );
+      },
+    );
   }
 
   Future<void> register(String email, String password, {String role = 'PARENT'}) async {
     final api = ref.read(apiClientProvider);
     await api.register(email, password, role: role);
     state = await api.children();
+    _openLive();
   }
 
   Future<void> signOut() async {
+    ref.read(liveChannelProvider).close();
     await ref.read(apiClientProvider).logout();
     state = const [];
   }

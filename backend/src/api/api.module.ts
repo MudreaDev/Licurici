@@ -25,6 +25,8 @@ import { SessionSummaryService } from '../reports/session-summary';
 import { AskFlow, ClaudeAsker } from '../reports/ask';
 import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
+import { LiveAccess } from '../live/live';
+import { LiveGateway } from '../live/live.gateway';
 import { AuthController, ChildrenController, ConsentsController, MeController } from './controllers';
 
 /**
@@ -70,8 +72,8 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
     },
     {
       provide: GamePlanService,
-      inject: [ChildAccess, PrismaRepos],
-      useFactory: (a: ChildAccess, r: PrismaRepos) => new GamePlanService(a, r.plan),
+      inject: [ChildAccess, PrismaRepos, LiveGateway],
+      useFactory: (a: ChildAccess, r: PrismaRepos, live: LiveGateway) => new GamePlanService(a, r.plan, undefined, live),
     },
     {
       provide: GdprService,
@@ -97,8 +99,9 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
     },
     {
       provide: SyncService,
-      inject: [ChildAccess, PrismaRepos, ConsentService],
-      useFactory: (a: ChildAccess, r: PrismaRepos, c: ConsentService) => new SyncService(a, r.sessions, c),
+      inject: [ChildAccess, PrismaRepos, ConsentService, LiveGateway],
+      useFactory: (a: ChildAccess, r: PrismaRepos, c: ConsentService, live: LiveGateway) =>
+        new SyncService(a, r.sessions, c, live),
     },
     {
       provide: SummaryFlow,
@@ -121,6 +124,12 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
       useFactory: (a: ChildAccess, r: PrismaRepos, redis: Redis, env: Env) =>
         new AskFlow(a, r.sessions, r.consents, redis, env.ANTHROPIC_API_KEY ? new ClaudeAsker() : null, env.AI_SUMMARIES_PER_DAY),
     },
+    {
+      provide: LiveAccess,
+      inject: [TokenService, ChildAccess],
+      useFactory: (t: TokenService, a: ChildAccess) => new LiveAccess(t, a),
+    },
+    LiveGateway,
     AuthGuard,
   ],
 })

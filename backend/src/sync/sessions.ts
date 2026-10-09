@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import type { AuthUser } from '../auth/tokens';
+import type { LiveEvents } from '../live/live';
 import type { ChildAccess } from '../children/access';
 import type { ConsentService } from '../consents/consents';
 import { ValidationError } from '../common/errors';
@@ -94,6 +95,8 @@ export class SyncService {
     private readonly access: ChildAccess,
     private readonly sessions: SessionRepo,
     private readonly consents: ConsentService,
+    /** Panoul primește imediat vestea (canalul live, ADR-010). */
+    private readonly live?: LiveEvents,
   ) {}
 
   async push(user: AuthUser, childId: string, body: unknown): Promise<{ accepted: number }> {
@@ -118,6 +121,7 @@ export class SyncService {
         facts,
       });
     }
+    this.live?.publish({ type: 'session.synced', childId, count: sessions.length });
     return { accepted: sessions.length };
   }
 

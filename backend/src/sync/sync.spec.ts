@@ -5,6 +5,7 @@ import type { AuthUser } from '../auth/tokens';
 import { ChildAccess, type ChildRepo, type ChildRow } from '../children/access';
 import { ForbiddenError, NotFoundError, RateLimitedError, UnavailableError, ValidationError } from '../common/errors';
 import type { SessionSummary } from '../reports/session-summary';
+import type { LiveEvent } from '../live/live';
 import { AskFlow, type AskBody, type Asker } from '../reports/ask';
 import { SummaryFlow, type Summarizer, type SummaryRepo } from '../reports/summary-flow';
 import { ConsentService, type ConsentStore } from '../consents/consents';
@@ -262,5 +263,17 @@ describe('AskFlow (întreabă despre progres)', () => {
     await expect(limited.flow.ask(parent, CHILD, { question: 'Și acum?' })).rejects.toBeInstanceOf(RateLimitedError);
     const off = await askSetup({ asker: null });
     await expect(off.flow.ask(parent, CHILD, { question: 'Cum a mers?' })).rejects.toBeInstanceOf(UnavailableError);
+  });
+});
+
+describe('evenimentele live (ADR-010)', () => {
+  it('sincronizarea anunță panoul: doar id-ul copilului și câte sesiuni', async () => {
+    const { access, sessions, consents } = setup();
+    const events: LiveEvent[] = [];
+    const sync = new SyncService(access, sessions, consents, { publish: (e) => events.push(e) });
+    await sync.push(parent, CHILD, fixture);
+    expect(events).toEqual([{ type: 'session.synced', childId: CHILD, count: fixture.sessions.length }]);
+    await expect(sync.push(otherParent, CHILD, fixture)).rejects.toBeInstanceOf(NotFoundError);
+    expect(events).toHaveLength(1);
   });
 });

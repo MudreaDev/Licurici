@@ -6,6 +6,7 @@ import 'account_page.dart';
 import 'api.dart';
 import 'email_pages.dart';
 import 'import_dialog.dart';
+import 'live.dart';
 import 'login_page.dart';
 import 'parent.dart';
 import 'specialist.dart';
@@ -51,6 +52,7 @@ class DashboardApp extends StatefulWidget {
 
 class _DashboardAppState extends State<DashboardApp> {
   late final GoRouter router = widget.router ?? createRouter();
+  final _messenger = GlobalKey<ScaffoldMessengerState>();
   @override
   void dispose() {
     if (widget.router == null) router.dispose();
@@ -62,6 +64,19 @@ class _DashboardAppState extends State<DashboardApp> {
     title: 'Licurici · Împreună, pas cu pas',
     debugShowCheckedModeBanner: false,
     routerConfig: router,
+    scaffoldMessengerKey: _messenger,
+    // Vestile live (sesiune nouă sincronizată) apar ca notificare pe orice pagină.
+    builder: (context, child) => Consumer(
+      builder: (context, ref, _) {
+        ref.listen(liveNoticeProvider, (_, notice) {
+          if (notice == null) return;
+          _messenger.currentState
+            ?..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(key: const ValueKey('live-notice'), content: Text(notice.text)));
+        });
+        return child ?? const SizedBox.shrink();
+      },
+    ),
     theme: ThemeData(
       useMaterial3: true,
       fontFamily: 'packages/${content.contentPackage}/${content.fontFamily}',

@@ -10,6 +10,7 @@ import 'package:http/testing.dart';
 import 'package:licurici_core/licurici_core.dart';
 import 'package:licurici_dashboard/api.dart';
 import 'package:licurici_dashboard/app.dart';
+import 'package:licurici_dashboard/live.dart';
 
 const childId = '0190a1b2-0000-7000-8000-000000000001';
 
@@ -231,6 +232,29 @@ class FakeBackend {
   }
 }
 
+/// Canalul live simulat: ține abonamentul, testul trimite evenimentele.
+class FakeLive implements LiveChannel {
+  List<String> watched = const [];
+  void Function(String type, Map<String, dynamic> data)? onEvent;
+  bool closed = false;
+
+  @override
+  void open({
+    required Future<String?> Function() token,
+    required Iterable<String> childIds,
+    required void Function(String type, Map<String, dynamic> data) onEvent,
+  }) {
+    watched = childIds.toList();
+    this.onEvent = onEvent;
+    closed = false;
+  }
+
+  @override
+  void close() => closed = true;
+}
+
+final fakeLive = FakeLive();
+
 Future<void> pumpDashboard(WidgetTester tester, FakeBackend backend) async {
   tester.view.physicalSize = const Size(1440, 1000);
   tester.view.devicePixelRatio = 1;
@@ -246,6 +270,7 @@ Future<void> pumpDashboard(WidgetTester tester, FakeBackend backend) async {
             baseUrl: 'http://api/api/v1',
           ),
         ),
+        liveChannelProvider.overrideWithValue(fakeLive),
       ],
       child: DashboardApp(router: router),
     ),
@@ -624,5 +649,20 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('ask-send')));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('ask-error')), findsOneWidget);
+  });
+
+  testWidgets('canalul live: panoul urmărește copiii și anunță sesiunea nouă', (tester) async {
+    final backend = FakeBackend();
+    await pumpDashboard(tester, backend);
+    await signIn(tester, 'parola-lunga-1');
+    expect(fakeLive.watched, [childId]);
+    final before = backend.calls.where((c) => c == 'GET /children').length;
+    fakeLive.onEvent!('session.synced', {'type': 'session.synced', 'childId': childId, 'count': 1});
+    await tester.pumpAndSettle();
+    expect(backend.calls.where((c) => c == 'GET /children').length, before + 1);
+    expect(find.text('Sesiune nouă de la Ilinca.'), findsOneWidget);
+    await tester.tap(find.text('Ieși'));
+    await tester.pumpAndSettle();
+    expect(fakeLive.closed, isTrue);
   });
 }

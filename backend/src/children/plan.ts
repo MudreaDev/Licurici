@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import type { AuthUser } from '../auth/tokens';
 import { parseWith } from '../common/validation';
+import type { LiveEvents } from '../live/live';
 import type { ChildAccess } from './access';
 
 /**
@@ -59,6 +60,7 @@ export class GamePlanService {
     private readonly access: ChildAccess,
     private readonly repo: PlanRepo,
     private readonly now: () => Date = () => new Date(),
+    private readonly live?: LiveEvents,
   ) {}
 
   async get(user: AuthUser, childId: string): Promise<GamePlan> {
@@ -82,6 +84,7 @@ export class GamePlanService {
     };
     await this.repo.write(childId, plan);
     await this.repo.audit(user.id, 'child.plan', childId);
+    this.live?.publish({ type: 'plan.changed', childId, by });
     return plan;
   }
 }
