@@ -89,6 +89,7 @@ Bifează ce ai făcut; la final, întreabă-l pe Claude „ce a mai rămas?” �
 
 **D. Juridic și decizii**
 - [ ] Cu un jurist: documentele din `docs/gdpr/` + identitatea operatorului (toate `[…]`).
+- [ ] **Validează planul terapeutic** ([docs/plan-dezvoltare-terapeutica.md](docs/plan-dezvoltare-terapeutica.md)), ideal cu 1–2 specialiști: ariile, treptele, KPI-urile.
 - [ ] ADR-uri „Propus” de citit și acceptat sau respins: ADR-025…ADR-032.
 - [ ] Decizii: 2FA obligatorie pentru specialiști? · preț în stele pentru peștii noi? · Sentry și în aplicația copilului?
 
@@ -105,7 +106,17 @@ Bifează ce ai făcut; la final, întreabă-l pe Claude „ce a mai rămas?” �
 
 **Sesiunea a opta (Claude, 06–08.10) — pe scurt:** acvariul complet (pe ecran și pe hârtie, cu scanare), pușculița cu stele, **toate jocurile din prototip portate** (79 în aplicație, inclusiv Explorările), most-to-least pe trepte noi, telefonul mic reorganizat (stimulul are toată înălțimea), GDPR: ștergerea contului, ștergerea datelor de pe tabletă, exportul ca fișier, 2FA, blocare după 5 parole greșite, retenția automată (sesiuni 24 luni, dovezile consimțământului 3 ani, partajări expirate), jurnal fără date personale, **ciornele celor 9 documente din `docs/gdpr/`**. Verificat la final: core 436 de teste, aplicația 191, backend 57, panoul 15; analyze curat; build web (aplicație + panou) și APK OK.
 
-**Tehnic rămas (pentru Claude, în sesiunile următoare):** criptarea volumului bazei de date și a câmpului e-mail (DPIA); Sentry în aplicația copilului (decizie: e un SDK în aplicația copilului); testele e2e cu Testcontainers (cer Docker); primul deploy după [docs/operare.md](docs/operare.md) + rularea k6; 2FA obligatorie pentru specialiști? (decizie); prețul în stele pentru peștii noi? (decizie).
+**Aplicația copilului — ce mai rămâne (pentru Claude):**
+1. **Parametri pe joc aleși de specialist** (`GameConfig`, ADR-025): limite pe axele de dificultate, câte runde, ce stimuli — azi specialistul alege doar ce jocuri vede copilul și nivelul de pornire.
+2. **Adaptare între jocuri** (S2): progresul dintr-un joc să influențeze nivelul de pornire în jocurile înrudite (aceeași treaptă); recomandări „Drumul de azi” după oboseală și dispoziție.
+3. **Integrarea ilustrațiilor** când vin de la tine (fundalul pictat al acvariului, 19 carduri) + verificarea pe toate ecranele.
+4. **Ajustări după tableta reală**: fluiditatea acvariului, scanarea foii de hârtie, mărimea țintelor.
+5. **Pregătirea pentru magazine**: Google Play (programul „Families”, declarația de date, semnare, iconă, capturi), iOS (build și testare, nefăcute încă).
+6. Teste pe dispozitiv (`integration_test`): fluxul copil → joc → final → sincronizare.
+7. Sentry în aplicație — doar dacă decizi tu (§0.0 D).
+8. (S2) Conținut pentru clasele 5–12 și tema „matură”; pachete de conținut descărcabile (`/content/manifest`) — opționale.
+
+**Tehnic rămas (server):** criptarea volumului bazei de date și a câmpului e-mail (DPIA); Sentry în aplicația copilului (decizie: e un SDK în aplicația copilului); testele e2e cu Testcontainers (cer Docker); primul deploy după [docs/operare.md](docs/operare.md) + rularea k6; 2FA obligatorie pentru specialiști? (decizie); prețul în stele pentru peștii noi? (decizie).
 
 **Sesiunea a noua (08–09.10) — detalii:**
 - ✅ **Fizica peștilor** (`licurici_core/lib/src/aquarium.dart`): adâncime `z` (perspectivă `depthScale`), direcție `yaw` rotită cu viteză unghiulară limitată și inerție (`turnRate` → corpul se îndoaie în viraj), viteza câștigată din coadă și pierdută prin frecare (`thrust`, reprize de înot + alunecare), urcare/coborâre mai lentă decât înaintarea. Fuga merge **spre fundal**, chemarea (apăsare lungă) aduce peștii **la geam**. Comportamente noi: **caută pe fund** (coboară, ciugulește cu capul în jos — norișori de nisip), **vine la geam** să se arate, **atins chiar pe el se învârte bucuros** (bule + sunet), peștele-balon tot se umflă. `autopilot = false` lasă un joc să-i dea ținta (fizica rămâne). 19 teste.
@@ -234,14 +245,14 @@ Codex se rulează din `%LOCALAPPDATA%\OpenAI\Codex\bin\<versiune>\codex.exe exec
 Înainte: **planul de reorientare spre terapie gamificată** — [docs/plan-dezvoltare-terapeutica.md](docs/plan-dezvoltare-terapeutica.md) + [ADR-026](docs/adr/ADR-026-trasee-de-dezvoltare-nu-clase.md) + [ADR-027](docs/adr/ADR-027-niveluri-generate-procedural.md) (status: propus). Pe scurt: **arii de dezvoltare cu trasee de trepte** în loc de clase și materii, fiecare rundă = **încercare măsurată** (corect, nivel de ajutor P0–P4, latență, stimul), KPI-uri pentru specialist (independență, stăpânire, generalizare, menținere), plan individual cu obiective, grafice ABA. Înainte: 12 jocuri, voce 100%.
 
 **Următorii pași, în ordine** (roadmap-ul revizuit e în plan, §11; §21 de mai jos se actualizează după acceptarea ADR-026):
-1. ⬜ **Validează planul** (utilizatorul) și, ideal, cu 1–2 specialiști: ariile și treptele (plan §3), KPI-urile (plan §4). Apoi ADR-026 → Acceptat și README §2, §11, §15, §16 rescrise pe arii.
-2. ⬜ `Domain`, `Step`, `Ladder` în `licurici_core` + trasee JSON pentru **POT, LRC, EMO, PAC-numerație**; cele 12 jocuri re-etichetate pe trepte.
-3. ⬜ Câte un folder per joc + `GameConfig` (ADR-025), acum legate de trepte.
-4. ⬜ `Trial` + `PromptLevel` + ierarhia de ajutor în `ChoiceMechanic`; `MasteryEvaluator` cu teste.
-4a. ⬜ **Paleta = [catalogul de 52 de jocuri pe arii](docs/catalog-jocuri-pe-arii.md)** (axe de dificultate, KPI specifici, paradigme din cercetare). **Paleta de jocuri + alocarea pe copil** (plan §5.1): fără clase/materii; specialistul (sau părintele, fără specialist) alege jocurile fiecărui copil; aplicația copilului arată doar jocurile alocate.
-4b. ⬜ **Niveluri generate procedural** (plan §3.5, ADR-027): axe de dificultate per joc, rating Elo copil × treaptă, bază de stimuli cu atribute, fără repetări, seed reproductibil. Primul: Potrivire.
-5. ⬜ Drift: sesiuni, încercări, progres pe trasee, outbox.
-6. ⬜ `SessionPlanner` (încălzire, 70/30, menținere), orar vizual, pauză; ecranul „Drumul de azi”.
+1. ⬜ **Validează planul** (utilizatorul, trecut în §0.0) și, ideal, cu 1–2 specialiști: ariile și treptele (plan §3), KPI-urile (plan §4). Apoi ADR-026 → Acceptat și README §2, §11, §15, §16 rescrise pe arii.
+2. ✅ `Domain`, `Step`, `Ladder` în `licurici_core` + trasee JSON pentru **POT, LRC, EMO, PAC-numerație**; cele 12 jocuri re-etichetate pe trepte.
+3. 🟨 Câte un folder per joc + `GameConfig` (ADR-025): folderele și nivelul de pornire pe joc există; parametrii pe joc aleși de specialist — nu (vezi §0.1, „Aplicația copilului”).
+4. ✅ `Trial` + `PromptLevel` + ierarhia de ajutor în `ChoiceMechanic`; `MasteryEvaluator` cu teste.
+4a. ✅ **Paleta = [catalogul de 52 de jocuri pe arii](docs/catalog-jocuri-pe-arii.md)** (axe de dificultate, KPI specifici, paradigme din cercetare). **Paleta de jocuri + alocarea pe copil** (plan §5.1): fără clase/materii; specialistul (sau părintele, fără specialist) alege jocurile fiecărui copil; aplicația copilului arată doar jocurile alocate.
+4b. ✅ **Niveluri generate procedural** (plan §3.5, ADR-027): axe de dificultate per joc, rating Elo copil × treaptă, bază de stimuli cu atribute, fără repetări, seed reproductibil. Primul: Potrivire.
+5. ✅ Drift: sesiuni, încercări, progres pe trasee, outbox.
+6. ✅ `SessionPlanner` (încălzire, 70/30, menținere), orar vizual, pauză; ecranul „Drumul de azi”.
 
 **Ce trebuie să facă utilizatorul (nu se poate automatiza):**
 - ✅ ~~Windows Developer Mode~~ — nu a fost necesar pentru APK (03.10).
