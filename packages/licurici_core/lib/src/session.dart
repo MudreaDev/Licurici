@@ -106,9 +106,25 @@ class SessionPlanner {
 
     final playable = progress.where((p) => gameFor(p.stepId) != null).toList();
     final mastered = playable.where((p) => p.mastered).toList()..shuffle(rnd);
-    // Obiectivele cu cel mai mic rating primesc întâi timp (cele mai puțin exersate).
-    final targets = playable.where((p) => !p.mastered).toList()
-      ..sort((a, b) => a.rating.compareTo(b.rating));
+    // Obiectivele cu cel mai mic rating primesc întâi timp (cele mai grele acum); la egalitate
+    // (de exemplu, trepte încă neîncepute) ordinea zilei e aleatoare, ca ariile să se rotească de
+    // la o zi la alta. Ce s-a exersat deja azi trece la coadă (practica distribuită).
+    final open = playable.where((p) => !p.mastered).toList()..shuffle(rnd);
+    final today = DateTime(now.year, now.month, now.day);
+    int key(StepProgress p) =>
+        ((p.lastPracticed != null && !p.lastPracticed!.isBefore(today)) ? 1 << 20 : 0) + (p.rating / 25).round();
+    open.sort((a, b) => key(a).compareTo(key(b)));
+    // Blocurile de obiective din arii diferite, cât se poate (variație, mai puțină oboseală).
+    final targets = <StepProgress>[];
+    final domains = <Domain>{};
+    for (final p in open) {
+      if (targets.length == config.targetBlocks) break;
+      if (domains.add(stepById(p.stepId)!.domain)) targets.add(p);
+    }
+    for (final p in open) {
+      if (targets.length == config.targetBlocks) break;
+      if (!targets.contains(p)) targets.add(p);
+    }
 
     final out = <SessionActivity>[];
     if (mastered.isNotEmpty) {
@@ -121,7 +137,7 @@ class SessionPlanner {
       ));
     }
 
-    for (final t in targets.take(config.targetBlocks)) {
+    for (final t in targets) {
       // Materialul cunoscut amestecat vine din aceeași arie, dacă există.
       final domain = stepById(t.stepId)!.domain;
       final known = mastered.where((m) => stepById(m.stepId)!.domain == domain).firstOrNull ??

@@ -60,4 +60,32 @@ void main() {
   test('nimic de jucat → plan gol', () {
     expect(plan(const [], allowed: {}).isEmpty, isTrue);
   });
+
+  test('copil nou: ariile obiectivelor se rotesc de la o zi la alta, mereu două arii diferite', () {
+    final games = {for (final e in catalog) e.id};
+    final progress = defaultObjectives(const [], games);
+    final seen = <Domain>{};
+    for (var day = 1; day <= 7; day++) {
+      final d = DateTime(2026, 10, day);
+      final p = planner.plan(progress: progress, allowedGames: games, now: d, random: Random(d.day));
+      final targets = p.activities.where((a) => a.kind == ActivityKind.target).toList();
+      expect(targets, hasLength(2));
+      final domains = targets.map((a) => stepById(a.stepId)!.domain).toSet();
+      expect(domains, hasLength(2), reason: 'ziua $day');
+      seen.addAll(domains);
+    }
+    expect(seen.length, greaterThan(4));
+  });
+
+  test('obiectivul exersat deja azi trece la coadă', () {
+    final p = plan([
+      StepProgress(stepId: 'EMO3', rating: 900, lastPracticed: now.add(const Duration(hours: 9))),
+      const StepProgress(stepId: 'FEX2', rating: 1000),
+      const StepProgress(stepId: 'EMO4', rating: 1000),
+    ]);
+    final targets = p.activities.where((a) => a.kind == ActivityKind.target).map((a) => a.stepId).toList();
+    // Deși are ratingul cel mai mic, EMO3 a fost exersată azi: întâi celelalte două.
+    expect(targets.toSet(), {'FEX2', 'EMO4'});
+  });
 }
+
