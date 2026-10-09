@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
+import 'ask_panel.dart';
 import 'data.dart';
 import 'game_plan.dart';
 import 'shared.dart';
@@ -177,6 +178,7 @@ class _ParentPageState extends ConsumerState<ParentPage> {
                         'Ilustrații: OpenMoji · CC BY-SA 4.0',
                         style: TextStyle(fontSize: 12),
                       ),
+                      AskPanel(key: ValueKey('ask-${history.child.id}'), history: history),
                       GamePlanPanel(key: ValueKey('plan-${history.child.id}'), history: history),
                     ],
                   ),

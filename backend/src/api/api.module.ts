@@ -22,6 +22,7 @@ import { PrismaRepos } from '../data/repos';
 import { PrismaService } from '../prisma/prisma.service';
 import { REDIS } from '../redis/redis.module';
 import { SessionSummaryService } from '../reports/session-summary';
+import { AskFlow, ClaudeAsker } from '../reports/ask';
 import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
 import { AuthController, ChildrenController, ConsentsController, MeController } from './controllers';
@@ -113,6 +114,12 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
           env.ANTHROPIC_API_KEY ? new SessionSummaryService() : null,
           env.AI_SUMMARIES_PER_DAY,
         ),
+    },
+    {
+      provide: AskFlow,
+      inject: [ChildAccess, PrismaRepos, REDIS, ENV],
+      useFactory: (a: ChildAccess, r: PrismaRepos, redis: Redis, env: Env) =>
+        new AskFlow(a, r.sessions, r.consents, redis, env.ANTHROPIC_API_KEY ? new ClaudeAsker() : null, env.AI_SUMMARIES_PER_DAY),
     },
     AuthGuard,
   ],

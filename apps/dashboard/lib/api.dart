@@ -155,6 +155,19 @@ class ApiClient {
     ],
   );
 
+  /// „Întreabă despre progres”: răspunsul AI din datele agregate (conversația rămâne în pagină).
+  Future<String> ask(String childId, String question, {List<({String role, String text})> history = const []}) async =>
+      ((await _send(
+                'POST',
+                '/children/$childId/ask',
+                body: {
+                  'question': question,
+                  'history': [for (final h in history) {'role': h.role, 'text': h.text}],
+                },
+              ))
+              as Map)['answer']
+          as String;
+
   /// Exportul complet al datelor (GDPR art. 15, 20), ca text JSON.
   Future<String> exportData() async => const JsonEncoder.withIndent(
     '  ',

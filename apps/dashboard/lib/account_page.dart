@@ -14,8 +14,9 @@ const consentTexts = {
     'Sesiunile de pe tabletă (rezultate, timpi, dispoziția aleasă; fără nume) sunt păstrate pe server, ca să le vezi aici.',
   ),
   'AI_SUMMARY': (
-    'Rezumate scrise de AI',
-    'Cifrele agregate ale unei sesiuni (fără nume) sunt trimise la Claude, care scrie rezumatul. Se generează doar la cerere.',
+    'Rezumate și răspunsuri scrise de AI',
+    'Cifrele agregate ale sesiunilor (fără nume) sunt trimise la Claude, care scrie rezumatul sau răspunde la '
+        'întrebările din „Întreabă despre progres”. Doar la cerere; întrebările nu se păstrează.',
   ),
   'THERAPIST_SHARING': (
     'Partajarea cu specialistul',

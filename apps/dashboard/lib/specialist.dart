@@ -1,4 +1,5 @@
 import 'api.dart';
+import 'ask_panel.dart';
 import 'game_plan.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -204,7 +205,15 @@ class _ChildDetail extends StatelessWidget {
         Expanded(
           child: TabBarView(
             children: [
-              _TabBody(child: _Overview(history.latest)),
+              _TabBody(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _Overview(history.latest),
+                    AskPanel(key: ValueKey('ask-${history.child.id}'), history: history),
+                  ],
+                ),
+              ),
               _TabBody(child: ProgressPanel(history)),
               _TabBody(child: _Sessions(history)),
               _TabBody(

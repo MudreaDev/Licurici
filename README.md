@@ -1152,7 +1152,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Prometheus + Grafana, optimizări, build-uri pentru magazine (Families/Kids), semnare
 - [ ] Testare cu copii/educatori (cu acord parental), iterații UX
 - [ ] Acvariul complet: ✅ pești 3D cu fizică, recif bogat (sesiunea 9) · ✅ pești animați, colorare pe ecran, hrănire, fugă/adunare (sesiunea 8) · ✅ fișa A4 + scanarea cu camera (de testat cu poze reale) · ✅ stelele ca monedă (mâncare) · ⬜ fundal pictat pe straturi (brief gata)
-- [ ] Chat AI în panoul adulților (Claude API, date agregate)
+- [x] Chat AI în panoul adulților (Claude API, date agregate) — „Întreabă despre progres” (`POST /children/:id/ask`, `reports/ask.ts`, `apps/dashboard/lib/ask_panel.dart`): ultimele 20 de sesiuni agregate, acordul „Rezumate AI”, limită zilnică, nimic păstrat
 - [ ] Conținut pentru clasele 5–12 + temă „matură” + conturi pentru adolescenți (14+)
 - [ ] Redactarea tezei (§23) + prezentare
 

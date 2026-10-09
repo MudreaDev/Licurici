@@ -34,6 +34,7 @@ class FakeBackend {
   bool verified = false;
   String? registeredRole;
   final mails = <String>[];
+  final questions = <Map<String, dynamic>>[];
   final sessions = demoChildren().first.sessions;
   Map<String, Object?> plan = {'hiddenGames': <String>[], 'updatedAt': null, 'updatedBy': null};
 
@@ -68,6 +69,14 @@ class FakeBackend {
         'refreshToken': 'r$accessVersion',
         'expiresIn': 900,
       });
+    }
+    if (path == '/children/$childId/ask') {
+      if (!consent) {
+        return json({'statusCode': 403, 'message': 'Părintele nu și-a dat consimțământul pentru răspunsurile scrise de AI.'}, 403);
+      }
+      final b = (jsonDecode(r.body) as Map).cast<String, dynamic>();
+      questions.add(b);
+      return json({'answer': 'Răspunsul ${questions.length}.', 'sessions': 4});
     }
     if (path == '/auth/register') {
       registeredRole = (jsonDecode(r.body) as Map)['role'] as String?;
@@ -589,5 +598,31 @@ void main() {
     router.go('/confirmare?token=altul-altul-altul-altul');
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('confirm-error')), findsOneWidget);
+  });
+
+  testWidgets('întreabă despre progres: exemplu, apoi întrebarea proprie cu istoricul; fără acord, mesajul serverului', (tester) async {
+    final backend = FakeBackend();
+    await pumpDashboard(tester, backend);
+    await signIn(tester, 'parola-lunga-1');
+    await tester.tap(find.text('Sunt specialist'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ilinca').first);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.byKey(const ValueKey('ask-example-0')), 300, scrollable: find.byType(Scrollable).last);
+    await tester.tap(find.byKey(const ValueKey('ask-example-0')));
+    await tester.pumpAndSettle();
+    expect(find.text('Răspunsul 1.'), findsOneWidget);
+    await tester.enterText(find.byKey(const ValueKey('ask-question')), 'Și la emoții?');
+    await tester.tap(find.byKey(const ValueKey('ask-send')));
+    await tester.pumpAndSettle();
+    expect(find.text('Răspunsul 2.'), findsOneWidget);
+    expect(backend.questions.last['question'], 'Și la emoții?');
+    expect(backend.questions.last['history'], hasLength(2));
+
+    backend.consent = false;
+    await tester.enterText(find.byKey(const ValueKey('ask-question')), 'Încă una?');
+    await tester.tap(find.byKey(const ValueKey('ask-send')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('ask-error')), findsOneWidget);
   });
 }

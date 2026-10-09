@@ -30,6 +30,7 @@ utilizatorii din România: **ANSPDCP**.
 | Setări senzoriale (modul calm, volum, mișcări reduse) | Copil | Confort, siguranță senzorială | Consimțământul părintelui | Tabletă; server doar cu acordul „Sincronizare” |
 | Sesiunile de joc: ce joc, nivelul, ce s-a ales, corect/greșit, ajutorul dat, timpi de răspuns, dispoziția aleasă de copil („Cum te simți?”), cererile din tabla de comunicare | Copil | Progresul, dificultatea adaptivă, rezumatul pentru părinte și specialist | Consimțământul părintelui | Tabletă; server doar cu acordul „Sincronizare” |
 | Rezumatul unei sesiuni scris de AI | Copil (pseudonimizat) | Explicarea progresului în cuvinte | Consimțământ separat „Rezumate AI” | Server |
+| Răspunsuri AI la întrebările adultului („Întreabă despre progres”) | Copil (pseudonimizat): faptele agregate ale ultimelor 20 de sesiuni; întrebarea adultului | Explicarea progresului în cuvinte | Același consimțământ „Rezumate AI” | Nu se păstrează (nici întrebarea, nici răspunsul) |
 | Abțibildurile, stelele, peștii din acvariu (desenele copilului) | Copil | Recompense în joc | Consimțământul părintelui | **Doar pe tabletă**, nu se trimit nicăieri |
 | Jurnalul de audit (cine a accesat / exportat / șters, când) | Părinte / specialist | Securitate, responsabilizare | Obligație legală / interes legitim | Server |
 

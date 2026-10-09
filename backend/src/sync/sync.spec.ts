@@ -5,6 +5,7 @@ import type { AuthUser } from '../auth/tokens';
 import { ChildAccess, type ChildRepo, type ChildRow } from '../children/access';
 import { ForbiddenError, NotFoundError, RateLimitedError, UnavailableError, ValidationError } from '../common/errors';
 import type { SessionSummary } from '../reports/session-summary';
+import { AskFlow, type AskBody, type Asker } from '../reports/ask';
 import { SummaryFlow, type Summarizer, type SummaryRepo } from '../reports/summary-flow';
 import { ConsentService, type ConsentStore } from '../consents/consents';
 import { type SessionRepo, type StoredSession, SyncService } from './sessions';
@@ -203,5 +204,63 @@ describe('SummaryFlow', () => {
   it('alt părinte nu poate cere rezumatul (404)', async () => {
     const { flow, sid } = await flowSetup();
     await expect(flow.summary(otherParent, CHILD, sid)).rejects.toBeInstanceOf(NotFoundError);
+  });
+});
+
+describe('AskFlow (întreabă despre progres)', () => {
+  async function askSetup(opts: { consent?: boolean; perDay?: number; asker?: Asker | null } = {}) {
+    const { access, sessions, sync } = setup();
+    await sync.push(parent, CHILD, fixture);
+    const counts = new Map<string, number>();
+    const counter = {
+      incr: async (k: string) => counts.set(k, (counts.get(k) ?? 0) + 1).get(k)!,
+      expire: async () => 1,
+    };
+    const calls: { context: unknown[]; body: AskBody }[] = [];
+    const asker: Asker = { ask: async (context, body) => (calls.push({ context, body }), 'Răspuns.') };
+    const flow = new AskFlow(
+      access,
+      sessions,
+      { granted: async () => opts.consent ?? true },
+      counter,
+      opts.asker === undefined ? asker : opts.asker,
+      opts.perDay ?? 30,
+      () => new Date('2026-10-01T12:00:00Z'),
+    );
+    return { flow, calls };
+  }
+
+  it('răspunde din faptele agregate (fără încercări individuale), pentru părinte și specialistul legat', async () => {
+    const { flow, calls } = await askSetup();
+    expect(await flow.ask(parent, CHILD, { question: 'Cum a mers săptămâna asta?' })).toEqual({
+      answer: 'Răspuns.',
+      sessions: fixture.sessions.length,
+    });
+    await flow.ask(therapist, CHILD, {
+      question: 'Și la emoții?',
+      history: [
+        { role: 'user', text: 'Cum a mers?' },
+        { role: 'assistant', text: 'Bine.' },
+      ],
+    });
+    expect(calls[1].body.history).toHaveLength(2);
+    const sent = JSON.stringify(calls[0].context);
+    expect(sent).not.toContain('"trials":[');
+    expect(sent).not.toContain('latencyMs"');
+    await expect(flow.ask(strangerTherapist, CHILD, { question: 'Cum a mers?' })).rejects.toBeInstanceOf(NotFoundError);
+  });
+
+  it('validare, consimțământ, limită, fără cheie', async () => {
+    const { flow } = await askSetup();
+    await expect(flow.ask(parent, CHILD, { question: 'x' })).rejects.toBeInstanceOf(ValidationError);
+    await expect(flow.ask(parent, CHILD, { question: 'a'.repeat(501) })).rejects.toBeInstanceOf(ValidationError);
+    const noConsent = await askSetup({ consent: false });
+    await expect(noConsent.flow.ask(parent, CHILD, { question: 'Cum a mers?' })).rejects.toBeInstanceOf(ForbiddenError);
+    expect(noConsent.calls).toHaveLength(0);
+    const limited = await askSetup({ perDay: 1 });
+    await limited.flow.ask(parent, CHILD, { question: 'Cum a mers?' });
+    await expect(limited.flow.ask(parent, CHILD, { question: 'Și acum?' })).rejects.toBeInstanceOf(RateLimitedError);
+    const off = await askSetup({ asker: null });
+    await expect(off.flow.ask(parent, CHILD, { question: 'Cum a mers?' })).rejects.toBeInstanceOf(UnavailableError);
   });
 });

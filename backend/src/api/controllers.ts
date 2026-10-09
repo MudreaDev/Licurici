@@ -12,6 +12,7 @@ import { SharingService } from '../children/sharing';
 import { ConsentService } from '../consents/consents';
 import { GdprService } from '../gdpr/gdpr';
 import { parseWith } from '../common/validation';
+import { AskFlow } from '../reports/ask';
 import { SummaryFlow } from '../reports/summary-flow';
 import { SyncService } from '../sync/sessions';
 
@@ -83,6 +84,7 @@ export class ChildrenController {
     @Inject(SharingService) private readonly sharing: SharingService,
     @Inject(GdprService) private readonly gdpr: GdprService,
     @Inject(GamePlanService) private readonly plan: GamePlanService,
+    @Inject(AskFlow) private readonly questions: AskFlow,
   ) {}
 
   /** Planul de jocuri (plan §5.1): părintele sau specialistul cu partajare activă aleg ce vede copilul. */
@@ -156,6 +158,13 @@ export class ChildrenController {
     @Param('sessionId', ParseUUIDPipe) sessionId: string,
   ) {
     return this.summaries.summary(user, childId, sessionId);
+  }
+
+  /** „Întreabă despre progres”: răspuns AI din datele agregate (nu se salvează nimic). */
+  @Post(':childId/ask')
+  @HttpCode(200)
+  ask(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string, @Body() body: unknown) {
+    return this.questions.ask(user, childId, body);
   }
 }
 
