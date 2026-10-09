@@ -629,6 +629,7 @@ erDiagram
 - `CHILD` **nu** are nume real, dată de naștere completă, fotografie, școală sau diagnostic (vezi §13).
 - Pe tabletă, setările locale (`AppSettings` în Drift, cheia `settings` din `Meta`) țin și **abțibildurile câștigate** (`stickers`: lista id-urilor, ex. `bunny`; `stickersSeen`: câte au fost văzute în album, pentru semnul „nou”). Sunt doar recompensa copilului — nu intră în sesiuni, rapoarte sau sincronizare.
 - **Acvariul** (`features/aquarium/aquarium_store.dart`): `<suport aplicație>/aquarium/index.json` (id, model, data, cadou) + desenul fiecărui pește ca PNG (`<id>.png`, 1000×600). Desenele sunt creația copilului: **rămân doar pe dispozitiv**, nu intră în sesiuni, rapoarte sau sincronizare. Maximum 14 pești (cel mai vechi, în afară de cadou, iese). Pe web — în memorie.
+- **Prezența** („se joacă acum”, sesiunea 9): pe server doar cheia Redis `presence:<childId>` (valoarea `1`, 20 min), pusă de tabletă la începutul sesiunii și ștearsă la sincronizare; nu intră în baza de date.
 - **Stelele** (`AppSettings.stars` în aceeași cheie `settings`): soldul pușculiței, doar recompensă locală — nu intră în sesiuni, rapoarte sau sincronizare.
 - `GAME_EVENT.payload` = ce s-a întrebat, ce a ales, câte încercări, timp de răspuns — **fără text liber**.
 - `game_events` partiționat lunar; retenție 24 luni (job de curățare).
@@ -701,6 +702,10 @@ Puncte-cheie din Legea 195/2024 relevante pentru noi:
 | Setări senzoriale, volum, modul calm | Copil | Personalizare | Consimțământ parental | Cât există profilul |
 | Abțibildurile câștigate (album) | Copil | Recompensă în joc | Consimțământ parental | Doar pe dispozitiv, nu se sincronizează; cât există profilul local |
 | Evenimente de joc, progres | Copil | Progres, dificultate adaptivă, raport pentru părinte | Consimțământ parental | 24 luni rulant |
+| „Se joacă acum” (semn fără conținut: copilul X are o sesiune deschisă) | Copil | Panoul în timp real | Consimțământ parental (sincronizare) + trimiterea automată pornită | Redis, 20 de minute sau până la sincronizarea sesiunii |
+| Întrebările adultului către AI și răspunsurile | Părinte / specialist | „Întreabă despre progres” | Consimțământ parental „Rezumate AI” | Nu se păstrează |
+| Adresa confirmată (data), tokenuri de confirmare / parolă nouă (doar hash) | Părinte / specialist | Recuperarea contului | Contract | Tokenurile: 48 h / 1 h în Redis |
+| Refresh token pe tabletă (trimitere automată) | Părinte | Trimiterea automată a sesiunilor | Consimțământ parental (sincronizare) | Stocarea securizată a dispozitivului, până la oprire / schimbarea parolei |
 | Token dispozitiv FCM | Părinte | Notificări | Consimțământ (opțional) | Până la dezactivare |
 | Loguri tehnice (fără PII, IP trunchiat) | — | Securitate | Interes legitim | 30 zile |
 | Rapoarte de eroare (Sentry, fără PII) | — | Stabilitate | Interes legitim | 90 zile |
