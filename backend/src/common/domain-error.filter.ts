@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 
 import { DomainError } from './errors';
+import { captureError } from './sentry';
 
 /** Erori de infrastructură (bază de date, Redis) — temporare, deci 503, nu 500. */
 export function isInfrastructureError(error: unknown): boolean {
@@ -43,6 +44,8 @@ export class DomainErrorFilter implements ExceptionFilter {
     const body = errorResponse(error);
     // Fără mesajul brut în log la erorile de domeniu (pot conține date de intrare); doar tipul.
     if (body.statusCode >= 500) this.log.warn(`${body.statusCode} ${error instanceof Error ? error.name : 'unknown'}`);
+    // Doar bug-urile (500) merg în Sentry; căderile temporare de infrastructură (503) nu.
+    if (body.statusCode === 500) captureError(error);
     res.status(body.statusCode).json(body);
   }
 }

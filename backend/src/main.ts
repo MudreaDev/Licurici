@@ -5,8 +5,10 @@ import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { corsOrigins, ENV, type Env } from './config/env';
 import { RedisIoAdapter } from './live/redis-io.adapter';
+import { initSentry } from './common/sentry';
 
 async function bootstrap() {
+  initSentry(process.env.SENTRY_DSN, process.env.NODE_ENV ?? 'development');
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(Logger));
   const env = app.get<Env>(ENV);

@@ -39,6 +39,9 @@ export const envSchema = z.object({
    *  Lipsă = doar originea din `APP_URL`. Aplicația de pe tabletă nu are nevoie de CORS. */
   CORS_ORIGINS: z.string().optional(),
 
+  /** Erorile neașteptate în Sentry (proiect în regiunea UE). Lipsă = nimic nu pleacă. */
+  SENTRY_DSN: z.url().optional(),
+
   /** Parola pentru Bull Board (doar dezvoltare, port 3001; utilizator `admin`). */
   BULLBOARD_PASSWORD: z.string().min(8).optional(),
 
