@@ -107,6 +107,38 @@ class ReefBackdropPainter extends CustomPainter {
     paintShell(canvas, Offset(w * 0.33, h * floorY(w * 0.33, w, 0.25)), h * 0.02);
     paintShell(canvas, Offset(w * 0.7, h * floorY(w * 0.7, w, 0.45)), h * 0.016, color: const Color(0xFFF6C9B5), fog: 0.12);
     paintStarfish(canvas, Offset(w * 0.79, h * floorY(w * 0.79, w, 0.75)), h * 0.02, 1.1, color: const Color(0xFFF2B33D), fog: 0.3);
+
+    // Mijlocul fundului nu rămâne gol: o stâncă joasă cu un coral-creier, la jumătatea adâncimii,
+    // și câteva grupuri de pietricele (dau scară nisipului; fundul rămâne liber pentru pești).
+    final midBase = Offset(w * 0.47, h * floorY(w * 0.47, w, 0.62));
+    paintContactShadow(canvas, midBase + Offset(0, h * 0.004), h * 0.13, alpha: 0.22);
+    paintRock(canvas, rockShape(midBase, h * 0.11, h * 0.045, r, bumps: 7), r, fog: 0.3, tone: const Color(0xFF8A9AA3));
+    paintBrainCoral(canvas, midBase + Offset(h * 0.025, -h * 0.04), h * 0.022, fog: 0.3, color: const Color(0xFFE9A1C0));
+    paintGrassTuft(canvas, midBase + Offset(-h * 0.05, 0), h * 0.045, r, fog: 0.3, color: const Color(0xFF4F9C63));
+    for (final (fx, z, n) in [(0.22, 0.18, 5), (0.58, 0.3, 4), (0.86, 0.22, 3), (0.39, 0.82, 4)]) {
+      _pebbles(canvas, Offset(w * fx, h * floorY(w * fx, w, z)), h * 0.009 * (1.25 - 0.6 * z), n, r, fog: z * 0.4);
+    }
+  }
+
+  /// Câteva pietricele rotunjite, cu lumină de sus și umbră moale.
+  void _pebbles(Canvas canvas, Offset c, double size, int n, math.Random r, {double fog = 0}) {
+    const tones = [Color(0xFFB9AE9A), Color(0xFF9FA7A8), Color(0xFFD3C2A2), Color(0xFF8E9A9C)];
+    for (var i = 0; i < n; i++) {
+      final s = size * (0.6 + r.nextDouble() * 0.7);
+      final p = c + Offset((r.nextDouble() - 0.5) * size * 6, (r.nextDouble() - 0.5) * size * 1.2);
+      final rect = Rect.fromCenter(center: p, width: s * 2.2, height: s * 1.3);
+      canvas.drawOval(rect.shift(Offset(s * 0.2, s * 0.35)), Paint()..color = Color.fromRGBO(60, 50, 30, 0.18 * (1 - fog)));
+      final tone = fogged(tones[r.nextInt(tones.length)], fog);
+      canvas.drawOval(
+        rect,
+        Paint()
+          ..shader = ui.Gradient.radial(rect.center - Offset(s * 0.3, s * 0.35), s * 1.6, [
+            Color.lerp(tone, const Color(0xFFFFFFFF), 0.35)!,
+            tone,
+            Color.lerp(tone, const Color(0xFF2B3A40), 0.3)!,
+          ], const [0, 0.55, 1]),
+      );
+    }
   }
 
   /// Un șir de stânci în depărtare, ca o siluetă estompată, cu corali deasupra.
