@@ -19,6 +19,7 @@ class AppSettings {
     this.levels = const {},
     this.maxLevels = const {},
     this.rounds = const {},
+    this.avoid = const {},
   });
 
   final Grade grade;
@@ -66,6 +67,10 @@ class AppSettings {
   /// Câte runde are o tură, ales de specialist pe joc (jocurile cu alegere).
   final Map<String, int> rounds;
 
+  /// Categoriile de imagini pe care copilul nu trebuie să le vadă (`avoidItems`): jocurile
+  /// sar peste rundele care le-ar arăta.
+  final Set<String> avoid;
+
   /// Nivelul cu care pornește jocul [gameId], ținând cont de plafon. Prima dată: [fallback] sau,
   /// dacă e mai mare, nivelul transferat de la un joc de pe aceeași treaptă (`transferredLevel`).
   int levelOf(String gameId, [int fallback = 1]) {
@@ -95,6 +100,7 @@ class AppSettings {
     if (levels.isNotEmpty) 'levels': levels,
     if (maxLevels.isNotEmpty) 'maxLevels': maxLevels,
     if (rounds.isNotEmpty) 'rounds': rounds,
+    if (avoid.isNotEmpty) 'avoid': avoid.toList()..sort(),
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -128,6 +134,10 @@ class AppSettings {
       for (final MapEntry(:key, :value) in ((j['rounds'] as Map?) ?? const {}).entries)
         if (key is String && value is num && value >= 1) key: value.toInt(),
     },
+    avoid: {
+      for (final a in (j['avoid'] as List? ?? const []))
+        if (a is String) a,
+    },
   );
 
   AppSettings copyWith({
@@ -145,6 +155,7 @@ class AppSettings {
     Map<String, int>? levels,
     Map<String, int>? maxLevels,
     Map<String, int>? rounds,
+    Set<String>? avoid,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -160,6 +171,7 @@ class AppSettings {
     levels: levels ?? this.levels,
     maxLevels: maxLevels ?? this.maxLevels,
     rounds: rounds ?? this.rounds,
+    avoid: avoid ?? this.avoid,
   );
 }
 
@@ -205,6 +217,13 @@ class SettingsNotifier extends Notifier<AppSettings> {
   void toggleCalm() => _set(state.copyWith(calm: !state.calm));
 
   void setContrast(bool on) => _set(state.copyWith(contrast: on));
+
+  /// Adultul alege de pe tabletă ce imagini să nu vadă copilul (contează ca schimbare de plan).
+  void setAvoid(String id, bool on) {
+    final next = {...state.avoid};
+    on ? next.add(id) : next.remove(id);
+    _set(state.copyWith(avoid: next, hiddenGamesAt: DateTime.now().toUtc()));
+  }
   void toggleVoice() => _set(state.copyWith(voice: !state.voice));
 
   /// Un joc terminat = un abțibild. Întâi cele lipsă din album, în ordine; după ce albumul e
@@ -236,6 +255,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
     DateTime at, [
     Map<String, int>? maxLevels,
     Map<String, int>? rounds,
+    Set<String>? avoid,
   ]) {
     final known = {for (final e in catalog) e.id};
     final next = hidden.where(known.contains).toSet();
@@ -248,6 +268,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
         hiddenGamesAt: at,
         maxLevels: caps,
         rounds: rounds ?? state.rounds,
+        avoid: avoid ?? state.avoid,
         levels: {for (final MapEntry(:key, :value) in merged.entries) key: capLevel(value, caps[key])},
       ),
     );

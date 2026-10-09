@@ -23,6 +23,10 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   /// Valorile parametrilor pe joc (ADR-025), după id-ul parametrului: `start`, `max`.
   Map<String, Map<String, int>> _params = {for (final p in gameParams) p.id: {}};
   Map<String, Map<String, int>> _savedParams = const {};
+
+  /// Categoriile de imagini de evitat (`avoidItems`).
+  Set<String> _avoid = {};
+  Set<String> _savedAvoid = const {};
   String? _info;
   String? _error;
   bool _busy = false;
@@ -49,6 +53,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
         _saved = {...plan.hidden};
         _params = {'start': {...plan.levels}, 'max': {...plan.maxLevels}, 'rounds': {...plan.rounds}};
         _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}, 'rounds': {...plan.rounds}};
+        _avoid = {...plan.avoid};
+        _savedAvoid = {...plan.avoid};
         _info = plan.updatedAt == null
             ? 'Copilul vede toate jocurile.'
             : 'Ultima schimbare: ${plan.updatedAt!.toLocal().toString().substring(0, 16)}'
@@ -70,11 +76,14 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
             levels: _params['start']!,
             maxLevels: _params['max']!,
             rounds: _params['rounds']!,
+            avoid: _avoid,
           );
       if (!mounted) return;
       setState(() {
         _saved = {...plan.hidden};
         _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}, 'rounds': {...plan.rounds}};
+        _avoid = {...plan.avoid};
+        _savedAvoid = {...plan.avoid};
         _info = 'Salvat. Tableta preia lista la următoarea sincronizare.';
         _error = null;
       });
@@ -158,6 +167,24 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                     child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                   ),
                 const SizedBox(height: 12),
+                Text('Imagini de evitat', style: text.titleSmall),
+                Text('Ce îl sperie sau îl tulbură pe copil: jocurile sar peste rundele care le-ar arăta.', style: text.bodySmall),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final item in avoidItems)
+                      FilterChip(
+                        key: ValueKey('plan-avoid-${item.id}'),
+                        avatar: Text(item.emojis.first),
+                        label: Text(item.label),
+                        selected: _avoid.contains(item.id),
+                        onSelected: (on) => setState(() => on ? _avoid.add(item.id) : _avoid.remove(item.id)),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
                 for (final MapEntry(key: domain, value: games) in catalogByDomain().entries)
                   ExpansionTile(
                     key: ValueKey('plan-${domain.code}'),
@@ -195,7 +222,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                 const SizedBox(height: 12),
                 FilledButton.icon(
                   key: const ValueKey('plan-save'),
-                  onPressed: _busy || (_sameSet(hidden, _saved) && _paramsSaved) ? null : _save,
+                  onPressed: _busy || (_sameSet(hidden, _saved) && _paramsSaved && _sameSet(_avoid, _savedAvoid)) ? null : _save,
                   icon: const Icon(Icons.save_rounded),
                   label: const Text('Salvează lista'),
                 ),

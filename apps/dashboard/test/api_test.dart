@@ -163,6 +163,7 @@ class FakeBackend {
           'levels': b['levels'],
           'maxLevels': b['maxLevels'],
           'rounds': b['rounds'],
+          'avoid': b['avoid'],
           'updatedAt': '2026-10-09T09:00:00.000Z',
           'updatedBy': 'THERAPIST',
           'history': [
@@ -543,9 +544,17 @@ void main() {
     await tester.tap(find.text('Jocuri'));
     await tester.pumpAndSettle();
     expect(find.text('Copilul vede toate jocurile.'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const ValueKey('plan-domain-FEX')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('plan-domain-FEX')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const ValueKey('plan-avoid-insecte')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('plan-avoid-insecte')));
+    await tester.pumpAndSettle();
     // Pentru „Emoții”: pornește de la 3 și nu urcă peste 6 (câmpurile vin din schema parametrilor).
+    await tester.ensureVisible(find.textContaining('EMO ·'));
+    await tester.pumpAndSettle();
     await tester.tap(find.textContaining('EMO ·'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const ValueKey('plan-start-emotii')));
@@ -575,6 +584,7 @@ void main() {
     expect(backend.plan['levels'], {'emotii': 3});
     expect(backend.plan['maxLevels'], {'emotii': 6});
     expect(backend.plan['rounds'], {'emotii': 4});
+    expect(backend.plan['avoid'], ['insecte']);
     expect(find.textContaining('Tableta preia lista'), findsOneWidget);
   });
 

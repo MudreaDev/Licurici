@@ -88,7 +88,7 @@ class AutoSync extends Notifier<AutoSyncState> {
         refreshToken: token,
         onRefreshToken: vault.write,
         consent: true,
-        plan: (hidden: settings.hiddenGames, at: settings.hiddenGamesAt),
+        plan: (hidden: settings.hiddenGames, avoid: settings.avoid, at: settings.hiddenGamesAt),
         onPlan: ref.read(settingsProvider.notifier).applyPlan,
       );
       state = AutoSyncState(enabled: true, lastAt: DateTime.now(), lastSent: n);

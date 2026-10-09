@@ -27,6 +27,12 @@ export const planSchema = z
       .record(gameId, z.number().int().min(1).max(40))
       .refine((r) => Object.keys(r).length <= 200)
       .default({}),
+    /** Categoriile de imagini de evitat (ex. `caini`, `insecte`) — `licurici_core/lib/src/avoid.dart`. */
+    avoid: z
+      .array(z.string().regex(/^[a-z-]{2,30}$/))
+      .max(50)
+      .transform((xs) => [...new Set(xs)].sort())
+      .default([]),
     /** Câte runde are o tură, pe joc (jocurile cu alegere). */
     rounds: z
       .record(gameId, z.number().int().min(3).max(12))
@@ -54,6 +60,8 @@ export interface GamePlan {
   maxLevels: Record<string, number>;
   /** Câte runde pe tură, pe joc. */
   rounds: Record<string, number>;
+  /** Categoriile de imagini de evitat. */
+  avoid: string[];
   /** Când s-a schimbat ultima dată și de cine (rolul), ca tableta să știe dacă e mai nou. */
   updatedAt: Date | null;
   updatedBy: 'PARENT' | 'THERAPIST' | null;
@@ -83,13 +91,13 @@ export class GamePlanService {
 
   async get(user: AuthUser, childId: string): Promise<GamePlan> {
     await this.access.assert(user, childId, 'read');
-    return (await this.repo.read(childId)) ?? { hiddenGames: [], levels: {}, maxLevels: {}, rounds: {}, updatedAt: null, updatedBy: null, history: [] };
+    return (await this.repo.read(childId)) ?? { hiddenGames: [], levels: {}, maxLevels: {}, rounds: {}, avoid: [], updatedAt: null, updatedBy: null, history: [] };
   }
 
   async put(user: AuthUser, childId: string, body: unknown): Promise<GamePlan> {
     // Citirea e suficientă ca drept: specialistul are voie aici (doar pentru plan).
     await this.access.assert(user, childId, 'read');
-    const { hiddenGames, levels, maxLevels, rounds } = parseWith(planSchema, body);
+    const { hiddenGames, levels, maxLevels, rounds, avoid } = parseWith(planSchema, body);
     const previous = await this.repo.read(childId);
     const by: PlanChange['by'] = user.role === 'THERAPIST' ? 'THERAPIST' : 'PARENT';
     const at = this.now();
@@ -98,6 +106,7 @@ export class GamePlanService {
       levels,
       maxLevels,
       rounds,
+      avoid,
       updatedAt: at,
       updatedBy: by,
       history: [...(previous?.history ?? []), { at, by, hidden: hiddenGames.length }].slice(-50),

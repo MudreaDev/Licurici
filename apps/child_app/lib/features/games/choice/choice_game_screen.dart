@@ -102,11 +102,15 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     final s = ref.read(settingsProvider);
     // Treapta jocului: unde a rămas copilul data trecută; prima dată, din clasă.
     _tier = s.levelOf(widget.game.id, Difficulty.freePlay(s.grade, s.level).tier);
-    final built = widget.game.build(
-      GameContext(
-        difficulty: Difficulty(_tier),
-        grade: s.grade,
+    // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
+    final built = buildAvoiding(
+      () => widget.game.build(
+        GameContext(
+          difficulty: Difficulty(_tier),
+          grade: s.grade,
+        ),
       ),
+      avoidedEmojis(s.avoid),
     );
     // Câte runde a ales specialistul pentru acest joc (ADR-025); altfel, cât dă nivelul.
     final cap = s.rounds[widget.game.id];
@@ -145,7 +149,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
       if (!mounted) return;
       setState(() {
         _ready = true;
-        _enterRound();
+        if (_lesson.rounds.isNotEmpty) _enterRound();
       });
     });
   }
@@ -312,6 +316,8 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     final layout = AppLayout.of(context);
     // Spațiul rezervat colțului cu mascota (strat fix, care nu se schimbă între runde).
     final corner = layout.mascot + 12;
+    // Toate imaginile jocului sunt printre cele de evitat: nu-l arătăm deloc.
+    if (_lesson.rounds.isEmpty) return const _NothingToShow();
     return Scaffold(
       body: SceneBackground(
         spec: SceneSpec.forLevel(widget.game.id, 1),
@@ -1074,3 +1080,34 @@ class _FitLabel extends StatelessWidget {
     },
   );
 }
+
+/// Jocul n-are runde fără imaginile pe care copilul nu trebuie să le vadă: un ecran liniștit,
+/// cu drumul înapoi (adultul poate schimba alegerea din „Pentru părinți”).
+class _NothingToShow extends StatelessWidget {
+  const _NothingToShow();
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    body: SafeArea(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Mascot(size: 140, mood: MascotMood.encourage),
+            const SizedBox(height: 16),
+            Text('Hai la alt joc!', style: Theme.of(context).textTheme.headlineMedium),
+            const SizedBox(height: 16),
+            CandyIconButton(
+              key: const ValueKey('nothing-back'),
+              icon: Icons.home_rounded,
+              label: 'Acasă',
+              color: Tokens.primary,
+              onTap: () => context.go('/'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+

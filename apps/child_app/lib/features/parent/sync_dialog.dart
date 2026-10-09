@@ -58,6 +58,7 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
             consent: _consent,
             plan: (
               hidden: ref.read(settingsProvider).hiddenGames,
+              avoid: ref.read(settingsProvider).avoid,
               at: ref.read(settingsProvider).hiddenGamesAt,
             ),
             onPlan: ref.read(settingsProvider.notifier).applyPlan,

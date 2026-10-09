@@ -29,6 +29,7 @@ class FakeServer {
   int rotations = 0;
   int presence = 0;
   Object? lastPutLevels;
+  Object? lastPutAvoid;
 
   http.Response json(Object body, [int status = 200]) =>
       http.Response.bytes(utf8.encode(jsonEncode(body)), status);
@@ -96,6 +97,7 @@ class FakeServer {
       final hidden = ((body as Map)['hiddenGames'] as List).cast<String>();
       planPuts.add(hidden);
       lastPutLevels = body['levels'];
+      lastPutAvoid = body['avoid'];
       plan = {'hiddenGames': hidden, 'updatedAt': '2026-10-09T10:00:00.000Z', 'updatedBy': 'PARENT'};
       return json(plan);
     }
@@ -235,8 +237,8 @@ void main() {
       email: 'ana@example.md',
       password: 'parola-lunga-1',
       consent: true,
-      plan: (hidden: <String>{}, at: null),
-      onPlan: (h, l, at, max, _) {
+      plan: (hidden: <String>{}, avoid: <String>{}, at: null),
+      onPlan: (h, l, at, max, _, _) {
         caps = max;
         applied = h;
         levels = l;
@@ -253,13 +255,14 @@ void main() {
       email: 'ana@example.md',
       password: 'parola-lunga-1',
       consent: true,
-      plan: (hidden: {'cauta'}, at: DateTime.utc(2026, 10, 9, 9)),
-      onPlan: (h, l, at, _, _) => applied = h,
+      plan: (hidden: {'cauta'}, avoid: {'caini'}, at: DateTime.utc(2026, 10, 9, 9)),
+      onPlan: (h, l, at, _, _, _) => applied = h,
     );
     expect(applied, isNull);
     expect(server.planPuts.single, ['cauta']);
     // Nivelurile alese de specialist nu se pierd când urcă lista de pe tabletă.
     expect(server.lastPutLevels, {'emotii': 3});
+    expect(server.lastPutAvoid, ['caini']);
   });
 
   test('trimiterea automată: cu refresh tokenul păstrat, după fiecare sesiune; se oprește singură dacă e refuzată', () async {

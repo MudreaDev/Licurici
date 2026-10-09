@@ -58,6 +58,7 @@ class ChildGamesScreen extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                 children: [
+                  const _AvoidCard(),
                   for (final MapEntry(key: domain, value: games) in domains.entries)
                     Card(
                       key: ValueKey('domain-${domain.code}'),
@@ -97,3 +98,49 @@ class ChildGamesScreen extends ConsumerWidget {
     );
   }
 }
+
+/// Imaginile pe care copilul nu trebuie să le vadă (frici, lucruri care îl tulbură): jocurile sar
+/// peste rundele care le-ar arăta. Se sincronizează cu panoul (planul de jocuri).
+class _AvoidCard extends ConsumerWidget {
+  const _AvoidCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final avoid = ref.watch(settingsProvider.select((s) => s.avoid));
+    final text = Theme.of(context).textTheme;
+    return Card(
+      key: const ValueKey('avoid-card'),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Imagini de evitat', style: text.titleMedium),
+            const SizedBox(height: 4),
+            Text(
+              'Bifează ce îl sperie sau îl tulbură pe copil: jocurile nu le mai arată.',
+              style: text.bodyMedium!.copyWith(color: Tokens.inkSoft),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final item in avoidItems)
+                  FilterChip(
+                    key: ValueKey('avoid-${item.id}'),
+                    avatar: Text(item.emojis.first),
+                    label: Text(item.label),
+                    selected: avoid.contains(item.id),
+                    onSelected: (on) => ref.read(settingsProvider.notifier).setAvoid(item.id, on),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

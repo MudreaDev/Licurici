@@ -60,13 +60,14 @@ class SyncClient {
     String? refreshToken,
     FutureOr<void> Function(String refreshToken)? onRefreshToken,
     required bool consent,
-    ({Set<String> hidden, DateTime? at})? plan,
+    ({Set<String> hidden, Set<String> avoid, DateTime? at})? plan,
     void Function(
       Set<String> hidden,
       Map<String, int> levels,
       DateTime at,
       Map<String, int> maxLevels,
       Map<String, int> rounds,
+      Set<String> avoid,
     )?
     onPlan,
   }) async {
@@ -142,13 +143,14 @@ class SyncClient {
 
   Future<void> _syncPlan(
     String childId,
-    ({Set<String> hidden, DateTime? at}) local,
+    ({Set<String> hidden, Set<String> avoid, DateTime? at}) local,
     void Function(
       Set<String> hidden,
       Map<String, int> levels,
       DateTime at,
       Map<String, int> maxLevels,
       Map<String, int> rounds,
+      Set<String> avoid,
     )?
     onPlan,
   ) async {
@@ -162,8 +164,9 @@ class SyncClient {
     final levels = numbers(server['levels']);
     final maxLevels = numbers(server['maxLevels']);
     final rounds = numbers(server['rounds']);
+    final avoid = {for (final a in (server['avoid'] as List? ?? const [])) if (a is String) a};
     if (at != null && (local.at == null || at.isAfter(local.at!))) {
-      onPlan?.call(hidden, levels, at, maxLevels, rounds);
+      onPlan?.call(hidden, levels, at, maxLevels, rounds, avoid);
     } else if (local.at != null && (at == null || local.at!.isAfter(at))) {
       // Nivelurile de pornire și plafoanele le alege specialistul în panou: rămân cele de pe server.
       await _call('PUT', '/children/$childId/plan', {
@@ -171,6 +174,8 @@ class SyncClient {
         'levels': levels,
         'maxLevels': maxLevels,
         'rounds': rounds,
+        // Imaginile de evitat le poate alege și părintele de pe tabletă: pleacă cele de aici.
+        'avoid': (local.avoid.toList()..sort()),
       });
     }
   }

@@ -8,6 +8,7 @@ export 'src/paper_scan.dart';
 export 'src/adaptive.dart';
 export 'src/difficulty.dart';
 export 'src/explore.dart';
+export 'src/avoid.dart';
 export 'src/first_steps.dart';
 export 'src/game_params.dart';
 export 'src/game.dart';

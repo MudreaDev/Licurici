@@ -212,6 +212,7 @@ export class PrismaRepos {
         levels?: Record<string, number>;
         maxLevels?: Record<string, number>;
         rounds?: Record<string, number>;
+        avoid?: string[];
         updatedAt?: string;
         updatedBy?: string;
         history?: { at: string; by: string; hidden: number }[];
@@ -223,6 +224,7 @@ export class PrismaRepos {
         levels: plan.levels && typeof plan.levels === 'object' ? plan.levels : {},
         maxLevels: plan.maxLevels && typeof plan.maxLevels === 'object' ? plan.maxLevels : {},
         rounds: plan.rounds && typeof plan.rounds === 'object' ? plan.rounds : {},
+        avoid: Array.isArray(plan.avoid) ? plan.avoid : [],
         updatedAt: plan.updatedAt ? new Date(plan.updatedAt) : null,
         updatedBy: plan.updatedBy === 'THERAPIST' ? 'THERAPIST' : plan.updatedBy === 'PARENT' ? 'PARENT' : null,
         history: (plan.history ?? []).map((h) => ({

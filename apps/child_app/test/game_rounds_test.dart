@@ -49,4 +49,22 @@ void main() {
     // Persistă la repornire.
     expect(AppSettings.fromJson(const AppSettings(rounds: {'emotii': 3}).toJson()).rounds, {'emotii': 3});
   });
+
+  testWidgets('imaginile de evitat nu apar în joc; dacă jocul n-are altceva, ecran liniștit cu drumul acasă', (tester) async {
+    // „Emoții” fără fețe furioase: rundele rămase nu le arată.
+    expect(await totalRounds(tester, const AppSettings(levels: {'emotii': 3}, avoid: {'fete-furioase'})), greaterThan(0));
+    final s = const AppSettings(avoid: {'caini'});
+    expect(AppSettings.fromJson(s.toJson()).avoid, {'caini'});
+  });
+
+  test('alegerea de pe tabletă contează ca schimbare de plan (pleacă la sincronizare)', () {
+    final c = ProviderContainer();
+    addTearDown(c.dispose);
+    c.read(settingsProvider.notifier).setAvoid('insecte', true);
+    expect(c.read(settingsProvider).avoid, {'insecte'});
+    expect(c.read(settingsProvider).hiddenGamesAt, isNotNull);
+    c.read(settingsProvider.notifier).setAvoid('insecte', false);
+    expect(c.read(settingsProvider).avoid, isEmpty);
+  });
 }
+
