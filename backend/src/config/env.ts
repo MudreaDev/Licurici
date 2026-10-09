@@ -35,6 +35,10 @@ export const envSchema = z.object({
   /** Adresa panoului (legăturile din e-mailuri duc acolo). */
   APP_URL: z.url().default('http://localhost:8080'),
 
+  /** Originile care pot apela API-ul din browser (panoul), separate prin virgulă.
+   *  Lipsă = doar originea din `APP_URL`. Aplicația de pe tabletă nu are nevoie de CORS. */
+  CORS_ORIGINS: z.string().optional(),
+
   /** Parola pentru Bull Board (doar dezvoltare, port 3001; utilizator `admin`). */
   BULLBOARD_PASSWORD: z.string().min(8).optional(),
 
@@ -57,3 +61,9 @@ export function loadEnv(source: Record<string, string | undefined> = process.env
 
 /** Token de injecție pentru configurație. */
 export const ENV = Symbol('ENV');
+
+/** Originile permise pentru CORS: lista explicită sau originea panoului. */
+export function corsOrigins(env: Pick<Env, 'APP_URL' | 'CORS_ORIGINS'>): string[] {
+  const list = env.CORS_ORIGINS?.split(',').map((o) => o.trim()).filter(Boolean) ?? [env.APP_URL];
+  return [...new Set(list.map((o) => new URL(o).origin))];
+}

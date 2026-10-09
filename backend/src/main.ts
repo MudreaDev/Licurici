@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
-import { ENV, type Env } from './config/env';
+import { corsOrigins, ENV, type Env } from './config/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -12,6 +12,14 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1', { exclude: ['health', 'health/ready'] });
   app.enableShutdownHooks();
+  // Panoul web rulează pe altă origine (alt port în dezvoltare, alt subdomeniu în producție).
+  // Tokenurile merg în antetul Authorization, nu în cookie-uri → fără `credentials`.
+  app.enableCors({
+    origin: corsOrigins(env),
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['content-type', 'authorization'],
+    maxAge: 600,
+  });
 
   if (env.NODE_ENV !== 'production') {
     const doc = new DocumentBuilder()

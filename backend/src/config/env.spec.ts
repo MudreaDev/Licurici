@@ -1,4 +1,4 @@
-import { EnvValidationError, loadEnv } from './env';
+import { corsOrigins, EnvValidationError, loadEnv } from './env';
 
 const valid = {
   DATABASE_URL: 'postgresql://licurici:secret@postgres:5432/licurici',
@@ -29,5 +29,12 @@ describe('loadEnv', () => {
 
   it('respinge un URL de bază de date care nu e PostgreSQL', () => {
     expect(() => loadEnv({ ...valid, DATABASE_URL: 'mysql://x@y/z' })).toThrow(/DATABASE_URL/);
+  });
+
+  it('CORS: originea panoului sau lista explicită, fără căi și fără dubluri', () => {
+    expect(corsOrigins(loadEnv(valid))).toEqual(['http://localhost:8080']);
+    expect(
+      corsOrigins(loadEnv({ ...valid, CORS_ORIGINS: 'https://panou.licurici.ro/, http://localhost:8080 ,https://panou.licurici.ro' })),
+    ).toEqual(['https://panou.licurici.ro', 'http://localhost:8080']);
   });
 });
