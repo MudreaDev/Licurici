@@ -102,12 +102,17 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     final s = ref.read(settingsProvider);
     // Treapta jocului: unde a rămas copilul data trecută; prima dată, din clasă.
     _tier = s.levelOf(widget.game.id, Difficulty.freePlay(s.grade, s.level).tier);
-    _lesson = widget.game.build(
+    final built = widget.game.build(
       GameContext(
         difficulty: Difficulty(_tier),
         grade: s.grade,
       ),
     );
+    // Câte runde a ales specialistul pentru acest joc (ADR-025); altfel, cât dă nivelul.
+    final cap = s.rounds[widget.game.id];
+    _lesson = cap == null || built.rounds.length <= cap
+        ? built
+        : Lesson(title: built.title, instruction: built.instruction, rounds: built.rounds.take(cap).toList());
     _index = 0;
     _firstTry = 0;
     _errorFree = 0;

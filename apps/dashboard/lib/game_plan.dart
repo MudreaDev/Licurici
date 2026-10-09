@@ -47,8 +47,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
       setState(() {
         _hidden = {...plan.hidden};
         _saved = {...plan.hidden};
-        _params = {'start': {...plan.levels}, 'max': {...plan.maxLevels}};
-        _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}};
+        _params = {'start': {...plan.levels}, 'max': {...plan.maxLevels}, 'rounds': {...plan.rounds}};
+        _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}, 'rounds': {...plan.rounds}};
         _info = plan.updatedAt == null
             ? 'Copilul vede toate jocurile.'
             : 'Ultima schimbare: ${plan.updatedAt!.toLocal().toString().substring(0, 16)}'
@@ -64,11 +64,17 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
     try {
       final plan = await ref
           .read(apiClientProvider)
-          .setPlan(widget.history.child.id, _hidden!, levels: _params['start']!, maxLevels: _params['max']!);
+          .setPlan(
+            widget.history.child.id,
+            _hidden!,
+            levels: _params['start']!,
+            maxLevels: _params['max']!,
+            rounds: _params['rounds']!,
+          );
       if (!mounted) return;
       setState(() {
         _saved = {...plan.hidden};
-        _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}};
+        _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}, 'rounds': {...plan.rounds}};
         _info = 'Salvat. Tableta preia lista la următoarea sincronizare.';
         _error = null;
       });
@@ -178,7 +184,10 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                           // Parametrii pe joc, generați din schemă (ADR-025): pornire, plafon.
                           secondary: Wrap(
                             spacing: 8,
-                            children: [for (final p in gameParams) _paramField(p, g.id)],
+                            children: [
+                              for (final p in gameParams)
+                                if (p.appliesTo(g.kind)) _paramField(p, g.id),
+                            ],
                           ),
                         ),
                     ],

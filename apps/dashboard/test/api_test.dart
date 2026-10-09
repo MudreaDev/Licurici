@@ -162,6 +162,7 @@ class FakeBackend {
           'hiddenGames': b['hiddenGames'],
           'levels': b['levels'],
           'maxLevels': b['maxLevels'],
+          'rounds': b['rounds'],
           'updatedAt': '2026-10-09T09:00:00.000Z',
           'updatedBy': 'THERAPIST',
           'history': [
@@ -558,6 +559,12 @@ void main() {
     expect(find.text('Nu urcă peste 2'), findsNothing);
     await tester.tap(find.text('Nu urcă peste 6').last);
     await tester.pumpAndSettle();
+    // „Runde” apare doar la jocurile cu alegere (Emoții da, Semaforul nu).
+    expect(find.byKey(const ValueKey('plan-rounds-semaforul')), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('plan-rounds-emotii')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Runde, cel mult 4').last);
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const ValueKey('plan-save')));
     await tester.tap(find.byKey(const ValueKey('plan-save')));
     await tester.pumpAndSettle();
@@ -567,6 +574,7 @@ void main() {
     expect(hidden, isNot(contains('emotii')));
     expect(backend.plan['levels'], {'emotii': 3});
     expect(backend.plan['maxLevels'], {'emotii': 6});
+    expect(backend.plan['rounds'], {'emotii': 4});
     expect(find.textContaining('Tableta preia lista'), findsOneWidget);
   });
 

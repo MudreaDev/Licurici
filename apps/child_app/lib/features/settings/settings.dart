@@ -18,6 +18,7 @@ class AppSettings {
     this.hiddenGamesAt,
     this.levels = const {},
     this.maxLevels = const {},
+    this.rounds = const {},
   });
 
   final Grade grade;
@@ -62,6 +63,9 @@ class AppSettings {
   /// Plafonul de dificultate ales de specialist pe joc (ADR-025): nivelul nu urcă peste el.
   final Map<String, int> maxLevels;
 
+  /// Câte runde are o tură, ales de specialist pe joc (jocurile cu alegere).
+  final Map<String, int> rounds;
+
   /// Nivelul cu care pornește jocul [gameId], ținând cont de plafon. Prima dată: [fallback] sau,
   /// dacă e mai mare, nivelul transferat de la un joc de pe aceeași treaptă (`transferredLevel`).
   int levelOf(String gameId, [int fallback = 1]) {
@@ -90,6 +94,7 @@ class AppSettings {
     if (hiddenGamesAt != null) 'hiddenGamesAt': hiddenGamesAt!.toIso8601String(),
     if (levels.isNotEmpty) 'levels': levels,
     if (maxLevels.isNotEmpty) 'maxLevels': maxLevels,
+    if (rounds.isNotEmpty) 'rounds': rounds,
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -119,6 +124,10 @@ class AppSettings {
       for (final MapEntry(:key, :value) in ((j['maxLevels'] as Map?) ?? const {}).entries)
         if (key is String && value is num && value >= 1) key: value.toInt(),
     },
+    rounds: {
+      for (final MapEntry(:key, :value) in ((j['rounds'] as Map?) ?? const {}).entries)
+        if (key is String && value is num && value >= 1) key: value.toInt(),
+    },
   );
 
   AppSettings copyWith({
@@ -135,6 +144,7 @@ class AppSettings {
     DateTime? hiddenGamesAt,
     Map<String, int>? levels,
     Map<String, int>? maxLevels,
+    Map<String, int>? rounds,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -149,6 +159,7 @@ class AppSettings {
     hiddenGamesAt: hiddenGamesAt ?? this.hiddenGamesAt,
     levels: levels ?? this.levels,
     maxLevels: maxLevels ?? this.maxLevels,
+    rounds: rounds ?? this.rounds,
   );
 }
 
@@ -219,7 +230,13 @@ class SettingsNotifier extends Notifier<AppSettings> {
   /// Planul venit de pe server (ales de părinte în panou sau de specialist): jocurile scoase
   /// și, pentru unele jocuri, nivelul de pornire și plafonul alese de specialist. Plafonul
   /// venit de pe server înlocuiește tot; nivelurile de acum se coboară sub el, dacă e nevoie.
-  void applyPlan(Set<String> hidden, Map<String, int> levels, DateTime at, [Map<String, int>? maxLevels]) {
+  void applyPlan(
+    Set<String> hidden,
+    Map<String, int> levels,
+    DateTime at, [
+    Map<String, int>? maxLevels,
+    Map<String, int>? rounds,
+  ]) {
     final known = {for (final e in catalog) e.id};
     final next = hidden.where(known.contains).toSet();
     if (next.length >= catalog.length) return;
@@ -230,6 +247,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
         hiddenGames: next,
         hiddenGamesAt: at,
         maxLevels: caps,
+        rounds: rounds ?? state.rounds,
         levels: {for (final MapEntry(:key, :value) in merged.entries) key: capLevel(value, caps[key])},
       ),
     );

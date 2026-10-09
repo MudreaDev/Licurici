@@ -236,7 +236,7 @@ void main() {
       password: 'parola-lunga-1',
       consent: true,
       plan: (hidden: <String>{}, at: null),
-      onPlan: (h, l, at, max) {
+      onPlan: (h, l, at, max, _) {
         caps = max;
         applied = h;
         levels = l;
@@ -254,7 +254,7 @@ void main() {
       password: 'parola-lunga-1',
       consent: true,
       plan: (hidden: {'cauta'}, at: DateTime.utc(2026, 10, 9, 9)),
-      onPlan: (h, l, at, _) => applied = h,
+      onPlan: (h, l, at, _, _) => applied = h,
     );
     expect(applied, isNull);
     expect(server.planPuts.single, ['cauta']);

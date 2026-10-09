@@ -155,11 +155,12 @@ class ApiClient {
     Set<String> hidden, {
     Map<String, int> levels = const {},
     Map<String, int> maxLevels = const {},
+    Map<String, int> rounds = const {},
   }) async => _plan(
     (await _send(
           'PUT',
           '/children/$childId/plan',
-          body: {'hiddenGames': hidden.toList()..sort(), 'levels': levels, 'maxLevels': maxLevels},
+          body: {'hiddenGames': hidden.toList()..sort(), 'levels': levels, 'maxLevels': maxLevels, 'rounds': rounds},
         ))
         as Map,
   );
@@ -173,6 +174,7 @@ class ApiClient {
     hidden: {for (final g in (j['hiddenGames'] as List? ?? const [])) g as String},
     levels: _numbers(j['levels']),
     maxLevels: _numbers(j['maxLevels']),
+    rounds: _numbers(j['rounds']),
     updatedAt: DateTime.tryParse(j['updatedAt'] as String? ?? ''),
     updatedBy: j['updatedBy'] as String?,
     changes: [
@@ -317,6 +319,7 @@ typedef GamePlan = ({
   Set<String> hidden,
   Map<String, int> levels,
   Map<String, int> maxLevels,
+  Map<String, int> rounds,
   DateTime? updatedAt,
   String? updatedBy,
   List<DateTime> changes,

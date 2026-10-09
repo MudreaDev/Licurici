@@ -35,5 +35,6 @@ Un editor vizual de jocuri pentru specialiști (creare de jocuri noi, nu doar co
   (`gameParams`: `start` = nivelul de pornire, `max` = plafonul de dificultate). Panoul își generează câmpurile pe joc din
   această listă; tableta îi aplică la fel peste tot (`AppSettings.levelOf`, `capLevel`).
 - Pe server, planul are `levels` și `maxLevels` (validare: pornirea ≤ plafon); ajung pe tabletă la sincronizare.
-- Parametrii specifici unui joc (câte runde, ce stimuli) și „câte un folder per joc” rămân de făcut.
+- Un parametru poate fi limitat la anumite tipuri de joc (`GameParam.kinds`): „Runde, cel mult” (`rounds`) e doar pentru
+  jocurile cu alegere. Rămân: rundele pentru celelalte mecanici, alegerea stimulilor, „câte un folder per joc”.
 

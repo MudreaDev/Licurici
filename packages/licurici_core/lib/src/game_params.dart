@@ -3,10 +3,11 @@
 /// Deocamdată parametrii comuni tuturor jocurilor adaptive: de unde pornește și până unde urcă.
 library;
 
+import 'catalog.dart';
 import 'development.dart';
 
 class GameParam {
-  const GameParam(this.id, this.label, this.help, {this.min = 1, this.max = 20});
+  const GameParam(this.id, this.label, this.help, {this.min = 1, this.max = 20, this.kinds});
 
   /// Cheia din plan (`levels` / `maxLevels` pe server).
   final String id;
@@ -14,6 +15,11 @@ class GameParam {
   final String help;
   final int min;
   final int max;
+
+  /// Pentru ce tipuri de joc are sens (null = toate jocurile adaptive).
+  final Set<GameKind>? kinds;
+
+  bool appliesTo(GameKind kind) => kinds == null || kinds!.contains(kind);
 }
 
 const startLevelParam = GameParam(
@@ -29,7 +35,17 @@ const maxLevelParam = GameParam(
       '(de exemplu, până se consolidează treapta).',
 );
 
-const gameParams = [startLevelParam, maxLevelParam];
+const roundsParam = GameParam(
+  'rounds',
+  'Runde, cel mult',
+  'Câte runde are cel mult o tură de joc: mai puține pentru o atenție scurtă '
+      '(altfel, câte dă nivelul — între 4 și 8).',
+  min: 3,
+  max: 8,
+  kinds: {GameKind.choice},
+);
+
+const gameParams = [startLevelParam, maxLevelParam, roundsParam];
 
 /// Nivelul permis, ținând cont de plafon (null = fără plafon) și de minimul 1.
 int capLevel(int level, int? max) {

@@ -34,6 +34,7 @@ describe('GamePlanService', () => {
       hiddenGames: [],
       levels: {},
       maxLevels: {},
+      rounds: {},
       updatedAt: null,
       updatedBy: null,
       history: [],
@@ -72,6 +73,8 @@ describe('GamePlanService', () => {
     // Plafonul de dificultate: păstrat, iar pornirea nu poate fi peste el.
     const capped = await plan.put(therapist, CHILD, { hiddenGames: [], levels: { simon: 3 }, maxLevels: { simon: 6, emotii: 4 } });
     expect(capped.maxLevels).toEqual({ simon: 6, emotii: 4 });
+    expect((await plan.put(therapist, CHILD, { hiddenGames: [], rounds: { emotii: 4 } })).rounds).toEqual({ emotii: 4 });
+    await expect(plan.put(therapist, CHILD, { hiddenGames: [], rounds: { emotii: 50 } })).rejects.toBeInstanceOf(ValidationError);
     await expect(
       plan.put(therapist, CHILD, { hiddenGames: [], levels: { simon: 8 }, maxLevels: { simon: 6 } }),
     ).rejects.toBeInstanceOf(ValidationError);

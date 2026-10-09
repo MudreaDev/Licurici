@@ -7,7 +7,10 @@ void main() {
     expect(capLevel(3, 5), 3);
     expect(capLevel(9, null), 9);
     expect(capLevel(0, 4), 1);
-    expect(gameParams.map((p) => p.id), ['start', 'max']);
+    expect(gameParams.map((p) => p.id), ['start', 'max', 'rounds']);
+    expect(roundsParam.appliesTo(GameKind.choice), isTrue);
+    expect(roundsParam.appliesTo(GameKind.maze), isFalse);
+    expect(maxLevelParam.appliesTo(GameKind.maze), isTrue);
   });
 
   test('transferul: un joc nou pornește aproape de nivelul atins într-un joc de pe aceeași treaptă', () {
