@@ -1113,7 +1113,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [x] 10 jocuri `choice` (alfabetul, numaram, adunam, scadem, culori, forme, emotii, opuse, comparam, da-nu)
 - [x] Vocea: generator (`tools/gen-voice`) + raport de acoperire (`tool/voice_coverage.dart`) — 100%
 - [ ] Câte un folder per joc + `GameConfig` (schema de parametri)
-- [ ] Ghid de ilustrații pentru ChatGPT, cu reguli de decupare pe straturi (`docs/art/`)
+- [x] Ghid de ilustrații pentru ChatGPT, cu reguli de decupare pe straturi ([docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md))
 - [ ] Drift: profil local, setări, evenimente, outbox, plan, acvariu (stele + pești)
 
 ### Sprint 3 · 26 oct – 8 nov — Conturi + sincronizare
