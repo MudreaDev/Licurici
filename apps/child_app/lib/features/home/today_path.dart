@@ -15,12 +15,20 @@ import '../settings/settings.dart';
 
 /// „Drumul de azi” (plan §3.4): încălzire → obiective → menținere → final pe succes, din
 /// progresul salvat. Aceeași zi → același drum (seed pe dată), ca orarul să fie previzibil.
+/// Într-o zi grea (obosit, trist, supărat) sau după o sesiune obositoare: drum mai scurt.
 final todayPlanProvider = FutureProvider.autoDispose<SessionPlan>((ref) async {
   final records = await ref.watch(sessionStoreProvider).all();
   // Jocurile copilului (pe arii, nu pe clase — ADR-026), fără cele scoase de adult (plan §5.1).
   final games = ref.watch(settingsProvider.select((s) => s.visibleGames));
   final now = DateTime.now();
-  return const SessionPlanner(config: SessionConfig(targetBlocks: 2)).plan(
+  // Cum e copilul azi (dispoziția aleasă la început) și cum s-a încheiat data trecută.
+  final mood = ref.watch(sessionProvider.select((s) => s?.moodBefore));
+  final config = gentleConfig(
+    const SessionConfig(targetBlocks: 2),
+    mood: mood,
+    last: records.isEmpty ? null : SessionReport.from(records.reduce((a, b) => a.start.isAfter(b.start) ? a : b)),
+  );
+  return SessionPlanner(config: config).plan(
     progress: defaultObjectives(progressFromSessions(records), games),
     allowedGames: games,
     now: now,

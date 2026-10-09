@@ -8,6 +8,7 @@ library;
 import 'dart:math';
 
 import 'development.dart';
+import 'report.dart';
 
 /// Progresul copilului pe o treaptă (vine din Drift / sincronizare).
 class StepProgress {
@@ -70,6 +71,25 @@ class SessionConfig {
   final double knownMix;
   final List<int> maintenanceDays;
   final int maintenanceTolerance;
+}
+
+/// „Drumul de azi” după cum e copilul azi (plan §3.4, autoreglare): obosit, trist sau supărat
+/// la început → un singur bloc de obiective, mai scurt; la fel dacă sesiunea trecută s-a
+/// încheiat cu oboseală mare (timpii au crescut cu ≥ 40%) sau a fost abandonată. Încălzirea și
+/// finalul pe succes rămân — ziua se termină tot cu ceva reușit.
+SessionConfig gentleConfig(SessionConfig base, {Mood? mood, SessionReport? last}) {
+  final hardDay = mood == Mood.obosit || mood == Mood.trist || mood == Mood.suparat;
+  final tiredLastTime = last != null && (last.abandoned || (last.fatigue ?? 0) >= 0.4);
+  if (!hardDay && !tiredLastTime) return base;
+  return SessionConfig(
+    targetBlocks: base.targetBlocks > 1 ? 1 : base.targetBlocks,
+    roundsPerBlock: (base.roundsPerBlock * (hardDay ? 0.6 : 0.8)).round().clamp(3, base.roundsPerBlock),
+    warmUpRounds: base.warmUpRounds,
+    // O zi grea: mai mult material cunoscut în blocul de lucru.
+    knownMix: hardDay ? 0.5 : base.knownMix,
+    maintenanceDays: base.maintenanceDays,
+    maintenanceTolerance: base.maintenanceTolerance,
+  );
 }
 
 class SessionPlan {

@@ -87,5 +87,20 @@ void main() {
     // Deși are ratingul cel mai mic, EMO3 a fost exersată azi: întâi celelalte două.
     expect(targets.toSet(), {'FEX2', 'EMO4'});
   });
+
+  test('zi grea (obosit, trist, supărat) sau oboseală data trecută: un singur bloc, mai scurt', () {
+    const base = SessionConfig();
+    expect(identical(gentleConfig(base, mood: Mood.bucuros), base), isTrue);
+    final hard = gentleConfig(base, mood: Mood.obosit);
+    expect(hard.targetBlocks, 1);
+    expect(hard.roundsPerBlock, lessThan(base.roundsPerBlock));
+    expect(hard.knownMix, greaterThan(base.knownMix));
+    final games = {for (final e in catalog) e.id};
+    final progress = defaultObjectives(const [], games);
+    final p = planner.plan(progress: progress, allowedGames: games, now: now, random: Random(1));
+    final calm = SessionPlanner(config: hard).plan(progress: progress, allowedGames: games, now: now, random: Random(1));
+    expect(p.activities.where((a) => a.kind == ActivityKind.target), hasLength(2));
+    expect(calm.activities.where((a) => a.kind == ActivityKind.target), hasLength(1));
+  });
 }
 

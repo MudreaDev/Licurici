@@ -98,7 +98,8 @@ class SessionController extends Notifier<SessionRecorder?> {
     // „Se joacă acum” în panou (doar dacă părintele a pornit trimiterea automată).
     if (isNew) unawaited(ref.read(autoSyncProvider.notifier).announcePlaying());
     r.moodBefore ??= moodBefore;
-    state = r;
+    // Obiectul e același: anunțăm explicit, ca „Drumul de azi” să vadă dispoziția aleasă.
+    ref.notifyListeners();
   }
 
   /// Înregistrează ceva în sesiunea curentă (o deschide dacă e nevoie).
