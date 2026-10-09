@@ -371,10 +371,11 @@ class LicuriciApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final calm = ref.watch(settingsProvider.select((s) => s.calm));
+    final contrast = ref.watch(settingsProvider.select((s) => s.contrast));
     return MaterialApp.router(
       title: 'Licurici',
       debugShowCheckedModeBanner: false,
-      theme: buildTheme(calm: calm),
+      theme: buildTheme(calm: calm, contrast: contrast),
       // Listele se derulează și trăgând cu mouse-ul / trackpad-ul (web, Chromebook),
       // nu doar cu degetul.
       scrollBehavior: const MaterialScrollBehavior().copyWith(

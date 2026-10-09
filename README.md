@@ -1105,7 +1105,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [ ] Documentele de cercetare §23 începute (arhitectură, comunicare)
 
 ### Sprint 2 · 12 – 25 oct — Design system + primul joc
-- [ ] Tokeni, teme (normal/calm/contrast), componente de bază, mascota `CutoutRig` (idle + bucurie + încurajare)
+- [x] Tokeni, teme (normal/calm/contrast), componente de bază, mascota `CutoutRig` (idle + bucurie + încurajare) — contrastul mare: „Pentru părinți” sau setarea de accesibilitate a sistemului (sesiunea 9)
 - [x] `MotionPolicy` (full/gentle/off) + cele 7 straturi de animație din §15.1 în `ChoiceMechanic` (mascota desenată în cod; `CutoutRig` urmează)
 - [x] Home: „Jocurile de azi” + categorii; alegerea clasei; navigație fixă — „Drumul de azi” (`home/today_path.dart`), arii, clase, bara fixă
 - [x] Port `difficulty.js` → Dart + teste de paritate

@@ -9,6 +9,9 @@ abstract final class Tokens {
   static const surface = Color(0xFFFFFFFF);
   static const surface2 = Color(0xFFF5FAF9);
   static const ink = Color(0xFF2F3D3B);
+
+  /// Conturul din modul „contrast mare” (aproape negru, nu negru pur).
+  static const contrastEdge = Color(0xFF15201E);
   static const inkSoft = Color(0xFF5F716E);
   static const line = Color(0xFFD6E4E1);
 
@@ -73,7 +76,10 @@ TextStyle _round(double size, FontWeight weight, [Color color = Tokens.ink]) =>
       fontWeight: weight,
     );
 
-ThemeData buildTheme({required bool calm}) {
+/// [contrast]: textul secundar devine la fel de închis ca textul principal (vedere slabă).
+ThemeData buildTheme({required bool calm, bool contrast = false}) {
+  final soft = contrast ? Tokens.contrastEdge : Tokens.inkSoft;
+  final ink = contrast ? Tokens.contrastEdge : Tokens.ink;
   final bg = calm ? CalmTokens.bg : Tokens.bg;
   final scheme = ColorScheme.fromSeed(
     seedColor: Tokens.primary,
@@ -86,13 +92,13 @@ ThemeData buildTheme({required bool calm}) {
     scaffoldBackgroundColor: bg,
     fontFamily: _fontFamily,
     textTheme: TextTheme(
-      displaySmall: _round(40, FontWeight.w800),
-      headlineMedium: _round(30, FontWeight.w800),
-      titleLarge: _round(24, FontWeight.w700),
-      titleMedium: _round(20, FontWeight.w700),
-      bodyLarge: _round(20, FontWeight.w600),
-      bodyMedium: _round(18, FontWeight.w600, Tokens.inkSoft),
-      labelLarge: _round(22, FontWeight.w800),
+      displaySmall: _round(40, FontWeight.w800, ink),
+      headlineMedium: _round(30, FontWeight.w800, ink),
+      titleLarge: _round(24, FontWeight.w700, ink),
+      titleMedium: _round(20, FontWeight.w700, ink),
+      bodyLarge: _round(20, FontWeight.w600, ink),
+      bodyMedium: _round(18, FontWeight.w600, soft),
+      labelLarge: _round(22, FontWeight.w800, ink),
     ),
     splashFactory: NoSplash.splashFactory,
     highlightColor: Colors.transparent,

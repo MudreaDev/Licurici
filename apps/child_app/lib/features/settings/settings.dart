@@ -8,6 +8,7 @@ class AppSettings {
     this.grade = Grade.clasa1,
     this.level = FreePlayLevel.usor,
     this.calm = false,
+    this.contrast = false,
     this.voice = true,
     this.stickers = const [],
     this.stickersSeen = 0,
@@ -23,6 +24,10 @@ class AppSettings {
 
   /// Modul calm: fără animații ambientale și particule, paletă mai palidă.
   final bool calm;
+
+  /// Contrast mare (vedere slabă): contur închis pe tot ce se apasă și text mai închis.
+  /// Pornește și singur când sistemul cere contrast mare (setările de accesibilitate).
+  final bool contrast;
   final bool voice;
 
   /// Abțibildurile câștigate, în ordine (id-urile din `stickerIds`). Rămân doar pe
@@ -63,6 +68,7 @@ class AppSettings {
     'grade': grade.name,
     'level': level.name,
     'calm': calm,
+    if (contrast) 'contrast': true,
     'voice': voice,
     'stickers': stickers,
     'stickersSeen': stickersSeen,
@@ -78,6 +84,7 @@ class AppSettings {
     grade: Grade.values.asNameMap()[j['grade']] ?? Grade.clasa1,
     level: FreePlayLevel.values.asNameMap()[j['level']] ?? FreePlayLevel.usor,
     calm: j['calm'] == true,
+    contrast: j['contrast'] == true,
     voice: j['voice'] != false,
     stickers: [
       for (final s in (j['stickers'] as List? ?? const []))
@@ -101,6 +108,7 @@ class AppSettings {
     Grade? grade,
     FreePlayLevel? level,
     bool? calm,
+    bool? contrast,
     bool? voice,
     List<String>? stickers,
     int? stickersSeen,
@@ -113,6 +121,7 @@ class AppSettings {
     grade: grade ?? this.grade,
     level: level ?? this.level,
     calm: calm ?? this.calm,
+    contrast: contrast ?? this.contrast,
     voice: voice ?? this.voice,
     stickers: stickers ?? this.stickers,
     stickersSeen: stickersSeen ?? this.stickersSeen,
@@ -164,6 +173,8 @@ class SettingsNotifier extends Notifier<AppSettings> {
   void setGrade(Grade grade) => _set(state.copyWith(grade: grade, levels: _withoutChoiceLevels));
   void setLevel(FreePlayLevel level) => _set(state.copyWith(level: level, levels: _withoutChoiceLevels));
   void toggleCalm() => _set(state.copyWith(calm: !state.calm));
+
+  void setContrast(bool on) => _set(state.copyWith(contrast: on));
   void toggleVoice() => _set(state.copyWith(voice: !state.voice));
 
   /// Un joc terminat = un abțibild. Întâi cele lipsă din album, în ordine; după ce albumul e

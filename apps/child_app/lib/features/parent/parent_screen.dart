@@ -201,6 +201,15 @@ class _StartLevel extends ConsumerWidget {
               ),
             ),
           ),
+          const SizedBox(width: 12),
+          // Vedere slabă: contur închis pe tot ce se apasă, text mai închis.
+          FilterChip(
+            key: const ValueKey('contrast'),
+            avatar: const Icon(Icons.contrast_rounded, size: 20),
+            label: const Text('Contrast mare'),
+            selected: ref.watch(settingsProvider.select((s) => s.contrast)),
+            onSelected: ref.read(settingsProvider.notifier).setContrast,
+          ),
         ],
       ),
     );

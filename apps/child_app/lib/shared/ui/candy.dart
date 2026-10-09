@@ -3,12 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/layout.dart';
 import '../../app/theme.dart';
+import '../../features/settings/settings.dart';
 import '../motion.dart';
 import '../sfx.dart';
 
 /// Kitul vizual al aplicației copilului: suprafețe „de jucărie” cu o buză 3D jos, lumină
 /// de sus și colțuri mari (README §14). Copilul vede imediat ce se poate apăsa: tot ce are buză
 /// se apasă și „coboară” la atingere.
+
+/// Contrast mare: ales de adult sau cerut de sistem (accesibilitate).
+bool highContrast(BuildContext context, WidgetRef ref) =>
+    ref.watch(settingsProvider.select((s) => s.contrast)) || MediaQuery.highContrastOf(context);
 
 /// Culoarea mai închisă a aceleiași nuanțe (buza de jos, contururi).
 Color shade(Color c, [double amount = 0.16]) {
@@ -103,6 +108,7 @@ class _CandyPressableState extends ConsumerState<CandyPressable> {
   @override
   Widget build(BuildContext context) {
     final motion = MotionPolicy.of(context, ref);
+    final contrast = highContrast(context, ref);
     final enabled = widget.onTap != null;
     final pressed = _down && motion.feedback;
     final lip = pressed ? 1.0 : widget.lip;
@@ -139,8 +145,9 @@ class _CandyPressableState extends ConsumerState<CandyPressable> {
                 lip: lip,
                 lipColor: widget.lipColor,
                 shadow: !pressed,
-                border: widget.border,
-                borderWidth: widget.borderWidth,
+                // Contrast mare: marginea fiecărui lucru apăsabil se vede clar pe orice fundal.
+                border: widget.border ?? (contrast ? Tokens.contrastEdge : null),
+                borderWidth: widget.border != null ? widget.borderWidth : (contrast ? 3 : 0),
               ),
               child: widget.child,
             ),
