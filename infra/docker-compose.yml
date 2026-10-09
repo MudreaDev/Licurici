@@ -90,6 +90,18 @@ services:
     healthcheck:
       disable: true
 
+  # Panoul web (Flutter web → nginx neprivilegiat): http://localhost:8080
+  dashboard:
+    build:
+      context: ..
+      dockerfile: apps/dashboard/Dockerfile
+      args:
+        API_URL: ${PUBLIC_API_URL:-http://localhost:3000/api/v1}
+    environment:
+      API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:3000}
+    ports: ["127.0.0.1:8080:8080"]
+    restart: unless-stopped
+
   # Cozile BullMQ în browser: http://localhost:3001 (utilizator admin, parola BULLBOARD_PASSWORD).
   bullboard:
     <<: *backend

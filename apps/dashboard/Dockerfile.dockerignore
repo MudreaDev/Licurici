@@ -1,0 +1,10 @@
+# Contextul e rădăcina repo-ului: trimitem doar ce trebuie pentru panou.
+**
+!pubspec.yaml
+!pubspec.lock
+!packages/licurici_core/**
+!packages/game_content/**
+!apps/child_app/pubspec.yaml
+!apps/dashboard/**
+apps/dashboard/build
+**/.dart_tool

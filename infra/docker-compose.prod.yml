@@ -1,0 +1,102 @@
+# Producția (README §18, ADR-17): peste fișierul de bază, pe un VPS în UE.
+#   cp infra/.env.example infra/.env   # NODE_ENV=production, DOMAIN, ACME_EMAIL, SMTP_URL (Brevo), BACKUP_AGE_RECIPIENT
+#   docker compose -f infra/docker-compose.yml -f infra/docker-compose.prod.yml up -d --build
+# Doar Traefik are porturi deschise (80 → redirecționare, 443 cu TLS Let's Encrypt).
+# Mailpit și Bull Board nu pornesc (profilul `dev`).
+
+services:
+  traefik:
+    image: traefik:v3.5
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --log.level=WARN
+      - --accesslog=false
+    ports: ["80:80", "443:443"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    restart: unless-stopped
+
+  postgres:
+    ports: !reset []
+  redis:
+    ports: !reset []
+  storage:
+    ports: !reset []
+
+  api:
+    ports: !reset []
+    environment:
+      NODE_ENV: production
+      APP_URL: https://panou.${DOMAIN}
+      CORS_ORIGINS: https://panou.${DOMAIN}
+      SMTP_URL: ${SMTP_URL}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api.rule=Host(`api.${DOMAIN}`)
+      - traefik.http.routers.api.entrypoints=websecure
+      - traefik.http.routers.api.tls.certresolver=le
+      - traefik.http.services.api.loadbalancer.server.port=3000
+      # HSTS + antete de bază pentru API.
+      - traefik.http.middlewares.secure.headers.stsSeconds=31536000
+      - traefik.http.middlewares.secure.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.secure.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.secure.headers.referrerPolicy=no-referrer
+      - traefik.http.routers.api.middlewares=secure
+
+  worker:
+    environment:
+      NODE_ENV: production
+      APP_URL: https://panou.${DOMAIN}
+      SMTP_URL: ${SMTP_URL}
+
+  dashboard:
+    ports: !reset []
+    build:
+      args:
+        API_URL: https://api.${DOMAIN}/api/v1
+    environment:
+      API_ORIGIN: https://api.${DOMAIN}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.panou.rule=Host(`panou.${DOMAIN}`)
+      - traefik.http.routers.panou.entrypoints=websecure
+      - traefik.http.routers.panou.tls.certresolver=le
+      - traefik.http.routers.panou.middlewares=secure
+      - traefik.http.services.panou.loadbalancer.server.port=8080
+
+  mailpit:
+    profiles: [dev]
+  bullboard:
+    profiles: [dev]
+
+  # Backup zilnic (README §18): pg_dump criptat cu age (cheia publică în BACKUP_AGE_RECIPIENT;
+  # cheia privată NU stă pe server), păstrat 35 de zile în volumul `backups`. Copierea în alt
+  # bucket UE și testul lunar de restaurare: docs/operare.md.
+  backup:
+    image: postgres:17-alpine
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      BACKUP_AGE_RECIPIENT: ${BACKUP_AGE_RECIPIENT}
+    volumes:
+      - backups:/backups
+      - ./backup.sh:/backup.sh:ro
+    entrypoint: ["/bin/sh", "/backup.sh"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+
+volumes:
+  letsencrypt:
+  backups:

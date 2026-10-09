@@ -1,0 +1,32 @@
+# Panoul Licurici: aplicație cu o singură pagină (rutele sunt după #), fișiere statice.
+server {
+    listen 8080;
+    server_name _;
+    root /usr/share/nginx/html;
+    server_tokens off;
+
+    location = /healthz {
+        access_log off;
+        return 200 "ok\n";
+    }
+
+    # Antetele de securitate (README §13): fără încadrare în alte site-uri, fără ghicirea tipului,
+    # CSP strict — scripturi doar de aici (+ WebAssembly pentru CanvasKit), cereri doar către API.
+    # index.html și bootstrap-ul se reverifică mereu: o versiune nouă ajunge imediat.
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache" always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ${API_ORIGIN}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy no-referrer always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    }
+
+    location ~* \.(wasm)$ {
+        types { application/wasm wasm; }
+        add_header Cache-Control "public, max-age=86400" always;
+    }
+
+    gzip on;
+    gzip_types text/css application/javascript application/json application/wasm image/svg+xml;
+}

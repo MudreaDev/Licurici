@@ -1032,10 +1032,11 @@ Toate prin **Adapter** + **Circuit Breaker** + chei în variabile de mediu (nici
 | `migrate` | build `backend` (target `migrate`) | — | `prisma migrate deploy`, apoi se oprește; api/worker pornesc după |
 | `api` | build `backend` (multi-stage, node:24-alpine) | 3000 | depinde de postgres/redis healthy + migrate reușit |
 | `worker` | aceeași imagine, `node dist/worker.js` | — | scalabil `--scale worker=N` |
-| `dashboard` | build `apps/dashboard` (Flutter web → nginx:alpine) | 8080 | |
+| `dashboard` | build `apps/dashboard/Dockerfile` (Flutter web → nginx neprivilegiat, CSP strict) | 8080 | context = rădăcina repo-ului |
 | `mailpit` | `axllent/mailpit` | 8025 | prinde e-mailurile în dev |
-| `bullboard` | build mic | 3001 | doar dev, monitorizare cozi |
-| `traefik` | `traefik:v3` | 80/443 | doar în prod |
+| `bullboard` | aceeași imagine, `node dist/bullboard.js` | 3001 | doar dev, parolă `BULLBOARD_PASSWORD` |
+| `traefik` | `traefik:v3.5` | 80/443 | doar în prod (`docker-compose.prod.yml`, Let's Encrypt) |
+| `backup` | `postgres:17-alpine` + `age` | — | doar în prod: `pg_dump` zilnic criptat, 35 de zile ([docs/operare.md](docs/operare.md)) |
 
 **Comenzi (după ce există infrastructura):**
 ```bash
@@ -1114,7 +1115,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [x] Vocea: generator (`tools/gen-voice`) + raport de acoperire (`tool/voice_coverage.dart`) — 100%
 - [ ] Câte un folder per joc + `GameConfig` (schema de parametri)
 - [x] Ghid de ilustrații pentru ChatGPT, cu reguli de decupare pe straturi ([docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md))
-- [ ] Drift: profil local, setări, evenimente, outbox, plan, acvariu (stele + pești)
+- [x] Drift: profil local, setări, evenimente, outbox, plan, acvariu (stele + pești) — tabelele `sessions` (cu outbox) și `meta` (setări, plan, acvariu)
 
 ### Sprint 3 · 26 oct – 8 nov — Conturi + sincronizare
 - [x] Auth părinte (e-mail + Argon2id, verificare e-mail prin Mailpit/Brevo), JWT + refresh în Redis, rate limit — + „Am uitat parola”, cont nou din panou (ADR-032)
@@ -1140,7 +1141,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 ### Sprint 6 · 7 – 20 dec — GDPR + producție = **70%**
 - [x] Export date (job → ZIP în stocarea S3 → link pe e-mail), ștergere cont (soft + purge), retragere consimțământ
 - [x] `docs/gdpr/*` (politică, RoPA, DPIA, proceduri)
-- [ ] `docker-compose.prod.yml` + Traefik + TLS + backup; deploy pe VPS UE
+- [ ] `docker-compose.prod.yml` + Traefik + TLS + backup; deploy pe VPS UE — 🟨 fișierele gata (`infra/docker-compose.prod.yml`, `infra/backup.sh`, imaginea panoului, [docs/operare.md](docs/operare.md)); netestate (fără Docker local), deploy-ul încă nefăcut
 - [ ] Sentry (app + API), testare de încărcare k6, audit accesibilitate
 - [x] Toate cele 48 de jocuri S1 funcționale; ADR-10…ADR-21 scrise — 89 de jocuri, ADR-001…ADR-032
 - [ ] Demo pentru coordonator
