@@ -65,6 +65,15 @@ void main() {
     expect(c.read(settingsProvider).levels['semaforul'], 8);
   });
 
+  test('un joc deschis prima dată pornește de la nivelul transferat de la un joc frate', () {
+    final step = ladders.expand((l) => l.steps).firstWhere((s) => s.games.length >= 2);
+    final [a, b, ...] = step.games;
+    final s = AppSettings(levels: {a: 6}, maxLevels: {b: 3});
+    expect(AppSettings(levels: {a: 6}).levelOf(b), 4);
+    expect(s.levelOf(b), 3); // plafonul specialistului câștigă
+    expect(AppSettings(levels: {a: 6, b: 2}).levelOf(b), 2); // ce a jucat deja rămâne
+  });
+
   testWidgets('adultul scoate o arie și un joc; copilul nu le mai vede', (tester) async {
     tester.view.physicalSize = const Size(1280, 800);
     tester.view.devicePixelRatio = 1;

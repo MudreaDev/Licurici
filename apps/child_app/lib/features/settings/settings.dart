@@ -62,8 +62,13 @@ class AppSettings {
   /// Plafonul de dificultate ales de specialist pe joc (ADR-025): nivelul nu urcă peste el.
   final Map<String, int> maxLevels;
 
-  /// Nivelul cu care pornește jocul [gameId] (ținând cont de plafon), sau [fallback] prima dată.
-  int levelOf(String gameId, [int fallback = 1]) => capLevel(levels[gameId] ?? fallback, maxLevels[gameId]);
+  /// Nivelul cu care pornește jocul [gameId], ținând cont de plafon. Prima dată: [fallback] sau,
+  /// dacă e mai mare, nivelul transferat de la un joc de pe aceeași treaptă (`transferredLevel`).
+  int levelOf(String gameId, [int fallback = 1]) {
+    final first = transferredLevel(gameId, levels);
+    final start = levels[gameId] ?? (first != null && first > fallback ? first : fallback);
+    return capLevel(start, maxLevels[gameId]);
+  }
 
   /// Câte felinare aprinse a văzut copilul pe hartă (pentru sărbătoarea unui felinar nou).
   final int lanternsSeen;

@@ -3,6 +3,8 @@
 /// Deocamdată parametrii comuni tuturor jocurilor adaptive: de unde pornește și până unde urcă.
 library;
 
+import 'development.dart';
+
 class GameParam {
   const GameParam(this.id, this.label, this.help, {this.min = 1, this.max = 20});
 
@@ -34,3 +36,21 @@ int capLevel(int level, int? max) {
   final l = level < 1 ? 1 : level;
   return max != null && l > max ? max : l;
 }
+
+/// Transferul între jocuri înrudite (aceeași treaptă): prima dată când copilul deschide
+/// [gameId], pornește cu 2 niveluri sub cel mai mare nivel atins într-un joc frate — prudent,
+/// ca să înceapă cu reușite. null = nimic de transferat (niciun frate peste nivelul 2).
+int? transferredLevel(String gameId, Map<String, int> levels) {
+  final siblings = {
+    for (final s in stepsForGame(gameId))
+      for (final g in s.games)
+        if (g != gameId) g,
+  };
+  var best = 0;
+  for (final g in siblings) {
+    final l = levels[g] ?? 0;
+    if (l > best) best = l;
+  }
+  return best >= 3 ? best - 2 : null;
+}
+

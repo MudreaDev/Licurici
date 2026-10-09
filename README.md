@@ -108,7 +108,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 
 **Aplicația copilului — ce mai rămâne (în sesiunile următoare):**
 1. 🟨 **Parametri pe joc aleși de specialist** (`GameConfig`, ADR-025): ✅ nivelul de pornire și **plafonul de dificultate** pe orice joc (schema `game_params.dart`, formularul din panou generat din ea, aplicat pe tabletă); rămân parametrii specifici (câte runde, ce stimuli).
-2. 🟨 **Adaptare între jocuri** (S2): ✅ „Drumul de azi” după dispoziție și oboseală (`gentleConfig`: obosit/trist/supărat la început sau oboseală/abandon data trecută → un singur bloc de obiective, mai scurt, cu mai mult material cunoscut); rămâne: progresul dintr-un joc să ridice pornirea în jocurile înrudite (aceeași treaptă).
+2. ✅ **Adaptare între jocuri** (S2): ✅ „Drumul de azi” după dispoziție și oboseală (`gentleConfig`: obosit/trist/supărat la început sau oboseală/abandon data trecută → un singur bloc de obiective, mai scurt, cu mai mult material cunoscut); ✅ transferul între jocuri înrudite: un joc deschis prima dată pornește cu 2 niveluri sub cel mai mare nivel atins pe aceeași treaptă (`transferredLevel`), sub plafonul specialistului.
 3. **Integrarea ilustrațiilor** când vin de la tine (fundalul pictat al acvariului, 19 carduri) + verificarea pe toate ecranele.
 4. **Ajustări după tableta reală**: fluiditatea acvariului, scanarea foii de hârtie, mărimea țintelor.
 5. **Pregătirea pentru magazine**: Google Play (programul „Families”, declarația de date, semnare, iconă, capturi), iOS (build și testare, nefăcute încă).
