@@ -22,7 +22,11 @@ class _SyncDialog extends ConsumerStatefulWidget {
 class _SyncDialogState extends ConsumerState<_SyncDialog> {
   final _email = TextEditingController();
   final _password = TextEditingController();
+  final _code = TextEditingController();
   bool _consent = false;
+
+  /// Contul are autentificarea în doi pași: după parola corectă se cere codul.
+  bool _askCode = false;
 
   /// „Trimite automat de acum”: tableta păstrează doar refresh tokenul (nu parola).
   bool _auto = false;
@@ -33,6 +37,7 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
   void dispose() {
     _email.dispose();
     _password.dispose();
+    _code.dispose();
     super.dispose();
   }
 
@@ -49,6 +54,7 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
             store: ref.read(sessionStoreProvider),
             email: _email.text,
             password: _password.text,
+            code: _askCode ? _code.text.trim() : null,
             consent: _consent,
             plan: (
               hidden: ref.read(settingsProvider).hiddenGames,
@@ -70,7 +76,10 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
         ),
       );
     } on SyncException catch (e) {
-      setState(() => _error = e.message);
+      setState(() {
+        _error = e.message;
+        _askCode |= e.needsTotp;
+      });
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -99,6 +108,15 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Parola'),
             ),
+            if (_askCode)
+              TextField(
+                key: const ValueKey('sync-code'),
+                controller: _code,
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+                decoration: const InputDecoration(labelText: 'Codul din aplicația de autentificare'),
+              ),
             const SizedBox(height: 8),
             CheckboxListTile(
               key: const ValueKey('sync-consent'),

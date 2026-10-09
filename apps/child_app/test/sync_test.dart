@@ -19,6 +19,7 @@ class FakeServer {
   final received = <Map<String, dynamic>>[];
   final consents = <String>[];
   bool hasChild = false;
+  bool totp = false;
   bool down = false;
   Map<String, Object?> plan = {'hiddenGames': <String>[], 'updatedAt': null, 'updatedBy': null};
   final planPuts = <List<String>>[];
@@ -35,6 +36,13 @@ class FakeServer {
     if (down) throw const SocketLikeException();
     final path = r.url.path.replaceFirst('/api/v1', '');
     final body = r.body.isEmpty ? null : jsonDecode(r.body);
+    if (path == '/auth/login' && totp && (body as Map)['code'] != '123456') {
+      return json({
+        'statusCode': 401,
+        'message': body['code'] == null ? 'Introdu codul din aplicația de autentificare.' : 'Codul nu e corect.',
+        if (body['code'] == null) 'details': ['totp'],
+      }, 401);
+    }
     if (path == '/auth/login') {
       return (body as Map)['password'] == 'parola-lunga-1'
           ? json({
@@ -305,5 +313,19 @@ void main() {
     );
     expect(kept, 'r' * 30);
     expect(server.consents, ['SYNC=true']);
+  });
+
+  test('contul cu autentificare în doi pași: întâi se cere codul, apoi trimiterea merge', () async {
+    final server = FakeServer()
+      ..hasChild = true
+      ..totp = true;
+    final store = MemorySessionStore();
+    await store.save(local().first);
+    final client = SyncClient(client: MockClient(server.handle), baseUrl: 'http://api/api/v1');
+    Future<int> go({String? code}) =>
+        client.run(store: store, email: 'ana@example.md', password: 'parola-lunga-1', code: code, consent: true);
+    await expectLater(go(), throwsA(isA<SyncException>().having((e) => e.needsTotp, 'needsTotp', isTrue)));
+    await expectLater(go(code: '000000'), throwsA(isA<SyncException>().having((e) => e.needsTotp, 'needsTotp', isFalse)));
+    expect(await go(code: '123456'), 1);
   });
 }

@@ -15,8 +15,11 @@ const apiUrl = String.fromEnvironment(
 const privacyPolicyVersion = '2026-10';
 
 class SyncException implements Exception {
-  const SyncException(this.message, [this.status]);
+  const SyncException(this.message, [this.status, this.needsTotp = false]);
   final String message;
+
+  /// Parola e bună, dar contul are autentificarea în doi pași: trebuie și codul.
+  final bool needsTotp;
 
   /// Codul HTTP (null = fără răspuns de la server).
   final int? status;
@@ -52,6 +55,7 @@ class SyncClient {
     required SessionStore store,
     String? email,
     String? password,
+    String? code,
     String? refreshToken,
     void Function(String refreshToken)? onRefreshToken,
     required bool consent,
@@ -66,7 +70,7 @@ class SyncClient {
     _token = null;
     final pair = refreshToken != null
         ? await _call('POST', '/auth/refresh', {'refreshToken': refreshToken}) as Map
-        : await _call('POST', '/auth/login', {'email': email, 'password': password}) as Map;
+        : await _call('POST', '/auth/login', {'email': email, 'password': password, 'code': ?code}) as Map;
     _token = pair['accessToken'] as String;
     onRefreshToken?.call(pair['refreshToken'] as String);
     // Acordul se dă (o dată, explicit) din fereastra „Trimite pe server”; la trimiterea
@@ -164,6 +168,7 @@ class SyncClient {
             ? data['message'] as String
             : 'Eroare ${res.statusCode}.',
         res.statusCode,
+        res.statusCode == 401 && data is Map && (data['details'] as List?)?.contains('totp') == true,
       );
     }
     return data;
