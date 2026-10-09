@@ -90,6 +90,14 @@ services:
     healthcheck:
       disable: true
 
+  # Cozile BullMQ în browser: http://localhost:3001 (utilizator admin, parola BULLBOARD_PASSWORD).
+  bullboard:
+    <<: *backend
+    command: ["node", "dist/bullboard.js"]
+    ports: ["127.0.0.1:3001:3001"]
+    healthcheck:
+      disable: true
+
   # Prinde toate e-mailurile trimise în dezvoltare: http://localhost:8025
   mailpit:
     image: axllent/mailpit:v1.27

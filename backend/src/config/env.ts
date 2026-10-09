@@ -35,6 +35,9 @@ export const envSchema = z.object({
   /** Adresa panoului (legăturile din e-mailuri duc acolo). */
   APP_URL: z.url().default('http://localhost:8080'),
 
+  /** Parola pentru Bull Board (doar dezvoltare, port 3001; utilizator `admin`). */
+  BULLBOARD_PASSWORD: z.string().min(8).optional(),
+
   /** Câte job-uri procesează un worker în paralel, pe coadă. */
   WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(64).default(4),
 });

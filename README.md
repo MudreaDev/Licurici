@@ -1126,7 +1126,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 ### Sprint 4 · 9 – 22 nov — Mecanici + cozi
 - [x] `DragDropMechanic`, `SequenceMechanic`, `MemoryCardsMechanic`, `TraceMechanic` — cu interacțiunile animate din §15.1 (ridicare, magnet, flip 3D, cerneală magică)
 - [x] +15 jocuri (sortare, grupam, habitate, umbre, marimi, perechi, memorie, secventa, ordonam, trasare-litere, trasare-cifre, ceasul, bani, zeci, semne)
-- [ ] BullMQ: cozi `stats`, `mail`; read model `child_skill_stats`; Bull Board — 🟨 `stats`, `mail`, `gdpr`, `child_skill_stats` gata; Bull Board lipsește
+- [x] BullMQ: cozi `stats`, `mail`; read model `child_skill_stats`; Bull Board — + `gdpr`, `reports`; Bull Board pe 3001 (`src/bullboard.ts`, parolă, doar dezvoltare)
 - [ ] Pipeline voce Azure Speech (`tools/gen-voice`), pachet de conținut în stocarea S3 + `/content/manifest`
 - [x] Aventura: hartă, niveluri infinite, stele — „Harta felinarelor” (`/harta`), niveluri adaptive păstrate pe joc, stele + pușculița
 
