@@ -1160,7 +1160,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [x] Export date (job → ZIP în stocarea S3 → link pe e-mail), ștergere cont (soft + purge), retragere consimțământ
 - [x] `docs/gdpr/*` (politică, RoPA, DPIA, proceduri)
 - [ ] `docker-compose.prod.yml` + Traefik + TLS + backup; deploy pe VPS UE — 🟨 fișierele gata (`infra/docker-compose.prod.yml`, `infra/backup.sh`, imaginea panoului, [docs/operare.md](docs/operare.md)); netestate (fără Docker local), deploy-ul încă nefăcut
-- [ ] Sentry (app + API), testare de încărcare k6, audit accesibilitate
+- [ ] Sentry (app + API), testare de încărcare k6, audit accesibilitate — 🟨 accesibilitatea testată automat (33 de ecrane, `test/a11y*_test.dart`); scriptul k6 gata (`tools/k6/sync.js`, 200 sync/s, p95 < 200 ms), nerulat; Sentry încă nu
 - [x] Toate cele 48 de jocuri S1 funcționale; ADR-10…ADR-21 scrise — 89 de jocuri, ADR-001…ADR-032
 - [ ] Demo pentru coordonator
 
