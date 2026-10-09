@@ -100,6 +100,9 @@ ThemeData buildTheme({required bool calm, bool contrast = false}) {
       bodyMedium: _round(18, FontWeight.w600, soft),
       labelLarge: _round(22, FontWeight.w800, ink),
     ),
+    // Textul butoanelor (ecranele adultului) în nuanța închisă: contrast WCAG ≥ 3 pe fundal.
+    textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: Tokens.primaryDark)),
+    outlinedButtonTheme: OutlinedButtonThemeData(style: OutlinedButton.styleFrom(foregroundColor: Tokens.primaryDark)),
     splashFactory: NoSplash.splashFactory,
     highlightColor: Colors.transparent,
   );

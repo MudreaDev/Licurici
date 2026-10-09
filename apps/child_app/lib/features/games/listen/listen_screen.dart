@@ -348,6 +348,7 @@ class _Thing extends StatelessWidget {
       shakeTick: shake,
       popTick: number ?? 0,
       child: CandyPressable(
+        semanticLabel: label,
         color: Colors.white,
         radius: side * 0.18,
         lip: 5,
