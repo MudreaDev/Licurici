@@ -1,0 +1,7 @@
+# Copiază în android/key.properties (ignorat de git) după ce creezi cheia de upload:
+#   keytool -genkey -v -keystore %USERPROFILE%\licurici-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+# Păstrează fișierul .jks și parolele în siguranță (manager de parole): fără ele nu mai poți actualiza aplicația.
+storeFile=C:/Users/<tu>/licurici-upload.jks
+storePassword=
+keyAlias=upload
+keyPassword=

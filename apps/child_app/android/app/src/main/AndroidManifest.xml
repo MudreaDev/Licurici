@@ -1,10 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Doar pentru sincronizarea opțională din Pentru părinți (cont + consimțământ). -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Datele copilului rămân pe tabletă: fără backup automat în cloud și fără transfer între
+         dispozitive (GDPR, minimizare; refresh tokenul din Keystore nu s-ar putea restaura oricum). -->
     <application
         android:label="Licurici"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:screenOrientation="sensorLandscape"
             android:name=".MainActivity"

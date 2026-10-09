@@ -87,6 +87,13 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] Cheia de backup: `age-keygen -o cheie.txt` pe calculatorul tău; cheia publică în `BACKUP_AGE_RECIPIENT`, cheia privată într-un manager de parole.
 - [ ] Primul deploy după [docs/operare.md](docs/operare.md); apoi testul de încărcare `k6 run tools/k6/sync.js` pe serverul de **test**.
 
+**C2. Google Play** (pregătit în cod: iconița, fără backup în cloud, semnare din `android/key.properties`)
+- [ ] Creează cheia de upload (comanda e în `apps/child_app/android/key.properties.example`) și completează `android/key.properties`; păstrează `.jks` + parolele în manager de parole.
+- [ ] Cont Google Play Console (taxă unică) → aplicație nouă, publicul țintă „copii” (programul Families).
+- [ ] Formularul „Siguranța datelor” și declarațiile: răspunsurile sunt în [docs/gdpr/declaratii-magazine.md](docs/gdpr/declaratii-magazine.md).
+- [ ] Politica de confidențialitate publicată la un URL (ex. `https://panou.<domeniu>/confidentialitate`) — cere-mi să o pun în panou când ai domeniul.
+- [ ] Capturi de ecran: pot fi luate din `apps/child_app/test/shots/` (tableta).
+
 **D. Juridic și decizii**
 - [ ] Cu un jurist: documentele din `docs/gdpr/` + identitatea operatorului (toate `[…]`).
 - [ ] **Validează planul terapeutic** ([docs/plan-dezvoltare-terapeutica.md](docs/plan-dezvoltare-terapeutica.md)), ideal cu 1–2 specialiști: ariile, treptele, KPI-urile.
@@ -111,7 +118,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 2. ✅ **Adaptare între jocuri** (S2): ✅ „Drumul de azi” după dispoziție și oboseală (`gentleConfig`: obosit/trist/supărat la început sau oboseală/abandon data trecută → un singur bloc de obiective, mai scurt, cu mai mult material cunoscut); ✅ transferul între jocuri înrudite: un joc deschis prima dată pornește cu 2 niveluri sub cel mai mare nivel atins pe aceeași treaptă (`transferredLevel`), sub plafonul specialistului.
 3. **Integrarea ilustrațiilor** când vin de la tine (fundalul pictat al acvariului, 19 carduri) + verificarea pe toate ecranele.
 4. **Ajustări după tableta reală**: fluiditatea acvariului, scanarea foii de hârtie, mărimea țintelor.
-5. **Pregătirea pentru magazine**: Google Play (programul „Families”, declarația de date, semnare, iconă, capturi), iOS (build și testare, nefăcute încă).
+5. 🟨 **Pregătirea pentru magazine**: ✅ iconița din mascotă (`tools/art/make_icon.py`, adaptivă), ✅ fără backup în cloud al datelor copilului (`allowBackup=false`, `data_extraction_rules.xml`), ✅ semnare release din `key.properties`; rămân: pagina publică a politicii de confidențialitate, iOS (build și testare, nefăcute încă).
 6. Teste pe dispozitiv (`integration_test`): fluxul copil → joc → final → sincronizare.
 7. Sentry în aplicație — doar dacă decizi tu (§0.0 D).
 8. (S2) Conținut pentru clasele 5–12 și tema „matură”; pachete de conținut descărcabile (`/content/manifest`) — opționale.
