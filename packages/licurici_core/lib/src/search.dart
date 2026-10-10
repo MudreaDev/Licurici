@@ -6,6 +6,7 @@ library;
 
 import 'dart:math';
 
+import 'avoid.dart' show safeWords;
 import 'games/vocabular.dart';
 import 'grades.dart';
 import 'reaction.dart' show ramp;
@@ -120,15 +121,17 @@ class SearchGame {
     return (cols, max(rows, 2));
   }
 
-  SearchLevel generate(int level, {int? seed}) {
+  /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
+  SearchLevel generate(int level, {int? seed, Set<String> avoid = const {}}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
     final s = seed ?? Random().nextInt(1 << 31);
     final random = Random(s);
     final axes = axesFor(level);
-    final targets = ([...objectWords]..shuffle(random)).take(axes.rounds).toList();
+    final words = safeWords(avoid);
+    final targets = ([...words]..shuffle(random)).take(axes.rounds).toList();
     final rounds = <SearchRound>[];
     for (final target in targets) {
-      final others = objectWords.where((o) => o.emoji != target.emoji).toList()..shuffle(random);
+      final others = words.where((o) => o.emoji != target.emoji).toList()..shuffle(random);
       final same = others.where((o) => o.group == target.group).toList();
       final rest = others.where((o) => o.group != target.group).toList();
       // Distractorii pot să se repete (mulți pe ecran), dar niciunul nu e ținta.

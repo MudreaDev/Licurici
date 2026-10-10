@@ -7,6 +7,7 @@ library;
 
 import 'dart:math';
 
+import 'avoid.dart' show isAvoided;
 import 'games/vocabular.dart';
 import 'grades.dart';
 
@@ -82,14 +83,15 @@ class ShopGame {
   int listFor(int level) => min(5, 1 + (level - 1) ~/ 2);
   int shelfFor(int level) => min(15, 5 + level);
 
-  ShopLevel generate(int level, {int? seed}) {
+  /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
+  ShopLevel generate(int level, {int? seed, Set<String> avoid = const {}}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
     final s = seed ?? Random().nextInt(1 << 31);
     final random = Random(s);
     final k = listFor(level), n = shelfFor(level);
     final rounds = <ShopRound>[];
     for (var r = 0; r < 3; r++) {
-      final products = [...shopProducts]..shuffle(random);
+      final products = [...shopProducts.where((o) => !isAvoided(o.emoji, avoid))]..shuffle(random);
       final list = products.take(k).toList();
       final rest = products.skip(k).toList();
       // De la nivelul 6, mai întâi produse din aceleași grupe (se confundă mai ușor).

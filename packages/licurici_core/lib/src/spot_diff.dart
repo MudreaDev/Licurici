@@ -7,6 +7,7 @@ library;
 
 import 'dart:math';
 
+import 'avoid.dart' show safeWords;
 import 'games/vocabular.dart';
 import 'grades.dart';
 
@@ -84,7 +85,9 @@ class SpotDiffGame {
   int differencesFor(int level) => min(5, 1 + (level - 1) ~/ 2);
   int itemsFor(int level) => min(12, 3 + level);
 
-  DiffLevel generate(int level, {int? seed}) {
+  /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
+  DiffLevel generate(int level, {int? seed, Set<String> avoid = const {}}) {
+    final words = safeWords(avoid);
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
     final s = seed ?? Random().nextInt(1 << 31);
     final random = Random(s);
@@ -95,7 +98,7 @@ class SpotDiffGame {
       final cols = n <= 6 ? 3 : 4;
       final rows = ((n + 2) / cols).ceil();
       final cells = [for (var i = 0; i < cols * rows; i++) i]..shuffle(random);
-      final objects = ([...objectWords]..shuffle(random)).take(n).toList();
+      final objects = ([...words]..shuffle(random)).take(n).toList();
       final left = {for (var i = 0; i < n; i++) cells[i]: objects[i]};
       final right = Map.of(left);
       final differences = <int, DiffKind>{};
@@ -110,11 +113,11 @@ class SpotDiffGame {
               right.remove(cell);
             } else {
               final old = left[cell]!;
-              final pool = objectWords
+              final pool = words
                   .where((o) => !left.containsValue(o) && !right.containsValue(o))
                   .where((o) => !similar || o.group == old.group)
                   .toList();
-              final fallback = objectWords.where((o) => !left.containsValue(o) && !right.containsValue(o)).toList();
+              final fallback = words.where((o) => !left.containsValue(o) && !right.containsValue(o)).toList();
               final list = pool.isEmpty ? fallback : pool;
               right[cell] = list[random.nextInt(list.length)];
             }
@@ -125,7 +128,7 @@ class SpotDiffGame {
               continue;
             }
             final cell = free.removeLast();
-            final pool = objectWords.where((o) => !left.containsValue(o) && !right.containsValue(o)).toList();
+            final pool = words.where((o) => !left.containsValue(o) && !right.containsValue(o)).toList();
             right[cell] = pool[random.nextInt(pool.length)];
             differences[cell] = DiffKind.extra;
         }

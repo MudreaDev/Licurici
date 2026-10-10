@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../../data/session.dart';
+import '../../../shared/nothing_to_show.dart';
 import '../../../shared/celebration.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
@@ -37,6 +38,7 @@ class ReactionGameScreen extends ConsumerStatefulWidget {
 class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   late ReactionLevel _level;
+  bool _blocked = false;
   late Speaker _speaker;
   late final _drift = AnimationController(vsync: this);
   late final _effect = AnimationController(
@@ -75,9 +77,16 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
       ..reset();
     _drift.reset();
     _effect.reset();
-    _level = widget.game.generate(
-      ref.read(reactionLevelProvider(widget.game.id)),
+    // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
+    final avoid = avoidedOf(ref);
+    final level = generateAvoiding(
+      (seed) => widget.game.generate(ref.read(reactionLevelProvider(widget.game.id)), seed: seed),
+      (l) => l.art,
+      avoid,
     );
+    _blocked = level == null;
+    if (level == null) return;
+    _level = level;
     _responses.clear();
     _index = _offTargetTaps = 0;
     _phase = _Phase.introduction;
@@ -253,6 +262,7 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_blocked) return const NothingToShow();
     _speaker = ref.watch(voiceProvider);
     final motion = MotionPolicy.of(context, ref);
     _motion = motion;

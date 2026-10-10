@@ -12,7 +12,8 @@ library;
 
 import 'dart:math';
 
-import 'games/vocabular.dart' show ObjectWord, objectWords;
+import 'avoid.dart' show safeWords;
+import 'games/vocabular.dart' show ObjectWord;
 import 'grades.dart';
 import 'reaction.dart' show ramp;
 import 'trial.dart' show PromptLevel;
@@ -192,12 +193,13 @@ class InstructionGame {
     return bare[w] ?? w;
   }
 
-  InstructionLevel generate(int level, {int? seed}) {
+  /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
+  InstructionLevel generate(int level, {int? seed, Set<String> avoid = const {}}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
     final s = seed ?? Random().nextInt(1 << 31);
     final random = Random(s);
     final axes = axesFor(level);
-    final pool = [for (final o in objectWords) if (!axes.familiarOnly || o.familiar) o];
+    final pool = [for (final o in safeWords(avoid)) if (!axes.familiarOnly || o.familiar) o];
     final rounds = <InstructionRound>[];
     for (var i = 0; i < axes.rounds; i++) {
       final table = ([...pool]..shuffle(random)).take(min(axes.objects, pool.length)).toList();

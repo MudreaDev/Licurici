@@ -6,6 +6,7 @@ library;
 
 import 'dart:math';
 
+import 'avoid.dart' show safeWords;
 import 'games/vocabular.dart';
 import 'grades.dart';
 
@@ -111,7 +112,8 @@ class GazeGame {
         rounds: 6,
       );
 
-  GazeLevel generate(int level, {int? seed}) {
+  /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
+  GazeLevel generate(int level, {int? seed, Set<String> avoid = const {}}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
     final s = seed ?? Random().nextInt(1 << 31);
     final random = Random(s);
@@ -124,7 +126,7 @@ class GazeGame {
     final rounds = <GazeRound>[];
     final used = <String>{};
     for (final side in sides) {
-      final pool = objectWords.where((o) => !used.contains(o.emoji)).toList();
+      final pool = safeWords(avoid).where((o) => !used.contains(o.emoji)).toList();
       // La obiecte asemănătoare, ținta vine dintr-o grupă care mai are măcar un obiect liber.
       final starts = axes.similar
           ? pool.where((o) => pool.any((p) => p != o && p.group == o.group)).toList()

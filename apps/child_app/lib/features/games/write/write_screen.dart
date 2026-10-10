@@ -12,6 +12,7 @@ import '../../../data/session.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/mascot.dart';
+import '../../../shared/nothing_to_show.dart' show avoidedOf;
 import '../../../shared/motion.dart';
 import '../../../shared/reward_finish.dart';
 import '../../../shared/sfx.dart';
@@ -303,7 +304,8 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with TickerProviderSt
                       ),
                     ),
                   ),
-                  if (g.picture != null)
+                  // Poza cuvântului doar dacă nu e printre imaginile de evitat (cuvântul rămâne scris).
+                  if (g.picture != null && !isAvoided(g.picture, avoidedOf(ref)))
                     Expanded(flex: 3, child: StimulusArt(g.picture!, size: layout.compact ? 64 : 120))
                   else if (int.tryParse(g.char) case final n? when n > 0)
                     Expanded(flex: 3, child: _Count(n)),

@@ -8,6 +8,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/nothing_to_show.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
@@ -37,6 +38,7 @@ class DiffScreen extends ConsumerStatefulWidget {
 
 class _DiffScreenState extends ConsumerState<DiffScreen> {
   late DiffLevel _level;
+  bool _blocked = false;
   final _solves = <DiffSolve>[];
   final _found = <int>{};
   final _clock = Stopwatch();
@@ -58,10 +60,17 @@ class _DiffScreenState extends ConsumerState<DiffScreen> {
 
   void _start() {
     _timer?.cancel();
-    _level = widget.game.generate(
-      ref.read(diffLevelProvider),
+    // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
+    final avoid = avoidedOf(ref);
+    final level = generateAvoiding(
+      (seed) => widget.game.generate(ref.read(diffLevelProvider), seed: seed, avoid: avoid),
+      (l) => l.art,
+      avoid,
       seed: widget.seed,
     );
+    _blocked = level == null;
+    if (level == null) return;
+    _level = level;
     _solves.clear();
     _scene = 0;
     _found.clear();
@@ -146,6 +155,7 @@ class _DiffScreenState extends ConsumerState<DiffScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_blocked) return const NothingToShow();
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     final result = _result;

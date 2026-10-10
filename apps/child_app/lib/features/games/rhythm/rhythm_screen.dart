@@ -12,6 +12,7 @@ import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/mascot.dart';
+import '../../../shared/nothing_to_show.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/reward_finish.dart';
 import '../../../shared/sfx.dart';
@@ -88,6 +89,7 @@ class _RhythmScreenState extends ConsumerState<RhythmScreen>
 
   void _start() {
     _cancel();
+    if (isAvoided(widget.game.emoji, avoidedOf(ref))) return;
     _generation++;
     _level = widget.game.generate(
       ref.read(rhythmLevelProvider),
@@ -243,6 +245,8 @@ class _RhythmScreenState extends ConsumerState<RhythmScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Adultul a ales „Tobe și zgomote” printre imaginile de evitat: jocul tobei nu se arată.
+    if (isAvoided(widget.game.emoji, avoidedOf(ref))) return const NothingToShow();
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     final result = _result;

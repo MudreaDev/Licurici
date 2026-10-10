@@ -7,6 +7,7 @@ import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/nothing_to_show.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
@@ -37,6 +38,7 @@ class CauseScreen extends ConsumerStatefulWidget {
 class _CauseScreenState extends ConsumerState<CauseScreen>
     with TickerProviderStateMixin {
   late CauseLevel _level;
+  bool _blocked = false;
   final _controllers = <AnimationController>[];
   final _touches = <CauseTouch>[];
   final _clock = Stopwatch();
@@ -60,10 +62,17 @@ class _CauseScreenState extends ConsumerState<CauseScreen>
       c.dispose();
     }
     _controllers.clear();
-    _level = widget.game.generate(
-      ref.read(causeLevelProvider),
+    // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
+    final avoid = avoidedOf(ref);
+    final level = generateAvoiding(
+      (seed) => widget.game.generate(ref.read(causeLevelProvider), seed: seed),
+      (l) => l.art,
+      avoid,
       seed: widget.seed,
     );
+    _blocked = level == null;
+    if (level == null) return;
+    _level = level;
     for (final o in _level.objects) {
       _controllers.add(
         AnimationController(
@@ -169,6 +178,7 @@ class _CauseScreenState extends ConsumerState<CauseScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_blocked) return const NothingToShow();
     final motion = MotionPolicy.of(context, ref);
     final result = _result;
     return Scaffold(

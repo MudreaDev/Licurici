@@ -8,6 +8,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/nothing_to_show.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/juice.dart';
@@ -56,6 +57,7 @@ class SortScreen extends ConsumerStatefulWidget {
 
 class _SortScreenState extends ConsumerState<SortScreen> {
   late SortLevel _level;
+  bool _blocked = false;
   final _placed = <int, String>{}; // lucru → grupă
   final _wrong = <int, int>{}; // lucru → greșeli
   final _firstWrong = <int, String>{};
@@ -81,9 +83,20 @@ class _SortScreenState extends ConsumerState<SortScreen> {
 
   void _start() {
     _timer?.cancel();
-    _level =
-        widget.preset ??
-        widget.game.generate(ref.read(sortLevelProvider), seed: widget.seed);
+    // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
+    final avoid = avoidedOf(ref);
+    final preset = widget.preset;
+    final level = preset != null
+        ? _withoutAvoided(preset, avoid)
+        : generateAvoiding(
+            (seed) => widget.game.generate(ref.read(sortLevelProvider), seed: seed),
+            (l) => l.art,
+            avoid,
+            seed: widget.seed,
+          );
+    _blocked = level == null;
+    if (level == null) return;
+    _level = level;
     _placed.clear();
     _wrong.clear();
     _firstWrong.clear();
@@ -180,6 +193,7 @@ class _SortScreenState extends ConsumerState<SortScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_blocked) return const NothingToShow();
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     final result = _result;
@@ -499,4 +513,23 @@ class _Bin extends StatelessWidget {
       ),
     );
   }
+}
+
+/// O oprire din explorare (nivel dat): lucrurile de evitat se scot; dacă rămâne prea puțin
+/// sau chiar o cutie e de evitat, nu se arată deloc.
+SortLevel? _withoutAvoided(SortLevel level, Set<String> avoid) {
+  if (avoid.isEmpty) return level;
+  if (level.bins.any((b) => isAvoided(b.emoji, avoid))) return null;
+  final kept = [for (final i in level.items) if (!isAvoided(i.emoji, avoid)) i];
+  if (kept.length < 2) return null;
+  if (kept.length == level.items.length) return level;
+  return SortLevel(
+    gameId: level.gameId,
+    level: level.level,
+    seed: level.seed,
+    axes: level.axes,
+    bins: level.bins,
+    items: [for (final (n, i) in kept.indexed) SortItem(n, i.emoji, i.binId)],
+    instruction: level.instruction,
+  );
 }

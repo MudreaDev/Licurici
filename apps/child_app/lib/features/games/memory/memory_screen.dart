@@ -8,6 +8,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/nothing_to_show.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/illustration.dart';
@@ -41,6 +42,7 @@ class MemoryScreen extends ConsumerStatefulWidget {
 
 class _MemoryScreenState extends ConsumerState<MemoryScreen> {
   late MemoryLevel _level;
+  bool _blocked = false;
   final _up = <int>{};
   final _matched = <int>{};
   final _moves = <MemoryMove>[];
@@ -63,10 +65,17 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
 
   void _start() {
     _timer?.cancel();
-    _level = widget.game.generate(
-      ref.read(memoryLevelProvider),
+    // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
+    final avoid = avoidedOf(ref);
+    final level = generateAvoiding(
+      (seed) => widget.game.generate(ref.read(memoryLevelProvider), seed: seed),
+      (l) => l.art,
+      avoid,
       seed: widget.seed,
     );
+    _blocked = level == null;
+    if (level == null) return;
+    _level = level;
     _up.clear();
     _matched.clear();
     _moves.clear();
@@ -164,6 +173,7 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_blocked) return const NothingToShow();
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     final result = _result;

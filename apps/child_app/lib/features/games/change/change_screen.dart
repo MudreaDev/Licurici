@@ -8,6 +8,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/nothing_to_show.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/juice.dart';
@@ -43,6 +44,7 @@ class ChangeScreen extends ConsumerStatefulWidget {
 class _ChangeScreenState extends ConsumerState<ChangeScreen>
     with SingleTickerProviderStateMixin {
   late ChangeLevel _level;
+  bool _blocked = false;
 
   /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
   int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
@@ -83,10 +85,17 @@ class _ChangeScreenState extends ConsumerState<ChangeScreen>
 
   void _start() {
     _cancel();
-    _level = widget.game.generate(
-      ref.read(changeLevelProvider),
+    // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
+    final avoid = avoidedOf(ref);
+    final level = generateAvoiding(
+      (seed) => widget.game.generate(ref.read(changeLevelProvider), seed: seed, avoid: avoid),
+      (l) => l.art,
+      avoid,
       seed: widget.seed,
     );
+    _blocked = level == null;
+    if (level == null) return;
+    _level = level;
     _answers.clear();
     _round = 0;
     _result = null;
@@ -192,6 +201,7 @@ class _ChangeScreenState extends ConsumerState<ChangeScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_blocked) return const NothingToShow();
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     final result = _result;

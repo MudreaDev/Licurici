@@ -7,6 +7,7 @@ library;
 
 import 'dart:math';
 
+import 'avoid.dart' show safeWords;
 import 'games/vocabular.dart';
 import 'grades.dart';
 import 'reaction.dart' show ramp;
@@ -142,7 +143,8 @@ class ChangeGame {
                 : const [ChangeKind.appear, ChangeKind.replace, ChangeKind.disappear]),
       );
 
-  ChangeLevel generate(int level, {int? seed}) {
+  /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
+  ChangeLevel generate(int level, {int? seed, Set<String> avoid = const {}}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
     final s = seed ?? Random().nextInt(1 << 31);
     final random = Random(s);
@@ -155,7 +157,7 @@ class ChangeGame {
       final cols = n <= 3 ? 3 : (n <= 6 ? 3 : 4);
       final rows = ((n + 1) / cols).ceil();
       final cells = [for (var i = 0; i < cols * rows; i++) i]..shuffle(random);
-      final objects = ([...objectWords]..shuffle(random)).take(n + 4).toList();
+      final objects = ([...safeWords(avoid)]..shuffle(random)).take(n + 4).toList();
       final before = [for (var i = 0; i < n; i++) ChangeItem(objects[i], cells[i])];
       final spare = objects.sublist(n);
       late List<ChangeItem> after;

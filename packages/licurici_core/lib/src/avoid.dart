@@ -4,6 +4,7 @@
 library;
 
 import 'game.dart';
+import 'games/vocabular.dart';
 
 class AvoidItem {
   const AvoidItem(this.id, this.label, this.emojis);
@@ -49,6 +50,30 @@ bool _hits(String? text, Set<String> avoid) {
   if (text == null || avoid.isEmpty) return false;
   final t = _bare(text);
   return avoid.any(t.contains);
+}
+
+/// Imaginea (sau textul cu imagini) [art] e printre cele de evitat?
+bool isAvoided(String? art, Set<String> avoid) => _hits(art, avoid);
+
+/// Obiectele din vocabular pe care copilul le poate vedea (pentru jocurile care aleg din toate).
+List<ObjectWord> safeWords(Set<String> avoid) =>
+    avoid.isEmpty ? objectWords : [for (final o in objectWords) if (!_hits(o.emoji, avoid)) o];
+
+/// Generează un nivel fără imagini de evitat, pentru mecanicile care nu sunt `choice`: încearcă
+/// alte seed-uri (deterministe, dacă [seed] e dat) până când [art] nu mai arată nimic de evitat.
+/// `null` dacă nu se poate — ecranul arată atunci „Hai la alt joc!”, niciodată stimulul.
+L? generateAvoiding<L>(
+  L Function(int? seed) generate,
+  Set<String> Function(L level) art,
+  Set<String> avoid, {
+  int? seed,
+  int tries = 40,
+}) {
+  for (var i = 0; i < (avoid.isEmpty ? 1 : tries); i++) {
+    final level = generate(seed == null ? null : seed + i * 7919);
+    if (!art(level).any((a) => _hits(a, avoid))) return level;
+  }
+  return null;
 }
 
 Iterable<String?> _visualTexts(Visual v) sync* {

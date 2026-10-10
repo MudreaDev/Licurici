@@ -9,6 +9,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/nothing_to_show.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
@@ -37,6 +38,7 @@ class TraceScreen extends ConsumerStatefulWidget {
 class _TraceScreenState extends ConsumerState<TraceScreen>
     with SingleTickerProviderStateMixin {
   late TraceLevel _level;
+  bool _blocked = false;
   late final _idle = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1600),
@@ -64,10 +66,17 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
 
   void _start() {
     _timer?.cancel();
-    _level = widget.game.generate(
-      ref.read(traceLevelProvider),
+    // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
+    final avoid = avoidedOf(ref);
+    final level = generateAvoiding(
+      (seed) => widget.game.generate(ref.read(traceLevelProvider), seed: seed),
+      (l) => l.art,
+      avoid,
       seed: widget.seed,
     );
+    _blocked = level == null;
+    if (level == null) return;
+    _level = level;
     _runs.clear();
     _index = 0;
     _tracker = null;
@@ -181,6 +190,7 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
 
   @override
   Widget build(BuildContext context) {
+    if (_blocked) return const NothingToShow();
     final motion = MotionPolicy.of(context, ref);
     final layout = AppLayout.of(context);
     if (motion.movement && !_idle.isAnimating) {
