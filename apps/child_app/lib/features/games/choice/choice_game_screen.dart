@@ -74,7 +74,9 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   /// Steluța care zboară de la răspunsul corect în bara de progres.
   final _stackKey = GlobalKey();
   final _progressKey = GlobalKey();
-  final _cardKeys = List.generate(6, (_) => GlobalKey());
+  // Chei noi la fiecare rundă: în trecerea animată, cardurile rundei care pleacă (cu cheile
+  // vechi) stau pe ecran o clipă lângă cele noi — aceeași GlobalKey de două ori ar strica arborele.
+  var _cardKeys = List.generate(6, (_) => GlobalKey());
   ({Offset from, Offset to, int tick})? _flight;
   int _flights = 0;
 
@@ -298,6 +300,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
         ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
       } else {
         _index++;
+        _cardKeys = List.generate(6, (_) => GlobalKey());
         _enterRound();
       }
     });

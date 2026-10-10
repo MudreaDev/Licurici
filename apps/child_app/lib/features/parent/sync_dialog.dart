@@ -72,7 +72,9 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
           content: Text(
             n == 0
                 ? 'Totul era deja trimis.'
-                : '$n sesiuni trimise. Le vezi în panoul web.',
+                : n == 1
+                    ? 'O sesiune trimisă. O vezi în panoul web.'
+                    : '$n sesiuni trimise. Le vezi în panoul web.',
           ),
         ),
       );
