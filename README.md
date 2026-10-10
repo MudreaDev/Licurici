@@ -54,7 +54,7 @@ ce urmează. Oricine (om sau asistent de cod) intră în repo trebuie să citeas
 | Backend NestJS (API + worker) | 🟨 | Config validat (zod), loguri pino fără PII, Prisma 7 + migrări (`init`, `therapy_sessions`), `/health` + `/health/ready`, cozi BullMQ, procesor `stats` cu lock Redis. **Conturi pentru adulți** (`auth/`: Argon2id, JWT 15 min, refresh opac rotit în Redis), **acces la copil** (`children/access.ts`: părinte / specialist cu `CareLink`, 404 pentru restul), **consimțăminte** (`consents/`: jurnal append-only, retragere), **sincronizarea sesiunilor** (`sync/`: idempotentă, cere consimțământul `SYNC`; test de contract cu JSON generat din Dart), **rezumat AI** (`reports/summary-flow.ts`: consimțământ `AI_SUMMARY`, cache, limită zilnică), **partajarea cu specialistul** (`children/sharing.ts`: invitație după e-mail, consimțământ `THERAPIST_SHARING`, 90 de zile implicit, revocare, audit), **GDPR** (`gdpr/`: export complet `GET /me/export`, ștergerea copilului `DELETE /children/:id` — acces tăiat imediat, ștergere definitivă după 7 zile prin coada `gdpr` și `GdprProcessor` în worker), erori de infrastructură → 503. Serviciile sunt TypeScript simplu (NestJS 12 e ESM și nu se încarcă în Jest), legate în `api/api.module.ts`. 38 de teste; API-ul și worker-ul pornite fără Docker (testul de pornire a prins o dependență lipsă între module): rute, 400/401/503, Swagger verificate pe HTTP. **Netestat cu Postgres/Redis reale** (Docker lipsă). **Sesiunea 9:** coada `mail` (confirmare, parolă nouă, raport săptămânal), CORS, Socket.IO + adapter Redis (`/api/v1/live`, prezență), `POST /children/:id/ask`, Bull Board. |
 | Docker Compose (dev + prod) | 🟨 | postgres, redis, storage (RustFS), migrate, api, worker, **dashboard**, **bullboard**, mailpit; `docker-compose.prod.yml` cu Traefik + TLS + backup criptat ([docs/operare.md](docs/operare.md)). **Netestat încă**: Docker nu e instalat pe mașina de dezvoltare. |
 | GDPR (consimțământ, export, ștergere, documente) | 🟨 | API: consimțăminte pe scopuri (jurnal append-only, retragere), export complet, ștergerea copilului cu perioadă de grație, audit. Panou: „Contul meu” (consimțăminte, partajare cu e-mailul specialistului, export, ștergerea copilului, **ștergerea contului** cu parola — sesiunea 8). Tableta: **„Șterge datele de pe tabletă”** în „Pentru părinți” (sesiuni, setări, abțibilduri, stele, acvariu — sesiunea 8). Documentele din `docs/gdpr/` — ciorne (§13.5). Exportul se descarcă ca fișier JSON (sesiunea 8). **De făcut:** verificarea juridică a documentelor, criptarea volumului și a e-mailului (DPIA). |
-| Documente ADR / cercetare pentru teză | 🟨 | ADR-001…ADR-032 în `docs/adr/`. `docs/research/`: [acvariul — pești 3D din cod](docs/research/acvariul-pesti-3d.md) (sesiunea 9). |
+| Documente ADR / cercetare pentru teză | 🟨 | ADR-001…ADR-032 în `docs/adr/`. **`docs/research/` — toate cele 8 capitole din §23** (sesiunea 11): [arhitectura](docs/research/01-arhitectura.md), [comunicarea](docs/research/02-comunicare.md), [tehnologiile](docs/research/03-tehnologii.md), [pattern-urile](docs/research/04-patternuri.md), [securitatea și GDPR](docs/research/05-securitate-gdpr.md), [UX pentru TSA](docs/research/06-ux-autism.md), [dificultatea adaptivă](docs/research/07-dificultate-adaptiva.md), [evaluarea](docs/research/08-evaluare.md) + [acvariul — pești 3D din cod](docs/research/acvariul-pesti-3d.md) (sesiunea 9). |
 | Unelte | 🟨 | `tools/gen-voice/gen-voice.mjs` (Azure AI Speech sau edge-tts, incremental). |
 
 **Termen:** 70% din aplicație gata la finalul semestrului 1 (**decembrie 2026**). Teza propriu-zisă — semestrul 2.
@@ -66,7 +66,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 Doar lucrurile pe care asistentul **nu le poate face** din repo (instalări, conturi, bani, fotografii, oameni, decizii).
 Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 
-**Progres (10.10.2026, numărat din §21):** semestrul 1 — **31 din 38 de puncte (~82%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **33 din 46 (~72%)**; jocurile din catalogul pe arii — **52 din 52** (89 de jocuri în aplicație). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
+**Progres (11.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (89 de jocuri în aplicație). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
 
 **A. Pe calculatorul tău (verificare)**
 - [ ] Instalează **Docker Desktop**. Apoi: `cp infra/.env.example infra/.env` (schimbă parolele) → `docker compose -f infra/docker-compose.yml up -d --build`.
@@ -104,13 +104,16 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 **E. Universitate**
 - [ ] Demo pentru coordonator (§21, Sprint 6).
 - [ ] Testare cu copii / educatori — doar cu acord parental și regulile din §13.6.
-- [ ] Redactarea tezei (§23) — ciornele pe capitole se pot pregăti în sesiunile de lucru.
+- [ ] Redactarea tezei (§23) — **cele 8 capitole de cercetare sunt scrise** în `docs/research/` (sesiunea 11), fiecare cu „Rezumat pentru susținere (60 s)” la final: citește-le și spune ce vrei schimbat.
+- [ ] La testul cap-coadă: **acordul pentru sincronizare cere acum adresa de e-mail confirmată** (sesiunea 11) — confirmă întâi adresa din Mailpit, apoi „Trimite pe server” pe tabletă.
 - [ ] Ramura `feat/fundatia-terapeutica` → `git push` și PR spre `main`.
 
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Ultima actualizare: 10.10.2026.** **Sesiunea a zecea (10.10) — pe scurt:** imaginile de evitat în toate mecanicile (`GameConfig` complet → §21 bifat), testul cap-coadă copil → joc → SQLite → server (`integration_test/flow.dart`, rulat și în `flutter test`), care a prins un bug cu cheile cardurilor la trecerea între runde (reparat); mesajul „1 sesiuni trimise” → „O sesiune trimisă”.
+**Ultima actualizare: 11.10.2026.** **Sesiunea a unsprezecea (11.10) — pe scurt:** **toate cele 8 capitole de cercetare din §23** (`docs/research/01…08`, verificate pe cod, fiecare cu alternative și rezumat de 60 s pentru susținere); **dificultatea adaptivă pe abilități** (§21 S2 bifat) — cu o eroare reală găsită și reparată: rating-ul Elo primea mărimea de pe axa jocului (pahare, secunde) în loc de dificultate, deci putea doar să scadă; acum fiecare încercare păstrează **nivelul jocului** (`Trial.level`, câmp nou, opțional și pe server), „Drumul de azi” face **pas înapoi** la treapta dinainte după două sesiuni foarte grele, **rotește jocurile** unei trepte pentru generalizare, iar un joc deschis prima dată pornește de la **nivelul estimat din rating** (`skillLevel`); **statisticile pe trepte** (`child_skill_stats`) se calculau dintr-o tabelă pe care n-o mai scrie nimeni — acum din sesiunile sincronizate, prin coada `stats` (deduplicată per copil), cu ruta nouă `GET /children/:id/skills`; **GDPR**: acordul pentru datele copilului doar de pe o adresă confirmată („efortul rezonabil” din Legea 195/2024), fiecare accesare a specialistului în jurnalul de audit și în exportul părintelui; §12 (API) rescris după rutele reale; măsurători: acoperire nucleu 94,2%, aplicație 91,7%, panou 90,4%; „Drumul de azi” sub 13 ms și la 500 de sesiuni (`tool/bench_progress.dart`). Teste: nucleu 506, aplicația 308, panou 21, backend 86.
+
+**Sesiunea a zecea (10.10) — pe scurt:** imaginile de evitat în toate mecanicile (`GameConfig` complet → §21 bifat), testul cap-coadă copil → joc → SQLite → server (`integration_test/flow.dart`, rulat și în `flutter test`), care a prins un bug cu cheile cardurilor la trecerea între runde (reparat); mesajul „1 sesiuni trimise” → „O sesiune trimisă”.
 
  **Sesiunea a noua (08–09.10) — pe scurt:** **acvariul refăcut** (pești 3D cu fizică reală, recif bogat în perspectivă, viață ambientală, comportamente noi), 3 modele noi de pești de colorat (7 în total), **10 jocuri noi** (89 în aplicație): Urmărește peștele, Scriem cifrele, Scriem literele, Sus-jos-stânga-dreapta, Zilele și lunile, Forma ascunsă, Colorăm, Rândul meu-rândul tău, Licuricii din grădină (Corsi), Ascultă și fă; **Harta mea** (felinarele treptelor stăpânite); **planul de jocuri al copilului** (pe tabletă și din panou, de părinte sau specialist, sincronizat); vocea 100%. **A doua parte:** „Primii pași” (chestionarul părintelui → setul de pornire), **confirmarea e-mailului, „Am uitat parola” și cont nou din panou** (coada `mail`, SMTP, ADR-032), **raportul săptămânal pe e-mail**, **trimiterea automată a sesiunilor** de pe tabletă, 2FA la sincronizare, „Drumul de azi” care rotește ariile, **contrast mare**, **„Întreabă despre progres”** (AI în panou), **canalul live WebSocket** (panoul se actualizează singur), CORS, Bull Board, imaginea Docker a panoului + `docker-compose.prod.yml` (Traefik, TLS, backup criptat), ghidul de ilustrații, teste de accesibilitate pe 33 de ecrane; **jocul „Construiește” lipsea din git** (ignorat de regula `build/`) — reparat. Detalii mai jos.
 
@@ -685,17 +688,40 @@ erDiagram
 - **Acvariul** (`features/aquarium/aquarium_store.dart`): `<suport aplicație>/aquarium/index.json` (id, model, data, cadou) + desenul fiecărui pește ca PNG (`<id>.png`, 1000×600). Desenele sunt creația copilului: **rămân doar pe dispozitiv**, nu intră în sesiuni, rapoarte sau sincronizare. Maximum 14 pești (cel mai vechi, în afară de cadou, iese). Pe web — în memorie.
 - **Prezența** („se joacă acum”, sesiunea 9): pe server doar cheia Redis `presence:<childId>` (valoarea `1`, 20 min), pusă de tabletă la începutul sesiunii și ștearsă la sincronizare; nu intră în baza de date.
 - **Stelele** (`AppSettings.stars` în aceeași cheie `settings`): soldul pușculiței, doar recompensă locală — nu intră în sesiuni, rapoarte sau sincronizare.
-- `GAME_EVENT.payload` = ce s-a întrebat, ce a ales, câte încercări, timp de răspuns — **fără text liber**.
-- `game_events` partiționat lunar; retenție 24 luni (job de curățare).
+- **Sesiunile sincronizate** (`therapy_sessions`, tabela principală din sesiunea 4; `game_sessions` / `game_events` din schema inițială nu mai sunt scrise): `record` = `SessionRecord` de pe tabletă — încercările (treapta, jocul, corect, ajutorul P0–P4, numărul de încercări, latența, stimulul și setul lui, seed-ul, mărimea pe axa jocului `difficulty`, **nivelul jocului `level`** — sesiunea 11, pentru rating —, atingerile în afara țintei, ținta și prima alegere greșită), pauzele / respirația / cererile AAC, dispoziția înainte și după — **fără text liber**; `facts` = KPI agregate calculate pe tabletă. Plus `session_summaries` (rezumatul AI, o dată per sesiune) și `consent_archive` (dovada acordurilor, 3 ani, fără identificatori). Retenție 24 de luni (job zilnic).
+- `CHILD_SKILL_STATS` = read model pe **trepte** (`skill` = `stepId`), recalculat integral de worker din încercările sesiunilor după fiecare sincronizare (sesiunea 11).
+- `AUDIT_LOG`: actor, acțiune, țintă, dată — partajări, schimbări de plan, exporturi, ștergeri și **fiecare accesare a datelor unui copil de către specialist** (`child.read`, sesiunea 11; apare în exportul părintelui).
 
 ---
 
-## 12. API (schiță)
+## 12. API
 
-Prefix `/api/v1`. Documentație automată: `/api/docs` (Swagger UI, doar în dev).
+Prefix `/api/v1`. Documentație automată: `/api/docs` (Swagger UI, doar în dezvoltare). Rutele reale sunt în `backend/src/api/controllers.ts`; toate, în afară de `/auth/*` și `/health`, cer tokenul de acces.
 
 | Metodă | Rută | Descriere |
 |--------|------|-----------|
+| POST | `/auth/register` | Cont nou de adult (părinte / specialist); trimite e-mailul de confirmare |
+| POST | `/auth/login` · `/auth/refresh` · `/auth/logout` | JWT 15 min + refresh opac rotit (cu `code` dacă e 2FA) |
+| POST | `/auth/verify-email` · `/auth/password/forgot` · `/auth/password/reset` | Confirmarea adresei, „Am uitat parola” (același răspuns pentru orice adresă) |
+| GET / POST | `/children` | Copiii văzuți (ai părintelui / partajați specialistului) · profil nou (poreclă, avatar, an) |
+| DELETE | `/children/{id}` | Ștergerea profilului (acces tăiat acum, definitiv în 7 zile) |
+| POST / GET | `/children/{id}/sessions` | Sincronizarea de pe tabletă (idempotentă după id-ul sesiunii, cere acordul `SYNC`) · lista sesiunilor |
+| GET | `/children/{id}/skills` | Statisticile pe trepte (read model, recalculat de worker) |
+| POST | `/children/{id}/sessions/{sid}/summary` | Rezumatul AI al unei sesiuni (acord `AI_SUMMARY`, cache, limită zilnică) |
+| POST | `/children/{id}/ask` | „Întreabă despre progres” (AI, nimic păstrat) |
+| GET / PUT | `/children/{id}/plan` | Planul de jocuri (`GameConfig`): părintele sau specialistul, „ultimul câștigă”, auditat |
+| POST | `/children/{id}/presence` | „Se joacă acum” (semn în Redis, 20 min) |
+| GET / POST / DELETE | `/children/{id}/share` · `/children/{id}/share/{therapistId}` | Partajarea cu specialistul (acord `THERAPIST_SHARING`, termen implicit 90 de zile) |
+| GET / POST | `/consents` | Acordurile curente · o decizie nouă (jurnal append-only; acordul cere adresa confirmată) |
+| GET | `/me` · `/me/export` | Contul · exportul complet (JSON, inclusiv cine a accesat datele copilului) |
+| POST | `/me/verify-email` · `/me/delete` | Retrimiterea confirmării · ștergerea contului (cere parola) |
+| GET / POST | `/me/2fa` · `/me/2fa/setup` · `/me/2fa/enable` · `/me/2fa/disable` | Autentificarea în doi pași (TOTP) |
+| GET | `/health` · `/health/ready` | Liveness / readiness |
+| WS | `/api/v1/live` (camere `child:{id}`) | `session.synced`, `plan.changed`, `presence` — doar pentru panou |
+
+Erorile au un singur format (`DomainErrorFilter`); 404 și pentru „nu ai acces”. Validare cu zod (`.strict()`). Versionare în URL. Neimplementate din schița inițială: Sign-In cu Google/Apple, `/content/manifest` (pachete de conținut — S2).
+
+--------|------|-----------|
 | POST | `/auth/register` | Cont părinte (e-mail + parolă) + consimțăminte obligatorii |
 | POST | `/auth/login` · `/auth/refresh` · `/auth/logout` | JWT + refresh rotit |
 | POST | `/auth/oauth/{google\|apple}` | Sign-In extern |
@@ -771,18 +797,19 @@ este o dată privind sănătatea — categorie specială; aplicația oferă „m
 să întrebe de diagnostic). Fără SDK-uri de analytics/reclame în aplicația copilului.
 
 ### 13.4 Confidențialitate prin design și implicit (implementare)
-- [ ] **Mod fără cont** implicit: totul local, zero trafic de rețea (în afară de descărcarea opțională de conținut).
-- [ ] Ecran de consimțământ parental (după poarta parentală): scopuri separate (sincronizare, raport pe e-mail, partajare cu terapeut, notificări), fiecare comutabil.
-- [ ] Verificarea e-mailului părintelui înainte de activarea sincronizării (efort rezonabil de verificare).
-- [ ] Politica de confidențialitate: versiune pentru părinți + **versiune pentru copii** (limbaj simplu, cu imagini), în RO/EN; versionată; re-consimțământ la schimbări majore.
-- [ ] „Datele mele” în zona părintelui: vizualizare, export (JSON + CSV într-un ZIP), ștergere profil copil, ștergere cont, retragere consimțământ.
-- [ ] Ștergere: soft-delete imediat (acces blocat) → purge definitiv în ≤ 30 zile (job) → backup-urile expiră în ≤ 35 zile (rotație).
-- [ ] Criptare: TLS 1.2+ peste tot; volum DB criptat pe server; câmpuri sensibile (e-mail) criptate cu `pgcrypto` + hash pentru căutare; SQLite local criptat (SQLCipher) opțional; token-uri în `flutter_secure_storage`.
-- [ ] Pseudonimizare: statisticile folosesc `childId` (UUID); rapoartele către LLM/terți (dacă există) — doar agregate, fără poreclă.
-- [ ] Control acces: fiecare interogare filtrată pe `parentId` (guard NestJS + teste); terapeutul doar prin `CARE_LINK` activ; jurnal de audit pentru accesările terapeutului.
-- [ ] Parole Argon2id; rate limiting; blocare temporară după încercări eșuate; 2FA opțional pentru terapeuți.
-- [ ] Fără link-uri externe/cumpărături în zona copilului; orice link extern trece prin poarta parentală.
-- [ ] Sentry: `sendDefaultPii=false`, scrubbing pe server, regiune UE.
+*Starea verificată în sesiunea 11; detalii și dovezi (teste) în [docs/research/05-securitate-gdpr.md](docs/research/05-securitate-gdpr.md).*
+- [x] **Mod fără cont** implicit: totul local, zero trafic de rețea.
+- [x] Consimțământ pe scopuri separate (`SYNC`, `WEEKLY_REPORT`, `THERAPIST_SHARING`, `AI_SUMMARY`, `PUSH_NOTIFICATIONS`), fiecare comutabil în „Contul meu”; acordul pentru sincronizare se dă explicit din fereastra „Trimite pe server” de pe tabletă, după poarta pentru adulți.
+- [x] Verificarea e-mailului părintelui înainte de activarea sincronizării: **orice acord se dă doar de pe o adresă confirmată** (sesiunea 11); retragerea merge oricând.
+- [ ] Politica de confidențialitate: versiune pentru părinți + **versiune pentru copii** — ✅ ciorne în `docs/gdpr/`, versionate (`policyVersion` în fiecare acord), pagini publice generate; 🕓 verificarea juridică, varianta EN, re-consimțământul la schimbări majore.
+- [x] „Datele mele” în zona părintelui: export complet (JSON, inclusiv accesările specialistului), ștergere profil copil, ștergere cont, retragere consimțământ. (CSV/ZIP nu — JSON-ul e suficient pentru portabilitate.)
+- [x] Ștergere: soft-delete imediat (acces blocat) → definitiv după 7 zile (job) → backup-urile expiră în 35 de zile (rotație).
+- [ ] Criptare: ✅ TLS prin Traefik; ✅ tokenuri în `flutter_secure_storage`; 🕓 volumul DB criptat și e-mailul cu `pgcrypto` (la primul deploy); SQLCipher pe tabletă — opțional, nefăcut.
+- [x] Pseudonimizare: statisticile folosesc `childId` (UUID); spre AI doar fapte agregate, fără poreclă sau id.
+- [x] Control acces: o singură regulă (`ChildAccess`) pe fiecare cerere, cu teste; specialistul doar prin `CareLink` activ; **jurnal de audit pentru fiecare accesare a specialistului** (sesiunea 11).
+- [x] Parole Argon2id; limite în Redis; blocare 15 min după 5 încercări greșite; 2FA TOTP opțional pentru orice cont.
+- [x] Fără linkuri externe / cumpărături în zona copilului; setările, trimiterea și printarea trec prin poarta pentru adulți.
+- [x] Sentry (opțional, doar API și worker): fără cerere, utilizator, breadcrumbs sau e-mailuri; regiune UE.
 
 ### 13.5 Documente de produs (în [`docs/gdpr/`](docs/gdpr/README.md))
 **Ciorne scrise (sesiunea 8), de verificat de un jurist** și de completat cu identitatea operatorului
@@ -1176,7 +1203,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [x] Schelet NestJS (api + worker), `/health`, config validat (zod), pino, Prisma + prima migrare
 - [x] Schelet Flutter `child_app` + `licurici_core` + `game_content` (pub workspaces)
 - [x] `docs/adr/` — ADR-001…ADR-022 în fișiere separate
-- [ ] Documentele de cercetare §23 începute (arhitectură, comunicare)
+- [x] Documentele de cercetare §23 începute (arhitectură, comunicare) — toate cele 8 capitole scrise (sesiunea 11)
 
 ### Sprint 2 · 12 – 25 oct — Design system + primul joc
 - [x] Tokeni, teme (normal/calm/contrast), componente de bază, mascota `CutoutRig` (idle + bucurie + încurajare) — contrastul mare: „Pentru părinți” sau setarea de accesibilitate a sistemului (sesiunea 9)
@@ -1221,7 +1248,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
 ### Semestrul 2 · feb – mai 2027
 - [x] 10 jocuri S2 (puzzle, labirint, colorare, sunete, privirea, imbracam, calendar, pozitii, sunetul-initial, personalitati) — gata înainte de termen (sesiunile 7–9)
-- [ ] Dificultate adaptivă pe abilități, recomandări „Jocurile de azi” mai inteligente
+- [x] Dificultate adaptivă pe abilități, recomandări „Jocurile de azi” mai inteligente — rating Elo pe trepte din nivelul jocului, nivel de pornire din rating, pas înapoi după două sesiuni grele, rotirea jocurilor pentru generalizare (sesiunea 11, [cercetarea](docs/research/07-dificultate-adaptiva.md))
 - [ ] Prometheus + Grafana, optimizări, build-uri pentru magazine (Families/Kids), semnare
 - [ ] Testare cu copii/educatori (cu acord parental), iterații UX
 - [ ] Acvariul complet: ✅ pești 3D cu fizică, recif bogat (sesiunea 9) · ✅ pești animați, colorare pe ecran, hrănire, fugă/adunare (sesiunea 8) · ✅ fișa A4 + scanarea cu camera (de testat cu poze reale) · ✅ stelele ca monedă (mâncare) · ⬜ fundal pictat pe straturi (brief gata)
@@ -1258,7 +1285,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 ## 23. Cercetarea pentru teză
 
 Coordonatorul va întreba, pentru fiecare subiect: **ce ai ales, de ce, ce alternative existau, de ce nu, când le-ai alege.**
-Fiecare subiect = un document în `docs/research/` (devine capitol/subcapitol în teză):
+Fiecare subiect = un document în `docs/research/` (devine capitol/subcapitol în teză). **Toate 8 scrise** (sesiunea 11), verificate pe cod; fiecare se încheie cu „Rezumat pentru susținere (60 s)”:
 
 | Document | Conținut | ADR-uri legate |
 |----------|----------|----------------|
@@ -1268,7 +1295,7 @@ Fiecare subiect = un document în `docs/research/` (devine capitol/subcapitol î
 | `04-patternuri.md` | Fiecare pattern din §9: problema, soluția, unde l-am aplicat, ce se întâmpla fără el, cost | — |
 | `05-securitate-gdpr.md` | Legea 195/2024 + GDPR aplicate la copii; privacy by design; DPIA; autentificare | 12, 20 |
 | `06-ux-autism.md` | ABA, TEACCH, PECS, învățare fără eroare, WCAG; comparație AutiSpark/Otsimo; decizii de design | — |
-| `07-dificultate-adaptiva.md` | Modelul de tier, reguli adaptive, (opțional) comparație cu Elo/BKT (Bayesian Knowledge Tracing) | 19 |
+| `07-dificultate-adaptiva.md` | Modelul de tier, reguli adaptive, Elo pe trepte, comparație cu BKT (Bayesian Knowledge Tracing) și IRT | 19, 25, 27 |
 | `08-evaluare.md` | Metrici: performanță (k6), acoperire teste, accesibilitate, test cu utilizatori | — |
 
 **Șablon de răspuns la susținere (60 de secunde):** *Problema* → *Constrângerile noastre* (1 dezvoltator, offline, date de
