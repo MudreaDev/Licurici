@@ -9,6 +9,7 @@ import type { LiveEvent } from '../live/live';
 import { AskFlow, type AskBody, type Asker } from '../reports/ask';
 import { SummaryFlow, type Summarizer, type SummaryRepo } from '../reports/summary-flow';
 import { ConsentService, type ConsentStore } from '../consents/consents';
+import { SkillStatsService } from '../stats/skill-stats';
 import { type SessionRepo, type StoredSession, SyncService } from './sessions';
 
 /** Corpul trimis de tabletă, generat de `licurici_core/tool/sync_fixture.dart` (contract Dart ↔ TS). */
@@ -145,6 +146,34 @@ describe('SyncService', () => {
     const { sync } = setup();
     await sync.push(parent, CHILD, fixture);
     await expect(sync.list(therapist, CHILD)).resolves.toHaveLength(fixture.sessions.length);
+  });
+
+  it('pune recalcularea statisticilor în coadă; o coadă căzută nu strică sincronizarea', async () => {
+    const { access, sessions, consents } = setup();
+    const queued: string[] = [];
+    const ok = new SyncService(access, sessions, consents, undefined, { recompute: async (id) => void queued.push(id) });
+    await ok.push(parent, CHILD, fixture);
+    expect(queued).toEqual([CHILD]);
+
+    const down = new SyncService(access, sessions, consents, undefined, {
+      recompute: () => Promise.reject(new Error('redis jos')),
+    });
+    await expect(down.push(parent, CHILD, fixture)).resolves.toEqual({ accepted: fixture.sessions.length });
+  });
+});
+
+describe('SkillStatsService', () => {
+  const row = { skill: 'POT2', attempts: 4, firstTry: 3, accuracy: 0.75, lastPlayed: new Date('2026-10-01') };
+  const make = () => {
+    const { access } = setup();
+    return new SkillStatsService(access, { list: async () => [row] });
+  };
+
+  it('părintele și specialistul legat văd statisticile; un străin primește 404', async () => {
+    await expect(make().list(parent, CHILD)).resolves.toEqual([row]);
+    await expect(make().list(therapist, CHILD)).resolves.toEqual([row]);
+    await expect(make().list(otherParent, CHILD)).rejects.toBeInstanceOf(NotFoundError);
+    await expect(make().list(strangerTherapist, CHILD)).rejects.toBeInstanceOf(NotFoundError);
   });
 });
 

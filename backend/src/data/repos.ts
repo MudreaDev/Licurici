@@ -9,6 +9,7 @@ import { type ConsentStore, consentPurposes } from '../consents/consents';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { ConsentRepo, SummaryRepo } from '../reports/summary-flow';
 import type { SessionFacts, SessionSummary } from '../reports/session-summary';
+import type { SkillStatsRepo } from '../stats/skill-stats';
 import type { SessionRecordJson, SessionRepo, StoredSession } from '../sync/sessions';
 
 /** Implementările Prisma ale interfețelor de domeniu (singurul loc care știe de tabele). */
@@ -89,6 +90,15 @@ export class PrismaRepos {
       this.db.child.create({
         data: { parentId, nickname: data.nickname, avatar: data.avatar, birthYear: data.birthYear },
         select: PrismaRepos.childSelect,
+      }),
+  };
+
+  readonly skillStats: SkillStatsRepo = {
+    list: (childId) =>
+      this.db.childSkillStats.findMany({
+        where: { childId },
+        select: { skill: true, attempts: true, firstTry: true, accuracy: true, lastPlayed: true },
+        orderBy: { skill: 'asc' },
       }),
   };
 

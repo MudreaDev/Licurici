@@ -182,7 +182,7 @@ model GameEvent {
   @@map("game_events")
 }
 
-/// Read model (CQRS-lite): calculat de worker din `game_events`.
+/// Read model (CQRS-lite): calculat de worker din încercările sesiunilor (`therapy_sessions`), pe trepte.
 model ChildSkillStats {
   childId    String   @db.Uuid
   skill      String   @db.VarChar(40)

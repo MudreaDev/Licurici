@@ -1,6 +1,11 @@
+import type { AuthUser } from '../auth/tokens';
+import type { ChildAccess } from '../children/access';
+
 /**
- * Calculul read-model-ului `child_skill_stats` (CQRS-lite, README §9) din evenimentele de joc.
- * Funcție pură → testată fără bază de date; worker-ul doar citește evenimentele și scrie rezultatul.
+ * Calculul read-model-ului `child_skill_stats` (CQRS-lite, README §9) din încercările sesiunilor
+ * sincronizate (`therapy_sessions.record.trials`). „Abilitatea” = treapta din traseul de
+ * dezvoltare (`stepId`, ex. `POT2`). Funcție pură → testată fără bază de date; worker-ul doar
+ * citește sesiunile și scrie rezultatul.
  */
 export interface AnswerEvent {
   skill: string;
@@ -11,10 +16,29 @@ export interface AnswerEvent {
 export interface SkillStats {
   skill: string;
   attempts: number;
+  /** Reușite independente: corect, din prima, fără ajutor (P0). */
   firstTry: number;
-  /** Acuratețea din prima încercare, 0..1 (ce folosește și regula adaptivă). */
+  /** Independența, 0..1 (aceeași definiție ca KPI-ul din `SessionReport`). */
   accuracy: number;
   lastPlayed: Date;
+}
+
+/** Câmpurile din `Trial.toJson()` de care avem nevoie (restul se ignoră). */
+export interface TrialLike {
+  stepId: string;
+  correct: boolean;
+  promptLevel: string;
+  attempts: number;
+  at: string;
+}
+
+/** Încercările sesiunilor → evenimente de răspuns. Independent = corect, o încercare, P0. */
+export function answersFromTrials(trials: readonly TrialLike[]): AnswerEvent[] {
+  return trials.map((t) => ({
+    skill: t.stepId,
+    firstTry: t.correct && t.attempts === 1 && t.promptLevel === 'P0',
+    at: new Date(t.at),
+  }));
 }
 
 export function computeSkillStats(events: readonly AnswerEvent[]): SkillStats[] {
@@ -35,4 +59,26 @@ export function computeSkillStats(events: readonly AnswerEvent[]): SkillStats[] 
   return [...bySkill.values()]
     .map((s) => ({ ...s, accuracy: Math.round((s.firstTry / s.attempts) * 1000) / 1000 }))
     .sort((a, b) => a.skill.localeCompare(b.skill));
+}
+
+/** Cine pune recalcularea în coadă (în teste, o listă). */
+export interface StatsQueue {
+  recompute(childId: string): Promise<void>;
+}
+
+export interface SkillStatsRepo {
+  list(childId: string): Promise<SkillStats[]>;
+}
+
+/** Citirea read-model-ului: aceeași regulă de acces ca sesiunile (părintele, specialistul legat). */
+export class SkillStatsService {
+  constructor(
+    private readonly access: ChildAccess,
+    private readonly repo: SkillStatsRepo,
+  ) {}
+
+  async list(user: AuthUser, childId: string): Promise<SkillStats[]> {
+    await this.access.assert(user, childId, 'read');
+    return this.repo.list(childId);
+  }
 }

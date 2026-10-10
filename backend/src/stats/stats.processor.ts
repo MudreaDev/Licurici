@@ -7,7 +7,7 @@ import { ENV, type Env } from '../config/env';
 import { PrismaService } from '../prisma/prisma.service';
 import { Queues } from '../queues/queues';
 import { REDIS } from '../redis/redis.module';
-import { computeSkillStats } from './skill-stats';
+import { answersFromTrials, computeSkillStats, type TrialLike } from './skill-stats';
 
 /** Șterge lock-ul doar dacă îl deținem (compare-and-delete atomic). */
 const RELEASE_LOCK = `if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end`;
@@ -20,7 +20,8 @@ export interface RecomputeStatsJob {
 
 /**
  * Recalculează statisticile unui copil (job `stats` → `recompute`).
- * Idempotent: rezultatul depinde doar de evenimentele din baza de date, deci un retry
+ * Pus în coadă după fiecare sincronizare (deduplicat per copil). Idempotent: rezultatul depinde
+ * doar de sesiunile din baza de date (recalcul integral, nu incremental), deci un retry
  * produce aceeași stare. Un lock Redis per copil evită două recalculări simultane; dacă e ocupat,
  * job-ul eșuează și BullMQ îl reîncearcă cu backoff (nu îl sărim — am pierde evenimente noi).
  */
@@ -47,13 +48,9 @@ export class StatsProcessor extends WorkerHost implements OnApplicationBootstrap
     const locked = await this.redis.set(lockKey, owner, 'PX', 30_000, 'NX');
     if (!locked) throw new LockBusyError(`statisticile copilului sunt deja în lucru`);
     try {
-      const events = await this.prisma.gameEvent.findMany({
-        where: { session: { childId }, skill: { not: null }, firstTry: { not: null } },
-        select: { skill: true, firstTry: true, at: true },
-      });
-      const stats = computeSkillStats(
-        events.map((e) => ({ skill: e.skill!, firstTry: e.firstTry!, at: e.at })),
-      );
+      const sessions = await this.prisma.therapySession.findMany({ where: { childId }, select: { record: true } });
+      const trials = sessions.flatMap((s) => (s.record as { trials?: TrialLike[] }).trials ?? []);
+      const stats = computeSkillStats(answersFromTrials(trials));
       await this.prisma.$transaction([
         this.prisma.childSkillStats.deleteMany({ where: { childId } }),
         this.prisma.childSkillStats.createMany({ data: stats.map((s) => ({ childId, ...s })) }),

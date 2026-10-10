@@ -24,6 +24,7 @@ import { REDIS } from '../redis/redis.module';
 import { SessionSummaryService } from '../reports/session-summary';
 import { AskFlow, ClaudeAsker } from '../reports/ask';
 import { SummaryFlow } from '../reports/summary-flow';
+import { SkillStatsService } from '../stats/skill-stats';
 import { SyncService } from '../sync/sessions';
 import { LiveAccess } from '../live/live';
 import { LiveGateway } from '../live/live.gateway';
@@ -100,15 +101,42 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
     },
     {
       provide: SyncService,
-      inject: [ChildAccess, PrismaRepos, ConsentService, LiveGateway, PresenceService],
-      useFactory: (a: ChildAccess, r: PrismaRepos, c: ConsentService, live: LiveGateway, presence: PresenceService) =>
-        new SyncService(a, r.sessions, c, {
-          publish: (e) => {
-            live.publish(e);
-            // Sesiunea a ajuns pe server: copilul a terminat.
-            if (e.type === 'session.synced') void presence.stop(e.childId).catch(() => undefined);
+      inject: [ChildAccess, PrismaRepos, ConsentService, LiveGateway, PresenceService, getQueueToken(Queues.stats)],
+      useFactory: (
+        a: ChildAccess,
+        r: PrismaRepos,
+        c: ConsentService,
+        live: LiveGateway,
+        presence: PresenceService,
+        stats: Queue,
+      ) =>
+        new SyncService(
+          a,
+          r.sessions,
+          c,
+          {
+            publish: (e) => {
+              live.publish(e);
+              // Sesiunea a ajuns pe server: copilul a terminat.
+              if (e.type === 'session.synced') void presence.stop(e.childId).catch(() => undefined);
+            },
           },
-        }),
+          {
+            // Cel mult un job în așteptare per copil; o sincronizare din timpul unui recalcul
+            // mai produce exact unul (keepLastIfActive), deci nicio sesiune nu rămâne nenumărată.
+            recompute: async (childId) =>
+              void (await stats.add(
+                'recompute',
+                { childId },
+                { deduplication: { id: `stats-${childId}`, keepLastIfActive: true } },
+              )),
+          },
+        ),
+    },
+    {
+      provide: SkillStatsService,
+      inject: [ChildAccess, PrismaRepos],
+      useFactory: (a: ChildAccess, r: PrismaRepos) => new SkillStatsService(a, r.skillStats),
     },
     {
       provide: SummaryFlow,

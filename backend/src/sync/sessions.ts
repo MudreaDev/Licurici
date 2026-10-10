@@ -7,6 +7,7 @@ import type { ConsentService } from '../consents/consents';
 import { ValidationError } from '../common/errors';
 import { parseWith } from '../common/validation';
 import { sessionFactsSchema, type SessionFacts } from '../reports/session-summary';
+import type { StatsQueue } from '../stats/skill-stats';
 
 const iso = z.iso.datetime({ offset: true });
 const mood = z.enum(['bucuros', 'linistit', 'obosit', 'trist', 'suparat']).nullable();
@@ -97,6 +98,8 @@ export class SyncService {
     private readonly consents: ConsentService,
     /** Panoul primește imediat vestea (canalul live, ADR-010). */
     private readonly live?: LiveEvents,
+    /** Statisticile pe trepte se recalculează în worker (read model, README §9). */
+    private readonly stats?: StatsQueue,
   ) {}
 
   async push(user: AuthUser, childId: string, body: unknown): Promise<{ accepted: number }> {
@@ -122,6 +125,9 @@ export class SyncService {
       });
     }
     this.live?.publish({ type: 'session.synced', childId, count: sessions.length });
+    // Sesiunile sunt deja salvate: o coadă indisponibilă nu face sincronizarea să eșueze
+    // (statisticile se pot recalcula oricând din sesiuni; următoarea sincronizare le reface).
+    await this.stats?.recompute(childId).catch(() => undefined);
     return { accepted: sessions.length };
   }
 

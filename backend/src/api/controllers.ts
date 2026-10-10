@@ -15,6 +15,7 @@ import { parseWith } from '../common/validation';
 import { PresenceService } from '../live/presence';
 import { AskFlow } from '../reports/ask';
 import { SummaryFlow } from '../reports/summary-flow';
+import { SkillStatsService } from '../stats/skill-stats';
 import { SyncService } from '../sync/sessions';
 
 const refreshSchema = z.object({ refreshToken: z.string().min(20).max(200) }).strict();
@@ -87,6 +88,7 @@ export class ChildrenController {
     @Inject(GamePlanService) private readonly plan: GamePlanService,
     @Inject(AskFlow) private readonly questions: AskFlow,
     @Inject(PresenceService) private readonly presence: PresenceService,
+    @Inject(SkillStatsService) private readonly skillStats: SkillStatsService,
   ) {}
 
   /** Planul de jocuri (plan §5.1): părintele sau specialistul cu partajare activă aleg ce vede copilul. */
@@ -156,6 +158,12 @@ export class ChildrenController {
   @Get(':childId/sessions')
   sessions(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string) {
     return this.sync.list(user, childId);
+  }
+
+  /** Statisticile pe trepte (read model recalculat de worker după fiecare sincronizare). */
+  @Get(':childId/skills')
+  skills(@CurrentUser() user: AuthUser, @Param('childId', ParseUUIDPipe) childId: string) {
+    return this.skillStats.list(user, childId);
   }
 
   /** Rezumatul AI (ADR-029): consimțământ, cache, limită zilnică. */
