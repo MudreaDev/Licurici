@@ -26,11 +26,25 @@ export interface ConsentStore {
 }
 
 export class ConsentService {
-  constructor(private readonly store: ConsentStore) {}
+  constructor(
+    private readonly store: ConsentStore,
+    /**
+     * Adresa contului e confirmată? Acordul pentru datele copilului se dă doar de pe o adresă
+     * confirmată — „efortul rezonabil” de a verifica că e părintele (Legea 195/2024, GDPR
+     * art. 8(2), README §13.4). Retragerea merge oricând. Fără funcție (teste vechi): nu se cere.
+     */
+    private readonly emailVerified?: (userId: string) => Promise<boolean>,
+  ) {}
 
   async set(user: AuthUser, body: unknown): Promise<Record<ConsentPurpose, boolean>> {
     if (user.role !== 'PARENT') throw new ForbiddenError('Consimțământul pentru datele copilului îl dă părintele.');
-    await this.store.record(user.id, parseWith(consentSchema, body));
+    const decision = parseWith(consentSchema, body);
+    if (decision.granted && this.emailVerified && !(await this.emailVerified(user.id))) {
+      throw new ForbiddenError(
+        'Confirmă întâi adresa de e-mail: ți-am trimis o legătură (o poți retrimite din „Contul meu” din panou).',
+      );
+    }
+    await this.store.record(user.id, decision);
     return this.store.current(user.id);
   }
 

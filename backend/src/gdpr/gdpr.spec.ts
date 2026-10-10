@@ -20,7 +20,13 @@ function setup() {
     account: async () => ({ email: 'ana@example.md', role: 'PARENT', createdAt: '2026-09-01T00:00:00.000Z' }),
     consentLog: async () => [{ purpose: 'SYNC', granted: true, policyVersion: '2026-10', at: '2026-09-02T00:00:00.000Z' }],
     childrenWithSessions: async () => [
-      { nickname: 'Ilinca', avatar: '🐞', birthYear: 2020, sessions: [{ record: { id: 's1' }, summary: null }] },
+      {
+        nickname: 'Ilinca',
+        avatar: '🐞',
+        birthYear: 2020,
+        sessions: [{ record: { id: 's1' }, summary: null }],
+        accesses: [{ by: 'logoped@example.md', at: '2026-09-05T10:00:00.000Z' }],
+      },
     ],
     softDeleteChild: async (_id, at) => {
       child.deletedAt = at;
@@ -58,6 +64,8 @@ describe('GdprService', () => {
     expect(out.account.email).toBe('ana@example.md');
     expect(out.consents).toHaveLength(1);
     expect(out.children[0].sessions).toHaveLength(1);
+    // Părintele vede cine a văzut datele copilului (art. 15).
+    expect(out.children[0].accesses).toEqual([{ by: 'logoped@example.md', at: '2026-09-05T10:00:00.000Z' }]);
     expect(audit).toEqual(['p1:gdpr.export']);
     await expect(gdpr.export(therapist)).rejects.toBeInstanceOf(ForbiddenError);
   });

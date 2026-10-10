@@ -16,6 +16,8 @@ export interface GdprExport {
     avatar: string;
     birthYear: number | null;
     sessions: { record: unknown; summary: unknown | null }[];
+    /** Cine (specialistul, după e-mail) și când a văzut datele copilului (jurnalul de audit). */
+    accesses: { by: string; at: string }[];
   }[];
 }
 

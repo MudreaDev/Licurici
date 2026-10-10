@@ -26,6 +26,7 @@ const CHILD = '0190a1b2-0000-7000-8000-000000000001';
 class Children implements ChildRepo {
   child: ChildRow = { id: CHILD, parentId: 'p1', deletedAt: null };
   linkExpires: Date | null = new Date('2026-12-31');
+  audit?: (actorId: string, action: string, targetId: string) => Promise<void>;
   async findChild(id: string) {
     return id === this.child.id ? this.child : null;
   }
@@ -140,6 +141,30 @@ describe('SyncService', () => {
     await expect(
       consents.set(parent, { purpose: 'MARKETING', granted: true, policyVersion: '1' }),
     ).rejects.toBeInstanceOf(ValidationError);
+  });
+
+  it('acordul se dă doar de pe o adresă confirmată; retragerea merge oricând', async () => {
+    const store = new Consents();
+    let verified = false;
+    const consents = new ConsentService(store, async () => verified);
+    const grant = { purpose: 'SYNC', granted: true, policyVersion: '2026-10' };
+    await expect(consents.set(parent, grant)).rejects.toThrow(/Confirmă întâi adresa/);
+    expect(store.log).toHaveLength(0);
+    await expect(consents.set(parent, { ...grant, granted: false })).resolves.toBeDefined();
+    verified = true;
+    await consents.set(parent, grant);
+    expect(await store.granted('p1', 'SYNC')).toBe(true);
+  });
+
+  it('fiecare accesare a specialistului intră în jurnalul de audit; ale părintelui nu', async () => {
+    const children = new Children();
+    const audit: string[] = [];
+    children.audit = async (actor: string, action: string, target: string) => void audit.push(`${actor} ${action} ${target}`);
+    const access = new ChildAccess(children, () => new Date('2026-10-01T12:00:00Z'));
+    await access.assert(parent, CHILD, 'read');
+    await access.assert(therapist, CHILD, 'read');
+    await expect(access.assert(strangerTherapist, CHILD, 'read')).rejects.toBeInstanceOf(NotFoundError);
+    expect(audit).toEqual([`t1 child.read ${CHILD}`]);
   });
 
   it('specialistul legat poate citi sesiunile', async () => {

@@ -66,7 +66,12 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
       inject: [PrismaRepos],
       useFactory: (r: PrismaRepos) => new ChildrenService(r.children),
     },
-    { provide: ConsentService, inject: [PrismaRepos], useFactory: (r: PrismaRepos) => new ConsentService(r.consents) },
+    {
+      provide: ConsentService,
+      inject: [PrismaRepos],
+      useFactory: (r: PrismaRepos) =>
+        new ConsentService(r.consents, async (id) => Boolean((await r.users.findById(id))?.verifiedAt)),
+    },
     {
       provide: SharingService,
       inject: [ChildAccess, ConsentService, PrismaRepos],

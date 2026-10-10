@@ -66,6 +66,9 @@ export class PrismaRepos {
       (await this.db.careLink.count({
         where: { childId, therapistId, OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] },
       })) > 0,
+    audit: async (actorId, action, targetId) => {
+      await this.db.auditLog.create({ data: { actorId, action, targetId } });
+    },
   };
 
   private static childSelect = { id: true, nickname: true, avatar: true, birthYear: true } as const;
@@ -277,18 +280,26 @@ export class PrismaRepos {
         policyVersion: c.policyVersion,
         at: c.at.toISOString(),
       })),
-    childrenWithSessions: async (parentId) =>
-      (
-        await this.db.child.findMany({
-          where: { parentId, deletedAt: null },
-          include: { therapySessions: { orderBy: { startedAt: 'asc' }, include: { summary: true } } },
-        })
-      ).map((c) => ({
+    childrenWithSessions: async (parentId) => {
+      const children = await this.db.child.findMany({
+        where: { parentId, deletedAt: null },
+        include: { therapySessions: { orderBy: { startedAt: 'asc' }, include: { summary: true } } },
+      });
+      const accesses = await this.db.auditLog.findMany({
+        where: { action: 'child.read', targetId: { in: children.map((c) => c.id) } },
+        include: { actor: { select: { email: true } } },
+        orderBy: { at: 'asc' },
+      });
+      return children.map((c) => ({
         nickname: c.nickname,
         avatar: c.avatar,
         birthYear: c.birthYear,
         sessions: c.therapySessions.map((s) => ({ record: s.record, summary: s.summary?.content ?? null })),
-      })),
+        accesses: accesses
+          .filter((a) => a.targetId === c.id)
+          .map((a) => ({ by: a.actor.email, at: a.at.toISOString() })),
+      }));
+    },
     softDeleteAccount: async (userId, at) => {
       await this.db.$transaction([
         this.db.careLink.deleteMany({ where: { OR: [{ therapistId: userId }, { child: { parentId: userId } }] } }),
