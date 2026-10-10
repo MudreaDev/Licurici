@@ -93,7 +93,7 @@ Job zilnic în worker (`gdpr/retention.ts`, programat idempotent): sesiunile mai
 | SQLite criptat pe tabletă (SQLCipher) | opțional | Datele de pe tabletă sunt deja în spațiul privat al aplicației; criptarea ar proteja doar o tabletă cu root/jailbreak |
 | 2FA obligatorie pentru specialiști | decizie | Utilizatorul (README §0.0 D) |
 | Verificarea juridică a documentelor și identitatea operatorului | 🕓 | Jurist (README §0.0 D) |
-| Înregistrarea dezvăluie dacă o adresă are cont (409) | acceptat deocamdată | Remedierea standard (răspuns identic + e-mail „cineva a încercat să-și facă un cont cu adresa ta”) schimbă fluxul de înregistrare din panou; riscul e limitat de limita de 3 e-mailuri/oră și de faptul că un cont nu spune nimic despre copii |
+| Înregistrarea dezvăluie dacă o adresă are cont (409) | acceptat deocamdată | Remedierea standard (răspuns identic + e-mail „cineva a încercat să-și facă un cont cu adresa ta”) schimbă fluxul de înregistrare din panou; riscul e mic: existența unui cont nu spune nimic despre copii (nici câți sunt, nici dacă există) |
 
 ## 5. Alternative la deciziile-cheie
 
