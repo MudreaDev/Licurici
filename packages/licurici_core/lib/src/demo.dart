@@ -144,6 +144,8 @@ SessionRecord _session(ChildProfile c, int i, int total, DateTime start, Random 
         attempts: correct && prompt == PromptLevel.p0 ? 1 : 2,
         latencyMs: (1400 + 2600 * (1 - skill) + 900 * late + r.nextInt(600)).round(),
         stimulusSet: 'set-${1 + r.nextInt(3)}',
+        // Nivelul urcă odată cu istoricul (fără să consume numere aleatoare: demo-ul rămâne același).
+        level: 1 + (progress * (mastered ? 6 : 3)).round(),
         at: t,
         targetId: isEmotion ? target : null,
         chosenId: isEmotion && !correct && confusedWith != target ? confusedWith : null,

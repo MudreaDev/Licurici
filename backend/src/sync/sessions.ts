@@ -25,6 +25,8 @@ const trialSchema = z
     stimulusSet: z.string().max(40).nullable(),
     seed: z.number().int().nullable(),
     difficulty: z.number().nullable(),
+    // Nivelul jocului (1…∞), pentru rating; lipsește în sesiunile trimise de versiunile mai vechi.
+    level: z.number().int().min(1).max(10_000).optional(),
     offTargetTaps: z.number().int().min(0).max(1000),
     targetId: z.string().max(40).nullable(),
     chosenId: z.string().max(40).nullable(),

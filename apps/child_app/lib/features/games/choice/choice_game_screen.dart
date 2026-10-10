@@ -104,7 +104,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
   void _start() {
     final s = ref.read(settingsProvider);
     // Treapta jocului: unde a rămas copilul data trecută; prima dată, din clasă.
-    _tier = s.levelOf(widget.game.id, Difficulty.freePlay(s.grade, s.level).tier);
+    _tier = s.levelOf(widget.game.id, Difficulty.freePlay(s.grade, s.level).tier, ref.read(stepRatingsProvider));
     // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
     final built = buildAvoiding(
       () => widget.game.build(
@@ -224,6 +224,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
               handShown: _handShown,
               latencyMs: _latencyMs!,
               chosenKey: _firstWrongKey,
+              level: _tier,
             ),
           );
       _launchStar(i);

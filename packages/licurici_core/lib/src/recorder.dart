@@ -115,6 +115,8 @@ class SessionRecorder {
     bool handShown = false,
     String? chosenKey,
     int? seed,
+    /// Nivelul jocului (la jocurile cu alegere: treapta de dificultate, `Difficulty.tier`).
+    int? level,
   }) {
     final prompt = choicePromptLevel(
       wrongAttempts: wrongAttempts,
@@ -122,6 +124,7 @@ class SessionRecorder {
       handShown: handShown,
     );
     add(Trial(
+      level: level,
       stepId: stepFor(gameId),
       gameId: gameId,
       // Runda se termină mereu pe răspunsul corect (învățare fără eroare); încercarea e
@@ -146,6 +149,7 @@ class SessionRecorder {
       final r = byIndex[s.index];
       final tapped = r?.tapped ?? false;
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: s.isGo == tapped,
@@ -168,6 +172,7 @@ class SessionRecorder {
     for (final m in result.moves) {
       final match = result.isMatch(m);
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: match,
@@ -188,6 +193,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final p in result.placements) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: p.firstTry,
@@ -211,6 +217,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final a in result.attempts) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: a.clean,
@@ -235,6 +242,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final t in result.trips) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: t.clean,
@@ -256,6 +264,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final s in result.solves) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: s.clean,
@@ -277,6 +286,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final s in result.solves) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: s.clean,
@@ -298,6 +308,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final r in result.runs) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: r.clean,
@@ -319,6 +330,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final s in result.solves) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: s.clean,
@@ -340,6 +352,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final a in result.answers) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: a.correct,
@@ -368,6 +381,7 @@ class SessionRecorder {
         continue;
       }
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: true,
@@ -390,6 +404,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final f in result.feeds) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: f.clean,
@@ -414,6 +429,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final p in result.plays) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: p.correct,
@@ -437,6 +453,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final a in result.attempts) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: a.clean,
@@ -462,6 +479,7 @@ class SessionRecorder {
     final switches = level.switches.toSet();
     for (final r in result.responses) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: r.correct,
@@ -484,6 +502,7 @@ class SessionRecorder {
     final step = level.axes.cue == GazeCue.point ? 'ATN3' : 'ATN4';
     for (final a in result.answers) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: a.correct,
@@ -506,6 +525,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final f in result.finds) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: f.clean,
@@ -532,6 +552,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final r in result.responses) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: r.correct,
@@ -558,6 +579,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final r in result.runs) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: r.clean,
@@ -583,6 +605,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final c in result.cycles) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: c.clean,
@@ -614,6 +637,7 @@ class SessionRecorder {
         }
       }
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: a.clean,
@@ -638,6 +662,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final r in result.responses) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: r.clean,
@@ -660,6 +685,7 @@ class SessionRecorder {
     final step = stepFor(level.gameId);
     for (final r in result.runs) {
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: r.clean,
@@ -682,6 +708,7 @@ class SessionRecorder {
     for (final p in result.picks) {
       final round = level.rounds[p.round];
       add(Trial(
+        level: level.level,
         stepId: step,
         gameId: level.gameId,
         correct: result.isCorrect(p),
@@ -700,6 +727,7 @@ class SessionRecorder {
   /// O secvență `simon` (o încercare; corectă dacă a fost repetată complet).
   void sequence(SequenceResult result, {required bool secondChance, int? latencyMs}) {
     add(Trial(
+      level: result.level.level,
       stepId: stepFor(result.level.gameId),
       gameId: result.level.gameId,
       correct: result.complete,

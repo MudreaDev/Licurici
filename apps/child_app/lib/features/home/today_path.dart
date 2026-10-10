@@ -29,7 +29,7 @@ final todayPlanProvider = FutureProvider.autoDispose<SessionPlan>((ref) async {
     last: records.isEmpty ? null : SessionReport.from(records.reduce((a, b) => a.start.isAfter(b.start) ? a : b)),
   );
   return SessionPlanner(config: config).plan(
-    progress: defaultObjectives(progressFromSessions(records), games),
+    progress: defaultObjectives(await ref.watch(stepProgressProvider.future), games),
     allowedGames: games,
     now: now,
     random: Random(now.year * 10000 + now.month * 100 + now.day),

@@ -9,6 +9,7 @@ import 'dart:math';
 
 import 'development.dart';
 import 'report.dart';
+import 'trial.dart';
 
 /// Progresul copilului pe o treaptă (vine din Drift / sincronizare).
 class StepProgress {
@@ -18,6 +19,9 @@ class StepProgress {
     this.rating = 1000,
     this.masteredAt,
     this.lastPracticed,
+    this.recentIndependence = const [],
+    this.gameTrials = const {},
+    this.gameLastPlayed = const {},
   });
 
   final String stepId;
@@ -25,6 +29,20 @@ class StepProgress {
   final double rating;
   final DateTime? masteredAt;
   final DateTime? lastPracticed;
+
+  /// Independența (0..1) în ultimele sesiuni pe treaptă, de la veche la nouă (cel mult 3).
+  final List<double> recentIndependence;
+
+  /// Câte încercări a făcut copilul în fiecare joc al treptei (cât de cunoscut îi e jocul).
+  final Map<String, int> gameTrials;
+
+  /// Când a jucat ultima dată fiecare joc al treptei.
+  final Map<String, DateTime> gameLastPlayed;
+
+  /// Ultimele două sesiuni pe treaptă au fost foarte grele (sub 30% independență, cu destule
+  /// încercări cât să conteze): copilul are nevoie de un pas înapoi, nu de mai multă presiune.
+  bool get struggling =>
+      !mastered && recentIndependence.length >= 2 && recentIndependence.reversed.take(2).every((i) => i < 0.3);
 }
 
 enum ActivityKind { warmUp, target, maintenance, finale }
@@ -38,6 +56,7 @@ class SessionActivity {
     required this.rounds,
     this.knownMix = 0,
     this.mixStepId,
+    this.bridgeFor,
   });
 
   final ActivityKind kind;
@@ -48,6 +67,10 @@ class SessionActivity {
   /// Proporția de runde din [mixStepId] (treaptă stăpânită) amestecate printre cele noi.
   final double knownMix;
   final String? mixStepId;
+
+  /// Pas înapoi: treapta grea (ultimele sesiuni sub 30% independență) pentru care s-a ales azi
+  /// treapta de dinainte. null = activitate obișnuită.
+  final String? bridgeFor;
 
   @override
   String toString() => '${kind.name}:$gameId@$stepId×$rounds';
@@ -119,12 +142,32 @@ class SessionPlanner {
     Random? random,
   }) {
     final rnd = random ?? Random();
-    String? gameFor(String stepId) {
-      final games = stepById(stepId)?.games.where(allowedGames.contains).toList() ?? const [];
-      return games.isEmpty ? null : games[rnd.nextInt(games.length)];
+    List<String> gamesOf(String stepId) =>
+        stepById(stepId)?.games.where(allowedGames.contains).toList() ?? const [];
+
+    /// Jocul treptei ales după [score] (mai mic = mai bun); la egalitate decide ziua (aleator).
+    String pick(StepProgress p, num Function(String game) score) {
+      final games = gamesOf(p.stepId)..shuffle(rnd);
+      final order = {for (final (i, g) in games.indexed) g: i};
+      games.sort((a, b) {
+        final c = score(a).compareTo(score(b));
+        return c != 0 ? c : order[a]!.compareTo(order[b]!);
+      });
+      return games.first;
     }
 
-    final playable = progress.where((p) => gameFor(p.stepId) != null).toList();
+    // Încălzirea și finalul: jocul cel mai cunoscut (previzibil, succes sigur).
+    String familiarGame(StepProgress p) => pick(p, (g) => -(p.gameTrials[g] ?? 0));
+    // Același obiectiv pe alt material: jocul jucat cel mai demult (niciodată = primul) —
+    // generalizarea (plan §4: stăpânirea pe un singur joc nu e încă o abilitate).
+    String freshGame(StepProgress p) =>
+        pick(p, (g) => p.gameLastPlayed[g]?.millisecondsSinceEpoch ?? -1);
+    // Un obiectiv în lucru: cât e încă greu (rating sub start), rămâne pe jocul cunoscut
+    // (consecvență în achiziție); când merge, trece pe alt joc al treptei.
+    String targetGame(StepProgress p) => p.rating >= EloRating.start ? freshGame(p) : familiarGame(p);
+
+    final byId = {for (final p in progress) p.stepId: p};
+    final playable = progress.where((p) => gamesOf(p.stepId).isNotEmpty).toList();
     final mastered = playable.where((p) => p.mastered).toList()..shuffle(rnd);
     // Obiectivele cu cel mai mic rating primesc întâi timp (cele mai grele acum); la egalitate
     // (de exemplu, trepte încă neîncepute) ordinea zilei e aleatoare, ca ariile să se rotească de
@@ -134,25 +177,38 @@ class SessionPlanner {
     int key(StepProgress p) =>
         ((p.lastPracticed != null && !p.lastPracticed!.isBefore(today)) ? 1 << 20 : 0) + (p.rating / 25).round();
     open.sort((a, b) => key(a).compareTo(key(b)));
+    // Pas înapoi: o treaptă la care ultimele două sesiuni au fost foarte grele cedează locul
+    // treptei dinaintea ei din traseu (dacă are jocuri) — copilul revine la ce îi reușește
+    // (momentum comportamental), apoi urcă din nou. Treapta grea rămâne obiectiv în plan.
+    final candidates = <StepProgress>[];
+    final bridgeFor = <String, String>{};
+    for (final p in open) {
+      final prev = p.struggling ? previousStep(p.stepId) : null;
+      final next = prev != null && gamesOf(prev.id).isNotEmpty ? (byId[prev.id] ?? StepProgress(stepId: prev.id)) : p;
+      if (candidates.any((c) => c.stepId == next.stepId)) continue;
+      if (next != p) bridgeFor[next.stepId] = p.stepId;
+      candidates.add(next);
+    }
     // Blocurile de obiective din arii diferite, cât se poate (variație, mai puțină oboseală).
     final targets = <StepProgress>[];
     final domains = <Domain>{};
-    for (final p in open) {
+    for (final p in candidates) {
       if (targets.length == config.targetBlocks) break;
       if (domains.add(stepById(p.stepId)!.domain)) targets.add(p);
     }
-    for (final p in open) {
+    for (final p in candidates) {
       if (targets.length == config.targetBlocks) break;
       if (!targets.contains(p)) targets.add(p);
     }
 
     final out = <SessionActivity>[];
     if (mastered.isNotEmpty) {
-      final w = mastered.first;
+      // Încălzirea nu repetă o treaptă care e deja pas înapoi azi.
+      final w = mastered.where((m) => !bridgeFor.containsKey(m.stepId)).firstOrNull ?? mastered.first;
       out.add(SessionActivity(
         kind: ActivityKind.warmUp,
         stepId: w.stepId,
-        gameId: gameFor(w.stepId)!,
+        gameId: familiarGame(w),
         rounds: config.warmUpRounds,
       ));
     }
@@ -165,10 +221,12 @@ class SessionPlanner {
       out.add(SessionActivity(
         kind: ActivityKind.target,
         stepId: t.stepId,
-        gameId: gameFor(t.stepId)!,
+        // Pasul înapoi rămâne pe jocul cunoscut: azi contează reușita, nu materialul nou.
+        gameId: bridgeFor.containsKey(t.stepId) ? familiarGame(t) : targetGame(t),
         rounds: config.roundsPerBlock,
         knownMix: known == null ? 0 : config.knownMix,
         mixStepId: known?.stepId,
+        bridgeFor: bridgeFor[t.stepId],
       ));
     }
 
@@ -177,7 +235,7 @@ class SessionPlanner {
       out.add(SessionActivity(
         kind: ActivityKind.maintenance,
         stepId: due.stepId,
-        gameId: gameFor(due.stepId)!,
+        gameId: freshGame(due),
         rounds: config.warmUpRounds,
       ));
     }
@@ -188,7 +246,7 @@ class SessionPlanner {
       out.add(SessionActivity(
         kind: ActivityKind.finale,
         stepId: f.stepId,
-        gameId: gameFor(f.stepId)!,
+        gameId: familiarGame(f),
         rounds: 2,
       ));
     }

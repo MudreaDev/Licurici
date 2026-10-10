@@ -79,6 +79,20 @@ final sessionStoreProvider = Provider<SessionStore>(
   (ref) => MemorySessionStore(),
 );
 
+/// Progresul pe trepte din sesiunile salvate (stăpânire, rating, jocurile folosite): pentru
+/// „Drumul de azi”, hartă și nivelul de pornire al unui joc deschis prima dată. Se recalculează
+/// la fiecare sesiune încheiată și după ștergerea datelor.
+final stepProgressProvider = FutureProvider<List<StepProgress>>(
+  (ref) async => progressFromSessions(await ref.watch(sessionStoreProvider).all()),
+);
+
+/// Rating-ul pe trepte, gata calculat (gol până se încarcă sesiunile).
+final stepRatingsProvider = Provider<Map<String, double>>(
+  (ref) => {
+    for (final p in ref.watch(stepProgressProvider).value ?? const <StepProgress>[]) p.stepId: p.rating,
+  },
+);
+
 /// Sesiunea în curs (null = nicio sesiune deschisă). O sesiune începe la primul joc și se
 /// încheie când copilul apasă „Gata pe azi” (sau, implicit, la următoarea pornire).
 class SessionController extends Notifier<SessionRecorder?> {
@@ -124,7 +138,10 @@ class SessionController extends Notifier<SessionRecorder?> {
     r.moodAfter = moodAfter;
     final record = r.close();
     state = null;
-    if (record != null) await ref.read(sessionStoreProvider).save(record);
+    if (record != null) {
+      await ref.read(sessionStoreProvider).save(record);
+      ref.invalidate(stepProgressProvider);
+    }
     return record;
   }
 

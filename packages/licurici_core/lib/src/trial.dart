@@ -88,6 +88,7 @@ class Trial {
     this.stimulusSet,
     this.seed,
     this.difficulty,
+    this.level,
     this.offTargetTaps = 0,
     this.targetId,
     this.chosenId,
@@ -113,8 +114,16 @@ class Trial {
   final String? stimulusSet;
   final int? seed;
 
-  /// Dificultatea estimată a itemului, pe scara rating-ului.
+  /// Mărimea itemului pe axa principală a jocului (mutări, obiecte, secunde de așteptare…), pentru
+  /// KPI de tipul „acuratețea față de mărime”. Fiecare joc are scara lui — NU e pe scara rating-ului.
   final double? difficulty;
+
+  /// Nivelul jocului (1…∞) la care s-a jucat încercarea; pentru rating (Elo) devine dificultatea
+  /// itemului prin [EloRating.difficultyOfLevel]. null = nivel necunoscut (sesiuni mai vechi).
+  final int? level;
+
+  /// Dificultatea itemului pe scara rating-ului.
+  double get ratingDifficulty => level == null ? EloRating.start : EloRating.difficultyOfLevel(level!);
   final int offTargetTaps;
 
   /// Corect, din prima, fără ajutor.
@@ -131,6 +140,7 @@ class Trial {
         stimulusSet: j['stimulusSet'] as String?,
         seed: j['seed'] as int?,
         difficulty: (j['difficulty'] as num?)?.toDouble(),
+        level: (j['level'] as num?)?.toInt(),
         offTargetTaps: (j['offTargetTaps'] as int?) ?? 0,
         targetId: j['targetId'] as String?,
         chosenId: j['chosenId'] as String?,
@@ -148,6 +158,7 @@ class Trial {
         'stimulusSet': stimulusSet,
         'seed': seed,
         'difficulty': difficulty,
+        if (level != null) 'level': level,
         'offTargetTaps': offTargetTaps,
         'targetId': targetId,
         'chosenId': chosenId,

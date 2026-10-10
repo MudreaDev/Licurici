@@ -61,7 +61,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
     WidgetsBinding.instance.addObserver(this);
     _speaker = ref.read(voiceProvider);
     _sessionLevel =
-        widget.initialLevel ?? ref.read(settingsProvider).levelOf(widget.game.id);
+        widget.initialLevel ?? ref.read(settingsProvider).levelOf(widget.game.id, 1, ref.read(stepRatingsProvider));
     _nextSessionLevel = _sessionLevel;
     _level = widget.game.generate(_sessionLevel);
     WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -42,9 +42,8 @@ class MapStation {
 /// Hărțile copilului, din sesiunile salvate (plan §3 f, §6): copilul nu vede niveluri, ci
 /// felinare aprinse.
 final mapStationsProvider = FutureProvider.autoDispose<List<MapStation>>((ref) async {
-  final records = await ref.watch(sessionStoreProvider).all();
   final visible = ref.watch(settingsProvider.select((s) => s.visibleGames));
-  final progress = {for (final p in progressFromSessions(records)) p.stepId: p};
+  final progress = {for (final p in await ref.watch(stepProgressProvider.future)) p.stepId: p};
   return [
     for (final ladder in ladders)
       if (ladder.steps.any((s) => s.games.any(visible.contains)))

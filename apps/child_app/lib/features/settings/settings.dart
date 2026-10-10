@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:licurici_core/licurici_core.dart';
+
+import '../../data/session.dart';
 
 /// Profilul local al copilului (setări senzoriale + clasa). Se păstrează în Drift (ADR-004),
 /// prin `main()`; în teste rămâne în memorie.
@@ -71,11 +75,13 @@ class AppSettings {
   /// sar peste rundele care le-ar arăta.
   final Set<String> avoid;
 
-  /// Nivelul cu care pornește jocul [gameId], ținând cont de plafon. Prima dată: [fallback] sau,
-  /// dacă e mai mare, nivelul transferat de la un joc de pe aceeași treaptă (`transferredLevel`).
-  int levelOf(String gameId, [int fallback = 1]) {
-    final first = transferredLevel(gameId, levels);
-    final start = levels[gameId] ?? (first != null && first > fallback ? first : fallback);
+  /// Nivelul cu care pornește jocul [gameId], ținând cont de plafon. Prima dată: cel mai mare
+  /// dintre [fallback], nivelul transferat de la un joc de pe aceeași treaptă
+  /// (`transferredLevel`) și nivelul estimat din rating-ul treptelor jocului ([ratings],
+  /// `skillLevel` — dificultate adaptivă pe abilități).
+  int levelOf(String gameId, [int fallback = 1, Map<String, double> ratings = const {}]) {
+    final start = levels[gameId] ??
+        [fallback, transferredLevel(gameId, levels) ?? 0, skillLevel(gameId, ratings) ?? 0].reduce(max);
     return capLevel(start, maxLevels[gameId]);
   }
 
@@ -310,7 +316,7 @@ class GameLevel extends Notifier<int> {
   final String gameId;
 
   @override
-  int build() => ref.read(settingsProvider).levelOf(gameId);
+  int build() => ref.read(settingsProvider).levelOf(gameId, 1, ref.read(stepRatingsProvider));
 
   void setLevel(int level) {
     state = capLevel(level, ref.read(settingsProvider).maxLevels[gameId]);

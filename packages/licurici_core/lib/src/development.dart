@@ -220,6 +220,16 @@ Step? stepById(String id) {
   return null;
 }
 
+/// Treapta dinaintea lui [id] în traseul ei (null pentru prima treaptă sau un id necunoscut).
+Step? previousStep(String id) {
+  for (final l in ladders) {
+    final i = l.steps.indexWhere((s) => s.id == id);
+    if (i > 0) return l.steps[i - 1];
+    if (i == 0) return null;
+  }
+  return null;
+}
+
 /// Treptele exersate de un joc.
 List<Step> stepsForGame(String gameId) =>
     [for (final l in ladders) ...l.steps.where((s) => s.games.contains(gameId))];

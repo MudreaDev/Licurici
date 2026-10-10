@@ -251,7 +251,8 @@ Future<void> _wipe(BuildContext context, WidgetRef ref) async {
   ref
     ..invalidate(aquariumProvider)
     ..invalidate(drawingsProvider)
-    ..invalidate(localReportsProvider);
+    ..invalidate(localReportsProvider)
+    ..invalidate(stepProgressProvider);
   if (!context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(
     const SnackBar(content: Text('Datele de pe tabletă au fost șterse.')),
