@@ -78,6 +78,8 @@ for (const text of todo) {
     // Salvăm după fiecare clip: o întrerupere nu pierde ce s-a generat deja.
     fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 1) + '\n');
   } catch (e) {
+    // Un clip eșuat (rețea, limită de cereri) nu lasă un fișier gol în urmă; reîncearcă la rularea următoare.
+    fs.rmSync(out, { force: true });
     console.error(`  ✗ „${text}”: ${e.message}`);
   }
 }
