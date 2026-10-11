@@ -106,7 +106,7 @@ Elo e folosit în același mod în educație (de ex. Pelánek, 2016, pentru sist
 | Nivel de pornire prudent | `skillLevel` < nivelul cu 80% șanse; null fără date |
 | Pas înapoi după două sesiuni grele, nu după una; sesiunile scurte nu contează | `progress_test.dart`, grupul „Drumul de azi adaptiv” |
 | Rotirea jocurilor pe o treaptă, pe mai multe seed-uri | `progress_test.dart` |
-| Plafonul declarat al fiecărui joc corespunde axelor lui | `level_scale_test.dart` (36 de jocuri) |
+| Plafonul declarat al fiecărui joc corespunde axelor lui | `level_scale_test.dart` (32 de jocuri cu niveluri proprii) |
 | Verificarea generalizării: o treaptă stăpânită pe un singur joc e verificată pe altul | `progress_test.dart`, grupul „generalizarea” |
 | Paritatea cu prototipul (bucla 2 la jocurile cu alegere) | `difficulty_test.dart` — teste de paritate cu `difficulty.js` |
 | Serverul acceptă noul câmp | `sync.spec.ts` — fixtura regenerată din Dart conține `level` |
