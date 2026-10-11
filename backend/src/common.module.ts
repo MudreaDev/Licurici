@@ -7,6 +7,7 @@ import { ENV, type Env } from './config/env';
 import { PrismaModule } from './prisma/prisma.module';
 import { QueueErrorLogger } from './queues/queue-errors';
 import { logSerializers } from './common/log-privacy';
+import { Metrics } from './common/metrics';
 import { Queues, bullConnection, defaultJobOptions } from './queues/queues';
 import { RedisModule } from './redis/redis.module';
 
@@ -40,7 +41,7 @@ function hasPrettyLogs(): boolean {
             paths: ['req.headers.authorization', 'req.headers.cookie', '*.email', '*.password', '*.nickname'],
             censor: '[ascuns]',
           },
-          autoLogging: { ignore: (req) => req.url?.startsWith('/health') ?? false },
+          autoLogging: { ignore: (req) => /^\/(health|metrics)/.test(req.url ?? '') },
         },
       }),
     }),
@@ -52,7 +53,8 @@ function hasPrettyLogs(): boolean {
     }),
     BullModule.registerQueue(...Object.values(Queues).map((name) => ({ name }))),
   ],
-  providers: [QueueErrorLogger],
-  exports: [BullModule],
+  // Metricile Prometheus: o singură instanță per proces (registrul ei).
+  providers: [QueueErrorLogger, { provide: Metrics, useFactory: () => new Metrics() }],
+  exports: [BullModule, Metrics],
 })
 export class CommonModule {}

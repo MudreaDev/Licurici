@@ -1,0 +1,14 @@
+# Prometheus (ADR-018): citește /metrics din rețeaua internă Docker, cu METRICS_TOKEN.
+# Tokenul e scris la pornire în /tmp/metrics_token (vezi docker-compose.prod.yml).
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: licurici-api
+    metrics_path: /metrics
+    authorization:
+      type: Bearer
+      credentials_file: /tmp/metrics_token
+    static_configs:
+      - targets: ["api:3000"]

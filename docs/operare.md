@@ -51,3 +51,7 @@ docker compose -f infra/docker-compose.yml -f infra/docker-compose.prod.yml up -
 - `/health` (proces viu) și `/health/ready` (PostgreSQL + Redis) — de pus într-un monitor extern (UptimeRobot, Better Stack).
 - Logurile sunt JSON fără date personale: `docker compose … logs -f api worker`.
 - Cozile: Bull Board doar în dezvoltare; în producție, la nevoie, un tunel SSH către Redis și Bull Board local.
+- **Metrici (opțional, ADR-018):** în `infra/.env` pune `METRICS_TOKEN` (cel puțin 24 de caractere, ex. `openssl rand -hex 24`) și `GRAFANA_PASSWORD`, apoi pornește cu profilul `monitoring`:
+  `docker compose -f infra/docker-compose.yml -f infra/docker-compose.prod.yml --profile monitoring up -d`.
+  Prometheus citește `api:3000/metrics` din rețeaua internă (Traefik nu rutează `/metrics`, iar fără token ruta răspunde 404) și păstrează 30 de zile. Grafana ascultă doar pe `127.0.0.1:3002`: de pe calculatorul tău, `ssh -L 3002:127.0.0.1:3002 <server>`, apoi `http://localhost:3002` (utilizator `admin`). Panoul „Licurici — API și cozi”: p95 al sincronizării (ținta 200 ms), cereri pe clase de răspuns, rutele cele mai lente, cozile BullMQ, sesiunile primite, erorile 5xx, memoria.
+  Metricile nu conțin date personale: rutele apar ca șablon (`/api/v1/children/:childId/sessions`), fără id-uri.

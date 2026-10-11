@@ -14,6 +14,7 @@ import { CommonModule } from '../common.module';
 import { GamePlanService } from '../children/plan';
 import { SharingService } from '../children/sharing';
 import { DomainErrorFilter } from '../common/domain-error.filter';
+import { Metrics } from '../common/metrics';
 import { ConsentService } from '../consents/consents';
 import { ENV, type Env } from '../config/env';
 import { GdprService } from '../gdpr/gdpr';
@@ -106,7 +107,7 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
     },
     {
       provide: SyncService,
-      inject: [ChildAccess, PrismaRepos, ConsentService, LiveGateway, PresenceService, getQueueToken(Queues.stats)],
+      inject: [ChildAccess, PrismaRepos, ConsentService, LiveGateway, PresenceService, getQueueToken(Queues.stats), Metrics],
       useFactory: (
         a: ChildAccess,
         r: PrismaRepos,
@@ -114,6 +115,7 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
         live: LiveGateway,
         presence: PresenceService,
         stats: Queue,
+        metrics: Metrics,
       ) =>
         new SyncService(
           a,
@@ -122,8 +124,11 @@ import { AuthController, ChildrenController, ConsentsController, MeController } 
           {
             publish: (e) => {
               live.publish(e);
-              // Sesiunea a ajuns pe server: copilul a terminat.
-              if (e.type === 'session.synced') void presence.stop(e.childId).catch(() => undefined);
+              if (e.type === 'session.synced') {
+                metrics.syncedSessions.inc(e.count);
+                // Sesiunea a ajuns pe server: copilul a terminat.
+                void presence.stop(e.childId).catch(() => undefined);
+              }
             },
           },
           {

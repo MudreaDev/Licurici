@@ -39,9 +39,11 @@ services:
       APP_URL: https://panou.${DOMAIN}
       CORS_ORIGINS: https://panou.${DOMAIN}
       SMTP_URL: ${SMTP_URL}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.api.rule=Host(`api.${DOMAIN}`)
+      # /metrics nu iese în internet: Prometheus îl citește din rețeaua internă (ADR-018).
+      - traefik.http.routers.api.rule=Host(`api.${DOMAIN}`) && !PathPrefix(`/metrics`)
       - traefik.http.routers.api.entrypoints=websecure
       - traefik.http.routers.api.tls.certresolver=le
       - traefik.http.services.api.loadbalancer.server.port=3000
@@ -97,6 +99,51 @@ services:
       postgres: { condition: service_healthy }
     restart: unless-stopped
 
+  # Metrici (ADR-018), opțional: `--profile monitoring`. Prometheus păstrează 30 de zile;
+  # Grafana doar pe 127.0.0.1:3002 — se deschide prin tunel SSH (docs/operare.md).
+  # Metricile nu conțin date personale: rute ca șablon, coduri, durate, lungimi de cozi.
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    profiles: [monitoring]
+    environment:
+      # Compose interpolează tot fișierul și fără profil: verificarea e în comandă, nu cu `:?`.
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        [ -n "$METRICS_TOKEN" ] || { echo "METRICS_TOKEN lipsește din infra/.env"; exit 1; } &&
+        printf %s "$METRICS_TOKEN" > /tmp/metrics_token &&
+        exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml
+        --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=30d
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    profiles: [monitoring]
+    ports: ["127.0.0.1:3002:3000"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-}
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    # Fără parolă setată, Grafana ar porni cu admin/admin: refuzăm pornirea.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        [ -n "$GF_SECURITY_ADMIN_PASSWORD" ] || { echo "GRAFANA_PASSWORD lipsește din infra/.env"; exit 1; } &&
+        exec /run.sh
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana:/var/lib/grafana
+    depends_on: [prometheus]
+    restart: unless-stopped
+
 volumes:
   letsencrypt:
   backups:
+  prometheus:
+  grafana:

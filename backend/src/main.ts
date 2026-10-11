@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { corsOrigins, ENV, type Env } from './config/env';
 import { RedisIoAdapter } from './live/redis-io.adapter';
 import { initSentry } from './common/sentry';
+import { Metrics, routeTemplate } from './common/metrics';
 
 async function bootstrap() {
   initSentry(process.env.SENTRY_DSN, process.env.NODE_ENV ?? 'development');
@@ -13,7 +14,16 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
   const env = app.get<Env>(ENV);
 
-  app.setGlobalPrefix('api/v1', { exclude: ['health', 'health/ready'] });
+  app.setGlobalPrefix('api/v1', { exclude: ['health', 'health/ready', 'metrics'] });
+  // Durata fiecărei cereri, pe ruta-șablon (fără id-uri) — ADR-018.
+  const metrics = app.get(Metrics);
+  app.use((req: Parameters<typeof routeTemplate>[0] & { method: string }, res: { statusCode: number; on(e: 'finish', f: () => void): void }, next: () => void) => {
+    const start = process.hrtime.bigint();
+    res.on('finish', () =>
+      metrics.observe(req.method, routeTemplate(req), res.statusCode, Number(process.hrtime.bigint() - start) / 1e9),
+    );
+    next();
+  });
   app.enableShutdownHooks();
   // Panoul web rulează pe altă origine (alt port în dezvoltare, alt subdomeniu în producție).
   // Tokenurile merg în antetul Authorization, nu în cookie-uri → fără `credentials`.
