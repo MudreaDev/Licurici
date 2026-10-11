@@ -16,7 +16,8 @@ String _openMoji(String emoji) => emoji.runes
 void main() {
   test('toate ilustrațiile jocurilor (inclusiv reaction) au SVG OpenMoji', () {
     final missing = <String>{};
-    bool has(String e) => File('../game_content/art/openmoji/${_openMoji(e)}.svg').existsSync();
+    // Fețele desenate din cod (`face:…`) nu au fișier.
+    bool has(String e) => FaceSpec.isFace(e) || File('../game_content/art/openmoji/${_openMoji(e)}.svg').existsSync();
     for (final g in allGames) {
       if (!has(g.emoji)) missing.add('${g.id}: ${g.emoji}');
       for (final tier in [1, 3, 5, 8]) {

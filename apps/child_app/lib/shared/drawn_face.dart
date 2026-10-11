@@ -55,7 +55,8 @@ class FacePainter extends CustomPainter {
     // Părul din spate (lung, codițe).
     if (look.hairStyle == 1) {
       canvas.drawRRect(
-        RRect.fromRectAndRadius(Rect.fromCenter(center: c.translate(0, r * 0.25), width: r * 2.25, height: r * 2.2), Radius.circular(r)),
+        // Cade pe lângă obraji și se termină în spatele bărbiei (altfel ar părea barbă).
+        RRect.fromRectAndRadius(Rect.fromCenter(center: c.translate(0, -r * 0.05), width: r * 2.32, height: r * 1.9), Radius.circular(r * 0.9)),
         fill(hair),
       );
     } else if (look.hairStyle == 2) {

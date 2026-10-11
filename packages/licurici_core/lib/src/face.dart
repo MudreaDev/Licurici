@@ -16,7 +16,8 @@ enum FaceEmotion {
   trist('trist'),
   suparat('supărat'),
   speriat('speriat'),
-  surprins('surprins');
+  surprins('surprins'),
+  obosit('obosit');
 
   const FaceEmotion(this.word);
 
@@ -65,6 +66,7 @@ class FaceShape {
         FaceEmotion.suparat => const FaceShape(mouthCurve: -0.7, mouthOpen: 0.12, mouthWidth: 0.5, browTilt: -1, browLift: -0.15, eyeOpen: 0.72),
         FaceEmotion.speriat => const FaceShape(mouthCurve: -0.3, mouthOpen: 0.6, mouthWidth: 0.42, browTilt: 0.65, browLift: 0.3, eyeOpen: 1.35),
         FaceEmotion.surprins => const FaceShape(mouthOpen: 0.85, mouthWidth: 0.26, browTilt: 0.1, browLift: 0.42, eyeOpen: 1.3),
+        FaceEmotion.obosit => const FaceShape(mouthCurve: -0.15, mouthOpen: 0.18, mouthWidth: 0.34, browTilt: 0.25, browLift: -0.08, eyeOpen: 0.35),
       };
 
   /// Forma la [intensity] ∈ [0, 1]: de la neutru spre emoția întreagă.

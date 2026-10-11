@@ -135,7 +135,7 @@ const List<Ladder> ladders = [
   Ladder(Domain.emo, [
     Step('EMO1', 'Deosebește bucuros de trist', games: ['emotii']),
     Step('EMO2', 'Recunoaște emoțiile de bază pe fețe diferite', games: ['emotii', 'sortam-emotiile']),
-    Step('EMO3', 'Spune ce simte cineva într-o situație', games: ['ce-simte']),
+    Step('EMO3', 'Spune ce simte cineva într-o situație', games: ['ce-simte', 'cum-se-simte']),
     Step('EMO4', 'Alege ce poate face cineva ca să se simtă mai bine', games: ['ce-ma-ajuta']),
     Step('EMO5', 'Înțelege ce știe și ce crede altcineva (perspectivă)', games: ['cine-stie']),
     Step('EMO6', 'Alege comportamentul potrivit în situații sociale', games: ['situatii']),
@@ -159,8 +159,8 @@ const List<Ladder> ladders = [
   ]),
   Ladder(Domain.aut, [
     Step('AUT1', 'Pune în ordine pașii unei rutine: întâi … apoi … (2–3 pași)',
-        games: ['pasii-rutinei']),
-    Step('AUT2', 'Pune în ordine o rutină întreagă (4–5 pași)', games: ['pasii-rutinei']),
+        games: ['pasii-rutinei', 'ajuta-l-pe-licurici']),
+    Step('AUT2', 'Pune în ordine o rutină întreagă (4–5 pași)', games: ['pasii-rutinei', 'ajuta-l-pe-licurici']),
     Step('AUT3', 'Alege hainele potrivite vremii', games: ['ce-imbrac']),
     Step('AUT4', 'Pune în ordine momentele zilei (orarul vizual)', games: ['orarul-meu']),
     Step('AUT5', 'Cumpără după o listă cu poze', games: ['la-magazin']),

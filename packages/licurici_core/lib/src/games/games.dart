@@ -13,6 +13,7 @@ import 'matematica.dart';
 import 'romana.dart';
 import 'scoala.dart';
 import 'scoala2.dart';
+import 'siblings.dart';
 import 'social.dart';
 import 'vocabular.dart';
 
@@ -25,10 +26,14 @@ export 'matematica.dart';
 export 'romana.dart';
 export 'scoala.dart';
 export 'scoala2.dart';
+export 'siblings.dart';
 export 'social.dart';
 export 'vocabular.dart';
 
 const List<GameSpec> allGames = [
+  // Jocurile „frate” (generalizare: același obiectiv, alt material)
+  CumSeSimteGame(),
+  AjutaLicuriciGame(),
   // Potrivire și limbaj receptiv
   PotrivesteGame(),
   ArataMiGame(),
