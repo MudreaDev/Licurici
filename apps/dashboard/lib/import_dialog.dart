@@ -9,15 +9,24 @@ class ImportButton extends ConsumerWidget {
   const ImportButton({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => TextButton.icon(
-    key: const ValueKey('import-sessions'),
-    onPressed: () => showDialog<void>(
-      context: context,
-      builder: (_) => const _ImportDialog(),
-    ),
-    icon: const Icon(Icons.upload_file_outlined),
-    label: const Text('Importă sesiuni'),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    void open() => showDialog<void>(context: context, builder: (_) => const _ImportDialog());
+    // Pe telefon doar iconița (cu descriere): textul n-ar mai lăsa loc titlului.
+    if (MediaQuery.sizeOf(context).width < 600) {
+      return IconButton(
+        key: const ValueKey('import-sessions'),
+        tooltip: 'Importă sesiuni',
+        onPressed: open,
+        icon: const Icon(Icons.upload_file_outlined),
+      );
+    }
+    return TextButton.icon(
+      key: const ValueKey('import-sessions'),
+      onPressed: open,
+      icon: const Icon(Icons.upload_file_outlined),
+      label: const Text('Importă sesiuni'),
+    );
+  }
 }
 
 class _ImportDialog extends ConsumerStatefulWidget {

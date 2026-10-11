@@ -26,13 +26,22 @@ class SpecialistPage extends ConsumerWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Licurici · Specialist'),
-            actions: [
-              TextButton(
-                onPressed: () => context.go('/'),
-                child: const Text('Schimbă rolul'),
-              ),
-              const Padding(padding: EdgeInsets.all(16), child: Text('DEMO')),
-            ],
+            // Pe ecran îngust, acțiunile devin compacte: altfel titlul rămâne fără loc.
+            actions: compact
+                ? [
+                    IconButton(
+                      tooltip: 'Schimbă rolul',
+                      onPressed: () => context.go('/'),
+                      icon: const Icon(Icons.swap_horiz),
+                    ),
+                  ]
+                : [
+                    TextButton(
+                      onPressed: () => context.go('/'),
+                      child: const Text('Schimbă rolul'),
+                    ),
+                    const Padding(padding: EdgeInsets.all(16), child: Text('DEMO')),
+                  ],
           ),
           drawer: compact ? Drawer(child: SafeArea(child: childList())) : null,
           body: Row(

@@ -81,8 +81,8 @@ class _DashboardAppState extends State<DashboardApp> {
       useMaterial3: true,
       fontFamily: 'packages/${content.contentPackage}/${content.fontFamily}',
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF527D79),
-        primary: const Color(0xFF527D79),
+        seedColor: const Color(0xFF466F6B),
+        primary: const Color(0xFF466F6B),
         surface: const Color(0xFFFFFDF8),
       ),
       scaffoldBackgroundColor: const Color(0xFFF5F3ED),
@@ -229,7 +229,7 @@ class SignInButton extends ConsumerWidget {
           : TextButton(
               key: const ValueKey('sign-in'),
               onPressed: () => context.go('/autentificare'),
-              child: const Text('Conectează-te · DEMO'),
+              child: Text(MediaQuery.sizeOf(context).width < 600 ? 'Conectează-te' : 'Conectează-te · DEMO'),
             ),
     );
   }
