@@ -218,6 +218,7 @@ class _ChildDetail extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _Overview(history.latest),
+                    StepBackNotice(history),
                     AskPanel(key: ValueKey('ask-${history.child.id}'), history: history),
                   ],
                 ),

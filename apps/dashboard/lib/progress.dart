@@ -212,3 +212,38 @@ double? phaseX(List<SessionReport> reports, DateTime at) {
   if (after <= 0) return null;
   return after + 0.5;
 }
+
+/// Treptele la care copilul are nevoie de un pas înapoi (aceeași regulă ca „Drumul de azi” de
+/// pe tabletă): specialistul vede de ce s-a schimbat orarul. Nimic dacă totul merge.
+class StepBackNotice extends StatelessWidget {
+  const StepBackNotice(this.history, {super.key});
+  final ChildHistory history;
+
+  @override
+  Widget build(BuildContext context) {
+    final back = stepsBack(progressFromSessions(history.sessions));
+    if (back.isEmpty) return const SizedBox.shrink();
+    return Section(
+      'Trepte grele acum',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final b in back)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                '${b.step.id} · ${b.step.objective} — independență în ultimele sesiuni: '
+                '${b.recentIndependence.map((i) => '${(i * 100).round()}%').join(', ')}. '
+                'Pe tabletă, „Drumul de azi” reia întâi ${b.to.id} · ${b.to.objective}, '
+                'pe jocul cunoscut, apoi urcă din nou.',
+              ),
+            ),
+          const Text(
+            'Regula: două sesiuni la rând sub 30% independență (cu cel puțin 4 încercări fiecare). '
+            'Poți ajusta nivelul sau plafonul jocurilor din tabul „Jocuri”.',
+          ),
+        ],
+      ),
+    );
+  }
+}

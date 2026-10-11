@@ -106,3 +106,21 @@ List<StepProgress> defaultObjectives(List<StepProgress> known, Set<String> avail
   }
   return out;
 }
+
+/// O treaptă grea (ultimele două sesiuni sub 30% independență — [StepProgress.struggling]) și
+/// treapta dinainte, la care „Drumul de azi” se întoarce întâi. Pentru panoul specialistului:
+/// de ce s-a schimbat orarul copilului.
+class StepBack {
+  const StepBack(this.step, this.to, this.recentIndependence);
+
+  final Step step;
+  final Step to;
+  final List<double> recentIndependence;
+}
+
+List<StepBack> stepsBack(List<StepProgress> progress) => [
+  for (final p in progress)
+    if (p.struggling)
+      if (stepById(p.stepId) case final step?)
+        if (previousStep(p.stepId) case final to?) StepBack(step, to, p.recentIndependence),
+];

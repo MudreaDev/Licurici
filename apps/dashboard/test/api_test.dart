@@ -151,6 +151,10 @@ class FakeBackend {
     if (path == '/consents') {
       if (r.method == 'POST') {
         final b = jsonDecode(r.body) as Map;
+        // Ca pe server: acordul se dă doar de pe o adresă confirmată; retragerea oricând.
+        if (b['granted'] == true && !verified) {
+          return json({'statusCode': 403, 'message': 'Confirmă întâi adresa de e-mail.'}, 403);
+        }
         consents[b['purpose'] as String] = b['granted'] as bool;
       }
       return json(consents);
@@ -368,6 +372,13 @@ void main() {
     await signIn(tester, 'parola-lunga-1');
     await tester.tap(find.byKey(const ValueKey('account')));
     await tester.pumpAndSettle();
+
+    // Adresa neconfirmată: acordul e refuzat (mesajul serverului), comutatorul rămâne oprit.
+    await tester.tap(find.byKey(const ValueKey('consent-AI_SUMMARY')));
+    await tester.pumpAndSettle();
+    expect(backend.consents['AI_SUMMARY'], isFalse);
+    expect(find.textContaining('Confirmă întâi adresa'), findsOneWidget);
+    backend.verified = true;
 
     // Consimțământul pentru rezumatele AI: dat din panou, salvat pe server.
     expect(

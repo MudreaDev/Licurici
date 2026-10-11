@@ -26,6 +26,7 @@ SessionRecord _session(int day, String step, int ok, {int n = 10, String set = '
 
 void main() {
   adaptiveTests();
+  stepsBackTests();
 
   test('stăpânirea apare după 2 sesiuni bune pe 2 seturi; rating-ul crește', () {
     final p = progressFromSessions([
@@ -174,5 +175,18 @@ void adaptiveTests() {
         expect(planFor(900), 'culori');
       }
     });
+  });
+}
+
+void stepsBackTests() {
+  test('stepsBack: treapta grea și treapta la care se întoarce drumul', () {
+    final back = stepsBack(progressFromSessions([
+      _session(1, 'EMO1', 9),
+      _session(10, 'EMO2', 2),
+      _session(12, 'EMO2', 1),
+      _session(13, 'EMO3', 1), // o singură sesiune grea: încă nu
+    ]));
+    expect(back.map((b) => '${b.step.id}→${b.to.id}'), ['EMO2→EMO1']);
+    expect(back.single.recentIndependence, [0.2, 0.1]);
   });
 }
