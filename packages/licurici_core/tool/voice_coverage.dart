@@ -70,9 +70,11 @@ const uiPhrases = [
   // Fă ca Licurici
   'Privește ce face Licurici.',
   'Acum tu!',
-  // Semaforul
+  // Semaforul, Floarea crește
   'Atinge felinarul doar când se face verde.',
   'Așteaptă verde.',
+  'Atinge floarea doar când s-a deschis de tot.',
+  'Așteaptă să se deschidă.',
   'Acum!',
   // Unde se uită?
   'Ce arată Licurici?',

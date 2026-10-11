@@ -71,6 +71,7 @@ const gameScales = <String, LevelScale>{
   // funcții executive
   'regula-se-schimba': LevelScale(7),
   'semaforul': LevelScale(10),
+  'floarea-creste': LevelScale(10),
   'pe-rand': LevelScale(12),
   // limbaj
   'asculta-si-fa': LevelScale(11),

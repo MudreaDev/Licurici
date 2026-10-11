@@ -348,6 +348,19 @@ final routerProvider = Provider<GoRouter>((ref) {
             _fade(context, state, const WaitScreen()),
       ),
       GoRoute(
+        path: '/asteapta/:id',
+        redirect: (context, state) =>
+            waitGameById(state.pathParameters['id']!) == null ? '/' : null,
+        pageBuilder: (context, state) => _fade(
+          context,
+          state,
+          WaitScreen(
+            key: ValueKey(state.pathParameters['id']),
+            game: waitGameById(state.pathParameters['id']!)!,
+          ),
+        ),
+      ),
+      GoRoute(
         path: '/traseaza',
         pageBuilder: (context, state) =>
             _fade(context, state, const TraceScreen()),

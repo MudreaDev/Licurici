@@ -70,7 +70,7 @@ class CatalogEntry {
         GameKind.trace => '/traseaza',
         GameKind.order => '/ordine/$id',
         GameKind.imitation => '/fa-ca-licuriciul',
-        GameKind.wait => '/semaforul',
+        GameKind.wait => id == 'semaforul' ? '/semaforul' : '/asteapta/$id',
         GameKind.rules => '/regula-se-schimba',
         GameKind.search => '/cauta',
         GameKind.gaze => '/unde-se-uita',
@@ -345,7 +345,7 @@ List<CatalogEntry> get catalog => [
           kind: GameKind.track,
           domain: _domainOf(g.id, g.steps),
         ),
-      for (final g in const [WaitGame()])
+      for (final g in waitGames)
         CatalogEntry(
           id: g.id,
           name: g.name,

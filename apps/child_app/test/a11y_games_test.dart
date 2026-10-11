@@ -22,7 +22,7 @@ void main() {
   const paths = [
     '/sortam', '/sortam/la-locul-lui', '/sortam/sortam-emotiile', '/fa-ca-licuriciul', '/regula-se-schimba', '/unde-se-uita', '/la-magazin', '/construieste',
     '/diferente', '/labirint', '/puzzle', '/ce-s-a-schimbat', '/atinge-si-vezi', '/hraneste-pestii', '/toba-magica',
-    '/vorbeste', '/cauta', '/pe-rand', '/coloram', '/urmareste-pestele', '/semaforul', '/traseaza', '/cucu-bau',
+    '/vorbeste', '/cauta', '/pe-rand', '/coloram', '/urmareste-pestele', '/semaforul', '/asteapta/floarea-creste', '/traseaza', '/cucu-bau',
     '/secventa/simon', '/secventa/licuricii', '/album',
   ];
 

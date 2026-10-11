@@ -73,10 +73,11 @@ final Map<String, String Function(int)> axesSignature = {
     final a = const SwitchGame().axesFor(l);
     return '${a.blocks} ${a.perBlock} ${a.mixed}';
   },
-  'semaforul': (l) {
-    final a = const WaitGame().axesFor(l);
-    return '${a.trials} ${a.minWaitMs} ${a.maxWaitMs} ${a.flickers}';
-  },
+  for (final g in waitGames)
+    g.id: (l) {
+      final a = g.axesFor(l);
+      return '${a.trials} ${a.minWaitMs} ${a.maxWaitMs} ${a.flickers}';
+    },
   'pe-rand': (l) {
     final a = const TurnGame().axesFor(l);
     return '${a.towers} ${a.blocks} ${a.waitMs} ${a.childFirst} ${a.passTurn} ${a.hesitate}';

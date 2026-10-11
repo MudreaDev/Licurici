@@ -107,13 +107,47 @@ class WaitResult {
   }
 }
 
-class WaitGame {
-  const WaitGame();
+/// Ce vede copilul în timp ce așteaptă (aceeași regulă, alt material — generalizarea).
+enum WaitSkin {
+  /// Felinarul se face verde; licăririle galbene sunt tentațiile.
+  lantern,
 
-  String get id => 'semaforul';
-  String get name => 'Semaforul';
-  String get emoji => '🚦';
-  String get description => 'Atinge doar la verde';
+  /// Floarea crește și se deschide de tot; tentațiile = un mugur care se umflă o clipă.
+  flower,
+}
+
+class WaitGame {
+  const WaitGame()
+      : id = 'semaforul',
+        name = 'Semaforul',
+        emoji = '🚦',
+        description = 'Atinge doar la verde',
+        skin = WaitSkin.lantern,
+        intro = 'Atinge felinarul doar când se face verde.',
+        early = 'Așteaptă verde.';
+
+  const WaitGame.custom({
+    required this.id,
+    required this.name,
+    required this.emoji,
+    required this.description,
+    required this.skin,
+    required this.intro,
+    required this.early,
+  });
+
+  final String id;
+  final String name;
+  final String emoji;
+  final String description;
+  final WaitSkin skin;
+
+  /// Rostit la început.
+  final String intro;
+
+  /// Rostit (o dată pe încercare) la o atingere prea devreme.
+  final String early;
+
   Set<Grade> get grades => Grade.parseCodes('G1');
   List<String> get steps => const ['FEX1'];
 
@@ -148,4 +182,26 @@ class WaitGame {
     }
     return WaitLevel(gameId: id, level: level, seed: s, axes: axes, trials: trials);
   }
+}
+
+/// Floarea crește (FEX1, fratele Semaforului): floarea crește încet și se poate culege doar când
+/// s-a deschis de tot. Aceleași niveluri și aceleași măsurători (atingeri anticipate, timpul de
+/// reacție, cea mai lungă așteptare reușită).
+const flowerWait = WaitGame.custom(
+  id: 'floarea-creste',
+  name: 'Floarea crește',
+  emoji: '🌷',
+  description: 'Culege floarea când s-a deschis',
+  skin: WaitSkin.flower,
+  intro: 'Atinge floarea doar când s-a deschis de tot.',
+  early: 'Așteaptă să se deschidă.',
+);
+
+const waitGames = [WaitGame(), flowerWait];
+
+WaitGame? waitGameById(String id) {
+  for (final g in waitGames) {
+    if (g.id == id) return g;
+  }
+  return null;
 }
