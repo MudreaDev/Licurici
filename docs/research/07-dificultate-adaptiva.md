@@ -93,7 +93,7 @@ Elo e folosit în același mod în educație (de ex. Pelánek, 2016, pentru sist
 ## 6. Limitări cunoscute
 
 1. **Liniaritatea nivelurilor** (+40 de puncte pe nivel) e o aproximare; la unele jocuri saltul între niveluri nu e egal. Calibrarea pe date reale (după testarea cu copii) poate da câte o pantă pe joc.
-2. **Nivelurile jocurilor cu alegere** (treapta `Difficulty.tier`) nu sunt pe aceeași scară cu nivelurile jocurilor procedurale; pe o treaptă cu jocuri de ambele feluri, rating-ul le amestecă. Deocamdată treptele cu mai multe jocuri sunt puține (ATN2, POT5, FEX5).
+2. ✅ *Rezolvat (sesiunea 11):* **scara comună a nivelurilor** (`level_scale.dart`). Fiecare joc își declară plafonul, adică nivelul de la care axele lui nu mai cresc („Construiește” — 7, „Felinarele” — 25, jocurile cu alegere — 7). Pe scara rating-ului, nivelul 1 al oricărui joc valorează 1000, iar plafonul 1400; între ele, liniar. Un test verifică plafonul declarat pe axele reale ale fiecărui joc (că nivelul de plafon e identic cu toate cele de peste el și diferit de cel de dedesubt) și a găsit două plafoane citite greșit din cod (labirintul și hrănirea peștilor). Rămâne o aproximare: liniaritatea între nivelul 1 și plafon (limitarea 1).
 3. **Pragurile clinice** (80% pentru stăpânire, 30% pentru pas înapoi, 4 încercări minime) sunt din literatură, nu validate pe copiii noștri — sunt parametri, nu constante, și urmează validarea planului cu specialiștii (README §0.0 D).
 
 ## 7. Cum am verificat
@@ -106,6 +106,8 @@ Elo e folosit în același mod în educație (de ex. Pelánek, 2016, pentru sist
 | Nivel de pornire prudent | `skillLevel` < nivelul cu 80% șanse; null fără date |
 | Pas înapoi după două sesiuni grele, nu după una; sesiunile scurte nu contează | `progress_test.dart`, grupul „Drumul de azi adaptiv” |
 | Rotirea jocurilor pe o treaptă, pe mai multe seed-uri | `progress_test.dart` |
+| Plafonul declarat al fiecărui joc corespunde axelor lui | `level_scale_test.dart` (36 de jocuri) |
+| Verificarea generalizării: o treaptă stăpânită pe un singur joc e verificată pe altul | `progress_test.dart`, grupul „generalizarea” |
 | Paritatea cu prototipul (bucla 2 la jocurile cu alegere) | `difficulty_test.dart` — teste de paritate cu `difficulty.js` |
 | Serverul acceptă noul câmp | `sync.spec.ts` — fixtura regenerată din Dart conține `level` |
 
