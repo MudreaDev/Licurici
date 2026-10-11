@@ -13,7 +13,7 @@ import 'package:licurici_core/licurici_core.dart';
 
 import 'layout_test.dart' show devices, loadFonts, settle, shots;
 
-Future<ProviderContainer> _open(WidgetTester tester, Size size) async {
+Future<ProviderContainer> _open(WidgetTester tester, Size size, {TraceGame game = const TraceGame()}) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
@@ -25,7 +25,7 @@ Future<ProviderContainer> _open(WidgetTester tester, Size size) async {
     initialLocation: '/traseaza',
     routes: [
       GoRoute(path: '/', builder: (_, _) => const Scaffold(body: Text('Acasă'))),
-      GoRoute(path: '/traseaza', builder: (_, _) => const TraceScreen(seed: 3)),
+      GoRoute(path: '/traseaza', builder: (_, _) => TraceScreen(game: game, seed: 3)),
     ],
   );
   addTearDown(router.dispose);
@@ -64,30 +64,33 @@ void main() {
     svg.cache.clear();
   });
 
+  for (final game in const <TraceGame>[TraceGame(), DotsGame()]) {
   for (final device in ['telefon-mic', 'tableta']) {
-    testWidgets('trasează: toate drumurile duc la final ($device)', (
+    testWidgets('${game.id}: toate drumurile duc la final ($device)', (
       tester,
     ) async {
-      final container = await _open(tester, devices[device]!);
-      final level = const TraceGame().generate(1, seed: 3);
+      final container = await _open(tester, devices[device]!, game: game);
+      final level = game.generate(1, seed: 3);
       expect(find.byKey(const ValueKey('trace-traveler')), findsOneWidget);
       if (shots) {
         await expectLater(
           find.byType(TraceScreen),
-          matchesGoldenFile('shots/trasare-$device.png'),
+          matchesGoldenFile(game.id == 'traseaza' ? 'shots/trasare-$device.png' : 'shots/${game.id}-$device.png'),
         );
       }
       for (final path in level.paths) {
         await _trace(tester, path);
-        await settle(tester, 8);
+        // Desenele din puncte își arată rezultatul 1,9 s (Trasează: 1,3 s).
+        await settle(tester, 12);
       }
       expect(find.byType(RewardFinish), findsOneWidget);
       final trials = container.read(sessionProvider)!.trials;
-      expect(trials.where((t) => t.gameId == 'traseaza'), hasLength(level.paths.length));
+      expect(trials.where((t) => t.gameId == game.id), hasLength(level.paths.length));
       expect(trials.every((t) => t.correct), isTrue);
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 5));
     });
+  }
   }
 
   testWidgets('atingerea departe de personaj nu-l mută', (tester) async {

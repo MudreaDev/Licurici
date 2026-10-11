@@ -167,9 +167,9 @@ const List<Ladder> ladders = [
     Step('AUT6', 'Alege ce e sănătos și ce e sigur; potrivește emoțiile', games: ['explorare-viata']),
   ]),
   Ladder(Domain.mot, [
-    Step('MOT1', 'Duce degetul pe un drum lat, drept, de la start la țintă', games: ['traseaza']),
-    Step('MOT2', 'Urmărește curbe și valuri fără să iasă de pe drum', games: ['traseaza']),
-    Step('MOT3', 'Urmărește zig-zag și bucle pe un drum îngust, fără ajutor', games: ['traseaza']),
+    Step('MOT1', 'Duce degetul pe un drum lat, drept, de la start la țintă', games: ['traseaza', 'uneste-punctele']),
+    Step('MOT2', 'Urmărește curbe și valuri fără să iasă de pe drum', games: ['traseaza', 'uneste-punctele']),
+    Step('MOT3', 'Urmărește zig-zag și bucle pe un drum îngust, fără ajutor', games: ['traseaza', 'uneste-punctele']),
     Step('MOT4', 'Trage un obiect precis la o țintă care se mișcă', games: ['hraneste-pestii']),
     Step('MOT5', 'Colorează în contur, cu carioca și cu găleata (motricitate fină, creație)',
         games: ['colorare']),

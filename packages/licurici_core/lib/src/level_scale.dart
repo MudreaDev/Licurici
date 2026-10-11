@@ -77,6 +77,7 @@ const gameScales = <String, LevelScale>{
   'asculta-si-fa': LevelScale(11),
   // motricitate și scris
   'traseaza': LevelScale(10),
+  'uneste-punctele': LevelScale(10),
   'hraneste-pestii': LevelScale(12), // viteza crește până la 12
   'atinge-si-vezi': LevelScale(6),
   'scriem-cifrele': LevelScale(10),

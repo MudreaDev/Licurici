@@ -213,6 +213,10 @@ void main(List<String> args) {
       add(aacSentence(c, w), 'vorbeste');
     }
   }
+  add(DotsGame.says, 'uneste-punctele');
+  for (final f in dotFigures) {
+    add(f.name, 'uneste-punctele');
+  }
   for (final g in sortGames) {
     add(g.instruction, g.id);
   }

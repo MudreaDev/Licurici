@@ -29,6 +29,7 @@ import 'shell.dart';
 import 'sorting.dart';
 import 'spot_diff.dart';
 import 'switching.dart';
+import 'dots.dart';
 import 'trace.dart';
 import 'tracking.dart';
 import 'turns.dart';
@@ -67,7 +68,7 @@ class CatalogEntry {
         GameKind.sort => id == 'sortam' ? '/sortam' : '/sortam/$id',
         GameKind.calm => '/respira',
         GameKind.shell => '/cucu-bau',
-        GameKind.trace => '/traseaza',
+        GameKind.trace => id == 'traseaza' ? '/traseaza' : '/traseaza/$id',
         GameKind.order => '/ordine/$id',
         GameKind.imitation => '/fa-ca-licuriciul',
         GameKind.wait => id == 'semaforul' ? '/semaforul' : '/asteapta/$id',
@@ -372,7 +373,7 @@ List<CatalogEntry> get catalog => [
           kind: GameKind.order,
           domain: _domainOf(g.id, g.steps),
         ),
-      for (final g in const [TraceGame()])
+      for (final g in const <TraceGame>[TraceGame(), DotsGame()])
         CatalogEntry(
           id: g.id,
           name: g.name,

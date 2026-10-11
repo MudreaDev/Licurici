@@ -86,6 +86,10 @@ final Map<String, String Function(int)> axesSignature = {
     final a = const InstructionGame().axesFor(l);
     return '${a.steps} ${a.objects} ${a.familiarOnly} ${a.reversed} ${a.hidden}';
   },
+  'uneste-punctele': (l) {
+    final a = const DotsGame().axesFor(l);
+    return '${a.width} ${a.guide} ${a.paths}';
+  },
   'traseaza': (l) {
     final a = const TraceGame().axesFor(l);
     return '${a.shapes} ${a.width} ${a.guide} ${a.paths}';

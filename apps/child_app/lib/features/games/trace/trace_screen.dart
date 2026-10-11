@@ -20,7 +20,8 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final traceLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('traseaza'));
+/// Nivelul fiecărui joc de trasat (id-ul jocului: „Trasează”, „Unește punctele”).
+final traceLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
 
 /// Trasează (MOT1–3): copilul duce personajul cu degetul pe drum până la ținta lui. Drumul
 /// e desenat din cod; partea parcursă se colorează. Ieșirea de pe drum nu se pedepsește:
@@ -69,7 +70,7 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
     // Fără imaginile pe care copilul nu trebuie să le vadă (alese de adult, `avoidItems`).
     final avoid = avoidedOf(ref);
     final level = generateAvoiding(
-      (seed) => widget.game.generate(ref.read(traceLevelProvider), seed: seed),
+      (seed) => widget.game.generate(ref.read(traceLevelProvider(widget.game.id)), seed: seed),
       (l) => l.art,
       avoid,
       seed: widget.seed,
@@ -146,8 +147,9 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
     setState(() {
       _burst++;
     });
-    ref.read(voiceProvider).say(['Bravo']);
-    _timer = Timer(const Duration(milliseconds: 1300), () {
+    // La un desen din puncte, Licurici spune ce a ieșit („O casă!”).
+    ref.read(voiceProvider).say([_path.figure?.name ?? 'Bravo']);
+    _timer = Timer(Duration(milliseconds: _path.figure == null ? 1300 : 1900), () {
       if (!mounted) return;
       if (_index + 1 < _level.paths.length) {
         setState(() {
@@ -175,7 +177,7 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
   void _again({required bool next}) {
     if (next) {
       ref
-          .read(traceLevelProvider.notifier)
+          .read(traceLevelProvider(widget.game.id).notifier)
           .setLevel(_result!.suggestedNextLevel(_level.level));
     }
     setState(_start);
@@ -283,16 +285,49 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
               Positioned.fill(
                 child: RepaintBoundary(
                   child: CustomPaint(
-                    painter: _RoadPainter(
-                      points: [for (final p in _path.points) px(p)],
-                      width: road,
-                      progress: tracker.progress,
-                      guide: _level.axes.guide,
-                    ),
+                    painter: switch (_path.figure) {
+                      final f? => _DotPainter(
+                        points: [for (final p in _path.points) px(p)],
+                        marks: [for (final m in dotMarks(f)) px(m)],
+                        closed: f.closed,
+                        progress: tracker.progress,
+                        guide: _level.axes.guide,
+                        done: _arrived,
+                        dot: field.height * (_level.axes.guide == TraceGuide.none ? 0.026 : 0.034),
+                        numberStyle: Theme.of(context).textTheme.titleLarge!,
+                      ),
+                      null => _RoadPainter(
+                        points: [for (final p in _path.points) px(p)],
+                        width: road,
+                        progress: tracker.progress,
+                        guide: _level.axes.guide,
+                      ),
+                    },
                   ),
                 ),
               ),
+              // Desenul din puncte: ce a ieșit apare în mijloc, la final.
+              if (_path.figure case final f?)
+                Positioned(
+                  left: field.width / 2 - field.height * 0.16,
+                  top: field.height / 2 - field.height * 0.16,
+                  width: field.height * 0.32,
+                  height: field.height * 0.32,
+                  child: IgnorePointer(
+                    child: AnimatedOpacity(
+                      opacity: _arrived ? 1 : 0,
+                      duration: motion.d(350),
+                      child: AnimatedScale(
+                        scale: _arrived ? 1 : 0.6,
+                        duration: motion.d(400),
+                        curve: Curves.easeOutBack,
+                        child: StimulusArt(f.emoji, size: field.height * 0.32, semanticLabel: f.name),
+                      ),
+                    ),
+                  ),
+                ),
               // Ținta, la capătul drumului.
+              if (_path.figure == null)
               Positioned(
                 left: goal.dx - art / 2,
                 top: goal.dy - art / 2,
@@ -319,9 +354,12 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
                       !_holding && tracker.progress == 0 && motion.movement
                       ? 1 + 0.06 * math.sin(_idle.value * 2 * math.pi)
                       : 1.0;
+                  // La desenele din puncte, vârful creionului (colțul din stânga-jos al
+                  // desenului ✏️) stă în punct, ca numărul și punctul să rămână vizibile.
+                  final pen = _path.figure != null;
                   return Positioned(
-                    left: at.dx - art / 2,
-                    top: at.dy - art / 2 + bob,
+                    left: pen ? at.dx - art * 0.12 : at.dx - art / 2,
+                    top: (pen ? at.dy - art * 0.88 : at.dy - art / 2) + bob,
                     width: art,
                     height: art,
                     child: Transform.scale(
@@ -481,4 +519,84 @@ class _Dots extends StatelessWidget {
         ),
     ],
   );
+}
+
+/// Desenul din puncte: punctele numerotate (punctul următor cu halou la nivelurile mici), linia
+/// trasă până unde a ajuns degetul; la final, conturul întreg.
+class _DotPainter extends CustomPainter {
+  _DotPainter({
+    required this.points,
+    required this.marks,
+    required this.closed,
+    required this.progress,
+    required this.guide,
+    required this.done,
+    required this.dot,
+    required this.numberStyle,
+  });
+
+  final List<Offset> points;
+  final List<Offset> marks;
+  final bool closed;
+  final int progress;
+  final TraceGuide guide;
+  final bool done;
+
+  /// Raza unui punct.
+  final double dot;
+
+  /// Fontul aplicației pentru numere (desenul nu are acces la temă).
+  final TextStyle numberStyle;
+
+  /// Puncte dese pe fiecare latură (`dotPathPoints`).
+  static const perSide = 12;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint stroke(Color c, double w) => Paint()
+      ..color = c
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    // Linia trasă de copil.
+    final upTo = done ? points.length - 1 : progress;
+    if (upTo > 0) {
+      final drawn = Path()..moveTo(points.first.dx, points.first.dy);
+      for (final o in points.skip(1).take(upTo)) {
+        drawn.lineTo(o.dx, o.dy);
+      }
+      if (done && closed) drawn.close();
+      canvas.drawPath(drawn, stroke(Tokens.primaryDark, dot * 0.45));
+    }
+
+    // Care punct urmează (după cât din drum s-a parcurs).
+    final reached = progress ~/ perSide;
+    final next = done ? -1 : (reached + 1) % marks.length;
+    final center = marks.fold(Offset.zero, (a, b) => a + b) / marks.length.toDouble();
+    for (final (i, m) in marks.indexed) {
+      final isDone = i <= reached || done;
+      if (i == next && guide == TraceGuide.dots) {
+        canvas.drawCircle(m, dot * 1.9, Paint()..color = Tokens.sun.withValues(alpha: 0.45));
+      }
+      canvas.drawCircle(m, dot, Paint()..color = isDone ? Tokens.sun : const Color(0xFFFFFDF8));
+      canvas.drawCircle(m, dot, stroke(Tokens.primaryDark, dot * 0.22));
+      // Numărul, lângă punct, spre exteriorul desenului (nu peste linii).
+      final out = m - center;
+      final dir = out.distance == 0 ? const Offset(0, -1) : out / out.distance;
+      final label = TextPainter(
+        text: TextSpan(
+          text: '${i + 1}',
+          style: numberStyle.copyWith(fontSize: dot * 1.5, fontWeight: FontWeight.w800, color: Tokens.ink),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      label.paint(canvas, m + dir * dot * 2.4 - Offset(label.width / 2, label.height / 2));
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DotPainter old) =>
+      old.progress != progress || old.done != done || old.points != points || old.dot != dot;
 }

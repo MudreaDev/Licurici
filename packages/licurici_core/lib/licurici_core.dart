@@ -38,6 +38,7 @@ export 'src/ordering.dart';
 export 'src/sorting.dart';
 export 'src/spot_diff.dart';
 export 'src/switching.dart';
+export 'src/dots.dart';
 export 'src/trace.dart';
 export 'src/tracking.dart';
 export 'src/turns.dart';

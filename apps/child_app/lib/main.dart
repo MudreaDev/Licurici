@@ -366,6 +366,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             _fade(context, state, const TraceScreen()),
       ),
       GoRoute(
+        path: '/traseaza/:id',
+        redirect: (context, state) =>
+            state.pathParameters['id'] == const DotsGame().id ? null : '/',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const TraceScreen(key: ValueKey('uneste-punctele'), game: DotsGame())),
+      ),
+      GoRoute(
         path: '/perechi',
         pageBuilder: (context, state) =>
             _fade(context, state, const MemoryScreen()),

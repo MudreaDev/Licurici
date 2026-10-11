@@ -8,6 +8,7 @@ library;
 
 import 'dart:math';
 
+import 'dots.dart';
 import 'grades.dart';
 
 enum TraceShape { line, diagonal, arc, wave, zigzag, loop }
@@ -79,12 +80,16 @@ class TracePath {
     required this.shape,
     required this.points,
     required this.trip,
+    this.figure,
   });
 
   final int index;
   final TraceShape shape;
   final List<Point<double>> points;
   final TraceTrip trip;
+
+  /// La „Unește punctele”: desenul din puncte (punctele numerotate se desenează din el).
+  final DotFigure? figure;
 
   /// Lungimea drumului în unități de înălțime, pentru o zonă cu raportul [aspect] (lățime/înălțime).
   double length(double aspect) {
