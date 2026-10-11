@@ -37,3 +37,6 @@ __pycache__/
 
 # mostre de voce pentru comparat (tools/gen-voice), nu fac parte din aplicație
 tools/gen-voice/mostre/
+# regenerarea vocii, în lucru (tools/gen-voice --toate)
+packages/game_content/audio/ro/regenerat.txt
+packages/game_content/audio/ro/*.nou.mp3

@@ -19,3 +19,11 @@ TTS dispozitiv — vocile românești lipsesc sau sună robotic pe multe dispozi
 
 ## Când am alege altfel
 TTS on-device neural (ex. modele Piper) dacă devine suficient de bun în română → elimină complet serviciul extern.
+
+## Actualizare (11.10.2026) — vocea aleasă
+Comparate 11 mostre cu aceeași frază: cele două voci românești native (Alina, Emil), cu viteze și înălțimi diferite, și
+șase voci multilingve Microsoft (Ava, Emma, Vivienne, Seraphina, Thalita, Andrew — au accent străin pe ă, î, ș, ț).
+Aleasă: **ro-RO-AlinaNeural, viteză −5%, înălțime +15 Hz** — mai caldă și puțin mai rară, ușor de urmărit pentru
+copiii mici. Toate clipurile românești au fost regenerate cu aceste setări (`node tools/gen-voice/gen-voice.mjs --toate`),
+ca aplicația să aibă o singură voce peste tot. Frazele jocului Engleză rămân cu `en-US-AnaNeural` (voce de copil).
+Setările stau într-un singur loc: `tools/gen-voice/gen-voice.mjs` (`VOICE`, `RATE`, `PITCH`).
