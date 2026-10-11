@@ -17,6 +17,15 @@ describe('loadEnv', () => {
     expect(env.WORKER_CONCURRENCY).toBe(4);
   });
 
+  it('cheile goale din .env (ex. `SENTRY_DSN=`) înseamnă „nesetat”, nu o valoare invalidă', () => {
+    const env = loadEnv({ ...valid, SENTRY_DSN: '', ANTHROPIC_API_KEY: '', SMTP_URL: ' ', METRICS_TOKEN: '' });
+    expect(env.SENTRY_DSN).toBeUndefined();
+    expect(env.ANTHROPIC_API_KEY).toBeUndefined();
+    expect(env.SMTP_URL).toBeUndefined();
+    // O obligatorie goală rămâne o eroare clară.
+    expect(() => loadEnv({ ...valid, JWT_SECRET: '' })).toThrow(/JWT_SECRET/);
+  });
+
   it('convertește numerele din text', () => {
     expect(loadEnv({ ...valid, PORT: '8080' }).PORT).toBe(8080);
   });

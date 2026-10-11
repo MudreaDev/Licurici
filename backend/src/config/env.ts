@@ -45,6 +45,9 @@ export const envSchema = z.object({
   /** Parola pentru Bull Board (doar dezvoltare, port 3001; utilizator `admin`). */
   BULLBOARD_PASSWORD: z.string().min(8).optional(),
 
+  /** Tokenul cu care Prometheus citește `/metrics` (ADR-018). Lipsă = ruta nu există. */
+  METRICS_TOKEN: z.string().min(24).optional(),
+
   /** Câte job-uri procesează un worker în paralel, pe coadă. */
   WORKER_CONCURRENCY: z.coerce.number().int().min(1).max(64).default(4),
 });
@@ -54,7 +57,10 @@ export type Env = z.infer<typeof envSchema>;
 export class EnvValidationError extends Error {}
 
 export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
-  const result = envSchema.safeParse(source);
+  // `CHEIE=` din .env (ex. `SENTRY_DSN=` în .env.example) ajunge ca șir gol, nu ca lipsă:
+  // pentru opțiuni înseamnă „nesetat”, altfel validarea (ex. URL) ar opri pornirea.
+  const cleaned = Object.fromEntries(Object.entries(source).filter(([, v]) => v !== undefined && v.trim() !== ''));
+  const result = envSchema.safeParse(cleaned);
   if (!result.success) {
     const details = result.error.issues.map((i) => `  - ${i.path.join('.')}: ${i.message}`).join('\n');
     throw new EnvValidationError(`Configurație invalidă:\n${details}`);
