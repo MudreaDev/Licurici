@@ -66,7 +66,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 Doar lucrurile pe care asistentul **nu le poate face** din repo (instalări, conturi, bani, fotografii, oameni, decizii).
 Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 
-**Progres (11.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (89 de jocuri în aplicație). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
+**Progres (11.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (95 de jocuri în aplicație, dintre care 6 jocuri „frate” pentru generalizare — sesiunea 11). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
 
 **A. Pe calculatorul tău (verificare)**
 - [ ] Instalează **Docker Desktop**. Apoi: `cp infra/.env.example infra/.env` (schimbă parolele) → `docker compose -f infra/docker-compose.yml up -d --build`.
@@ -80,6 +80,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] Fundalul acvariului: [docs/brief-codex-acvariu.md](docs/brief-codex-acvariu.md)
 - [ ] 11 carduri școlare: [docs/brief-codex-carduri-scolare.md](docs/brief-codex-carduri-scolare.md)
 - [ ] 8 carduri ale jocurilor noi: [docs/brief-codex-carduri-sesiunea9.md](docs/brief-codex-carduri-sesiunea9.md)
+- [ ] 6 carduri ale jocurilor „frate”: [docs/brief-codex-carduri-sesiunea11.md](docs/brief-codex-carduri-sesiunea11.md)
 
 **C. Conturi și servicii externe (pentru producție)**
 - [ ] Un **VPS în UE** + un **domeniu** (DNS: `api.<domeniu>`, `panou.<domeniu>`).
@@ -117,12 +118,19 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 
 **Planul jocurilor măsurabile (cerut pe 11.10; estimare ≈ 45–53 de ore, 7–8 sesiuni):**
 1. ✅ **Calibrarea nivelurilor pe o scară comună** (`level_scale.dart`): fiecare joc își declară plafonul (nivelul de la care axele nu mai cresc); nivelul 1 = 1000, plafonul = 1400 pe scara rating-ului, în orice joc. Testul `level_scale_test.dart` verifică plafonul pe axele reale ale celor 32 de jocuri cu niveluri proprii (plus 3 explorări, pe scara „Sortăm”) și cere ca orice joc nou să-l declare (a prins două plafoane citite greșit). ✅ **Verificarea generalizării**: o treaptă stăpânită pe un singur joc primește în „Drumul de azi” o tură pe alt joc al ei; „generalizată” = ≥ 80% independență în două jocuri; panoul specialistului arată „Stăpânire și generalizare”.
-2. ⬜ **12 jocuri „frate”** (aceeași treaptă, altă mecanică): Sortăm emoțiile (EMO2), Termină povestea (EMO3), Adu-mi (LRC1–2), Colorează ce auzi (LRC4), Pune ursul sub masă (LRC6), Oglinda (IMI1–3), Strânge jucăriile (COG3), Turnul (COG4), Memorie cu sunete (COM1), Ajută-l pe Licurici (AUT1–2), Floarea crește (FEX1), Unește punctele (MOT1–3).
+2. 🟨 **12 jocuri „frate”** (aceeași treaptă, alt material sau alt fel de răspuns) — **6 gata** (sesiunea 11, partea a doua):
+   - ✅ **Sortăm emoțiile** (EMO2) și **La locul lui** (COG3): mecanica „Sortăm” generalizată (`SortGame.custom`, ruta `/sortam/:id`, nivel propriu);
+   - ✅ **Cum se simte?** (EMO3, numit în plan „Termină povestea”): întâmplarea, iar răspunsul e **fața** aceleiași persoane cu emoții diferite; expresiile devin mai discrete la tier mare;
+   - ✅ **Ajută-l pe Licurici** (AUT1–2): rutina pas cu pas — copilul alege doar ce urmează; la tier mare, greșelile vin din aceeași rutină;
+   - ✅ **Floarea crește** (FEX1): mecanica „Semaforului” generalizată (`WaitGame.custom`, `/asteapta/:id`), floarea desenată din cod crește și se deschide la semnal;
+   - ✅ **Unește punctele** (MOT1–3): urmăritorul de la „Trasează” (`DotsGame`, `/traseaza/:id`), desene din 3 → 12 puncte numerotate, desenul apare și e rostit la final;
+   - ⬜ rămase: Adu-mi (LRC1–2), Colorează ce auzi (LRC4), Pune ursul sub masă (LRC6), Oglinda (IMI1–3), Turnul (COG4), Memorie cu sunete (COM1).
+   - **Fețe desenate din cod** (`face.dart` + `drawn_face.dart`): ten, păr, coafură, ochi, accesorii, 7 emoții, intensitate 0…1 — oricâte persoane diferite; filtrul „Fețe furioase” le exclude. Sunt și baza pentru „Cât de tare?” și „Cine e prietenul?” (punctul 3).
 3. ⬜ **10 jocuri noi cu metrici standard**: Câte sunt? (subitizare), Linia numerelor (eroarea procentuală absolută), Paznicul farului (atenție susținută), Stop! (SSRT), Acum sau mai mult? (amânarea recompensei), Cât de tare? (pragul de recunoaștere a emoției), Cum spune? (emoția din voce), Pară sau bară? (discriminare auditivă), Atinge rapid (legea lui Fitts), Cine e prietenul? (memoria fețelor).
 4. ✅ **Pescarul**: vietățile înoată ca în acvariu (`swim.dart`: reprize de înot și alunecare pe același drum total — timpul de reacție se măsoară la fel —, legănare, corpul după direcție; în aplicație, desenul pictat pe o plasă de 16 felii cu unda din corp spre coadă; caracatița pulsează, crabul pășește). Verificat în browser.
 5. ⬜ Vocea pentru jocurile noi, cardurile (brief pentru Codex), testele de accesibilitate pe ecranele noi, capitolul 07 completat.
 
-Tot în sesiunea 11: o frază lungă în stimul (ex. „Mare, mic, roșu”) ieșea din panou pe telefonul mic la unele runde aleatoare — reparat, cu test determinist.
+Tot în sesiunea 11: o frază lungă în stimul (ex. „Mare, mic, roșu”) ieșea din panou pe telefonul mic la unele runde aleatoare — reparat, cu test determinist. Vocea: 2379/2379 (generatorul acceptă `PYTHON=py` și nu mai lasă fișiere goale la un clip eșuat). Testul de trasee al dezvoltării citește jocurile din catalog (o singură sursă).
 
 **Sesiunea a zecea (10.10) — pe scurt:** imaginile de evitat în toate mecanicile (`GameConfig` complet → §21 bifat), testul cap-coadă copil → joc → SQLite → server (`integration_test/flow.dart`, rulat și în `flutter test`), care a prins un bug cu cheile cardurilor la trecerea între runde (reparat); mesajul „1 sesiuni trimise” → „O sesiune trimisă”.
 
