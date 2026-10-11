@@ -21,6 +21,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/sfx.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import 'swimming_art.dart';
 
 
 final reactionLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
@@ -452,9 +453,20 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
                   final flight = _level.axes.flies && motion.movement
                       ? _Flight(elapsed, s, side)
                       : null;
-                  final t = flight == null
-                      ? _drift.value
-                      : Curves.easeInOut.transform(_drift.value);
+                  // În apă (Pescarul), vietățile înoată ca în acvariu: reprize, legănare, undă.
+                  final swim = flight == null && motion.movement && widget.game.id == 'pescarul'
+                      ? swimPose(
+                          _drift.value,
+                          style: swimStyleFor(s.art),
+                          visibleMs: s.visibleMs,
+                          driftX: s.driftX,
+                          driftY: s.driftY,
+                          phase: s.index * 1.7,
+                        )
+                      : null;
+                  final t = flight != null
+                      ? Curves.easeInOut.transform(_drift.value)
+                      : (swim?.progress ?? _drift.value);
                   final x = s.x + (motion.movement ? s.driftX * t : 0);
                   final y = s.y + (motion.movement ? s.driftY * t : 0);
                   final left = (x * box.maxWidth - side / 2 + (flight?.dx ?? 0))
@@ -515,16 +527,23 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
                                       child: _Glow(
                                         on: s.art == '✨',
                                         pulse: flight?.glow ?? 1,
-                                        child: _flutter(
-                                          flight,
-                                          StimulusArt(
-                                            s.art,
-                                            size: side,
-                                            // Privesc în direcția în care înoată / zboară.
-                                            flip:
-                                                motion.movement && s.driftX < 0,
-                                          ),
-                                        ),
+                                        child: swim != null
+                                            ? SwimmingArt(
+                                                emoji: s.art,
+                                                size: side,
+                                                pose: swim,
+                                                flip: s.driftX < 0,
+                                              )
+                                            : _flutter(
+                                                flight,
+                                                StimulusArt(
+                                                  s.art,
+                                                  size: side,
+                                                  // Privesc în direcția în care înoată / zboară.
+                                                  flip:
+                                                      motion.movement && s.driftX < 0,
+                                                ),
+                                              ),
                                       ),
                                     ),
                                   ),

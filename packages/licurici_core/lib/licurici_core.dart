@@ -44,6 +44,7 @@ export 'src/writing.dart';
 export 'src/waiting.dart';
 export 'src/breathing.dart';
 export 'src/shell.dart';
+export 'src/swim.dart';
 export 'src/session.dart';
 export 'src/report.dart';
 export 'src/rhythm.dart';
