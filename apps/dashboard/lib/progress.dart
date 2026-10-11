@@ -247,3 +247,57 @@ class StepBackNotice extends StatelessWidget {
     );
   }
 }
+
+/// Stăpânire și generalizare pe trepte (plan §4): „stăpânită” = criteriul pe sesiuni;
+/// „generalizată” = arătată independent în cel puțin două jocuri ale treptei. Pentru o treaptă
+/// stăpânită pe un singur joc, tableta pune în „Drumul de azi” o tură scurtă pe alt joc.
+class MasteryPanel extends StatelessWidget {
+  const MasteryPanel(this.history, {super.key});
+  final ChildHistory history;
+
+  @override
+  Widget build(BuildContext context) {
+    final mastered = [for (final p in progressFromSessions(history.sessions)) if (p.mastered) p];
+    if (mastered.isEmpty) return const SizedBox.shrink();
+    String games(StepProgress p) {
+      final shown = [
+        for (final e in p.gameIndependence.entries)
+          if (e.value >= 0.8) catalogEntry(e.key)?.name ?? e.key,
+      ];
+      return shown.isEmpty ? '' : ' (${shown.join(', ')})';
+    }
+
+    return Section(
+      'Stăpânire și generalizare',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final p in mastered)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    p.generalized ? Icons.verified_outlined : Icons.check_circle_outline,
+                    size: 20,
+                    semanticLabel: p.generalized ? 'generalizată' : 'stăpânită',
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${p.stepId} · ${stepById(p.stepId)?.objective ?? ''} — '
+                      '${p.generalized ? 'generalizată' : 'stăpânită, de verificat pe alt joc'}${games(p)}',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const Text(
+            'Generalizată = cel puțin 80% independență în două jocuri diferite ale treptei.',
+          ),
+        ],
+      ),
+    );
+  }
+}

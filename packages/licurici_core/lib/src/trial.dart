@@ -5,6 +5,8 @@ library;
 
 import 'dart:math';
 
+import 'level_scale.dart';
+
 /// Nivelul de ajutor primit într-o încercare (plan §3.3). Ordinea contează: P0 < P4.
 enum PromptLevel {
   /// Independent, fără ajutor.
@@ -119,11 +121,11 @@ class Trial {
   final double? difficulty;
 
   /// Nivelul jocului (1…∞) la care s-a jucat încercarea; pentru rating (Elo) devine dificultatea
-  /// itemului prin [EloRating.difficultyOfLevel]. null = nivel necunoscut (sesiuni mai vechi).
+  /// itemului pe scara comună a jocului ([scaleFor]). null = nivel necunoscut (sesiuni mai vechi).
   final int? level;
 
   /// Dificultatea itemului pe scara rating-ului.
-  double get ratingDifficulty => level == null ? EloRating.start : EloRating.difficultyOfLevel(level!);
+  double get ratingDifficulty => level == null ? EloRating.start : scaleFor(gameId).difficultyOf(level!);
   final int offTargetTaps;
 
   /// Corect, din prima, fără ajutor.
@@ -275,12 +277,7 @@ class EloRating {
   double targetDifficulty(double rating) =>
       rating - scale * log(targetSuccess / (1 - targetSuccess)) / ln10;
 
-  /// Jocurile cu niveluri numerotate (1…∞): nivelul n are dificultatea `start + (n−1)·perLevel`.
-  static const double perLevel = 40;
-
-  static double difficultyOfLevel(int level) => start + (level - 1) * perLevel;
-
-  /// Nivelul potrivit pentru [rating] (cel mai greu nivel cu ≥ [targetSuccess] șanse).
-  int levelFor(double rating) =>
-      max(1, 1 + ((targetDifficulty(rating) - start) / perLevel).floor());
+  /// Nivelul potrivit pentru [rating] într-un joc cu scara [scale] (cel mai greu nivel cu
+  /// ≥ [targetSuccess] șanse).
+  int levelFor(double rating, [LevelScale scale = choiceScale]) => scale.levelAt(targetDifficulty(rating));
 }

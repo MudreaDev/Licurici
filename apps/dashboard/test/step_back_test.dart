@@ -42,6 +42,27 @@ void main() {
     expect(find.textContaining('reia întâi EMO1'), findsOneWidget);
   });
 
+  testWidgets('stăpânire: pe un joc „de verificat”, pe două jocuri „generalizată”', (tester) async {
+    SessionRecord on(int day, String game, String set) {
+      final s = _session(day, 'POT5', 9);
+      return SessionRecord(
+        id: '${s.id}$game',
+        childId: s.childId,
+        start: s.start,
+        end: s.end,
+        trials: [
+          for (final (i, t) in s.trials.indexed)
+            Trial(stepId: t.stepId, gameId: game, correct: t.correct, promptLevel: t.promptLevel, stimulusSet: '$set${i % 2}', at: t.at),
+        ],
+      );
+    }
+
+    await tester.pumpWidget(_wrap(MasteryPanel(_history([on(1, 'culori', 'a'), on(2, 'culori', 'a')]))));
+    expect(find.textContaining('de verificat pe alt joc'), findsOneWidget);
+    await tester.pumpWidget(_wrap(MasteryPanel(_history([on(1, 'culori', 'a'), on(2, 'culori', 'a'), on(3, 'forme', 'b')]))));
+    expect(find.textContaining('generalizată ('), findsOneWidget);
+  });
+
   testWidgets('nimic de arătat când totul merge', (tester) async {
     await tester.pumpWidget(_wrap(StepBackNotice(_history([_session(1, 'EMO1', 9), _session(2, 'EMO2', 8)]))));
     expect(find.text('Trepte grele acum'), findsNothing);

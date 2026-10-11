@@ -4,6 +4,7 @@
 library;
 
 import 'development.dart';
+import 'level_scale.dart';
 import 'report.dart';
 import 'session.dart';
 import 'trial.dart';
@@ -55,6 +56,17 @@ StepProgress _progress(
       if (seen == null || t.at.isAfter(seen)) gameLastPlayed[t.gameId] = t.at;
     }
   }
+  // Independența pe joc: ultima sesiune cu destule încercări în acel joc.
+  final gameIndependence = <String, double>{};
+  for (final (_, trials) in history) {
+    final byGame = <String, List<Trial>>{};
+    for (final t in trials) {
+      byGame.putIfAbsent(t.gameId, () => []).add(t);
+    }
+    for (final e in byGame.entries) {
+      if (e.value.length >= minTrialsForIndependence) gameIndependence[e.key] = TrialStats(e.value).independence;
+    }
+  }
   // Doar sesiunile cu destule încercări pe treaptă spun ceva despre cât de greu i-a fost.
   final meaningful = [
     for (final (_, trials) in history)
@@ -67,6 +79,7 @@ StepProgress _progress(
     masteredAt: masteredAt,
     lastPracticed: last,
     recentIndependence: meaningful.length > 3 ? meaningful.sublist(meaningful.length - 3) : meaningful,
+    gameIndependence: gameIndependence,
     gameTrials: gameTrials,
     gameLastPlayed: gameLastPlayed,
   );
@@ -85,7 +98,7 @@ int? skillLevel(String gameId, Map<String, double> ratings, {EloRating elo = con
     if (r != null && (best == null || r > best)) best = r;
   }
   if (best == null) return null;
-  final level = elo.levelFor(best) - 1;
+  final level = elo.levelFor(best, scaleFor(gameId)) - 1;
   return level >= 2 ? level : null;
 }
 

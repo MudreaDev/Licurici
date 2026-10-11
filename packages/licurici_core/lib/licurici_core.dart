@@ -22,6 +22,7 @@ export 'src/coloring.dart';
 export 'src/cause_effect.dart';
 export 'src/change.dart';
 export 'src/scene.dart';
+export 'src/level_scale.dart';
 export 'src/trial.dart';
 export 'src/search.dart';
 export 'src/sequence.dart';

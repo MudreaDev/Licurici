@@ -232,7 +232,12 @@ class _ChildDetail extends StatelessWidget {
                   ],
                 ),
               ),
-              _TabBody(child: ProgressPanel(history)),
+              _TabBody(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [ProgressPanel(history), MasteryPanel(history)],
+                ),
+              ),
               _TabBody(child: _Sessions(history)),
               _TabBody(
                 child: Section(

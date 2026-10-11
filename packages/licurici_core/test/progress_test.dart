@@ -27,6 +27,7 @@ SessionRecord _session(int day, String step, int ok, {int n = 10, String set = '
 void main() {
   adaptiveTests();
   stepsBackTests();
+  generalizationTests();
 
   test('stăpânirea apare după 2 sesiuni bune pe 2 seturi; rating-ul crește', () {
     final p = progressFromSessions([
@@ -125,7 +126,8 @@ void adaptiveTests() {
       ]).single;
       final l = skillLevel(game, {'FEX2': strong.rating})!;
       expect(l, greaterThanOrEqualTo(2));
-      expect(l, lessThan(const EloRating().levelFor(strong.rating)));
+      expect(l, lessThan(const EloRating().levelFor(strong.rating, scaleFor(game))));
+      expect(l, lessThanOrEqualTo(scaleFor(game).plateau));
     });
   });
 
@@ -188,5 +190,61 @@ void stepsBackTests() {
     ]));
     expect(back.map((b) => '${b.step.id}→${b.to.id}'), ['EMO2→EMO1']);
     expect(back.single.recentIndependence, [0.2, 0.1]);
+  });
+}
+
+SessionRecord _onGame(int day, String step, String game, int ok, {String set = 'a'}) {
+  final start = DateTime.utc(2026, 9, day, 16);
+  return SessionRecord(
+    id: 'g$day$game',
+    childId: 'c',
+    start: start,
+    end: start.add(const Duration(minutes: 10)),
+    trials: [
+      for (var i = 0; i < 10; i++)
+        Trial(
+          stepId: step,
+          gameId: game,
+          correct: i < ok,
+          promptLevel: i < ok ? PromptLevel.p0 : PromptLevel.p3,
+          stimulusSet: '$set${i % 2}',
+          at: start.add(Duration(seconds: 20 * i)),
+        ),
+    ],
+  );
+}
+
+void generalizationTests() {
+  group('generalizarea', () {
+    final now = DateTime.utc(2026, 9, 20);
+    final mastered = [_onGame(1, 'POT5', 'culori', 9), _onGame(2, 'POT5', 'culori', 9)];
+
+    test('stăpânită pe un singur joc: nu e încă generalizată; drumul o verifică pe celălalt joc', () {
+      final p = progressFromSessions(mastered).single;
+      expect(p.mastered, isTrue);
+      expect(p.generalized, isFalse);
+      final plan = const SessionPlanner()
+          .plan(progress: [p], allowedGames: const {'culori', 'forme'}, now: now, random: Random(1));
+      final probe = plan.activities.where((a) => a.kind == ActivityKind.generalization).single;
+      expect(probe.stepId, 'POT5');
+      expect(probe.gameId, 'forme');
+      // Ziua se încheie tot pe succes.
+      expect(plan.activities.last.kind, ActivityKind.finale);
+    });
+
+    test('arătată independent și pe al doilea joc: generalizată, fără altă verificare', () {
+      final p = progressFromSessions([...mastered, _onGame(3, 'POT5', 'forme', 9, set: 'b')]).single;
+      expect(p.generalized, isTrue);
+      final plan = const SessionPlanner()
+          .plan(progress: [p], allowedGames: const {'culori', 'forme'}, now: now, random: Random(1));
+      expect(plan.activities.where((a) => a.kind == ActivityKind.generalization), isEmpty);
+    });
+
+    test('fără un al doilea joc permis: nicio verificare (nu are pe ce)', () {
+      final p = progressFromSessions(mastered).single;
+      final plan = const SessionPlanner()
+          .plan(progress: [p], allowedGames: const {'culori'}, now: now, random: Random(1));
+      expect(plan.activities.where((a) => a.kind == ActivityKind.generalization), isEmpty);
+    });
   });
 }

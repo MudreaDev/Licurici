@@ -20,6 +20,7 @@ class StepProgress {
     this.masteredAt,
     this.lastPracticed,
     this.recentIndependence = const [],
+    this.gameIndependence = const {},
     this.gameTrials = const {},
     this.gameLastPlayed = const {},
   });
@@ -33,6 +34,9 @@ class StepProgress {
   /// Independența (0..1) în ultimele sesiuni pe treaptă, de la veche la nouă (cel mult 3).
   final List<double> recentIndependence;
 
+  /// Independența în ultima sesiune cu destule încercări (cel puțin 4) în fiecare joc al treptei.
+  final Map<String, double> gameIndependence;
+
   /// Câte încercări a făcut copilul în fiecare joc al treptei (cât de cunoscut îi e jocul).
   final Map<String, int> gameTrials;
 
@@ -41,11 +45,16 @@ class StepProgress {
 
   /// Ultimele două sesiuni pe treaptă au fost foarte grele (sub 30% independență, cu destule
   /// încercări cât să conteze): copilul are nevoie de un pas înapoi, nu de mai multă presiune.
+  /// Stăpânită și arătată independent (≥ 80%) în cel puțin două jocuri diferite ale treptei.
+  bool get generalized => mastered && gameIndependence.values.where((i) => i >= 0.8).length >= 2;
+
   bool get struggling =>
       !mastered && recentIndependence.length >= 2 && recentIndependence.reversed.take(2).every((i) => i < 0.3);
 }
 
-enum ActivityKind { warmUp, target, maintenance, finale }
+/// [generalization] = verificarea generalizării: o treaptă stăpânită pe un singur joc, jucată pe
+/// altul (plan §4: abilitatea se arată pe materiale diferite, nu doar în jocul în care a învățat-o).
+enum ActivityKind { warmUp, target, maintenance, generalization, finale }
 
 /// O activitate din orar: un joc pe o treaptă, cu câte runde.
 class SessionActivity {
@@ -238,6 +247,21 @@ class SessionPlanner {
         gameId: freshGame(due),
         rounds: config.warmUpRounds,
       ));
+    } else {
+      // Verificarea generalizării (doar dacă azi nu e și o menținere — sesiunea rămâne scurtă):
+      // o treaptă stăpânită, încă negeneralizată, pe un joc al ei în care n-a arătat-o încă.
+      for (final m in mastered) {
+        if (m.generalized) continue;
+        final others = gamesOf(m.stepId).where((g) => (m.gameIndependence[g] ?? 0) < 0.8).toList();
+        if (others.isEmpty) continue;
+        out.add(SessionActivity(
+          kind: ActivityKind.generalization,
+          stepId: m.stepId,
+          gameId: pick(m, (g) => others.contains(g) ? (m.gameLastPlayed[g]?.millisecondsSinceEpoch ?? -1) : 1 << 62),
+          rounds: config.warmUpRounds + 1,
+        ));
+        break;
+      }
     }
 
     // Final pe succes: o treaptă stăpânită, diferită de încălzire când se poate.
