@@ -17,11 +17,12 @@
 
 | Componentă | Teste | Fișiere de test | Comandă |
 |---|---|---|---|
-| `licurici_core` (Dart pur: dificultate, jocuri, sesiune, rapoarte, scanare) | **506** | 53 | `dart test` |
+| `licurici_core` (Dart pur: dificultate, jocuri, sesiune, rapoarte, scanare) | **507** | 53 | `dart test` |
 | Aplicația copilului (Flutter) | **308** | 53 | `flutter test` |
-| Panoul adulților (Flutter Web) | **21** | 4 | `flutter test` |
-| Backend (NestJS) | **86** + testul de fum live | 17 | `npm test`, `npm run test:smoke` |
-| **Total** | **921** | | |
+| Panoul adulților (Flutter Web) | **32** | 6 | `flutter test` |
+| Backend (NestJS) | **90** + testul de fum live | 18 | `npm test`, `npm run test:smoke` |
+| **Total** | **937** | |
+| Stiva Docker reală (PostgreSQL, Redis, worker, Mailpit) | 15 verificări cap-coadă | `tools/e2e/stack.mjs` (rulează după `docker compose up`; pregătit și pentru CI) | |
 
 Tipuri de teste, cu exemple:
 - **unitare pe proprietăți** — rating-ul Elo crește mai mult la o reușită pe un nivel mare (`progress_test.dart`); un generator cu același seed dă același nivel;
@@ -29,7 +30,7 @@ Tipuri de teste, cu exemple:
 - **de contract** — JSON-ul produs de Dart e acceptat exact de schema TypeScript a serverului (`sync.spec.ts`, fixtura generată cu `tool/sync_fixture.dart`);
 - **de acces** — un părinte străin sau un specialist fără partajare primește 404 la fiecare resursă a copilului;
 - **de interfață pe mai multe dimensiuni de ecran** — fiecare joc pe telefonul mic și pe tabletă, fără depășiri (`choice_games_test.dart`, `layout_test.dart`);
-- **de accesibilitate** — 9 ecrane + 24 de rute de joc (`a11y_test.dart`, `a11y_games_test.dart`);
+- **de accesibilitate** — 9 ecrane + 24 de rute de joc în aplicație (`a11y_test.dart`, `a11y_games_test.dart`) și toate paginile panoului la două dimensiuni (contrast WCAG AA, etichete, ținte ≥ 24 px — WCAG 2.5.8); cele din panou au găsit contrast 4,14:1 la butoane și bara de sus depășită pe telefon (reparate);
 - **cap-coadă** — copil → joc jucat cu animațiile pornite → SQLite → poarta părintelui → server HTTP local (`flow_test.dart`, `integration_test/flow.dart`);
 - **cu fotografii sintetice** — scanarea fișei de colorat în perspectivă, cu lumină inegală, zgomot și rotire (`paper_scan_test.dart`).
 
@@ -101,4 +102,4 @@ Pentru studiul cu utilizatori, metricile sunt deja în aplicație și pe server:
 
 ## 7. Rezumat pentru susținere (60 s)
 
-*Ce am măsurat:* 921 de teste automate; peste 90% acoperire în nucleu (94%), aplicație și panou, 80–100% pe serviciile serverului care decid acces și consimțământ; calculul de pe ecranul principal sub 13 ms și pentru 24 de luni de date; 33 de ecrane verificate automat pentru accesibilitate. *Cum:* teste pe proprietăți, de contract între limbaje, de acces, pe mai multe dimensiuni de ecran și cap-coadă. *Ce lipsește:* încărcarea serverului (k6), fps pe tabletă reală și studiul cu copii — toate pregătite, blocate de infrastructură sau de acorduri, nu de cod.
+*Ce am măsurat:* 937 de teste automate; peste 90% acoperire în nucleu (94%), aplicație și panou, 80–100% pe serviciile serverului care decid acces și consimțământ; calculul de pe ecranul principal sub 13 ms și pentru 24 de luni de date; 33 de ecrane verificate automat pentru accesibilitate. *Cum:* teste pe proprietăți, de contract între limbaje, de acces, pe mai multe dimensiuni de ecran și cap-coadă. *Ce lipsește:* încărcarea serverului (k6), fps pe tabletă reală și studiul cu copii — toate pregătite, blocate de infrastructură sau de acorduri, nu de cod.
