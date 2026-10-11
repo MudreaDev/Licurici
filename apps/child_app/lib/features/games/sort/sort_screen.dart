@@ -22,7 +22,8 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
-final sortLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('sortam'));
+/// Nivelul fiecărui joc de sortare (id-ul jocului).
+final sortLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
 
 /// Culoarea fiecărei grupe (cutia și buza ei).
 Color _binColor(int i) =>
@@ -89,7 +90,7 @@ class _SortScreenState extends ConsumerState<SortScreen> {
     final level = preset != null
         ? _withoutAvoided(preset, avoid)
         : generateAvoiding(
-            (seed) => widget.game.generate(ref.read(sortLevelProvider), seed: seed),
+            (seed) => widget.game.generate(ref.read(sortLevelProvider(widget.game.id)), seed: seed),
             (l) => l.art,
             avoid,
             seed: widget.seed,
@@ -179,7 +180,7 @@ class _SortScreenState extends ConsumerState<SortScreen> {
   void _again({required bool next}) {
     if (next) {
       ref
-          .read(sortLevelProvider.notifier)
+          .read(sortLevelProvider(widget.game.id).notifier)
           .setLevel(_result!.suggestedNextLevel(_level.level));
     }
     setState(_start);

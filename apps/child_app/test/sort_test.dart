@@ -5,10 +5,48 @@ import 'package:go_router/go_router.dart';
 import 'package:licurici/app/theme.dart';
 import 'package:licurici/data/session.dart';
 import 'package:licurici/features/games/sort/sort_screen.dart';
+import 'package:licurici/shared/drawn_face.dart';
 import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 void main() {
+  // Jocurile „frate” (aceeași mecanică, alt material): la nivelul cel mai încărcat (4 × 4),
+  // pe telefonul mic, fără depășiri; fețele desenate apar.
+  for (final game in sortGames) {
+    testWidgets('${game.id} la nivelul maxim, pe telefonul mic', (tester) async {
+      tester.view.physicalSize = const Size(640, 360);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final container = ProviderContainer(
+        overrides: [
+          voiceProvider.overrideWithValue(const SilentSpeaker()),
+          sessionStoreProvider.overrideWithValue(MemorySessionStore()),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(sortLevelProvider(game.id).notifier).setLevel(12);
+      final router = GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => SortScreen(game: game, seed: 3))]);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            theme: buildTheme(calm: true),
+            routerConfig: router,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(disableAnimations: true),
+              child: child!,
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 2));
+      expect(tester.takeException(), isNull);
+      expect(game.categories.where((b) => find.text(b.name).evaluate().isNotEmpty), isNotEmpty);
+      if (game.id == 'sortam-emotiile') expect(find.byType(DrawnFace), findsWidgets);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
   for (final size in const [Size(1280, 800), Size(640, 360)]) {
     testWidgets(
       'Sortăm ${size.width.toInt()}×${size.height.toInt()}: trage greșit (rămâne), '

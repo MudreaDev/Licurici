@@ -52,6 +52,8 @@ const gameScales = <String, LevelScale>{
   // memorie, sortare, căutare
   'perechi': LevelScale(13),
   'sortam': LevelScale(10),
+  'la-locul-lui': LevelScale(10),
+  'sortam-emotiile': LevelScale(10),
   'cauta': LevelScale(14),
   'cucu-bau': LevelScale(14),
   'ce-s-a-schimbat': LevelScale(11),

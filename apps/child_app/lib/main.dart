@@ -209,6 +209,19 @@ final routerProvider = Provider<GoRouter>((ref) {
             _fade(context, state, const SortScreen()),
       ),
       GoRoute(
+        path: '/sortam/:id',
+        redirect: (context, state) =>
+            sortGameById(state.pathParameters['id']!) == null ? '/' : null,
+        pageBuilder: (context, state) => _fade(
+          context,
+          state,
+          SortScreen(
+            key: ValueKey(state.pathParameters['id']),
+            game: sortGameById(state.pathParameters['id']!)!,
+          ),
+        ),
+      ),
+      GoRoute(
         path: '/ordine/:id',
         redirect: (context, state) =>
             orderGameById(state.pathParameters['id']!) == null ? '/' : null,

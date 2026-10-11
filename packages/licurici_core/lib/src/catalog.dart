@@ -64,7 +64,7 @@ class CatalogEntry {
         GameKind.reaction => '/reactie/$id',
         GameKind.sequence => '/secventa/$id',
         GameKind.memory => '/perechi',
-        GameKind.sort => '/sortam',
+        GameKind.sort => id == 'sortam' ? '/sortam' : '/sortam/$id',
         GameKind.calm => '/respira',
         GameKind.shell => '/cucu-bau',
         GameKind.trace => '/traseaza',
@@ -147,7 +147,7 @@ List<CatalogEntry> get catalog => [
           kind: GameKind.sequence,
           domain: _domainOf(g.id, g.steps),
         ),
-      for (final g in const [SortGame()])
+      for (final g in sortGames)
         CatalogEntry(
           id: g.id,
           name: g.name,

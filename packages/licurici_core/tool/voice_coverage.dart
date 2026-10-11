@@ -211,7 +211,9 @@ void main(List<String> args) {
       add(aacSentence(c, w), 'vorbeste');
     }
   }
-  add(const SortGame().generate(1, seed: 1).instruction, 'sortam');
+  for (final g in sortGames) {
+    add(g.instruction, g.id);
+  }
   add(const MemoryGame().generate(1, seed: 1).instruction, 'perechi');
 
   final missing = phrases.keys.where((p) => !clips.contains(p)).toList()..sort();

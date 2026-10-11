@@ -124,7 +124,7 @@ const List<Ladder> ladders = [
         games: ['atinge-si-vezi']),
     Step('COG2', 'Găsește un obiect ascuns, chiar dacă s-a mutat (permanența obiectului)',
         games: ['cucu-bau']),
-    Step('COG3', 'Sortează obiecte după categorie', games: ['sortam']),
+    Step('COG3', 'Sortează obiecte după categorie', games: ['sortam', 'la-locul-lui']),
     Step('COG4', 'Ordonează după mărime (de la mic la mare)', games: ['mare-mic']),
     Step('COG5', 'Continuă un model (AB, AAB, ABC)', games: ['continua-sirul']),
     Step('COG7', 'Cunoaște anotimpurile și semnele lor', games: ['anotimpuri']),
@@ -134,7 +134,7 @@ const List<Ladder> ladders = [
   ]),
   Ladder(Domain.emo, [
     Step('EMO1', 'Deosebește bucuros de trist', games: ['emotii']),
-    Step('EMO2', 'Recunoaște emoțiile de bază pe fețe diferite', games: ['emotii']),
+    Step('EMO2', 'Recunoaște emoțiile de bază pe fețe diferite', games: ['emotii', 'sortam-emotiile']),
     Step('EMO3', 'Spune ce simte cineva într-o situație', games: ['ce-simte']),
     Step('EMO4', 'Alege ce poate face cineva ca să se simtă mai bine', games: ['ce-ma-ajuta']),
     Step('EMO5', 'Înțelege ce știe și ce crede altcineva (perspectivă)', games: ['cine-stie']),

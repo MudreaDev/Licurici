@@ -25,10 +25,11 @@ final Map<String, String Function(int)> axesSignature = {
     final a = const MemoryGame().axesFor(l);
     return '${a.pairs} ${a.similar}';
   },
-  'sortam': (l) {
-    final a = const SortGame().axesFor(l);
-    return '${a.bins} ${a.perBin}';
-  },
+  for (final g in sortGames)
+    g.id: (l) {
+      final a = g.axesFor(l);
+      return '${a.bins} ${a.perBin}';
+    },
   'cauta': (l) {
     final a = const SearchGame().axesFor(l);
     return '${a.items} ${a.similar}';

@@ -5,6 +5,7 @@ library;
 
 import 'dart:math';
 
+import 'face.dart';
 import 'grades.dart';
 
 /// O grupă (cutia în care se sortează).
@@ -111,15 +112,43 @@ class SortResult {
   }
 }
 
+/// Un joc de sortare: aceeași mecanică (`dragDrop`), alte grupe și altă treaptă. Jocurile
+/// „frate” (același obiectiv pe alt material — generalizarea, plan §4) se adaugă aici, fără cod nou
+/// în ecran: [sortGames].
 class SortGame {
-  const SortGame();
+  const SortGame()
+      : id = 'sortam',
+        name = 'Sortăm',
+        emoji = '🗂',
+        description = 'Pune fiecare lucru în grupa lui',
+        gradeCodes = 'G1234',
+        steps = const ['COG3'],
+        categories = sortCategories,
+        instruction = 'Trage fiecare lucru în grupa potrivită.';
 
-  String get id => 'sortam';
-  String get name => 'Sortăm';
-  String get emoji => '🗂';
-  String get description => 'Pune fiecare lucru în grupa lui';
-  Set<Grade> get grades => Grade.parseCodes('G1234');
-  List<String> get steps => const ['COG3'];
+  const SortGame.custom({
+    required this.id,
+    required this.name,
+    required this.emoji,
+    required this.description,
+    required this.steps,
+    required this.categories,
+    required this.instruction,
+    this.gradeCodes = 'G1234',
+  });
+
+  final String id;
+  final String name;
+  final String emoji;
+  final String description;
+  final String gradeCodes;
+  final List<String> steps;
+
+  /// Grupele din care se aleg cele ale nivelului (cel puțin 4, fiecare cu cel puțin 4 lucruri).
+  final List<SortBin> categories;
+  final String instruction;
+
+  Set<Grade> get grades => Grade.parseCodes(gradeCodes);
 
   SortAxes axesFor(int level) => SortAxes(
         bins: level < 5 ? 2 : (level < 10 ? 3 : 4),
@@ -131,7 +160,7 @@ class SortGame {
     final s = seed ?? Random().nextInt(1 << 31);
     final random = Random(s);
     final axes = axesFor(level);
-    final bins = ([...sortCategories]..shuffle(random)).take(axes.bins).toList();
+    final bins = ([...categories]..shuffle(random)).take(axes.bins).toList();
     final items = <SortItem>[];
     for (final b in bins) {
       for (final e in ([...b.items]..shuffle(random)).take(axes.perBin)) {
@@ -146,7 +175,55 @@ class SortGame {
       axes: axes,
       bins: bins,
       items: [for (final (i, it) in items.indexed) SortItem(i, it.emoji, it.binId)],
-      instruction: 'Trage fiecare lucru în grupa potrivită.',
+      instruction: instruction,
     );
   }
+}
+
+/// Pune la locul lui (COG3, al doilea joc al treptei): aceleași sortări, pe locurile din casă.
+const sortRooms = SortGame.custom(
+  id: 'la-locul-lui',
+  name: 'La locul lui',
+  emoji: '🏠',
+  description: 'Duce fiecare lucru în camera lui',
+  steps: ['COG3'],
+  instruction: 'Pune fiecare lucru la locul lui.',
+  categories: [
+    SortBin('bucatarie', 'Bucătărie', '🍽️', ['🥄', '🥣', '🥛', '🍞', '🍎']),
+    SortBin('baie', 'Baie', '🛁', ['🧼', '🪥', '🧴', '🧻']),
+    SortBin('dormitor', 'Dormitor', '🛏️', ['🧸', '📖', '🌙', '🪀']),
+    SortBin('dulap', 'Dulap', '🚪', ['👕', '👖', '👗', '🧦', '🧢', '👟']),
+  ],
+);
+
+/// Sortăm emoțiile (EMO2, al doilea joc al treptei): în cutii, fețele pictate ale copilului
+/// cunoscut (referința); de sortat, fețe desenate din cod, de fiecare dată altele (ten, păr,
+/// ochi, accesorii) — emoția recunoscută pe fețe noi, nu doar pe desenele învățate.
+final sortEmotions = SortGame.custom(
+  id: 'sortam-emotiile',
+  name: 'Sortăm emoțiile',
+  emoji: '😊',
+  description: 'Pune fiecare față la emoția ei',
+  steps: const ['EMO2'],
+  instruction: 'Pune fiecare față la emoția ei.',
+  categories: [
+    for (final (i, (e, icon, name)) in const [
+      (FaceEmotion.bucuros, '😊', 'Bucuros'),
+      (FaceEmotion.trist, '😢', 'Trist'),
+      (FaceEmotion.suparat, '😠', 'Supărat'),
+      (FaceEmotion.speriat, '😨', 'Speriat'),
+      (FaceEmotion.surprins, '😲', 'Surprins'),
+    ].indexed)
+      SortBin(e.name, name, icon, [for (final f in distinctFaces(Random(31 + i), e, 12)) f.art]),
+  ],
+);
+
+/// Toate jocurile de sortare (fiecare cu nivelul lui și ruta `/sortam/:id`).
+final sortGames = <SortGame>[const SortGame(), sortRooms, sortEmotions];
+
+SortGame? sortGameById(String id) {
+  for (final g in sortGames) {
+    if (g.id == id) return g;
+  }
+  return null;
 }

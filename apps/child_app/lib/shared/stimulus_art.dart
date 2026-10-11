@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:game_content/game_content.dart';
+import 'package:licurici_core/licurici_core.dart';
 
 import 'art_cache.dart';
+import 'drawn_face.dart';
 import 'emoji_art.dart';
 import 'illustration.dart';
 
@@ -176,6 +178,10 @@ class StimulusArt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fețele desenate din cod (`face:…`, licurici_core/face.dart).
+    if (FaceSpec.parse(emoji) case final face?) {
+      return DrawnFace(face, size: size, semanticLabel: semanticLabel);
+    }
     final sprite = spriteFor(emoji);
     Widget art = sprite == null
         ? EmojiArt(emoji, size: size, semanticLabel: semanticLabel)

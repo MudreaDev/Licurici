@@ -5,7 +5,8 @@
 //
 // Surse (în ordinea preferinței):
 //   - Azure AI Speech (oficial): setează AZURE_SPEECH_KEY și AZURE_SPEECH_REGION.
-//   - edge-tts (aceeași voce neurală, fără cheie): `python -m pip install --user edge-tts`.
+//   - edge-tts (aceeași voce neurală, fără cheie): `python -m pip install --user edge-tts`
+//     (alt interpretor: PYTHON=py node tools/gen-voice/gen-voice.mjs).
 // Se trimit DOAR texte fixe din joc — niciodată date ale copilului. Aplicația rămâne offline:
 // clipurile se împachetează în `packages/game_content/audio/ro/`.
 import { execFileSync } from 'node:child_process';
@@ -58,7 +59,7 @@ async function azure(phrase, out) {
 
 function edgeTts(phrase, out) {
   const [voice, , text] = voiceOf(phrase);
-  execFileSync('python', ['-m', 'edge_tts', '--voice', voice, `--rate=${RATE}`, '--text', text, '--write-media', out], {
+  execFileSync(process.env.PYTHON ?? 'python', ['-m', 'edge_tts', '--voice', voice, `--rate=${RATE}`, '--text', text, '--write-media', out], {
     stdio: 'ignore',
   });
 }

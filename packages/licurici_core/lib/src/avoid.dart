@@ -23,7 +23,7 @@ const avoidItems = [
   AvoidItem('serpi', 'Șerpi și reptile', {'🐍', '🐊', '🦎', '🦖'}),
   AvoidItem('soareci', 'Șoareci', {'🐭', '🐁', '🐀'}),
   AvoidItem('animale-mari', 'Animale mari (leu, tigru, rechin)', {'🦁', '🐯', '🦈', '🐻'}),
-  AvoidItem('fete-furioase', 'Fețe furioase', {'😠', '😡', '👿'}),
+  AvoidItem('fete-furioase', 'Fețe furioase', {'😠', '😡', '👿', 'face:suparat'}),
   AvoidItem('fete-triste', 'Fețe triste sau care plâng', {'😢', '😭', '😞'}),
   AvoidItem('foc', 'Foc', {'🔥', '🧨'}),
   AvoidItem('apa', 'Apă multă, valuri, ploaie', {'🌊', '🌧', '⛈'}),

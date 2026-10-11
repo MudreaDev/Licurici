@@ -26,7 +26,8 @@ void main() {
     });
 
     test('fiecare joc din trasee există, iar fiecare joc are cel puțin o treaptă', () {
-      final known = {...allGames.map((g) => g.id), ...reactionGames.map((g) => g.id), const SimonGame().id, const MemoryGame().id, const SortGame().id, const BreathingGame().id, const ShellGame().id, const TraceGame().id, const ImitationGame().id, const WaitGame().id, const SwitchGame().id, const SearchGame().id, const GazeGame().id, const AacGame().id, const RhythmGame().id, const FeedGame().id, const CauseGame().id, const ChangeGame().id, const PuzzleGame().id, const MazeGame().id, const SpotDiffGame().id, const BuildGame().id, const ShopGame().id, ...orderGames.map((g) => g.id), ...exploreEpisodes.map((e) => e.id), const TrackGame().id, ...writingGames.map((g) => g.id), const ColorPlayGame().id, const TurnGame().id, const SpatialSpanGame().id, const InstructionGame().id};
+      // Catalogul e sursa unică: orice joc nou intră automat în verificare.
+      final known = {for (final e in catalog) e.id};
       for (final l in ladders) {
         for (final s in l.steps) {
           for (final g in s.games) {

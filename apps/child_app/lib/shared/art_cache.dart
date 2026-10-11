@@ -7,7 +7,8 @@ import 'package:game_content/game_content.dart';
 /// `EmojiArt` are oricum rezervă.
 Future<void> precacheArt(Iterable<String> emojis) async {
   await Future.wait(
-    emojis.toSet().map((emoji) async {
+    // Fețele desenate din cod (`face:…`) nu au SVG.
+    emojis.toSet().where((e) => !e.startsWith('face:')).map((emoji) async {
       final loader = SvgAssetLoader(
         openMojiAsset(emoji),
         packageName: contentPackage,
