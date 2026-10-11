@@ -34,3 +34,6 @@ __pycache__/
 
 # „build/” de mai sus e pentru rezultatele compilării; jocul „Construiește” e cod sursă
 !apps/child_app/lib/features/games/build/
+
+# mostre de voce pentru comparat (tools/gen-voice), nu fac parte din aplicație
+tools/gen-voice/mostre/
