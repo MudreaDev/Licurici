@@ -279,10 +279,13 @@ class _BigText extends ConsumerWidget {
       fontSize: (visual.isEquation ? 56 : 52) * VisualScale.of(context),
       color: visual.isEquation ? Tokens.ink : Tokens.primaryDark,
     );
-    if (!motion.movement) return Text(visual.text, style: style);
+    // O frază lungă („mingea portocalie”) pe telefonul mic: se micșorează cât să încapă în panou,
+    // nu iese din el (litera rămâne mare cât se poate).
+    Widget fit(Widget child) => FittedBox(fit: BoxFit.scaleDown, child: child);
+    if (!motion.movement) return fit(Text(visual.text, style: style));
     // Ecuația „se scrie singură”, caracter cu caracter.
     final chars = visual.text.characters.toList();
-    return Row(
+    return fit(Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         for (final (i, ch) in chars.indexed)
@@ -296,7 +299,7 @@ class _BigText extends ConsumerWidget {
                 curve: Curves.easeOut,
               ),
       ],
-    );
+    ));
   }
 }
 
