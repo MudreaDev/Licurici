@@ -94,6 +94,8 @@ void main() {
     expect(catalogByDomain(only: container.read(settingsProvider).visibleGames).containsKey(Domain.atn), isFalse);
 
     await tester.scrollUntilVisible(find.byKey(const ValueKey('game-pescarul')), 300);
+    await tester.ensureVisible(find.byKey(const ValueKey('game-pescarul')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('game-pescarul')));
     await tester.pumpAndSettle();
     expect(container.read(settingsProvider).visibleGames.contains('pescarul'), isFalse);
