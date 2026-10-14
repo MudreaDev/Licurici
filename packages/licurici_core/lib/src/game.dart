@@ -235,6 +235,7 @@ class ChoiceRound {
     this.hint,
     this.fixedChoices = false,
     this.stimulusId,
+    this.showMs,
   })  : speak = speak ?? [prompt],
         assert(choices.any((c) => c.correct), 'o rundă are cel puțin un răspuns corect');
 
@@ -254,6 +255,10 @@ class ChoiceRound {
   /// Tipul încercării, pentru rapoarte (ex. `congruent` / `incongruent` la Flanker).
   final String? stimulusId;
 
+  /// Cât timp se vede stimulul (milisecunde) înainte să se ascundă (ex. „Câte sunt?”: o
+  /// privire, fără numărat); null = mereu vizibil. După două greșeli se arată din nou.
+  final int? showMs;
+
   ChoiceRound copyWith({List<Choice>? choices}) => ChoiceRound(
         prompt: prompt,
         visuals: visuals,
@@ -262,6 +267,7 @@ class ChoiceRound {
         hint: hint,
         fixedChoices: fixedChoices,
         stimulusId: stimulusId,
+        showMs: showMs,
       );
 }
 

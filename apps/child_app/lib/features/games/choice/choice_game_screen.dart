@@ -158,7 +158,19 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     });
   }
 
+  /// Stimulul arătat doar o clipă (`ChoiceRound.showMs`) s-a ascuns.
+  bool _hidden = false;
+  Timer? _flashTimer;
+
   void _enterRound() {
+    _hidden = false;
+    _flashTimer?.cancel();
+    if (_round.showMs case final ms?) {
+      // Ceasul pornește când runda e pe ecran (după intrare).
+      _flashTimer = Timer(Duration(milliseconds: ms + 350), () {
+        if (mounted && !_solved) setState(() => _hidden = true);
+      });
+    }
     _attempts = 0;
     _solved = false;
     _wrong.clear();
@@ -260,6 +272,8 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
             : retry;
         _guide = _attempts >= 2;
         _guideShown |= _guide;
+        // Stimulul arătat o clipă revine după a doua greșeală (ajutor, nu pedeapsă).
+        if (_attempts >= 2) _hidden = false;
         // A treia greșeală: mânuța apare imediat.
         if (_attempts >= 3) _hand = _handShown = true;
       });
@@ -316,6 +330,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
     _guideTimer?.cancel();
     _handTimer?.cancel();
     _advanceTimer?.cancel();
+    _flashTimer?.cancel();
     super.dispose();
   }
 
@@ -474,7 +489,12 @@ class _RoundView extends ConsumerWidget {
     final visuals = Stack(
       alignment: Alignment.center,
       children: [
-        PromptVisuals(visuals: round.visuals, solved: state._solved),
+        AnimatedSwitcher(
+          duration: motion.d(250),
+          child: state._hidden && !state._solved
+              ? const _Hidden(key: ValueKey('stimulus-hidden'))
+              : PromptVisuals(key: const ValueKey('stimulus'), visuals: round.visuals, solved: state._solved),
+        ),
         Positioned.fill(
           child: StarBurst(trigger: state._burst, enabled: motion.particles),
         ),
@@ -1090,3 +1110,20 @@ class _FitLabel extends StatelessWidget {
   );
 }
 
+
+/// Stimulul s-a ascuns (a fost arătat doar o clipă): un nor blând cu un semn de întrebare.
+class _Hidden extends StatelessWidget {
+  const _Hidden({super.key});
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Ascuns',
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        Icon(Icons.cloud_rounded, size: 180, color: Colors.white.withValues(alpha: 0.9)),
+        Text('?', style: Theme.of(context).textTheme.displayMedium!.copyWith(color: Tokens.primary, fontWeight: FontWeight.w800)),
+      ],
+    ),
+  );
+}

@@ -177,6 +177,7 @@ const List<Ladder> ladders = [
         games: ['colorare']),
   ]),
   Ladder(Domain.pac, [
+    Step('PAC-N1', 'Vede dintr-o privire câte sunt, fără să numere (subitizare 1–4)', games: ['cate-sunt']),
     Step('PAC-N2', 'Numără până la 5', games: ['numaram']),
     Step('PAC-N3', 'Scrie cifrele urmărind conturul, în ordinea corectă a trăsăturilor',
         games: ['scriem-cifrele']),

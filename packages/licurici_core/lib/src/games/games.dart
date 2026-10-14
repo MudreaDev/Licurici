@@ -15,6 +15,7 @@ import 'romana.dart';
 import 'scoala.dart';
 import 'scoala2.dart';
 import 'siblings.dart';
+import 'subitizing.dart';
 import 'social.dart';
 import 'vocabular.dart';
 
@@ -29,6 +30,7 @@ export 'romana.dart';
 export 'scoala.dart';
 export 'scoala2.dart';
 export 'siblings.dart';
+export 'subitizing.dart';
 export 'social.dart';
 export 'vocabular.dart';
 
@@ -39,6 +41,7 @@ const List<GameSpec> allGames = [
   // Fețe desenate din cod, cu metrici standard (pragul emoției, recunoașterea feței)
   CatDeTareGame(),
   CineEPrietenulGame(),
+  CateSuntGame(),
   // Potrivire și limbaj receptiv
   PotrivesteGame(),
   ArataMiGame(),
