@@ -13,6 +13,7 @@ import 'change.dart';
 import 'fitts.dart';
 import 'number_line.dart';
 import 'stop_signal.dart';
+import 'delay.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -346,6 +347,28 @@ class SessionRecorder {
         targetId: '${m.round.target}',
         chosenId: m.estimate.toStringAsFixed(1),
         difficulty: level.axes.max.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Acum sau mai mult?”: câte o încercare pe ofertă; corectă = a așteptat până la
+  /// capăt; latența = cât s-a gândit; dificultatea = așteptarea cerută (secunde); `stimulusId`
+  /// spune ce a ales (`acum` / `asteapta` / `a-renuntat`).
+  void delayLevel(DelayResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final c in result.choices) {
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: c.completed,
+        promptLevel: PromptLevel.p0,
+        latencyMs: c.latencyMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: !c.waited ? 'acum' : (c.completed ? 'asteapta' : 'a-renuntat'),
+        difficulty: c.offer.waitMs / 1000,
       ));
     }
   }

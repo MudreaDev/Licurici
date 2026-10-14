@@ -23,7 +23,7 @@ void main() {
     '/sortam', '/sortam/la-locul-lui', '/sortam/sortam-emotiile', '/fa-ca-licuriciul', '/regula-se-schimba', '/unde-se-uita', '/la-magazin', '/construieste',
     '/diferente', '/labirint', '/puzzle', '/ce-s-a-schimbat', '/atinge-si-vezi', '/hraneste-pestii', '/toba-magica',
     '/vorbeste', '/cauta', '/pe-rand', '/coloram', '/urmareste-pestele', '/semaforul', '/asteapta/floarea-creste', '/traseaza', '/traseaza/uneste-punctele', '/cucu-bau',
-    '/secventa/simon', '/secventa/licuricii', '/album', '/linia-numerelor', '/atinge-rapid', '/reactie/paznicul-farului', '/stop',
+    '/secventa/simon', '/secventa/licuricii', '/album', '/linia-numerelor', '/atinge-rapid', '/reactie/paznicul-farului', '/stop', '/acum-sau-mai-mult',
   ];
 
   for (final path in paths) {

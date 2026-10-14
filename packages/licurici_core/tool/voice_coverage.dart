@@ -61,6 +61,11 @@ const uiPhrases = [
   // Stop!
   'Atinge felinarul când e verde. Când se face roșu, oprește-te!',
   'Data viitoare te oprești.',
+  // Acum sau mai mult?
+  'O stea acum sau trei stele dacă aștepți?',
+  'O stea acum sau două stele dacă aștepți?',
+  'Bine. Așteptăm împreună.',
+  'Poftim steaua ta!',
   // Urmărește peștele
   'Urmărește peștele!',
   'Acesta e peștele tău. Urmărește-l!',

@@ -147,6 +147,7 @@ const List<Ladder> ladders = [
   ]),
   Ladder(Domain.fex, [
     Step('FEX1', 'Așteaptă semnalul (verde) înainte să atingă', games: ['semaforul', 'floarea-creste']),
+    Step('FEX1b', 'Alege să aștepte pentru o recompensă mai mare și duce așteptarea la capăt', games: ['acum-sau-mai-mult']),
     Step('FEX2', 'Atinge doar ținta cerută și se abține la celelalte (go/no-go)',
         games: ['pescarul']),
     Step('FEX2b', 'Ignoră vecinii care distrag și răspunde doar la țintă (Flanker)',
