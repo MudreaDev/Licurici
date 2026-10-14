@@ -200,7 +200,8 @@ class MazeGame {
   Set<Grade> get grades => Grade.parseCodes('G1234');
   List<String> get steps => const ['FEX7'];
 
-  (int, int) sizeFor(int level) => (min(8, 2 + level), min(5, 1 + (level + 1) ~/ 2));
+  /// Coloane × rânduri: 3 × 2 la început, până la 10 × 6 (nivelul 9).
+  (int, int) sizeFor(int level) => (min(10, 2 + level), min(6, 1 + (level + 1) ~/ 2));
 
   MazeLevel generate(int level, {int? seed}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');

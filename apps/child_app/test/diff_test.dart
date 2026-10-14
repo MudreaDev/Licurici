@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 10), ('tableta', 5)]) {
+  for (final (device, level) in [('telefon-mic', 13), ('tableta', 5)]) {
     testWidgets('diferențe: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;

@@ -4,13 +4,18 @@ import 'package:test/test.dart';
 void main() {
   const game = PuzzleGame();
 
-  test('piese: 2 → 4 → 6 → 9; modelul dispare la niveluri mari; tava nu e deja în ordine', () {
+  test('piese: 2 → 4 → 6 → 9 → 12 → 16; modelul ajută la fiecare mărime nouă; tava nu e deja în ordine', () {
     expect(game.axesFor(1).toJson(), {'cols': 2, 'rows': 1, 'model': true, 'rounds': 3});
     expect(game.axesFor(2).cols * game.axesFor(2).rows, 4);
     expect(game.axesFor(4).cols * game.axesFor(4).rows, 6);
-    expect(game.axesFor(9).cols * game.axesFor(9).rows, 9);
+    expect(game.axesFor(7).cols * game.axesFor(7).rows, 9);
+    expect(game.axesFor(7).model, isFalse);
+    expect(game.axesFor(8).cols * game.axesFor(8).rows, 12);
+    expect(game.axesFor(8).model, isTrue);
     expect(game.axesFor(9).model, isFalse);
-    for (var level = 1; level <= 10; level++) {
+    expect(game.axesFor(11).cols * game.axesFor(11).rows, 16);
+    expect(game.axesFor(11).model, isFalse);
+    for (var level = 1; level <= 12; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = game.generate(level, seed: seed);
         expect(l.rounds.map((r) => r.image).toSet(), hasLength(l.rounds.length));

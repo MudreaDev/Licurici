@@ -57,12 +57,12 @@ const gameScales = <String, LevelScale>{
   'cauta': LevelScale(14),
   'cucu-bau': LevelScale(14),
   'ce-s-a-schimbat': LevelScale(11),
-  'diferente': LevelScale(9),
+  'diferente': LevelScale(13), // 16 obiecte la 13, 6 diferențe de la 11
   'la-magazin': LevelScale(10),
   // construcție, puzzle, labirint
   'construieste': LevelScale(7),
-  'puzzle': LevelScale(7),
-  'labirint': LevelScale(7),
+  'puzzle': LevelScale(11), // 4 × 4 fără model la 11
+  'labirint': LevelScale(9), // 10 × 6 la 9
   // atenție comună, imitație, ritm
   'unde-se-uita': LevelScale(6),
   'fa-ca-licuriciul': LevelScale(8),

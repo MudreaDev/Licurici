@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 9), ('tableta', 4)]) {
+  for (final (device, level) in [('telefon-mic', 11), ('tableta', 8)]) {
     testWidgets('puzzle: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;

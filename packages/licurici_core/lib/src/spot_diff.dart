@@ -82,8 +82,8 @@ class SpotDiffGame {
   Set<Grade> get grades => Grade.parseCodes('G1234');
   List<String> get steps => const ['POT8'];
 
-  int differencesFor(int level) => min(5, 1 + (level - 1) ~/ 2);
-  int itemsFor(int level) => min(12, 3 + level);
+  int differencesFor(int level) => min(6, 1 + (level - 1) ~/ 2);
+  int itemsFor(int level) => min(16, 3 + level);
 
   /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
   DiffLevel generate(int level, {int? seed, Set<String> avoid = const {}}) {
@@ -95,7 +95,7 @@ class SpotDiffGame {
     final similar = level >= 6;
     final scenes = <DiffScene>[];
     for (var sc = 0; sc < 3; sc++) {
-      final cols = n <= 6 ? 3 : 4;
+      final cols = n <= 6 ? 3 : (n <= 12 ? 4 : 5);
       final rows = ((n + 2) / cols).ceil();
       final cells = [for (var i = 0; i < cols * rows; i++) i]..shuffle(random);
       final objects = ([...words]..shuffle(random)).take(n).toList();
