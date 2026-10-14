@@ -157,11 +157,19 @@ class ApiClient {
     Map<String, int> maxLevels = const {},
     Map<String, int> rounds = const {},
     Set<String> avoid = const {},
+    MusicChoice? music,
   }) async => _plan(
     (await _send(
           'PUT',
           '/children/$childId/plan',
-          body: {'hiddenGames': hidden.toList()..sort(), 'levels': levels, 'maxLevels': maxLevels, 'rounds': rounds, 'avoid': avoid.toList()..sort()},
+          body: {
+            'hiddenGames': hidden.toList()..sort(),
+            'levels': levels,
+            'maxLevels': maxLevels,
+            'rounds': rounds,
+            'avoid': avoid.toList()..sort(),
+            if (music != null) 'music': {'on': music.on, 'track': music.track},
+          },
         ))
         as Map,
   );
@@ -177,6 +185,10 @@ class ApiClient {
     maxLevels: _numbers(j['maxLevels']),
     rounds: _numbers(j['rounds']),
     avoid: {for (final a in (j['avoid'] as List? ?? const [])) a as String},
+    music: switch (j['music']) {
+      {'on': final bool on, 'track': final String track} => (on: on, track: track),
+      _ => null,
+    },
     updatedAt: DateTime.tryParse(j['updatedAt'] as String? ?? ''),
     updatedBy: j['updatedBy'] as String?,
     changes: [
@@ -316,6 +328,12 @@ class ApiClient {
 
 final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
 
+/// Muzica de fundal de pe tabletă: pornită/oprită și piesa (`all`, `lumini`, `valuri`, `gradina`).
+typedef MusicChoice = ({bool on, String track});
+
+/// Piesele de fundal, cu numele arătat adultului (aceleași ca pe tabletă, `MusicTrack`).
+const musicTracks = {'all': 'Toate, pe rând', 'lumini': 'Lumini de seară', 'valuri': 'Valuri', 'gradina': 'Grădina'};
+
 /// Planul de jocuri al copilului (jocurile scoase + datele schimbărilor).
 typedef GamePlan = ({
   Set<String> hidden,
@@ -323,6 +341,7 @@ typedef GamePlan = ({
   Map<String, int> maxLevels,
   Map<String, int> rounds,
   Set<String> avoid,
+  MusicChoice? music,
   DateTime? updatedAt,
   String? updatedBy,
   List<DateTime> changes,

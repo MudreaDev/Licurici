@@ -23,6 +23,7 @@ class FakeServer {
   bool down = false;
   Map<String, Object?> plan = {'hiddenGames': <String>[], 'updatedAt': null, 'updatedBy': null};
   final planPuts = <List<String>>[];
+  Object? lastPutMusic;
 
   /// Refresh tokenul valabil acum (rotit la fiecare folosire, ca pe server).
   String validRefresh = 'r' * 30;
@@ -98,6 +99,7 @@ class FakeServer {
       planPuts.add(hidden);
       lastPutLevels = body['levels'];
       lastPutAvoid = body['avoid'];
+      lastPutMusic = body['music'];
       plan = {'hiddenGames': hidden, 'updatedAt': '2026-10-09T10:00:00.000Z', 'updatedBy': 'PARENT'};
       return json(plan);
     }
@@ -226,10 +228,12 @@ void main() {
       'hiddenGames': ['pescarul', 'simon'],
       'levels': {'emotii': 3},
       'maxLevels': {'emotii': 5},
+      'music': {'on': false, 'track': 'valuri'},
       'updatedAt': '2026-10-09T08:00:00.000Z',
       'updatedBy': 'THERAPIST',
     };
     Set<String>? applied;
+    (bool, String)? music;
     Map<String, int>? levels;
     Map<String, int>? caps;
     await client().run(
@@ -243,7 +247,10 @@ void main() {
         applied = h;
         levels = l;
       },
+      onMusic: (on, track) => music = (on, track),
     );
+    // Specialistul a oprit muzica din panou: tableta o oprește.
+    expect(music, (false, 'valuri'));
     expect(applied, {'pescarul', 'simon'});
     expect(caps, {'emotii': 5});
     expect(levels, {'emotii': 3});
@@ -257,12 +264,14 @@ void main() {
       consent: true,
       plan: (hidden: {'cauta'}, avoid: {'caini'}, at: DateTime.utc(2026, 10, 9, 9)),
       onPlan: (h, l, at, _, _, _) => applied = h,
+      music: (on: true, track: 'gradina'),
     );
     expect(applied, isNull);
     expect(server.planPuts.single, ['cauta']);
     // Nivelurile alese de specialist nu se pierd când urcă lista de pe tabletă.
     expect(server.lastPutLevels, {'emotii': 3});
     expect(server.lastPutAvoid, ['caini']);
+    expect(server.lastPutMusic, {'on': true, 'track': 'gradina'});
   });
 
   test('trimiterea automată: cu refresh tokenul păstrat, după fiecare sesiune; se oprește singură dacă e refuzată', () async {

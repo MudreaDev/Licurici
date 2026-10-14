@@ -168,6 +168,7 @@ class FakeBackend {
           'maxLevels': b['maxLevels'],
           'rounds': b['rounds'],
           'avoid': b['avoid'],
+          if (b['music'] != null) 'music': b['music'],
           'updatedAt': '2026-10-09T09:00:00.000Z',
           'updatedBy': 'THERAPIST',
           'history': [
@@ -563,6 +564,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('plan-avoid-insecte')));
     await tester.pumpAndSettle();
+    // Muzica de fundal: doar „Valuri” (apoi oprită ar dezactiva alegerea piesei).
+    await tester.ensureVisible(find.byKey(const ValueKey('plan-music-valuri')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('plan-music-valuri')));
+    await tester.pumpAndSettle();
     // Pentru „Emoții”: pornește de la 3 și nu urcă peste 6 (câmpurile vin din schema parametrilor).
     await tester.ensureVisible(find.textContaining('EMO ·'));
     await tester.pumpAndSettle();
@@ -596,6 +602,7 @@ void main() {
     expect(backend.plan['maxLevels'], {'emotii': 6});
     expect(backend.plan['rounds'], {'emotii': 4});
     expect(backend.plan['avoid'], ['insecte']);
+    expect(backend.plan['music'], {'on': true, 'track': 'valuri'});
     expect(find.textContaining('Tableta preia lista'), findsOneWidget);
   });
 

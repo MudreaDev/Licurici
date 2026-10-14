@@ -27,6 +27,10 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   /// Categoriile de imagini de evitat (`avoidItems`).
   Set<String> _avoid = {};
   Set<String> _savedAvoid = const {};
+
+  /// Muzica de fundal pe tabletă (null = neschimbată din panou: rămâne alegerea de pe tabletă).
+  MusicChoice? _music;
+  MusicChoice? _savedMusic;
   String? _info;
   String? _error;
   bool _busy = false;
@@ -55,6 +59,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
         _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}, 'rounds': {...plan.rounds}};
         _avoid = {...plan.avoid};
         _savedAvoid = {...plan.avoid};
+        _music = _savedMusic = plan.music;
         _info = plan.updatedAt == null
             ? 'Copilul vede toate jocurile.'
             : 'Ultima schimbare: ${plan.updatedAt!.toLocal().toString().substring(0, 16)}'
@@ -77,6 +82,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
             maxLevels: _params['max']!,
             rounds: _params['rounds']!,
             avoid: _avoid,
+            music: _music,
           );
       if (!mounted) return;
       setState(() {
@@ -84,6 +90,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
         _savedParams = {'start': {...plan.levels}, 'max': {...plan.maxLevels}, 'rounds': {...plan.rounds}};
         _avoid = {...plan.avoid};
         _savedAvoid = {...plan.avoid};
+        _music = _savedMusic = plan.music;
         _info = 'Salvat. Tableta preia lista la următoarea sincronizare.';
         _error = null;
       });
@@ -185,6 +192,40 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                   ],
                 ),
                 const SizedBox(height: 12),
+                Text('Muzică liniștită', style: text.titleSmall),
+                Text(
+                  'Muzică de fundal blândă pe tabletă (mereu mai încet decât vocea; tace în jocurile cu sunete '
+                  'și în acvariu). Oprește-o dacă îl distrage sau îl agită pe copil.',
+                  style: text.bodySmall,
+                ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    MergeSemantics(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('Pornită'),
+                          Switch(
+                            key: const ValueKey('plan-music'),
+                            value: _music?.on ?? true,
+                            onChanged: (on) => setState(() => _music = (on: on, track: _music?.track ?? 'all')),
+                          ),
+                        ],
+                      ),
+                    ),
+                    for (final MapEntry(key: id, value: label) in musicTracks.entries)
+                      ChoiceChip(
+                        key: ValueKey('plan-music-$id'),
+                        label: Text(label),
+                        selected: (_music?.track ?? 'all') == id,
+                        onSelected: (_music?.on ?? true) ? (_) => setState(() => _music = (on: true, track: id)) : null,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
                 for (final MapEntry(key: domain, value: games) in catalogByDomain().entries)
                   ExpansionTile(
                     key: ValueKey('plan-${domain.code}'),
@@ -222,7 +263,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                 const SizedBox(height: 12),
                 FilledButton.icon(
                   key: const ValueKey('plan-save'),
-                  onPressed: _busy || (_sameSet(hidden, _saved) && _paramsSaved && _sameSet(_avoid, _savedAvoid)) ? null : _save,
+                  onPressed: _busy || (_sameSet(hidden, _saved) && _paramsSaved && _sameSet(_avoid, _savedAvoid) && _music == _savedMusic) ? null : _save,
                   icon: const Icon(Icons.save_rounded),
                   label: const Text('Salvează lista'),
                 ),
