@@ -24,6 +24,8 @@ class AppSettings {
     this.maxLevels = const {},
     this.rounds = const {},
     this.avoid = const {},
+    this.music = true,
+    this.musicTrack = MusicTrack.all,
   });
 
   final Grade grade;
@@ -75,6 +77,13 @@ class AppSettings {
   /// sar peste rundele care le-ar arăta.
   final Set<String> avoid;
 
+  /// Muzica liniștită de fundal (`shared/music.dart`): o pornește sau o oprește adultul
+  /// (în „Pentru părinți” sau specialistul din panou, prin plan). Pornită implicit, încet.
+  final bool music;
+
+  /// Ce piesă se cântă (sau toate, pe rând).
+  final MusicTrack musicTrack;
+
   /// Nivelul cu care pornește jocul [gameId], ținând cont de plafon. Prima dată: cel mai mare
   /// dintre [fallback], nivelul transferat de la un joc de pe aceeași treaptă
   /// (`transferredLevel`) și nivelul estimat din rating-ul treptelor jocului ([ratings],
@@ -107,6 +116,8 @@ class AppSettings {
     if (maxLevels.isNotEmpty) 'maxLevels': maxLevels,
     if (rounds.isNotEmpty) 'rounds': rounds,
     if (avoid.isNotEmpty) 'avoid': avoid.toList()..sort(),
+    'music': music,
+    'musicTrack': musicTrack.name,
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -144,6 +155,8 @@ class AppSettings {
       for (final a in (j['avoid'] as List? ?? const []))
         if (a is String) a,
     },
+    music: j['music'] != false,
+    musicTrack: MusicTrack.values.asNameMap()[j['musicTrack']] ?? MusicTrack.all,
   );
 
   AppSettings copyWith({
@@ -162,6 +175,8 @@ class AppSettings {
     Map<String, int>? maxLevels,
     Map<String, int>? rounds,
     Set<String>? avoid,
+    bool? music,
+    MusicTrack? musicTrack,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -178,7 +193,23 @@ class AppSettings {
     maxLevels: maxLevels ?? this.maxLevels,
     rounds: rounds ?? this.rounds,
     avoid: avoid ?? this.avoid,
+    music: music ?? this.music,
+    musicTrack: musicTrack ?? this.musicTrack,
   );
+}
+
+/// Piesele de fundal (`game_content/audio/music/`, generate de `tools/audio/gen_music.py`).
+enum MusicTrack {
+  /// Toate, pe rând.
+  all('Toate, pe rând'),
+  lumini('Lumini de seară'),
+  valuri('Valuri'),
+  gradina('Grădina');
+
+  const MusicTrack(this.label);
+
+  /// Numele arătat adultului.
+  final String label;
 }
 
 /// Abțibildurile din album (ilustrațiile `rewards/sticker_<id>`).
@@ -232,6 +263,13 @@ class SettingsNotifier extends Notifier<AppSettings> {
   }
   void toggleVoice() => _set(state.copyWith(voice: !state.voice));
 
+  /// Adultul pornește/oprește muzica (contează ca schimbare de plan, ca la sincronizare
+  /// să câștige alegerea mai nouă).
+  void setMusic(bool on) => _set(state.copyWith(music: on, hiddenGamesAt: DateTime.now().toUtc()));
+
+  void setMusicTrack(MusicTrack track) =>
+      _set(state.copyWith(musicTrack: track, hiddenGamesAt: DateTime.now().toUtc()));
+
   /// Un joc terminat = un abțibild. Întâi cele lipsă din album, în ordine; după ce albumul e
   /// plin, se adună dubluri (albumul arată câte are din fiecare).
   /// Albumul a fost deschis: toate abțibildurile sunt văzute.
@@ -279,6 +317,11 @@ class SettingsNotifier extends Notifier<AppSettings> {
       ),
     );
   }
+
+  /// Muzica aleasă în panou (vine cu planul, deci data planului e deja la zi).
+  void applyMusic(bool on, String track) => _set(
+    state.copyWith(music: on, musicTrack: MusicTrack.values.asNameMap()[track] ?? state.musicTrack),
+  );
 
   /// Nivelul la care a ajuns copilul în jocul [gameId].
   void setGameLevel(String gameId, int level) {

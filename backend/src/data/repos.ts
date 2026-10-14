@@ -2,7 +2,7 @@ import type { UserRepo } from '../auth/auth.service';
 import type { Role } from '../auth/tokens';
 import type { ChildRepo } from '../children/access';
 import type { ChildrenRepo } from '../children/children';
-import type { PlanRepo } from '../children/plan';
+import { type MusicChoice, musicTracks, type PlanRepo } from '../children/plan';
 import type { SharingRepo } from '../children/sharing';
 import type { GdprRepo } from '../gdpr/gdpr';
 import { type ConsentStore, consentPurposes } from '../consents/consents';
@@ -226,6 +226,7 @@ export class PrismaRepos {
         maxLevels?: Record<string, number>;
         rounds?: Record<string, number>;
         avoid?: string[];
+        music?: { on?: unknown; track?: unknown };
         updatedAt?: string;
         updatedBy?: string;
         history?: { at: string; by: string; hidden: number }[];
@@ -238,6 +239,9 @@ export class PrismaRepos {
         maxLevels: plan.maxLevels && typeof plan.maxLevels === 'object' ? plan.maxLevels : {},
         rounds: plan.rounds && typeof plan.rounds === 'object' ? plan.rounds : {},
         avoid: Array.isArray(plan.avoid) ? plan.avoid : [],
+        ...(typeof plan.music?.on === 'boolean' && musicTracks.includes(plan.music.track as MusicChoice['track'])
+          ? { music: { on: plan.music.on, track: plan.music.track as MusicChoice['track'] } }
+          : {}),
         updatedAt: plan.updatedAt ? new Date(plan.updatedAt) : null,
         updatedBy: plan.updatedBy === 'THERAPIST' ? 'THERAPIST' : plan.updatedBy === 'PARENT' ? 'PARENT' : null,
         history: (plan.history ?? []).map((h) => ({

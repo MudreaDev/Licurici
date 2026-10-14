@@ -62,6 +62,8 @@ class _SyncDialogState extends ConsumerState<_SyncDialog> {
               at: ref.read(settingsProvider).hiddenGamesAt,
             ),
             onPlan: ref.read(settingsProvider.notifier).applyPlan,
+            music: (on: ref.read(settingsProvider).music, track: ref.read(settingsProvider).musicTrack.name),
+            onMusic: ref.read(settingsProvider.notifier).applyMusic,
             onRefreshToken: _auto ? (t) => refresh = t : null,
           );
       if (refresh != null) await ref.read(autoSyncProvider.notifier).enable(refresh!);

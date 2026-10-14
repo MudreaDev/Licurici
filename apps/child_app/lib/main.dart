@@ -51,6 +51,8 @@ import 'features/games/write/write_screen.dart';
 import 'features/parent/parent_screen.dart';
 import 'features/games/sequence/simon_screen.dart';
 import 'features/settings/settings.dart';
+import 'shared/music.dart';
+import 'shared/voice.dart';
 
 /// Cheia setărilor copilului în tabela `meta`.
 const settingsKey = 'settings';
@@ -394,7 +396,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
-  ref.onDispose(router.dispose);
+  // Copilul a ieșit din joc (sau a intrat în altul): vocea tace imediat, nu mai termină
+  // instrucțiunea sau lauda începute pe ecranul de dinainte.
+  var path = '/';
+  void stopVoiceOnLeave() {
+    final now = router.routerDelegate.currentConfiguration.uri.path;
+    if (now == path) return;
+    path = now;
+    ref.read(voiceProvider).stop();
+  }
+
+  router.routerDelegate.addListener(stopVoiceOnLeave);
+  ref.onDispose(() {
+    router.routerDelegate.removeListener(stopVoiceOnLeave);
+    router.dispose();
+  });
   return router;
 });
 
@@ -415,8 +431,10 @@ class LicuriciApp extends ConsumerWidget {
         dragDevices: PointerDeviceKind.values.toSet(),
       ),
       routerConfig: ref.watch(routerProvider),
-      builder: (context, child) =>
-          BootGate(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => MusicDirector(
+        router: ref.watch(routerProvider),
+        child: BootGate(child: child ?? const SizedBox.shrink()),
+      ),
     );
   }
 }

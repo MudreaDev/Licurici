@@ -27,6 +27,7 @@ flutter:
     - art/illustrations/actions/
     - audio/ro/
     - audio/sfx/
+    - audio/music/
   fonts:
     - family: Nunito
       fonts:

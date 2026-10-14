@@ -11,6 +11,15 @@ import type { ChildAccess } from './access';
  */
 const gameId = z.string().regex(/^[a-z0-9-]{2,40}$/);
 
+/** Piesele de fundal din aplicație (`MusicTrack`): toate pe rând sau una anume. */
+export const musicTracks = ['all', 'lumini', 'valuri', 'gradina'] as const;
+
+// Alias (nu interfață): trebuie să fie valoare JSON pentru Prisma.
+export type MusicChoice = {
+  on: boolean;
+  track: (typeof musicTracks)[number];
+};
+
 export const planSchema = z
   .object({
     hiddenGames: z
@@ -38,6 +47,11 @@ export const planSchema = z
       .record(gameId, z.number().int().min(3).max(12))
       .refine((r) => Object.keys(r).length <= 200)
       .default({}),
+    /** Muzica liniștită de fundal pe tabletă: pornită/oprită și piesa (lipsă = neschimbată). */
+    music: z
+      .object({ on: z.boolean(), track: z.enum(musicTracks) })
+      .strict()
+      .optional(),
   })
   .strict()
   .refine((p) => Object.entries(p.levels).every(([g, l]) => p.maxLevels[g] == null || l <= p.maxLevels[g]), {
@@ -62,6 +76,8 @@ export interface GamePlan {
   rounds: Record<string, number>;
   /** Categoriile de imagini de evitat. */
   avoid: string[];
+  /** Muzica de fundal aleasă din panou (lipsă = cum e pe tabletă). */
+  music?: MusicChoice;
   /** Când s-a schimbat ultima dată și de cine (rolul), ca tableta să știe dacă e mai nou. */
   updatedAt: Date | null;
   updatedBy: 'PARENT' | 'THERAPIST' | null;
@@ -97,7 +113,7 @@ export class GamePlanService {
   async put(user: AuthUser, childId: string, body: unknown): Promise<GamePlan> {
     // Citirea e suficientă ca drept: specialistul are voie aici (doar pentru plan).
     await this.access.assert(user, childId, 'read');
-    const { hiddenGames, levels, maxLevels, rounds, avoid } = parseWith(planSchema, body);
+    const { hiddenGames, levels, maxLevels, rounds, avoid, music } = parseWith(planSchema, body);
     const previous = await this.repo.read(childId);
     const by: PlanChange['by'] = user.role === 'THERAPIST' ? 'THERAPIST' : 'PARENT';
     const at = this.now();
@@ -107,6 +123,7 @@ export class GamePlanService {
       maxLevels,
       rounds,
       avoid,
+      ...((music ?? previous?.music) ? { music: music ?? previous?.music } : {}),
       updatedAt: at,
       updatedBy: by,
       history: [...(previous?.history ?? []), { at, by, hidden: hiddenGames.length }].slice(-50),

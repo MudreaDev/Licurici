@@ -78,6 +78,16 @@ describe('GamePlanService', () => {
     await expect(plan.put(therapist, CHILD, { hiddenGames: [], rounds: { emotii: 50 } })).rejects.toBeInstanceOf(ValidationError);
     expect((await plan.put(parent, CHILD, { hiddenGames: [], avoid: ['insecte', 'caini', 'caini'] })).avoid).toEqual(['caini', 'insecte']);
     await expect(plan.put(parent, CHILD, { hiddenGames: [], avoid: ['Text Liber!'] })).rejects.toBeInstanceOf(ValidationError);
+    // Muzica de fundal: aleasă de specialist, rămâne la schimbările care n-o trimit.
+    expect((await plan.put(therapist, CHILD, { hiddenGames: [], music: { on: false, track: 'valuri' } })).music).toEqual({
+      on: false,
+      track: 'valuri',
+    });
+    expect((await plan.put(parent, CHILD, { hiddenGames: ['cauta'] })).music).toEqual({ on: false, track: 'valuri' });
+    await expect(plan.put(parent, CHILD, { hiddenGames: [], music: { on: true, track: 'rock' } })).rejects.toBeInstanceOf(ValidationError);
+    await expect(plan.put(parent, CHILD, { hiddenGames: [], music: { on: true, track: 'all', vol: 1 } })).rejects.toBeInstanceOf(
+      ValidationError,
+    );
     await expect(
       plan.put(therapist, CHILD, { hiddenGames: [], levels: { simon: 8 }, maxLevels: { simon: 6 } }),
     ).rejects.toBeInstanceOf(ValidationError);

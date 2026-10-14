@@ -90,6 +90,8 @@ class AutoSync extends Notifier<AutoSyncState> {
         consent: true,
         plan: (hidden: settings.hiddenGames, avoid: settings.avoid, at: settings.hiddenGamesAt),
         onPlan: ref.read(settingsProvider.notifier).applyPlan,
+        music: (on: ref.read(settingsProvider).music, track: ref.read(settingsProvider).musicTrack.name),
+        onMusic: ref.read(settingsProvider.notifier).applyMusic,
       );
       state = AutoSyncState(enabled: true, lastAt: DateTime.now(), lastSent: n);
       return n;

@@ -1,10 +1,18 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_content/game_content.dart';
 
 import '../features/settings/settings.dart';
+
+/// Adevărat cât timp Licurici vorbește (muzica de fundal se face mai încet).
+final voiceActivityProvider = Provider<ValueNotifier<bool>>((ref) {
+  final speaking = ValueNotifier(false);
+  ref.onDispose(speaking.dispose);
+  return speaking;
+});
 
 final voiceManifestProvider = FutureProvider<VoiceManifest>(
   (ref) => VoiceManifest.load(),
@@ -43,23 +51,30 @@ class Voice implements Speaker {
     if (!_ref.read(settingsProvider).voice) return;
     final manifest = _ref.read(voiceManifestProvider).value;
     if (manifest == null) return;
-    for (final part in parts) {
-      if (generation != _generation) return;
-      final asset = manifest.assetFor(part);
-      if (asset == null) continue;
-      final done = _player.onPlayerComplete.first;
-      try {
-        await _player.play(AssetSource(asset));
-        await done.timeout(const Duration(seconds: 8));
-      } on Object {
-        return; // audio indisponibil (ex. browser fără interacțiune) — jocul continuă fără voce
+    final speaking = _ref.read(voiceActivityProvider);
+    try {
+      for (final part in parts) {
+        if (generation != _generation) return;
+        final asset = manifest.assetFor(part);
+        if (asset == null) continue;
+        final done = _player.onPlayerComplete.first;
+        speaking.value = true;
+        try {
+          await _player.play(AssetSource(asset));
+          await done.timeout(const Duration(seconds: 8));
+        } on Object {
+          return; // audio indisponibil (ex. browser fără interacțiune) — jocul continuă fără voce
+        }
       }
+    } finally {
+      if (generation == _generation) speaking.value = false;
     }
   }
 
   @override
   Future<void> stop() async {
     _generation++;
+    _ref.read(voiceActivityProvider).value = false;
     await _player.stop();
   }
 

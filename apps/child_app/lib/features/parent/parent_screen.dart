@@ -81,6 +81,7 @@ class ParentScreen extends ConsumerWidget {
               ),
             ),
             const _StartLevel(),
+            const _MusicLine(),
             const _AutoSyncLine(),
             Expanded(
               child: reports.when(
@@ -209,6 +210,55 @@ class _StartLevel extends ConsumerWidget {
             label: const Text('Contrast mare'),
             selected: ref.watch(settingsProvider.select((s) => s.contrast)),
             onSelected: ref.read(settingsProvider.notifier).setContrast,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Muzica liniștită de fundal: pornită/oprită de adult (părinte sau specialist) și piesa.
+/// Aceeași alegere se poate face din panoul web, la „Jocuri” (planul copilului).
+class _MusicLine extends ConsumerWidget {
+  const _MusicLine();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final on = ref.watch(settingsProvider.select((s) => s.music));
+    final track = ref.watch(settingsProvider.select((s) => s.musicTrack));
+    final notifier = ref.read(settingsProvider.notifier);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+      child: Row(
+        children: [
+          Icon(Icons.music_note_rounded, color: on ? Tokens.primary : Tokens.inkSoft),
+          const SizedBox(width: 8),
+          Text('Muzică liniștită:', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(width: 8),
+          Switch(
+            key: const ValueKey('music-switch'),
+            value: on,
+            onChanged: notifier.setMusic,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final t in MusicTrack.values)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        key: ValueKey('music-${t.name}'),
+                        label: Text(t.label),
+                        selected: t == track,
+                        onSelected: on ? (_) => notifier.setMusicTrack(t) : null,
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

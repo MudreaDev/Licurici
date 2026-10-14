@@ -70,6 +70,8 @@ class SyncClient {
       Set<String> avoid,
     )?
     onPlan,
+    ({bool on, String track})? music,
+    void Function(bool on, String track)? onMusic,
   }) async {
     if (!consent) {
       throw const SyncException(
@@ -119,7 +121,7 @@ class SyncClient {
     }
     if (plan != null) {
       try {
-        await _syncPlan(childId, plan, onPlan);
+        await _syncPlan(childId, plan, onPlan, music, onMusic);
       } on SyncException {
         // Planul e un bonus: sesiunile au plecat deja; încercăm iar la următoarea sincronizare.
       }
@@ -152,8 +154,10 @@ class SyncClient {
       Map<String, int> rounds,
       Set<String> avoid,
     )?
-    onPlan,
-  ) async {
+    onPlan, [
+    ({bool on, String track})? music,
+    void Function(bool on, String track)? onMusic,
+  ]) async {
     final server = await _call('GET', '/children/$childId/plan') as Map;
     final at = DateTime.tryParse(server['updatedAt'] as String? ?? '');
     final hidden = {for (final g in (server['hiddenGames'] as List? ?? const [])) g as String};
@@ -167,6 +171,8 @@ class SyncClient {
     final avoid = {for (final a in (server['avoid'] as List? ?? const [])) if (a is String) a};
     if (at != null && (local.at == null || at.isAfter(local.at!))) {
       onPlan?.call(hidden, levels, at, maxLevels, rounds, avoid);
+      // Muzica aleasă în panou (de specialist sau de părinte), dacă planul o are.
+      if (server['music'] case {'on': final bool on, 'track': final String track}) onMusic?.call(on, track);
     } else if (local.at != null && (at == null || local.at!.isAfter(at))) {
       // Nivelurile de pornire și plafoanele le alege specialistul în panou: rămân cele de pe server.
       await _call('PUT', '/children/$childId/plan', {
@@ -176,6 +182,7 @@ class SyncClient {
         'rounds': rounds,
         // Imaginile de evitat le poate alege și părintele de pe tabletă: pleacă cele de aici.
         'avoid': (local.avoid.toList()..sort()),
+        if (music != null) 'music': {'on': music.on, 'track': music.track},
       });
     }
   }
