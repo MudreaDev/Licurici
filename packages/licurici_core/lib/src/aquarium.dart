@@ -30,6 +30,9 @@ enum FishMode {
 
   /// A fost atins chiar pe el: se învârte o dată, bucuros.
   spin,
+
+  /// Copilul l-a chemat (din raftul „Peștii mei”): vine la geam, în mijloc, apoi se învârte.
+  called,
 }
 
 /// Cât de mic pare un pește la adâncimea [z] (perspectivă).
@@ -260,15 +263,7 @@ class Aquarium {
   /// ceilalți din apropiere fug de deget (și spre fundal).
   void tap(Point<double> at) {
     final hit = fishAt(at);
-    if (hit != null && !hit.puffs) {
-      hit
-        ..mode = FishMode.spin
-        .._timer = 0.75
-        ..turnRate = (cos(hit.yaw) >= 0 ? 1 : -1) * 8.5
-        ..joy = 1
-        ..thrust = 0.9;
-      _events.add(FishTickled(hit.pos, hit.id));
-    }
+    if (hit != null && !hit.puffs) _spin(hit);
     for (final f in fish) {
       if (identical(f, hit) && !f.puffs) continue;
       final d = f.pos - at;
@@ -293,6 +288,32 @@ class Aquarium {
       }
       f.climb = away.y * f.cruise * 2;
     }
+  }
+
+  /// Copilul și-a ales peștele [id]: acesta vine la geam, în mijlocul acvariului, și se
+  /// învârte bucuros când ajunge (cel mult câteva secunde de drum). Fals dacă nu există.
+  bool call(String id) {
+    final f = fish.where((f) => f.id == id).firstOrNull;
+    if (f == null) return false;
+    f
+      ..mode = FishMode.called
+      ..buddy = null
+      .._timer = 5
+      ..target = _clamp(Point(width * 0.5, 0.45))
+      ..targetZ = 0.02
+      ..thrust = 1
+      ..speed = max(f.speed, f.cruise * 1.2);
+    return true;
+  }
+
+  void _spin(SwimmingFish f) {
+    f
+      ..mode = FishMode.spin
+      .._timer = 0.75
+      ..turnRate = (cos(f.yaw) >= 0 ? 1 : -1) * 8.5
+      ..joy = 1
+      ..thrust = 0.9;
+    _events.add(FishTickled(f.pos, f.id));
   }
 
   /// Apăsare lungă: peștii vin încet și se adună în jurul degetului, aproape de geam.
@@ -382,6 +403,8 @@ class Aquarium {
 
     if (f.mode != FishMode.forage) f.nod = max(0, f.nod - dt * 1.5);
     switch (f.mode) {
+      case FishMode.called:
+        if (_len(f.target - f.pos) < 0.07 && f.z < 0.15 || f._timer <= 0) _spin(f);
       case FishMode.spin:
         if (f._timer <= 0) {
           f.mode = FishMode.wander;
@@ -556,6 +579,7 @@ class Aquarium {
       FishMode.wander => cruise,
       FishMode.forage => cruise * 0.7,
       FishMode.spin => cruise * 0.5,
+      FishMode.called => cruise * 1.8,
     };
     if (f.mode == FishMode.wander) {
       // Plimbare în reprize: câteva bătăi de coadă, apoi plutește.

@@ -261,4 +261,21 @@ void main() {
       expect(follower.buddy, isNull);
     });
   });
+
+  test('peștele chemat din raft vine la geam, în mijloc, și se învârte bucuros', () {
+    final a = Aquarium(width: 1.6, seed: 3);
+    final f = _fish('al-meu', const Point(0.2, 0.7))..z = 0.8;
+    a.add(f);
+    a.add(_fish('altul', const Point(1.3, 0.3)));
+    expect(a.call('nu-exista'), isFalse);
+    expect(a.call('al-meu'), isTrue);
+    var tickled = false;
+    for (var i = 0; i < 6 * 30 && !tickled; i++) {
+      a.step(1 / 30);
+      tickled = a.drainEvents().any((e) => e is FishTickled && e.fishId == 'al-meu');
+    }
+    expect(tickled, isTrue);
+    expect(f.z, lessThan(0.3), reason: 'vine aproape de geam');
+    expect(f.pos.x, inInclusiveRange(0.5, 1.1), reason: 'în mijlocul acvariului');
+  });
 }
