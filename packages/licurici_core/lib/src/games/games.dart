@@ -6,6 +6,7 @@ import '../game.dart';
 import '../grades.dart';
 import 'calendar.dart';
 import 'emotii.dart';
+import 'faces.dart';
 import 'hidden_shape.dart';
 import 'forme.dart';
 import 'logica.dart';
@@ -19,6 +20,7 @@ import 'vocabular.dart';
 
 export 'calendar.dart';
 export 'emotii.dart';
+export 'faces.dart';
 export 'hidden_shape.dart';
 export 'forme.dart';
 export 'logica.dart';
@@ -34,6 +36,9 @@ const List<GameSpec> allGames = [
   // Jocurile „frate” (generalizare: același obiectiv, alt material)
   CumSeSimteGame(),
   AjutaLicuriciGame(),
+  // Fețe desenate din cod, cu metrici standard (pragul emoției, recunoașterea feței)
+  CatDeTareGame(),
+  CineEPrietenulGame(),
   // Potrivire și limbaj receptiv
   PotrivesteGame(),
   ArataMiGame(),

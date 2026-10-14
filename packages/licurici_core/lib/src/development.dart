@@ -134,7 +134,8 @@ const List<Ladder> ladders = [
   ]),
   Ladder(Domain.emo, [
     Step('EMO1', 'Deosebește bucuros de trist', games: ['emotii']),
-    Step('EMO2', 'Recunoaște emoțiile de bază pe fețe diferite', games: ['emotii', 'sortam-emotiile']),
+    Step('EMO2', 'Recunoaște emoțiile de bază pe fețe diferite',
+        games: ['emotii', 'sortam-emotiile', 'cat-de-tare', 'cine-e-prietenul']),
     Step('EMO3', 'Spune ce simte cineva într-o situație', games: ['ce-simte', 'cum-se-simte']),
     Step('EMO4', 'Alege ce poate face cineva ca să se simtă mai bine', games: ['ce-ma-ajuta']),
     Step('EMO5', 'Înțelege ce știe și ce crede altcineva (perspectivă)', games: ['cine-stie']),
