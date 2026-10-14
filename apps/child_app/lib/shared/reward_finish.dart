@@ -10,6 +10,7 @@ import 'illustration.dart';
 import 'mascot.dart';
 import 'motion.dart';
 import 'sfx.dart';
+import 'cheer.dart';
 import 'ui/candy.dart';
 
 /// O acțiune de la finalul unui joc.
@@ -30,14 +31,15 @@ class RewardFinish extends ConsumerWidget {
     super.key,
     required this.stars,
     required this.actions,
-    this.title = 'Ai terminat! Bravo!',
+    this.title,
     this.subtitle,
     this.sticker,
   });
 
   /// 1..3
   final int stars;
-  final String title;
+  /// Implicit: lauda de final spusă chiar acum de Licurici (`Cheer.finish`).
+  final String? title;
   final String? subtitle;
   final List<FinishAction> actions;
 
@@ -93,7 +95,7 @@ class RewardFinish extends ConsumerWidget {
         children: [
           _FinishSounds(stars: stars, sticker: sticker != null),
           Text(
-            title,
+            title ?? ref.read(cheerProvider).lastFinish,
             style: (compact ? text.headlineMedium : text.displaySmall)!
                 .copyWith(color: const Color(0xFF3D5A80)),
             textAlign: TextAlign.center,

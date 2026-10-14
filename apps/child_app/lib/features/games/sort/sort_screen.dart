@@ -21,6 +21,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 /// Nivelul fiecărui joc de sortare (id-ul jocului).
 final sortLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
@@ -156,7 +157,7 @@ class _SortScreenState extends ConsumerState<SortScreen> {
         _reaction++;
         _mood = MascotMood.encourage;
       });
-      ref.read(voiceProvider).say(['Mai încearcă']);
+      ref.read(voiceProvider).say([ref.read(cheerProvider).retry()]);
     }
   }
 
@@ -174,7 +175,7 @@ class _SortScreenState extends ConsumerState<SortScreen> {
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

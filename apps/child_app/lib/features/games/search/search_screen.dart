@@ -20,6 +20,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final searchLevelProvider = NotifierProvider<GameLevel, int>(
   () => GameLevel('cauta'),
@@ -120,7 +121,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         SearchFind(_r, ms: ms, wrongTaps: _wrong, firstWrong: _firstWrong),
       );
       ref.read(sfxProvider).play(Sfx.correct);
-      ref.read(voiceProvider).say(['Bravo']);
+      ref.read(voiceProvider).say([ref.read(cheerProvider).correct()]);
       setState(() {
         _found = true;
         _burst++;
@@ -153,7 +154,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

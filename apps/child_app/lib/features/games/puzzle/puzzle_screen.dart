@@ -18,6 +18,7 @@ import '../../../shared/sfx.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final puzzleLevelProvider = NotifierProvider<GameLevel, int>(
   () => GameLevel('puzzle'),
@@ -122,7 +123,7 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
       PuzzleSolve(_r, wrongMoves: _wrong, ms: _clock.elapsedMilliseconds),
     );
     ref.read(sfxProvider).play(Sfx.correct);
-    ref.read(voiceProvider).say(['Bravo']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).correct()]);
     setState(() {
       _done = true;
       _burst++;
@@ -152,7 +153,7 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

@@ -22,6 +22,7 @@ import '../../aquarium/reef.dart';
 import '../../aquarium/reef_life.dart';
 import '../../aquarium/reef_scene.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final trackLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('urmareste-pestele'));
 
@@ -348,7 +349,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
     if (r.correct) {
       fish.joy = 1;
       ref.read(sfxProvider).play(Sfx.correct);
-      ref.read(voiceProvider).say(['Bravo!']);
+      ref.read(voiceProvider).say([ref.read(cheerProvider).correct()]);
     } else {
       // Fără reproș: îi arătăm peștele lui.
       ref.read(voiceProvider).say(['Uite-l pe al tău!']);
@@ -375,7 +376,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

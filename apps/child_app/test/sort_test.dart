@@ -8,6 +8,7 @@ import 'package:licurici/features/games/sort/sort_screen.dart';
 import 'package:licurici/shared/drawn_face.dart';
 import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
+import 'praise_finders.dart';
 
 void main() {
   // Jocurile „frate” (aceeași mecanică, alt material): la nivelul cel mai încărcat (4 × 4),
@@ -122,7 +123,7 @@ void main() {
           await tester.pump();
         }
         await tester.pump(const Duration(seconds: 1));
-        expect(find.text('Ai terminat! Bravo!'), findsOneWidget);
+        expect(findFinish(), findsOneWidget);
         expect(tester.takeException(), isNull);
 
         final trials = container.read(sessionProvider)!.trials;

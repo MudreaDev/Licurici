@@ -19,6 +19,7 @@ import '../../../shared/stimulus_art.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 /// Nivelul fiecărui joc de trasat (id-ul jocului: „Trasează”, „Unește punctele”).
 final traceLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
@@ -148,7 +149,7 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
       _burst++;
     });
     // La un desen din puncte, Licurici spune ce a ieșit („O casă!”).
-    ref.read(voiceProvider).say([_path.figure?.name ?? 'Bravo']);
+    ref.read(voiceProvider).say([_path.figure?.name ?? ref.read(cheerProvider).correct()]);
     _timer = Timer(Duration(milliseconds: _path.figure == null ? 1300 : 1900), () {
       if (!mounted) return;
       if (_index + 1 < _level.paths.length) {
@@ -171,7 +172,7 @@ class _TraceScreenState extends ConsumerState<TraceScreen>
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

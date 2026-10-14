@@ -20,6 +20,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/sfx.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 enum _Phase { introduction, watch, turn, retry, success, moving, finished }
 
@@ -42,6 +43,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late SequenceLevel _level;
   late Speaker _speaker;
+  String _praise = '';
   late int _sessionLevel;
   late int _nextSessionLevel;
   Timer? _timer;
@@ -154,7 +156,8 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
       }
       _phase = result.complete ? _Phase.success : _Phase.moving;
     });
-    _speaker.say([result.complete ? 'Bravo!' : 'Continuăm']);
+    if (result.complete) _praise = ref.read(cheerProvider).correct();
+    _speaker.say([result.complete ? _praise : 'Continuăm']);
     _after(1000, () {
       final next = result.suggestedNextLevel(_level.level);
       setState(() {
@@ -174,7 +177,7 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
       if (_phase != _Phase.finished) {
         _watch();
       } else {
-        _speaker.say(['Ai terminat! Bravo!']);
+        _speaker.say([ref.read(cheerProvider).finish()]);
       }
     });
   }
@@ -220,9 +223,9 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
       _Phase.turn =>
         _level.axes.reverse ? 'Rândul tău — de la ultimul' : 'Rândul tău',
       _Phase.retry => 'Mai privim o dată',
-      _Phase.success => 'Bravo!',
+      _Phase.success => _praise,
       _Phase.moving => 'Continuăm',
-      _Phase.finished => 'Ai terminat! Bravo!',
+      _Phase.finished => ref.read(cheerProvider).lastFinish,
     };
     final compact = AppLayout.of(context).compact;
     final stars = _wins >= 4 ? 3 : (_wins >= 2 ? 2 : 1);

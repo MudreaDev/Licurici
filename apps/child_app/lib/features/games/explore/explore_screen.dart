@@ -18,6 +18,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 import '../sort/sort_screen.dart';
+import '../../../app/nav_memory.dart';
 
 /// Rutele unei explorări: harta și, deasupra ei, sortarea unei opriri (întoarce rezultatul).
 GoRoute exploreRoute({
@@ -165,10 +166,10 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                             }),
                           ),
                           FinishAction(
-                            'Acasă',
-                            Icons.home_rounded,
+                            'Alte jocuri',
+                            Icons.grid_view_rounded,
                             Tokens.good,
-                            () => context.go('/'),
+                            () => goBackToMenu(context, ref),
                           ),
                         ],
                       )

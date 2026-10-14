@@ -19,6 +19,7 @@ import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 import '../rules/switch_screen.dart' show shapePath;
+import '../../../shared/cheer.dart';
 
 final buildLevelProvider = NotifierProvider<GameLevel, int>(
   () => GameLevel('construieste'),
@@ -137,7 +138,7 @@ class _BuildScreenState extends ConsumerState<BuildScreen> {
       ),
     );
     ref.read(sfxProvider).play(Sfx.correct);
-    ref.read(voiceProvider).say(['Bravo']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).correct()]);
     setState(() {
       _done = true;
       _hidden = false;
@@ -163,7 +164,7 @@ class _BuildScreenState extends ConsumerState<BuildScreen> {
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

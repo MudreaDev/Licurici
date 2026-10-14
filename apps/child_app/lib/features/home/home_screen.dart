@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../app/layout.dart';
+import '../../app/nav_memory.dart';
 import '../../app/theme.dart';
 import '../../shared/fx/scene_background.dart';
 import '../../shared/motion.dart';
@@ -33,12 +34,15 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final _scroll = ScrollController();
+  late final ScrollController _scroll;
   final _parallax = ValueNotifier<double>(0);
 
   @override
   void initState() {
     super.initState();
+    // Lista pornește de unde a lăsat-o copilul (la întoarcerea dintr-un joc).
+    final memory = ref.read(navMemoryProvider)..enterMenu('/');
+    _scroll = memory.controllerFor('/');
     _scroll.addListener(() {
       final max = _scroll.position.maxScrollExtent;
       _parallax.value = max <= 0 ? 0 : (_scroll.offset / max).clamp(0.0, 1.0);

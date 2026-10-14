@@ -7,6 +7,7 @@ import 'package:licurici/data/session.dart';
 import 'package:licurici/features/games/memory/memory_screen.dart';
 import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
+import 'praise_finders.dart';
 
 void main() {
   for (final size in const [Size(1280, 800), Size(640, 360)]) {
@@ -79,7 +80,7 @@ void main() {
           await tap(level.cards.indexOf(face, a + 1));
         }
         await tester.pump(const Duration(seconds: 1));
-        expect(find.text('Ai terminat! Bravo!'), findsOneWidget);
+        expect(findFinish(), findsOneWidget);
         expect(find.text('Mai departe'), findsOneWidget);
         expect(tester.takeException(), isNull);
 

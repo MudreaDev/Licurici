@@ -3,7 +3,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/layout.dart';
@@ -15,6 +14,7 @@ import '../../../shared/motion.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
+import '../../../app/nav_memory.dart';
 
 enum _Phase { intro, inhale, hold, exhale, done }
 
@@ -211,10 +211,10 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen>
           onTap: _begin,
         ),
         CandyButton(
-          label: 'Acasă',
-          icon: Icons.home_rounded,
+          label: 'Alte jocuri',
+          icon: Icons.grid_view_rounded,
           color: Tokens.good,
-          onTap: () => context.go('/'),
+          onTap: () => goBackToMenu(context, ref),
         ),
       ],
     ),

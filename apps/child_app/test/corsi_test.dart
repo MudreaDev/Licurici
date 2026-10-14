@@ -8,6 +8,7 @@ import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import 'layout_test.dart' show devices, shots;
+import 'praise_finders.dart';
 
 class _Game extends SpatialSpanGame {
   final levels = <SequenceLevel>[];
@@ -68,7 +69,7 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 450));
       }
-      expect(find.text('Bravo!'), findsOneWidget);
+      expect(findPraise(), findsOneWidget);
       await tester.pump(const Duration(seconds: 1));
       expect(game.levels.last.level, 5);
       expect(tester.takeException(), isNull);

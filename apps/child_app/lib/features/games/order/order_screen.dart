@@ -20,6 +20,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 
 final orderLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
@@ -129,7 +130,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     } else {
       _firstWrong ??= _card(stepIndex).caption;
       _expected ??= _r.steps[_placed].caption;
-      voice.say(['Mai încearcă']);
+      voice.say([ref.read(cheerProvider).retry()]);
       setState(() {
         _wrongTaps++;
         _wrongHere++;
@@ -182,7 +183,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

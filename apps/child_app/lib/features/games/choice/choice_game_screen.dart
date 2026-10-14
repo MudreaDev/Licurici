@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/layout.dart';
@@ -25,6 +24,8 @@ import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 import '../../../shared/placement_art.dart';
 import 'visuals.dart';
+import '../../../app/nav_memory.dart';
+import '../../../shared/cheer.dart';
 
 /// Mecanica „alege răspunsul” (port din `engine.js`), cu învățare fără eroare și
 /// straturile de animație din README §15.1.
@@ -228,22 +229,25 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
             ),
           );
       _launchStar(i);
+      // Din prima și fără ajutor → laudă mare (și serii); altfel doar confirmăm.
+      final praise = ref.read(cheerProvider).correct(firstTry: _attempts == 0 && !_guideShown && !_handShown);
       setState(() {
         _solved = true;
         _mood = MascotMood.happy;
         _reaction++;
         _burst++;
-        _bubble = 'Bravo!';
+        _bubble = praise;
         _guide = false;
         _hand = false;
       });
       _guideTimer?.cancel();
       _handTimer?.cancel();
-      voice.say([if (choice.spoken != null) choice.spoken!, 'Bravo']);
+      voice.say([if (choice.spoken != null) choice.spoken!, praise]);
       _advanceTimer = Timer(const Duration(milliseconds: 1400), _next);
     } else {
       _attempts++;
       _firstWrongKey ??= choice.key;
+      final retry = ref.read(cheerProvider).retry();
       setState(() {
         _wrong.add(i);
         _lastWrong = i;
@@ -253,13 +257,13 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
         // Învățare fără eroare: după a doua greșeală arătăm indiciul și ghidăm spre corect.
         _bubble = _attempts >= 2 && _round.hint != null
             ? _round.hint!
-            : 'Mai încearcă';
+            : retry;
         _guide = _attempts >= 2;
         _guideShown |= _guide;
         // A treia greșeală: mânuța apare imediat.
         if (_attempts >= 3) _hand = _handShown = true;
       });
-      voice.say([if (choice.spoken != null) choice.spoken!, 'Mai încearcă']);
+      voice.say([if (choice.spoken != null) choice.spoken!, retry]);
       if (_attempts < 2) {
         _armGuide();
       } else if (!_hand) {
@@ -298,7 +302,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
         ref.read(sessionProvider.notifier).checkpoint();
         _mood = MascotMood.happy;
         _reaction++;
-        ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+        ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
       } else {
         _index++;
         _cardKeys = List.generate(6, (_) => GlobalKey());
@@ -377,10 +381,10 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
                                     () => setState(_start),
                                   ),
                                   FinishAction(
-                                    'Acasă',
-                                    Icons.home_rounded,
+                                    'Alte jocuri',
+                                    Icons.grid_view_rounded,
                                     Tokens.good,
-                                    () => context.go('/'),
+                                    () => goBackToMenu(context, ref),
                                   ),
                                 ],
                               )
@@ -409,7 +413,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
                           // Pe telefon balonul n-are loc lângă variante; vocea spune oricum
                           // instrucțiunea.
                           bubble: _finished
-                              ? 'Ai terminat! Bravo!'
+                              ? ref.read(cheerProvider).lastFinish
                               : (_ready && !(layout.twoPane && layout.compact) ? _bubble : ''),
                           progressKey: _progressKey,
                         ),

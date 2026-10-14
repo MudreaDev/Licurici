@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../app/layout.dart';
+import '../app/nav_memory.dart';
 import '../app/theme.dart';
 import '../features/settings/settings.dart';
 import 'ui/candy.dart';
@@ -19,7 +20,12 @@ class TopBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
-    final atHome = GoRouterState.of(context).uri.path == '/';
+    final path = GoRouterState.of(context).uri.path;
+    final atHome = path == '/';
+    // Dintr-un joc, butonul duce înapoi în lista din care a pornit copilul (aceeași
+    // arie, aceeași poziție); din celelalte locuri, acasă.
+    final menu = ref.read(navMemoryProvider).menu;
+    final back = isGameRoute(path) && menu != '/';
     final compact = AppLayout.of(context).compact;
     final text = Theme.of(context).textTheme;
     return Padding(
@@ -28,10 +34,11 @@ class TopBar extends ConsumerWidget {
         children: [
           if (!atHome) ...[
             BarButton(
-              icon: Icons.home_rounded,
+              key: const ValueKey('home'),
+              icon: back ? Icons.arrow_back_rounded : Icons.home_rounded,
               color: Tokens.primary,
-              label: 'Acasă',
-              onTap: () => context.go('/'),
+              label: back ? 'Înapoi la jocuri' : 'Acasă',
+              onTap: () => context.go(back ? menu : '/'),
             ),
             const SizedBox(width: 14),
           ],

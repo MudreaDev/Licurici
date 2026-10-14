@@ -21,6 +21,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final gazeLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('unde-se-uita'));
 
@@ -150,7 +151,7 @@ class _GazeScreenState extends ConsumerState<GazeScreen> {
         ),
       );
       ref.read(sfxProvider).play(Sfx.correct);
-      ref.read(voiceProvider).say([_r.target.word, 'Bravo']);
+      ref.read(voiceProvider).say([_r.target.word, ref.read(cheerProvider).correct()]);
       setState(() {
         _solved = true;
         _burst++;
@@ -164,7 +165,7 @@ class _GazeScreenState extends ConsumerState<GazeScreen> {
         }
       });
     } else {
-      ref.read(voiceProvider).say(['Mai încearcă']);
+      ref.read(voiceProvider).say([ref.read(cheerProvider).retry()]);
       setState(() {
         _shake[side]++;
         _extraCue = true; // gestul se adaugă (sau rămâne) ca ajutor
@@ -181,7 +182,7 @@ class _GazeScreenState extends ConsumerState<GazeScreen> {
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

@@ -17,6 +17,7 @@ import '../../../shared/stimulus_art.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final mazeLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('labirint'));
 
@@ -119,7 +120,7 @@ class _MazeScreenState extends ConsumerState<MazeScreen> {
       ),
     );
     ref.read(sfxProvider).play(Sfx.correct);
-    ref.read(voiceProvider).say(['Bravo']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).correct()]);
     setState(() => _burst++);
     _timer = Timer(const Duration(milliseconds: 1400), () {
       if (!mounted) return;
@@ -143,7 +144,7 @@ class _MazeScreenState extends ConsumerState<MazeScreen> {
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

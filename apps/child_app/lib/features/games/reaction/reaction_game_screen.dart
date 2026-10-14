@@ -22,6 +22,7 @@ import '../../../shared/sfx.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 import 'swimming_art.dart';
+import '../../../shared/cheer.dart';
 
 
 final reactionLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
@@ -187,7 +188,7 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
       final level = _level, responses = List.of(_responses);
       session.record((s) => s.reactionLevel(level, responses));
       session.checkpoint();
-      _speaker.say(['Ai terminat! Bravo!']);
+      _speaker.say([ref.read(cheerProvider).finish()]);
     }
   }
 

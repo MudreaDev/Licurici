@@ -9,6 +9,7 @@ import 'package:licurici/features/games/choice/choice_game_screen.dart';
 import 'package:licurici/main.dart';
 import 'package:licurici_core/licurici_core.dart';
 import 'package:licurici/shared/voice.dart';
+import 'praise_finders.dart';
 
 /// Pornește aplicația fără voce și cu „reduce motion” (animații deterministe).
 Future<void> pumpApp(WidgetTester tester, {SessionStore? store}) async {
@@ -110,14 +111,14 @@ void main() {
       round++
     ) {
       // Atinge variantele pe rând: greșelile doar se estompează, deci ajungem la corect.
-      for (var i = 0; i < 5 && find.text('Bravo!').evaluate().isEmpty; i++) {
+      for (var i = 0; i < 5 && findPraise().evaluate().isEmpty; i++) {
         final option = find.byKey(ValueKey('choice-$i'));
         if (option.evaluate().isEmpty) break;
         await tester.tap(option, warnIfMissed: false);
         await tester.pump(const Duration(milliseconds: 100));
       }
       expect(
-        find.text('Bravo!'),
+        findPraise(),
         findsWidgets,
         reason: 'runda $round nu s-a rezolvat',
       );
@@ -131,8 +132,12 @@ void main() {
     }
 
     expect(find.text('Încă o dată'), findsOneWidget);
-    await tester.tap(find.text('Acasă').last);
-    await pumpUntil(tester, find.text('Atenție'));
+    await tester.tap(find.text('Alte jocuri').last);
+    // Înapoi în aria din care a pornit, apoi acasă.
+    await pumpUntil(tester, find.byKey(const ValueKey('game-potriveste')));
+    await tester.tap(find.byKey(const ValueKey('home')));
+    // Acasă (lista rămâne derulată unde a lăsat-o copilul).
+    await pumpUntil(tester, find.byKey(const ValueKey('finish-session')));
 
     // „Gata pe azi” → dispoziția de final → sesiunea se salvează cu toate rundele jucate.
     await tester.tap(find.byKey(const ValueKey('finish-session')));
@@ -216,7 +221,7 @@ void main() {
         );
         await tester.tap(correct.first, warnIfMissed: false);
         await tester.pump(const Duration(milliseconds: 100));
-        expect(find.text('Bravo!'), findsWidgets);
+        expect(findPraise(), findsWidgets);
         expect(find.byType(PointingHand), findsNothing);
         await closeApp(tester);
       },

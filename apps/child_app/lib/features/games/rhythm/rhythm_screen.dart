@@ -21,6 +21,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final rhythmLevelProvider = NotifierProvider<GameLevel, int>(
   () => GameLevel('toba-magica'),
@@ -187,7 +188,7 @@ class _RhythmScreenState extends ConsumerState<RhythmScreen>
       });
       if (play.correct) {
         ref.read(sfxProvider).play(Sfx.correct);
-        ref.read(voiceProvider).say(['Bravo']);
+        ref.read(voiceProvider).say([ref.read(cheerProvider).correct()]);
       }
       _after(1400, () {
         if (_round + 1 < _level.patterns.length) {
@@ -223,7 +224,7 @@ class _RhythmScreenState extends ConsumerState<RhythmScreen>
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

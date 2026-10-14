@@ -13,6 +13,7 @@ import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import 'app_test.dart' show pumpUntil, closeApp;
+import 'praise_finders.dart';
 
 class _SeededPond extends PescarulGame {
   const _SeededPond();
@@ -124,7 +125,7 @@ void main() {
         );
         await _begin(tester);
         await _play(tester, game.generate(1));
-        expect(find.text('Ai terminat! Bravo!'), findsOneWidget);
+        expect(findFinish(), findsOneWidget);
         expect(find.text('Încă o dată'), findsOneWidget);
         expect(find.text('Mai departe'), findsOneWidget);
         expect(

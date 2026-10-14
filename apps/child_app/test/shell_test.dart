@@ -7,6 +7,7 @@ import 'package:licurici/data/session.dart';
 import 'package:licurici/features/games/shell/shell_screen.dart';
 import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
+import 'praise_finders.dart';
 
 void main() {
   for (final (size, levelNo) in const [
@@ -87,7 +88,7 @@ void main() {
           await tester.pump(const Duration(milliseconds: 2000));
         }
         await tester.pump(const Duration(milliseconds: 500));
-        expect(find.text('Ai terminat! Bravo!'), findsOneWidget);
+        expect(findFinish(), findsOneWidget);
         expect(tester.takeException(), isNull);
         final trials = container.read(sessionProvider)!.trials;
         expect(trials, hasLength(level.rounds.length));

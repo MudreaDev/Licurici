@@ -21,6 +21,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 /// Nivelul curent, separat pe joc (cifre / litere), păstrat pe tabletă.
 final writeLevelProvider = NotifierProvider.family<GameLevel, int, String>(GameLevel.new);
@@ -217,7 +218,7 @@ class _WriteScreenState extends ConsumerState<WriteScreen> with TickerProviderSt
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

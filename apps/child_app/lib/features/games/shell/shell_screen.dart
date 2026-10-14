@@ -20,6 +20,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final shellLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('cucu-bau'));
 
@@ -168,7 +169,9 @@ class _ShellScreenState extends ConsumerState<ShellScreen>
       if (correct) _burst++;
     });
     ref.read(sfxProvider).play(correct ? Sfx.correct : Sfx.tap);
-    ref.read(voiceProvider).say([correct ? 'Bravo' : 'Mai încearcă']);
+    final cheer = ref.read(cheerProvider);
+    _praise = correct ? cheer.correct() : cheer.retry();
+    ref.read(voiceProvider).say([_praise]);
     // Greșit: după o clipă se ridică și paharul bun (învățare fără eroare).
     if (!correct) {
       _timer = Timer(const Duration(milliseconds: 700), () {
@@ -186,6 +189,9 @@ class _ShellScreenState extends ConsumerState<ShellScreen>
     });
   }
 
+  /// Ce a spus Licurici la ultima alegere (scris și în balon).
+  String _praise = '';
+
   void _finish() {
     final result = ShellResult(_level, _picks);
     final session = ref.read(sessionProvider.notifier);
@@ -196,7 +202,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen>
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {
@@ -227,7 +233,7 @@ class _ShellScreenState extends ConsumerState<ShellScreen>
       _Phase.ask => _r.thing.question,
       _Phase.reveal =>
         _picked != null && _slotOf[_picked!] == _r.answer
-            ? 'Bravo!'
+            ? _praise
             : 'Aici era!',
       _Phase.finished => '',
     };

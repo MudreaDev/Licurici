@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../app/theme.dart';
 import '../../shared/mascot.dart';
@@ -12,6 +11,7 @@ import '../../shared/voice.dart';
 import '../aquarium/coloring_screen.dart';
 import 'coloring_pages.dart';
 import 'drawings_store.dart';
+import '../../app/nav_memory.dart';
 
 /// Colorăm (catalog #58, joc liber): pagini de colorat desenate din cod (casa, floarea,
 /// mașina…), cu aceleași unelte ca peștii. La „Gata!” desenul apare într-o ramă, Licurici
@@ -94,6 +94,6 @@ class ColorPlayScreen extends ConsumerWidget {
         ),
       ),
     );
-    if (again == false && context.mounted) context.go('/');
+    if (again == false && context.mounted) goBackToMenu(context, ref);
   }
 }

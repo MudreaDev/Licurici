@@ -7,6 +7,7 @@ import 'package:licurici/features/games/sequence/simon_screen.dart';
 import 'package:licurici/shared/celebration.dart';
 import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
+import 'praise_finders.dart';
 
 class _Game extends SimonGame {
   final levels = <SequenceLevel>[];
@@ -97,10 +98,10 @@ void main() {
       for (final index in level.expected) {
         await _tap(tester, index);
       }
-      expect(find.text('Bravo!'), findsOneWidget);
+      expect(findPraise(), findsOneWidget);
       await tester.pump(const Duration(seconds: 1));
     }
-    expect(find.text('Ai terminat! Bravo!'), findsOneWidget);
+    expect(findFinish(), findsOneWidget);
     expect(find.text('Încă o dată'), findsOneWidget);
     expect(find.text('Mai departe'), findsOneWidget);
     expect(find.byType(StarBurst), findsNothing);
@@ -146,7 +147,7 @@ void main() {
     for (final index in level.expected) {
       await _tap(tester, index);
     }
-    expect(find.text('Bravo!'), findsOneWidget);
+    expect(findPraise(), findsOneWidget);
     expect(tester.takeException(), isNull);
     await _close(tester);
   });

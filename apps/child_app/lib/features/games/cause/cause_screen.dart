@@ -17,6 +17,7 @@ import '../../../shared/stimulus_art.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final causeLevelProvider = NotifierProvider<GameLevel, int>(
   () => GameLevel('atinge-si-vezi'),
@@ -155,7 +156,7 @@ class _CauseScreenState extends ConsumerState<CauseScreen>
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {

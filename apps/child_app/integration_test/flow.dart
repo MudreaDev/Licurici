@@ -22,6 +22,7 @@ import 'package:licurici/data/session.dart';
 import 'package:licurici/data/sync.dart';
 import 'package:licurici/main.dart';
 import 'package:licurici/shared/voice.dart';
+import '../test/praise_finders.dart';
 
 const _email = 'parinte@licurici.test';
 const _password = 'parola-de-test-1';
@@ -148,18 +149,18 @@ Future<void> childToServerFlow(WidgetTester tester, {List<Override> overrides = 
 
   // Joacă toate rundele: atinge variantele pe rând (greșelile nu blochează).
   for (var round = 0; round < 12 && find.text('Încă o dată').evaluate().isEmpty; round++) {
-    for (var i = 0; i < 5 && find.text('Bravo!').evaluate().isEmpty; i++) {
+    for (var i = 0; i < 5 && findPraise().evaluate().isEmpty; i++) {
       final option = find.byKey(ValueKey('choice-$i'));
       if (option.evaluate().isEmpty) break;
       await tester.tap(option, warnIfMissed: false);
       await wait(tester, 400);
     }
-    expect(find.text('Bravo!'), findsWidgets, reason: 'runda $round nu s-a rezolvat');
+    expect(findPraise(), findsWidgets, reason: 'runda $round nu s-a rezolvat');
     // Trecerea la runda următoare (sau la final): runda veche iese animat, cât stă lângă cea nouă.
     for (
       var t = 0;
       t < 60 &&
-          (find.text('Bravo!').evaluate().isNotEmpty || find.byKey(const ValueKey('choice-0')).evaluate().length > 1) &&
+          (findPraise().evaluate().isNotEmpty || find.byKey(const ValueKey('choice-0')).evaluate().length > 1) &&
           find.text('Încă o dată').evaluate().isEmpty;
       t++
     ) {
@@ -167,8 +168,13 @@ Future<void> childToServerFlow(WidgetTester tester, {List<Override> overrides = 
     }
   }
   await waitFor(tester, find.text('Încă o dată'));
-  await tester.tap(find.text('Acasă').last);
-  await waitFor(tester, find.text('Atenție'));
+  await tester.tap(find.text('Alte jocuri').last);
+  // Înapoi în aria din care a pornit, apoi acasă.
+  await waitFor(tester, find.byKey(const ValueKey('game-potriveste')));
+  await wait(tester, 500);
+  await tester.tap(find.byKey(const ValueKey('home')).last);
+  // Acasă (lista rămâne derulată unde a lăsat-o copilul).
+  await waitFor(tester, find.byKey(const ValueKey('finish-session')));
   await wait(tester, 500);
 
   // „Gata pe azi” → dispoziția de final → sesiunea se scrie în SQLite.
@@ -184,7 +190,7 @@ Future<void> childToServerFlow(WidgetTester tester, {List<Override> overrides = 
   // „La revedere”: Licurici adoarme, copilul apasă „Pe mâine!”.
   await waitFor(tester, find.byKey(const ValueKey('goodbye')));
   await tester.tap(find.byKey(const ValueKey('goodbye')));
-  await waitFor(tester, find.text('Atenție'));
+  await waitFor(tester, find.byKey(const ValueKey('parent-corner')));
   await wait(tester, 500);
 
   // Părintele: poarta pentru adulți (înmulțirea), apoi „Trimite pe server”.

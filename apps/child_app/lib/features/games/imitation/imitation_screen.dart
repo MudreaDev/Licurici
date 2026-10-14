@@ -21,6 +21,7 @@ import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
+import '../../../shared/cheer.dart';
 
 final imitationLevelProvider = NotifierProvider<GameLevel, int>(
   () => GameLevel('fa-ca-licuriciul'),
@@ -184,7 +185,7 @@ class _ImitationScreenState extends ConsumerState<ImitationScreen>
       });
       if (_check.complete) _completeRound();
     } else {
-      ref.read(voiceProvider).say(['Mai încearcă']);
+      ref.read(voiceProvider).say([ref.read(cheerProvider).retry()]);
       setState(() {
         _shake[action.target] = (_shake[action.target] ?? 0) + 1;
         _mood = MascotMood.encourage;
@@ -211,7 +212,7 @@ class _ImitationScreenState extends ConsumerState<ImitationScreen>
       ),
     );
     setState(() => _burst++);
-    ref.read(voiceProvider).say(['Bravo']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).correct()]);
     _timer = Timer(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
       if (_round + 1 < _total) {
@@ -235,7 +236,7 @@ class _ImitationScreenState extends ConsumerState<ImitationScreen>
       _result = result;
       _sticker = ref.read(settingsProvider.notifier).awardSticker();
     });
-    ref.read(voiceProvider).say(['Ai terminat! Bravo!']);
+    ref.read(voiceProvider).say([ref.read(cheerProvider).finish()]);
   }
 
   void _again({required bool next}) {
