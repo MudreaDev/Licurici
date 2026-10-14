@@ -609,6 +609,7 @@ Fiecare decizie are fișierul ei în [`docs/adr/`](docs/adr/). Rezumat:
 | [ADR-030](docs/adr/ADR-030-acvariul-pe-hartie-fisa-pdf-si-scanare-pe-dispozitiv.md) | Acvariul pe hârtie: fișa PDF și scanarea pe dispozitiv, în Dart pur (propus) |
 | [ADR-031](docs/adr/ADR-031-specialistul-alege-jocurile-copilului.md) | Specialistul poate alege jocurile copilului — singura scriere permisă lui (propus) |
 | [ADR-032](docs/adr/ADR-032-e-mailuri-tranzactionale-prin-smtp.md) | E-mailurile tranzacționale (confirmarea adresei, parola nouă) prin SMTP/nodemailer, din coada `mail` (propus) |
+| [ADR-033](docs/adr/ADR-033-muzica-de-fundal-generata-din-cod.md) | Muzica de fundal: 3 piese liniștite generate din cod (pentatonic, 58–70 bpm), mereu sub voce, pornită/oprită de adult pe tabletă sau de specialist din plan (propus) |
 
 ---
 
@@ -806,6 +807,7 @@ Puncte-cheie din Legea 195/2024 relevante pentru noi:
 | Adresa confirmată (data), tokenuri de confirmare / parolă nouă (doar hash) | Părinte / specialist | Recuperarea contului | Contract | Tokenurile: 48 h / 1 h în Redis |
 | Refresh token pe tabletă (trimitere automată) | Părinte | Trimiterea automată a sesiunilor | Consimțământ parental (sincronizare) | Stocarea securizată a dispozitivului, până la oprire / schimbarea parolei |
 | Imagini de evitat (categorii fixe: câini, insecte, fețe furioase…) | Copil | Să nu-l sperie jocurile | Consimțământ parental | Pe tabletă; pe server doar în planul de jocuri (cu sincronizarea), cât există profilul |
+| Muzica de fundal (pornită/oprită, piesa) | Copil | Confortul senzorial în timpul jocului | Consimțământ parental | Pe tabletă; pe server doar în planul de jocuri (cu sincronizarea), cât există profilul |
 | Token dispozitiv FCM | Părinte | Notificări | Consimțământ (opțional) | Până la dezactivare |
 | Loguri tehnice (fără PII, IP trunchiat) | — | Securitate | Interes legitim | 30 zile |
 | Rapoarte de eroare (Sentry, fără PII) | — | Stabilitate | Interes legitim | 90 zile |
