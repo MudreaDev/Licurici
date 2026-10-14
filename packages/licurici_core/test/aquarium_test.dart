@@ -36,6 +36,28 @@ void main() {
       });
     }
 
+    test('solzi pe corp (nu pe cap), raze pe înotătoare, vârful înotătoarei mai subțire', () {
+      for (final s in fishSpecies) {
+        final b = FishBody.compute(s, width: 250);
+        final (eye, er) = s.eye;
+        final sc = 250 / FishSpecies.boxWidth;
+        var bodyScales = 0, headScales = 0, rays = 0, deep = 0;
+        for (var i = 0; i < b.coverage.length; i++) {
+          final x = (i % b.width) / sc;
+          if (b.scales[i] != 0 && b.fin[i] == 0) {
+            if (x > eye.x) headScales++;
+            if (x < eye.x - er * 5) bodyScales++;
+          }
+          if (b.fin[i] == 1 && b.rays[i] > 0.5) rays++;
+          if (b.fin[i] == 1 && b.finDepth[i] > 0.5) deep++;
+        }
+        expect(bodyScales, greaterThan(200), reason: '${s.id}: solzi pe corp');
+        expect(headScales, 0, reason: '${s.id}: fără solzi pe cap');
+        expect(rays, greaterThan(20), reason: '${s.id}: raze pe înotătoare');
+        expect(deep, greaterThan(0), reason: '${s.id}: vârful înotătoarelor');
+      }
+    });
+
     test('spatele e luminat, burta e în umbră', () {
       final s = fishSpeciesById('balon')!;
       final b = FishBody.compute(s, width: 250);

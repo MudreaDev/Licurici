@@ -53,12 +53,19 @@ class FishRenderer {
     // Îndoirea din viraj: coada rămâne în urma capului.
     final bend = (-f.turnRate * 0.16).clamp(-0.9, 0.9);
 
-    // 1. Direcția fiecărei felii (coloane) — de la coadă (c = 0) la cap.
+    // 1. Direcția fiecărei felii (coloane) — de la coadă (c = 0) la cap. Unda trece spre
+    //    coadă cu o lungime de undă cam cât corpul (înot „carangiform”); capul se clatină
+    //    puțin invers (reculul), iar înotătoarea caudală, mai moale, vine cu întârziere și
+    //    biciuiește mai larg decât corpul.
+    final caudal = frame.length * 0.2;
     for (var c = 0; c <= _cols; c++) {
       final bx = x0 + (x1 - x0) * c / _cols;
       final tt = ((frame.head - bx) / frame.length).clamp(0.0, 1.0); // 0 la cap, 1 la coadă
-      final wave = amp * (0.05 + 0.95 * tt * tt) * math.sin(f.phase - tt * 2.5);
-      _psi[c] = f.yaw + wave + bend * math.pow(tt, 1.3);
+      final body = amp * (0.06 + 0.94 * tt * tt) * math.sin(f.phase - tt * 3.6);
+      final recoil = -amp * 0.05 * (1 - tt) * (1 - tt) * math.sin(f.phase);
+      final tail = ((frame.tail + caudal - bx) / caudal).clamp(0.0, 1.0);
+      final whip = amp * 0.55 * tail * tail * math.sin(f.phase - tt * 3.6 - 0.9);
+      _psi[c] = f.yaw + body + recoil + whip + bend * math.pow(tt, 1.3);
     }
 
     // 2. Coloana vertebrală proiectată: fiecare segment merge spre cap pe direcția lui.
@@ -80,6 +87,12 @@ class FishRenderer {
     // Desenul copilului trebuie să-și păstreze culorile: ceața și absorbția sunt doar o
     // nuanță, nu o spălare.
     final fog = (f.z * 0.26).clamp(0.0, 0.26);
+    // Înclinarea în viraj (ca un pește adevărat care se apleacă spre interiorul curbei):
+    // partea de sus a corpului se luminează sau se umbrește.
+    final roll = (f.turnRate * 0.11).clamp(-0.45, 0.45) * _softSign(math.cos(f.yaw));
+    // Înotătoarele de sus și de jos ondulează mereu, mai tare când peștele stă pe loc
+    // (atunci ele îl țin în echilibru), cu o undă care merge spre coadă.
+    final ripple = 4 + 7 * (1 - (f.effort / 1.6).clamp(0.0, 1.0));
     final absorbR = 1 - 0.1 * f.z, absorbG = 1 - 0.04 * f.z;
     final px = f.pos.x * h, py = f.pos.y * h;
 
@@ -96,7 +109,7 @@ class FishRenderer {
         // Burta rotunjită: cea mai groasă spre cap, subțire la coadă.
         final profile = (1 - math.pow((tt - 0.32) / 0.44, 2)).clamp(0.0, 1.0);
         final side = thick * profile * round * sn * _softSign(cs);
-        final fin = edge * edge * edge * math.sin(f.phase * 1.3 + bx * 0.02) * 6;
+        final fin = edge * edge * edge * math.sin(f.phase * 1.7 - tt * 9) * ripple;
         _pos[i * 2] = (_sx[c] - ox) + side;
         _pos[i * 2 + 1] = by - midY + fin;
         _tex[i * 2] = bx * texScale;
@@ -106,7 +119,8 @@ class FishRenderer {
         // peste ea, reflexele apei care se mișcă pe pește.
         final wx = (px + _pos[i * 2] * k) / h, wy = (py + _pos[i * 2 + 1] * k) / h;
         final caustic = 0.07 * math.sin(wx * 21 + t * 1.6) * math.sin(wy * 17 - t * 1.25 + wx * 5);
-        final shade = (0.72 + 0.28 * math.pow(cs.abs(), 0.7) + caustic).clamp(0.0, 1.0);
+        final top = (by - midY) / halfH; // −1 sus … +1 jos
+        final shade = (0.72 + 0.28 * math.pow(cs.abs(), 0.7) + caustic - roll * top * 0.16 - 0.04 * top).clamp(0.0, 1.0);
         _colors[i] = _argb(shade * absorbR, shade * absorbG, shade);
         i++;
       }
@@ -138,6 +152,8 @@ class FishRenderer {
     canvas.scale(k, k * (1 + 0.04 * (1 - f.facing.abs())));
     canvas.rotate(f.tilt * f.facing);
     if (puff > 0) canvas.scale(1 + 0.16 * puff, 1 + 0.42 * puff);
+    // În viraj corpul se apleacă: văzut puțin de sus sau de jos, pare mai scund.
+    if (roll != 0) canvas.scale(1, 1 - 0.14 * roll.abs());
     final v = ui.Vertices.raw(ui.VertexMode.triangles, _pos, textureCoordinates: _tex, colors: _colors, indices: _idx);
     canvas.drawVertices(
       v,
@@ -148,6 +164,21 @@ class FishRenderer {
         ..colorFilter = fog > 0.01 ? _fogFilter(fog) : null,
     );
     v.dispose();
+
+    // Înotătoarea pectorală (cea dinspre noi): vâslește repede când peștele stă pe loc sau
+    // frânează, se lipește de corp când țâșnește.
+    final side = math.cos(_psi[_cols]);
+    if (side.abs() > 0.2 && puff < 0.5) {
+      final (eye, er) = species.eye;
+      final bx = eye.x - er * 4.2;
+      final cc = ((bx - x0) / (x1 - x0) * _cols).clamp(0.0, _cols.toDouble()).round();
+      final base = Offset(_sx[cc] - ox, halfH * 0.2);
+      final effort = (f.effort / 2).clamp(0.0, 1.0);
+      final flap = math.sin(f.phase * (1.4 - 0.6 * effort) + 1.3) * (0.55 - 0.4 * effort);
+      final fold = 0.25 + 0.5 * effort; // lipită de corp la viteză mare
+      final tone = Color.lerp(_toneOf(img), const Color(0xFFFFFFFF), 0.08)!;
+      _pectoral(canvas, base, er * 3.8, side.sign, fold + flap, Color.lerp(tone, tankFog, fog)!, 0.8 * math.min(1.0, (side.abs() - 0.2) * 3));
+    }
 
     // Cu capul spre noi (sau cu coada): vederea din față, ca peștele să nu devină o „felie”.
     final headCs = math.cos(_psi[_cols]), headSn = math.sin(_psi[_cols]);
@@ -181,6 +212,46 @@ class FishRenderer {
       canvas.scale(turn, 1);
       canvas.translate(-frame.center.dx, -frame.center.dy);
       _spikes(canvas, species, puff, fog);
+    }
+    canvas.restore();
+  }
+
+  /// Înotătoarea pectorală: un evantai translucid cu raze, prins în [base], întors spre coadă
+  /// ([dir] = semnul direcției capului pe ecran), deschis sub unghiul [angle].
+  void _pectoral(Canvas canvas, Offset base, double len, double dir, double angle, Color tone, double alpha) {
+    canvas.save();
+    canvas.translate(base.dx, base.dy);
+    canvas.scale(-dir, 1); // spre coadă
+    canvas.rotate(angle);
+    final fan = Path()
+      ..moveTo(0, -len * 0.12)
+      ..quadraticBezierTo(len * 0.7, -len * 0.42, len, -len * 0.18)
+      ..quadraticBezierTo(len * 1.05, len * 0.12, len * 0.8, len * 0.32)
+      ..quadraticBezierTo(len * 0.4, len * 0.3, 0, len * 0.12)
+      ..close();
+    canvas.drawPath(
+      fan,
+      Paint()
+        ..shader = ui.Gradient.linear(Offset.zero, Offset(len, 0), [
+          tone.withValues(alpha: alpha),
+          tone.withValues(alpha: alpha * 0.45),
+        ]),
+    );
+    canvas.drawPath(
+      fan,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = len * 0.03
+        ..color = Color.lerp(tone, const Color(0xFF14202A), 0.45)!.withValues(alpha: alpha * 0.5),
+    );
+    final ray = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = len * 0.025
+      ..strokeCap = StrokeCap.round
+      ..color = Color.lerp(tone, const Color(0xFF14202A), 0.4)!.withValues(alpha: alpha * 0.55);
+    for (var k = 0; k < 5; k++) {
+      final a = -0.32 + k * 0.17;
+      canvas.drawLine(Offset.zero, Offset(math.cos(a), math.sin(a)) * len * (0.82 + 0.1 * math.sin(k * 1.7)), ray);
     }
     canvas.restore();
   }

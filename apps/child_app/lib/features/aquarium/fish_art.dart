@@ -110,6 +110,15 @@ Future<ui.Image> buildFishImage(FishSpecies s, ui.Image drawing) async {
       g += (edge[i * 3 + 1] * 0.5 - g) * m;
       b += (edge[i * 3 + 2] * 0.56 - b) * m;
     }
+    // Solzii: umbra de sub marginea fiecăruia și o sclipire pe muchie (doar o nuanță, culorile
+    // copilului rămân).
+    final sc = body.scales[i];
+    if (sc != 0) {
+      final f = 1 + sc * (sc < 0 ? 0.12 : 0.08);
+      r *= f;
+      g *= f;
+      b *= f * (sc > 0 ? 1.02 : 1);
+    }
     if (l < 0) {
       // Umbra: mai închis și puțin spre albastrul apei.
       final f = 1 + l * 0.55;
@@ -121,13 +130,31 @@ Future<ui.Image> buildFishImage(FishSpecies s, ui.Image drawing) async {
       r += (255 - r) * f;
       g += (255 - g) * f;
       b += (255 - b) * f;
+      // Luciul umed are o irizare rece, ca solzii adevărați.
+      if (l > 0.35) {
+        final k = (l - 0.35) * 0.25;
+        g += (255 - g) * k * 0.4;
+        b += (255 - b) * k;
+      }
     }
-    if (body.fin[i] > 0) {
-      // Înotătoarea: subțire, lasă să treacă puțină lumină.
-      r += (235 - r) * 0.12;
-      g += (250 - g) * 0.12;
-      b += (255 - b) * 0.12;
-      a *= 0.86;
+    if (body.fin[i] == 2) {
+      // Conturul înotătoarei: o margine subțire, de culoarea ei, aproape transparentă.
+      if (edge[i * 3] >= 0) {
+        r = edge[i * 3] * 0.72;
+        g = edge[i * 3 + 1] * 0.72;
+        b = edge[i * 3 + 2] * 0.76;
+        a *= 0.4;
+      } else {
+        a *= 0.08;
+      }
+    } else if (body.fin[i] > 0) {
+      // Înotătoarea: membrană subțire între raze; spre vârf lasă tot mai multă lumină să treacă.
+      final ray = body.rays[i], depth = body.finDepth[i];
+      final dark = 1 - 0.24 * ray;
+      r = r * dark + (235 - r * dark) * (0.1 + 0.18 * depth);
+      g = g * dark + (250 - g * dark) * (0.1 + 0.18 * depth);
+      b = b * dark + (255 - b * dark) * (0.1 + 0.18 * depth);
+      a *= (0.92 - 0.3 * depth * (1 - ray * 0.6)).clamp(0.5, 1.0);
     }
     // Alfa premultiplicat: marginea moale rămâne închisă, fără halou deschis.
     out[i * 4] = (r.clamp(0, 255) * a).round();
@@ -137,25 +164,100 @@ Future<ui.Image> buildFishImage(FishSpecies s, ui.Image drawing) async {
   }
   final shaded = await _decode(out, w, h);
 
-  // Ochii: albul, pupila spre cap, sclipirea.
+  // Detaliile pictate: operculul, linia laterală, gura, apoi ochiul.
   final rec2 = ui.PictureRecorder();
   final c = Canvas(rec2);
   c.drawImage(shaded, Offset.zero, Paint());
   c.scale(w / fishBox.width);
-  final (e, er) = s.eye;
-  final eye = Offset(e.x, e.y);
-  c.drawCircle(eye, er * 1.1, Paint()..color = const Color(0x55000000));
-  c.drawCircle(eye, er * 0.95, Paint()..color = const Color(0xFFF7FAFC));
-  final pupil = eye + Offset(er * 0.22, er * 0.04);
-  c.drawCircle(
-    pupil,
-    er * 0.6,
-    Paint()..shader = ui.Gradient.radial(pupil - Offset(er * 0.1, er * 0.1), er * 0.6, const [Color(0xFF2A3140), Color(0xFF0E1018)]),
-  );
-  c.drawCircle(pupil + Offset(er * 0.18, -er * 0.2), er * 0.2, Paint()..color = const Color(0xFFFFFFFF));
-  c.drawCircle(pupil + Offset(-er * 0.2, er * 0.22), er * 0.08, Paint()..color = const Color(0xCCFFFFFF));
+  paintFishDetails(c, s);
   shaded.dispose();
   return rec2.endRecording().toImage(w, h);
+}
+
+/// Detaliile care fac peștele „adevărat”, peste desenul copilului (unități de desen):
+/// marginea operculului (de unde respiră), linia laterală (punctată, de-a lungul corpului),
+/// buzele și ochiul (alb, iris cald, pupilă, două sclipiri, umbra pleoapei).
+void paintFishDetails(Canvas c, FishSpecies s) {
+  final frame = FishFrame.of(s);
+  final (e, er) = s.eye;
+  final eye = Offset(e.x, e.y);
+  final bodyH = frame.bottom - frame.top;
+  c.save();
+  c.clipPath(curvePath(s.body));
+  // Operculul: un arc în spatele ochiului, cu o umbră și o muchie luminată.
+  final gill = Rect.fromCircle(center: eye + Offset(er * 0.9, er * 0.7), radius: er * 3.1);
+  c.drawArc(
+    gill,
+    math.pi * 0.62,
+    math.pi * 0.72,
+    false,
+    Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = er * 0.42
+      ..strokeCap = StrokeCap.round
+      ..color = const Color(0x2A0A1420),
+  );
+  c.drawArc(
+    gill.deflate(er * 0.32),
+    math.pi * 0.66,
+    math.pi * 0.62,
+    false,
+    Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = er * 0.16
+      ..strokeCap = StrokeCap.round
+      ..color = const Color(0x30FFFFFF),
+  );
+  // Linia laterală: puncte mici, ușor curbate, de la opercul spre coadă.
+  final fromX = gill.left + er * 0.6, toX = frame.tail + frame.length * 0.2;
+  final lineY = frame.top + bodyH * 0.42;
+  final dot = Paint()..color = const Color(0x38FFFFFF);
+  for (var x = fromX; x > toX; x -= er * 0.75) {
+    final t = (fromX - x) / (fromX - toX);
+    c.drawCircle(Offset(x, lineY - math.sin(t * math.pi) * bodyH * 0.05 + t * bodyH * 0.06), er * 0.12, dot);
+  }
+  // Gura: buzele la vârful capului.
+  final mouth = Offset(frame.head - er * 0.5, e.y + er * 1.45);
+  c.drawPath(
+    Path()
+      ..moveTo(mouth.dx, mouth.dy - er * 0.15)
+      ..quadraticBezierTo(mouth.dx - er * 0.7, mouth.dy + er * 0.25, mouth.dx - er * 1.3, mouth.dy + er * 0.05),
+    Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = er * 0.2
+      ..strokeCap = StrokeCap.round
+      ..color = const Color(0x553A1E24),
+  );
+  c.restore();
+
+  // Ochiul: adâncitura, albul, irisul cald, pupila spre cap, sclipirile.
+  c.drawCircle(
+    eye,
+    er * 1.3,
+    Paint()..shader = ui.Gradient.radial(eye, er * 1.3, const [Color(0x55000000), Color(0x22000000), Color(0x00000000)], const [0.6, 0.8, 1]),
+  );
+  c.drawCircle(eye, er * 0.98, Paint()..color = const Color(0xFFF7FAFC));
+  final iris = eye + Offset(er * 0.2, er * 0.04);
+  c.drawCircle(
+    iris,
+    er * 0.7,
+    Paint()..shader = ui.Gradient.radial(iris, er * 0.7, const [Color(0xFF6B4A1E), Color(0xFFC9963E), Color(0xFF5A3A16)], const [0.45, 0.8, 1]),
+  );
+  c.drawCircle(
+    iris + Offset(er * 0.05, 0),
+    er * 0.44,
+    Paint()..shader = ui.Gradient.radial(iris - Offset(er * 0.1, er * 0.1), er * 0.44, const [Color(0xFF242A36), Color(0xFF07080C)]),
+  );
+  // Umbra pleoapei de sus (ochiul pare rotund, nu lipit).
+  c.save();
+  c.clipPath(Path()..addOval(Rect.fromCircle(center: eye, radius: er * 0.98)));
+  c.drawRect(
+    Rect.fromLTWH(eye.dx - er, eye.dy - er, er * 2, er * 0.9),
+    Paint()..shader = ui.Gradient.linear(eye - Offset(0, er), eye - Offset(0, er * 0.1), const [Color(0x40203040), Color(0x00203040)]),
+  );
+  c.restore();
+  c.drawCircle(iris + Offset(er * 0.2, -er * 0.24), er * 0.2, Paint()..color = const Color(0xFFFFFFFF));
+  c.drawCircle(iris + Offset(-er * 0.22, er * 0.24), er * 0.08, Paint()..color = const Color(0xCCFFFFFF));
 }
 
 /// Unde sunt liniile fișei (0…1), la rezoluția [w]×[h].
@@ -183,7 +285,7 @@ Float32List _edgeColors(Uint8List src, Float32List ink, FishBody body, int w, in
       col[i * 3 + 2] = src[i * 4 + 2].toDouble();
     }
   }
-  for (var pass = 0; pass < 7; pass++) {
+  for (var pass = 0; pass < 12; pass++) {
     final next = Uint8List.fromList(known);
     for (var y = 1; y < h - 1; y++) {
       for (var x = 1; x < w - 1; x++) {
@@ -277,7 +379,7 @@ Future<ui.Image> paintGiftDrawing(FishSpecies s, {int seed = 1}) {
     case 'inger':
       for (final f in fins) {
         fill(f, const Color(0xFFF6D35B));
-        edge(f, const Color(0xFF2B2B2B), 22);
+        edge(f, const Color(0xFFB08A2A), 10);
       }
       fill(body, const Color(0xFFF3E7B0));
       bands([(700, 34), (520, 40), (360, 30)], const Color(0xFF2E2E36));
@@ -297,7 +399,7 @@ Future<ui.Image> paintGiftDrawing(FishSpecies s, {int seed = 1}) {
     case 'chirurg':
       for (final f in fins) {
         fill(f, const Color(0xFF2F6FD6));
-        edge(f, const Color(0xFF1F2340), 20);
+        edge(f, const Color(0xFF1F2340), 10);
       }
       fill(curvePath(s.fins[2]), const Color(0xFFF5C842));
       fill(body, const Color(0xFF3B82E6));
@@ -315,7 +417,7 @@ Future<ui.Image> paintGiftDrawing(FishSpecies s, {int seed = 1}) {
     case 'fluture':
       for (final f in fins) {
         fill(f, const Color(0xFFF7D23E));
-        edge(f, const Color(0xFFF08A24), 26);
+        edge(f, const Color(0xFFF08A24), 14);
       }
       fill(curvePath(s.fins[2]), const Color(0xFFFFF3C4));
       fill(body, const Color(0xFFFBE27A));
@@ -334,7 +436,7 @@ Future<ui.Image> paintGiftDrawing(FishSpecies s, {int seed = 1}) {
     case 'papagal':
       for (final f in fins) {
         fill(f, const Color(0xFFE86FA0));
-        edge(f, const Color(0xFF7A5BD0), 22);
+        edge(f, const Color(0xFF7A5BD0), 12);
       }
       fill(body, const Color(0xFF3CC3A8));
       c.save();
@@ -365,7 +467,7 @@ Future<ui.Image> paintGiftDrawing(FishSpecies s, {int seed = 1}) {
     default: // clovn
       for (final f in fins) {
         fill(f, const Color(0xFFF58A1F));
-        edge(f, const Color(0xFF2B2B2B), 30);
+        edge(f, const Color(0xFF2B2B2B), 14);
       }
       fill(body, const Color(0xFFF58A1F));
       bands([(770, 62), (535, 74), (262, 46)], const Color(0xFFFFFFFF), rim: const Color(0xFF2B2B2B));

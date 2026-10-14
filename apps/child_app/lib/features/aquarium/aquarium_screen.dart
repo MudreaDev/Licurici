@@ -156,7 +156,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
         SwimmingFish(
           id: o.entry.id,
           species: o.species.id,
-          length: 0.24 + rnd.nextDouble() * 0.05 - (o.species.id == 'balon' ? 0.03 : 0),
+          length: 0.28 + rnd.nextDouble() * 0.05 - (o.species.id == 'balon' ? 0.03 : 0),
           cruise: 0.1 + rnd.nextDouble() * 0.04,
           liveliness: o.species.swim,
           at: math.Point(0.2 + rnd.nextDouble() * (width - 0.4), Aquarium.top + 0.1 + rnd.nextDouble() * 0.45),

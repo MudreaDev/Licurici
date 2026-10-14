@@ -300,7 +300,7 @@ List<Point<double>> sampleCurve(List<Point<double>> pts, {bool closed = true, in
 /// Volumul unui pește, calculat o dată pe model, pe o grilă [width]×[height] care acoperă
 /// caseta desenului: unde e silueta, cât e de gros și ce lumină primește.
 class FishBody {
-  FishBody._(this.width, this.height, this.coverage, this.thickness, this.light, this.fin);
+  FishBody._(this.width, this.height, this.coverage, this.thickness, this.light, this.fin, this.scales, this.rays, this.finDepth);
 
   final int width, height;
 
@@ -313,8 +313,19 @@ class FishBody {
   /// Lumina: −1 (umbră) … 0 (neschimbat) … +1 (luciu).
   final Float32List light;
 
-  /// 1 pe înotătoare (în afara corpului): acolo peștele e subțire și lasă lumina să treacă.
+  /// 1 pe înotătoare (în afara corpului): acolo peștele e subțire și lasă lumina să treacă;
+  /// 2 pe conturul fișei din jurul înotătoarelor.
   final Float32List fin;
+
+  /// Solzii: −1 (umbra de sub marginea unui solz) … +1 (marginea luminată a solzului).
+  /// Doar pe corp, nu și pe cap (operculul n-are solzi), mai șterși spre margini.
+  final Float32List scales;
+
+  /// Razele înotătoarelor: 1 pe o rază (mai închisă, mai groasă), 0 între raze (membrana).
+  final Float32List rays;
+
+  /// Pe înotătoare, cât de departe de corp (0 la bază … 1 la vârf): vârful e mai transparent.
+  final Float32List finDepth;
 
   static final _cache = <String, FishBody>{};
 
@@ -332,6 +343,7 @@ class FishBody {
 
     final outD = _distanceTo(sil, width, height, 1), inD = _distanceTo(sil, width, height, 0);
     final bodyIn = _distanceTo(body, width, height, 0);
+    final bodyOut = _distanceTo(body, width, height, 1);
     var dmax = 0.0, x0 = width, x1 = 0;
     for (var i = 0; i < n; i++) {
       dmax = max(dmax, bodyIn[i]);
@@ -376,7 +388,50 @@ class FishBody {
         light[i] = ((diff - 0.72) * 1.8 + spec * 1.1 - belly * 1.1 - rim[i] * 0.75).clamp(-1.0, 1.0).toDouble();
       }
     }
-    return FishBody._(width, height, coverage, thick, light, fin);
+    // Solzii: rânduri decalate de arce, cu marginea liberă spre coadă (se suprapun ca țiglele);
+    // pe cap (de la opercul înainte) nu sunt. Mărimea lor ține de lungimea peștelui.
+    final (eye, er) = s.eye;
+    final headStart = (eye.x - er * 3.2) * scale;
+    final size = max(6.0, (x1 - x0) / 34);
+    var cx = 0.0, cy = 0.0, cn = 0;
+    for (var i = 0; i < n; i++) {
+      if (body[i] == 1) {
+        cx += i % width;
+        cy += i ~/ width;
+        cn++;
+      }
+    }
+    cx /= max(1, cn);
+    cy /= max(1, cn);
+    final scales = Float32List(n), rays = Float32List(n), finDepth = Float32List(n);
+    for (var i = 0; i < n; i++) {
+      if (coverage[i] == 0) continue;
+      final x = (i % width).toDouble(), y = (i ~/ width).toDouble();
+      if (body[i] == 1) {
+        final v = y / (size * 0.82);
+        final row = v.floor();
+        final u = x / size + (row.isOdd ? 0.5 : 0);
+        final fu = u - u.floor(), fv = v - row;
+        // Centrul arcului e spre cap (fu = 1): marginea liberă e spre coadă.
+        final d = sqrt((1 - fu) * (1 - fu) + (fv - 0.5) * (fv - 0.5) * 1.6);
+        final edge = exp(-pow((d - 0.92) / 0.09, 2)), glint = exp(-pow((d - 0.78) / 0.1, 2));
+        final onHead = _smooth(headStart - size * 2, headStart, x);
+        final fade = (1 - onHead) * min(1.0, thick[i] * 2.2);
+        scales[i] = ((glint * 0.6 - edge) * fade).clamp(-1.0, 1.0).toDouble();
+      } else if (sil[i] == 0 && bodyOut[i] > outline * scale + 2) {
+        // Conturul de pe fișă din jurul unei înotătoare: înotătoarele adevărate n-au contur,
+        // deci aici rămâne doar o margine subțire și moale (2 = conturul înotătoarei).
+        fin[i] = 2;
+        finDepth[i] = min(1.0, bodyOut[i] / (70 * scale));
+      } else if (fin[i] == 1) {
+        // Razele pleacă din corp spre marginea înotătoarei (în evantai).
+        final a = atan2(y - cy, x - cx);
+        final ray = pow(0.5 + 0.5 * cos(a * 92), 6).toDouble();
+        rays[i] = ray * _smooth(0, 6 * scale * 2, bodyOut[i]);
+        finDepth[i] = min(1.0, bodyOut[i] / (70 * scale));
+      }
+    }
+    return FishBody._(width, height, coverage, thick, light, fin, scales, rays, finDepth);
   }
 }
 
