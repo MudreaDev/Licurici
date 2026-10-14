@@ -12,6 +12,7 @@ import 'cause_effect.dart';
 import 'change.dart';
 import 'fitts.dart';
 import 'number_line.dart';
+import 'stop_signal.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -345,6 +346,27 @@ class SessionRecorder {
         targetId: '${m.round.target}',
         chosenId: m.estimate.toStringAsFixed(1),
         difficulty: level.axes.max.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Stop!”: câte o încercare pe aprindere; corectă = atins la verde / neatins la roșu;
+  /// latența = timpul de reacție; la oprire, dificultatea = întârzierea semnalului (SSD, ms).
+  void stopLevel(StopResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final t in result.trials) {
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: t.correct,
+        promptLevel: PromptLevel.p0,
+        latencyMs: t.rtMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: t.stop ? 'stop' : 'go',
+        difficulty: t.ssdMs?.toDouble(),
       ));
     }
   }

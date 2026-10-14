@@ -58,6 +58,9 @@ const uiPhrases = [
   'Unde stă numărul',
   'Uite unde stă.',
   'Sparge bulele cât de repede poți.',
+  // Stop!
+  'Atinge felinarul când e verde. Când se face roșu, oprește-te!',
+  'Data viitoare te oprești.',
   // Urmărește peștele
   'Urmărește peștele!',
   'Acesta e peștele tău. Urmărește-l!',

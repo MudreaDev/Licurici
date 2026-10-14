@@ -63,7 +63,8 @@ const gameScales = <String, LevelScale>{
   // construcție, puzzle, labirint
   'construieste': LevelScale(7),
   'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
-  'atinge-rapid': LevelScale(9), // bula de 0,07 la 9 (distanța se oprește la 9)
+  'atinge-rapid': LevelScale(9),
+  'stop': LevelScale(9), // 32 de încercări, 30% opriri, fereastra de 0,9 s la 9 // bula de 0,07 la 9 (distanța se oprește la 9)
   'puzzle': LevelScale(11), // 4 × 4 fără model la 11
   'labirint': LevelScale(9), // 10 × 6 la 9
   // atenție comună, imitație, ritm
