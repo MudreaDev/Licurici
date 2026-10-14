@@ -9,6 +9,10 @@ final Map<String, String Function(int)> axesSignature = {
     final a = const PescarulGame().axesFor(l);
     return '${a.count} ${a.gapMs} ${a.visibleMs} ${a.noGoRatio} ${a.similarity} ${a.sizeFactor} ${a.edgeBias} ${a.moving}';
   },
+  'paznicul-farului': (l) {
+    final a = const PaznicFaruluiGame().axesFor(l);
+    return '${a.count} ${a.gapMs} ${a.visibleMs} ${a.noGoRatio} ${a.similarity} ${a.sizeFactor} ${a.edgeBias} ${a.driftRange}';
+  },
   'prinde-licuriciul': (l) {
     final a = const PrindeLicuriciulGame().axesFor(l);
     return '${a.count} ${a.gapMs} ${a.visibleMs} ${a.sizeFactor} ${a.edgeBias} ${a.driftRange}';

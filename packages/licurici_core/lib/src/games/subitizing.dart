@@ -19,7 +19,7 @@ class CateSuntGame extends ChoiceGame {
       : super(
           id: 'cate-sunt',
           name: 'Câte sunt?',
-          emoji: '👀',
+          emoji: '🎲',
           description: 'Privește o clipă și spune câte au fost',
           subject: Subject.matematica,
           gradeCodes: 'G1234',

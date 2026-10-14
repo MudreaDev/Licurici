@@ -316,15 +316,17 @@ abstract class ReactionGame {
   }
 
   /// Ordinea go/no-go: primele două sunt mereu „atinge” (început cu succes), cel mult două
-  /// „nu atinge” la rând, iar numărul de no-go e exact proporția cerută (cel puțin 1 dacă > 0).
+  /// „nu atinge” la rând (cel mult șase când țintele sunt rare, ca la „Paznicul farului”), iar
+  /// numărul de no-go e exact proporția cerută (cel puțin 1 dacă > 0).
   static List<ReactionKind> _kinds(ReactionAxes axes, Random random) {
     final noGo = axes.noGoRatio <= 0 ? 0 : max(1, (axes.count * axes.noGoRatio).round());
+    final limit = axes.noGoRatio > 0.5 ? 6 : 2;
     for (var attempt = 0; attempt < 200; attempt++) {
       final rest = [
         for (var i = 0; i < axes.count - 2; i++) i < noGo ? ReactionKind.noGo : ReactionKind.go,
       ]..shuffle(random);
       final all = [ReactionKind.go, ReactionKind.go, ...rest];
-      if (_maxRun(all, ReactionKind.noGo) <= 2) return all;
+      if (_maxRun(all, ReactionKind.noGo) <= limit) return all;
     }
     // Rezervă deterministă: no-go distribuiți uniform după încălzire.
     final all = List.filled(axes.count, ReactionKind.go);
@@ -446,7 +448,58 @@ class PrindeLicuriciulGame extends ReactionGame {
   String? noGoArtFor(ReactionAxes axes) => null;
 }
 
-const List<ReactionGame> reactionGames = [PrindeLicuriciulGame(), PescarulGame()];
+/// Paznicul farului — atenție susținută (ATN6, sarcina de vigilență de tip CPT): de pe far,
+/// copilul păzește marea câteva minute și atinge **doar bărcile**, care sunt rare; pe lângă
+/// ele trec pescăruși, delfini, rațe. Măsura principală e **scăderea vigilenței**: câte bărci
+/// prinde în a doua jumătate față de prima (încercările păstrează ordinea și timpul).
+/// Axe: durata (24 → 60 de apariții, ~1,5 → 2,5 min), bărcile tot mai rare (50% → 25%),
+/// ritmul și timpul de afișare, asemănarea celorlalte cu barca.
+class PaznicFaruluiGame extends ReactionGame {
+  const PaznicFaruluiGame();
+
+  @override
+  String get id => 'paznicul-farului';
+  @override
+  String get name => 'Paznicul farului';
+  @override
+  String get emoji => '⛵';
+  @override
+  String get description => 'Păzește marea și atinge doar bărcile';
+  @override
+  Subject get subject => Subject.emotii;
+  @override
+  Set<Grade> get grades => Grade.parseCodes('G1234');
+  @override
+  List<String> get steps => const ['ATN6'];
+
+  static const go = '⛵';
+  static const noGoBySimilarity = ['🐦', '🐬', '🦆'];
+  static const noGoName = ['pescăruș', 'delfin', 'rață'];
+
+  @override
+  ReactionAxes axesFor(int level) => ReactionAxes(
+        count: ramp(level, 24, 60, 10).round(),
+        gapMs: ramp(level, 2200, 1300, 10).round(),
+        visibleMs: ramp(level, 1800, 1100, 10).round(),
+        noGoRatio: ramp(level, 0.5, 0.75, 8),
+        similarity: level < 4 ? 0 : (level < 8 ? 1 : 2),
+        sizeFactor: ramp(level, 1.2, 0.9, 10),
+        edgeBias: ramp(level, 0.3, 1, 8),
+        moving: true,
+        driftRange: ramp(level, 0.08, 0.22, 10),
+      );
+
+  @override
+  String instructionFor(ReactionAxes axes) => 'Atinge doar bărcile. Pe ${noGoName[axes.similarity]} nu.';
+
+  @override
+  String goArtFor(ReactionAxes axes) => go;
+
+  @override
+  String? noGoArtFor(ReactionAxes axes) => noGoBySimilarity[axes.similarity];
+}
+
+const List<ReactionGame> reactionGames = [PrindeLicuriciulGame(), PescarulGame(), PaznicFaruluiGame()];
 
 ReactionGame? reactionGameById(String id) {
   for (final g in reactionGames) {

@@ -273,7 +273,7 @@ class _ReactionGameScreenState extends ConsumerState<ReactionGameScreen>
     return Scaffold(
       body: SceneBackground(
         spec: SceneSpec.forLevel(widget.game.id, _level.level),
-        kind: widget.game.id == 'pescarul' ? SceneKind.water : SceneKind.dusk,
+        kind: widget.game.id == 'pescarul' || widget.game.id == 'paznicul-farului' ? SceneKind.water : SceneKind.dusk,
         child: SafeArea(
           child: Column(
             children: [

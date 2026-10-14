@@ -85,7 +85,7 @@ class NumberLineGame {
 
   String get id => 'linia-numerelor';
   String get name => 'Linia numerelor';
-  String get emoji => '📏';
+  String get emoji => '🔢';
   String get description => 'Pune numărul la locul lui pe linie';
   Set<Grade> get grades => Grade.parseCodes('G1234');
   List<String> get steps => const ['PAC-N5'];

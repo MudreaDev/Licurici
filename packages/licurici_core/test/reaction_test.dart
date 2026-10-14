@@ -19,11 +19,11 @@ void main() {
             expect(l.stimuli.length, ax.count);
             // Început cu succes: primii doi sunt „atinge”.
             expect(l.stimuli.take(2).every((s) => s.isGo), isTrue);
-            // Cel mult două „nu atinge” la rând.
+            // Cel mult două „nu atinge” la rând (șase când țintele sunt rare).
             var run = 0;
             for (final s in l.stimuli) {
               run = s.isGo ? 0 : run + 1;
-              expect(run, lessThanOrEqualTo(2));
+              expect(run, lessThanOrEqualTo(ax.noGoRatio > 0.5 ? 6 : 2));
             }
             final noGo = l.stimuli.where((s) => !s.isGo).length;
             if (ax.noGoRatio == 0) {

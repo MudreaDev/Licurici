@@ -46,6 +46,7 @@ const gameScales = <String, LevelScale>{
   // reacție
   'pescarul': LevelScale(16), // viteza și proporția no-go cresc până la 16
   'prinde-licuriciul': LevelScale(14),
+  'paznicul-farului': LevelScale(10), // durata, ritmul și mărimea se opresc la 10
   // secvențe
   'simon': LevelScale(25), // span 7 la 19, ordinea inversă de la 19, fără sunet de la 25
   'licuricii': LevelScale(19),
