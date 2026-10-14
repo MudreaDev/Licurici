@@ -14,6 +14,7 @@ import 'matematica.dart';
 import 'romana.dart';
 import 'scoala.dart';
 import 'scoala2.dart';
+import 'listening.dart';
 import 'siblings.dart';
 import 'subitizing.dart';
 import 'social.dart';
@@ -29,6 +30,7 @@ export 'matematica.dart';
 export 'romana.dart';
 export 'scoala.dart';
 export 'scoala2.dart';
+export 'listening.dart';
 export 'siblings.dart';
 export 'subitizing.dart';
 export 'social.dart';
@@ -42,6 +44,7 @@ const List<GameSpec> allGames = [
   CatDeTareGame(),
   CineEPrietenulGame(),
   CateSuntGame(),
+  CeAiAuzitGame(),
   // Potrivire și limbaj receptiv
   PotrivesteGame(),
   ArataMiGame(),

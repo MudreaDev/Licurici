@@ -19,7 +19,8 @@ bool musicPausedOn(String path) =>
     path == '/toba-magica' ||
     path == '/asculta-si-fa' ||
     path == '/joc/ce-se-aude' ||
-    path == '/joc/primul-sunet';
+    path == '/joc/primul-sunet' ||
+    path == '/joc/ce-ai-auzit';
 
 /// Cât de tare cântă muzica (0…1). Mereu în spatele vocii: când vorbește Licurici, coboară.
 double musicVolume({required bool calm, required bool speaking}) {

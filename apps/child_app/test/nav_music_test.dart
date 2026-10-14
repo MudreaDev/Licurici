@@ -53,7 +53,7 @@ void main() {
   });
 
   test('muzica: tace unde sunetul e sarcina și în acvariu; mai încet cât vorbește Licurici', () {
-    for (final p in ['/acvariu', '/secventa/simon', '/toba-magica', '/asculta-si-fa', '/joc/ce-se-aude', '/joc/primul-sunet']) {
+    for (final p in ['/acvariu', '/secventa/simon', '/toba-magica', '/asculta-si-fa', '/joc/ce-se-aude', '/joc/primul-sunet', '/joc/ce-ai-auzit']) {
       expect(musicPausedOn(p), isTrue, reason: p);
     }
     for (final p in ['/', '/arie/pot', '/joc/potriveste', '/respira']) {
