@@ -53,5 +53,6 @@ export 'src/rhythm.dart';
 export 'src/demo.dart';
 export 'src/recorder.dart';
 export 'src/progress.dart';
+export 'src/praise.dart';
 export 'src/puzzle.dart';
 export 'src/transfer.dart';

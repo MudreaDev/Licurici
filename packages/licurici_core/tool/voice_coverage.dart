@@ -119,7 +119,7 @@ void main(List<String> args) {
   void add(String phrase, String gameId) =>
       phrases.putIfAbsent(phrase.trim(), () => {}).add(gameId);
 
-  for (final p in uiPhrases) {
+  for (final p in [...uiPhrases, ...Praise.all]) {
     add(p, 'interfață');
   }
   for (final m in Mood.values) {
