@@ -140,6 +140,14 @@ void main() {
       expect((await store.load()).length, 2);
       await settle(tester, 12);
       if (shots) await expectLater(find.byType(AquariumScreen), matchesGoldenFile('shots/acvariu-nou-$device.png'));
+
+      // „Peștii mei”: câte o bulă pe pește; atingerea îl cheamă la geam.
+      final mine = find.byKey(ValueKey('shelf-${fish.last.entry.id}'));
+      expect(mine, findsOneWidget);
+      expect(find.byKey(const ValueKey('shelf-cadou')), findsOneWidget);
+      await tester.tap(mine);
+      await settle(tester, 20);
+      expect(tester.takeException(), isNull);
     });
   }
 }

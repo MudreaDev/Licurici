@@ -233,12 +233,20 @@ class _MusicLine extends ConsumerWidget {
         children: [
           Icon(Icons.music_note_rounded, color: on ? Tokens.primary : Tokens.inkSoft),
           const SizedBox(width: 8),
-          Text('Muzică liniștită:', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(width: 8),
-          Switch(
-            key: const ValueKey('music-switch'),
-            value: on,
-            onChanged: notifier.setMusic,
+          // Eticheta și comutatorul sunt un singur element pentru cititorul de ecran.
+          MergeSemantics(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Muzică liniștită:', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(width: 8),
+                Switch(
+                  key: const ValueKey('music-switch'),
+                  value: on,
+                  onChanged: notifier.setMusic,
+                ),
+              ],
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(

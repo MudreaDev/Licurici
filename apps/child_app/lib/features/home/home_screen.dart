@@ -14,6 +14,7 @@ import '../../data/session.dart';
 import '../parent/parent_gate.dart';
 import '../settings/settings.dart';
 import '../session/mood_check.dart';
+import 'aquarium_window.dart';
 import 'catalog_cards.dart';
 import 'today_path.dart';
 
@@ -95,7 +96,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 layout.compact ? 10 : 24,
               ),
               children: [
-                Center(child: enterCard(const _TodayPanel(), motion, 0)),
+                // „Drumul de azi” și, sub el, fereastra acvariului (peștii copilului înoată).
+                Center(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        enterCard(const _TodayPanel(), motion, 0),
+                        SizedBox(height: layout.compact ? 10 : 16),
+                        enterCard(AquariumWindow(height: layout.compact ? 130 : 200), motion, 1),
+                      ],
+                    ),
+                  ),
+                ),
                 for (final card in cards) ...[
                   SizedBox(width: gap),
                   // Pe telefoanele mici cardul se micșorează proporțional ca să încapă pe înălțime.
@@ -116,6 +130,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 12),
           const _TodayPanel(),
+          const SizedBox(height: 16),
+          const Center(child: AquariumWindow(height: 160)),
           const SizedBox(height: 16),
           Wrap(spacing: 16, runSpacing: 16, children: cards),
         ],
@@ -182,14 +198,6 @@ class _HomeBar extends ConsumerWidget {
             color: const Color(0xFF6E6AB8),
             label: 'Harta mea',
             onTap: () => context.go('/harta'),
-          ),
-          const SizedBox(width: 10),
-          BarButton(
-            key: const ValueKey('aquarium'),
-            icon: Icons.water_rounded,
-            color: const Color(0xFF3FA7C4),
-            label: 'Acvariul meu',
-            onTap: () => context.go('/acvariu'),
           ),
           const SizedBox(width: 10),
           // Un abțibild nou așteaptă în album: steluță pe buton.

@@ -21,6 +21,7 @@ import '../../shared/ui/candy.dart';
 import '../../shared/voice.dart';
 import '../parent/parent_gate.dart';
 import '../settings/settings.dart';
+import 'aquarium_dock.dart';
 import 'aquarium_store.dart';
 import 'paper_scan_flow.dart';
 import 'paper_sheet.dart';
@@ -70,11 +71,15 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   _Hint? _hint;
   double _hintAt = 0;
   bool _usedGather = false, _usedChest = false, _hintedGather = false, _hintedChest = false;
-  int _broke = 0;
+  int _broke = 0, _spent = 0;
   bool _scanning = false;
 
   /// Peștele adus de pe hârtie chiar acum (intră de sus, ca cel colorat pe ecran).
   String? _diveId;
+
+  /// Peștele chemat din raftul „Peștii mei” (bula lui e luminată câteva secunde).
+  String? _called;
+  Timer? _calledOff;
 
   @override
   void initState() {
@@ -92,6 +97,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
 
   @override
   void dispose() {
+    _calledOff?.cancel();
     _sfx?.ambient(null);
     _ticker.dispose();
     _time.dispose();
@@ -179,6 +185,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     final rnd = math.Random();
     sim.feed(sim.width * (0.25 + rnd.nextDouble() * 0.5));
     ref.read(sfxProvider).play(Sfx.tap);
+    setState(() => _spent++); // pușculița sare puțin: steaua a plătit mâncarea
   }
 
   /// Fișele A4 de colorat — pentru părinte (printarea cere poarta pentru adulți).
@@ -299,6 +306,19 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     ref.read(voiceProvider).say([says]);
   }
 
+  /// Copilul și-a ales peștele din raft: vine la geam și se învârte bucuros.
+  void _callFish(String id) {
+    _touched();
+    if (_sim?.call(id) != true) return;
+    ref.read(sfxProvider).play(Sfx.bubble);
+    ref.read(voiceProvider).say(['Uite-l pe al tău!']);
+    setState(() => _called = id);
+    _calledOff?.cancel();
+    _calledOff = Timer(const Duration(seconds: 4), () {
+      if (mounted) setState(() => _called = null);
+    });
+  }
+
   /// Zi ↔ noapte. Noaptea, degetul ținut pe apă e o lanternă: peștii vin la lumină.
   void _toggleNight() {
     setState(() => _nightOn = !_nightOn);
@@ -409,13 +429,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          BarButton(
-                            key: const ValueKey('night'),
-                            icon: _nightOn ? Icons.wb_sunny_rounded : Icons.nightlight_round,
-                            color: _nightOn ? const Color(0xFFF2C14E) : const Color(0xFF4B5A9C),
-                            label: _nightOn ? 'Zi' : 'Noapte',
-                            onTap: _toggleNight,
-                          ),
+                          SkyButton(night: _nightOn, onTap: _toggleNight),
                           const SizedBox(width: 10),
                           BarButton(
                             key: const ValueKey('print-sheets'),
@@ -425,7 +439,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                             onTap: _printSheets,
                           ),
                           const SizedBox(width: 10),
-                          _StarPurse(stars: stars, shake: _broke),
+                          _StarPurse(stars: stars, shake: _broke, spent: _spent),
                         ],
                       ),
                     ),
@@ -442,32 +456,39 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                                     alignment: Alignment.bottomLeft,
                                     child: _GiftHint(compact: layout.compact),
                                   )
-                                : const SizedBox.shrink(),
+                                : Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: list == null || list.isEmpty
+                                        ? const SizedBox.shrink()
+                                        : FishShelf(fish: list, picked: _called, onPick: _callFish),
+                                  ),
                           ),
-                          CandyButton(
+                          const SizedBox(width: 12),
+                          DockButton(
                             key: const ValueKey('feed'),
+                            image: 'sprites/food_jar',
+                            fallback: Icons.grain_rounded,
                             label: 'Mâncare',
-                            icon: Icons.grain_rounded,
                             color: const Color(0xFFF2A33A),
-                            minWidth: layout.compact ? 120 : 160,
+                            badge: const StarPrice(foodPrice),
                             onTap: _feed,
                           ),
-                          const SizedBox(width: 12),
-                          CandyButton(
+                          SizedBox(width: layout.compact ? 10 : 16),
+                          DockButton(
                             key: const ValueKey('color-fish'),
-                            label: layout.compact ? 'Colorez' : 'Colorez un pește',
-                            icon: Icons.brush_rounded,
+                            image: 'sprites/brush_fish',
+                            fallback: Icons.brush_rounded,
+                            label: 'Colorez',
                             color: Tokens.primary,
-                            minWidth: layout.compact ? 120 : 200,
                             onTap: () => context.go('/acvariu/coloreaza'),
                           ),
-                          const SizedBox(width: 12),
-                          CandyIconButton(
+                          SizedBox(width: layout.compact ? 10 : 16),
+                          DockButton(
                             key: const ValueKey('scan-paper'),
-                            icon: Icons.photo_camera_rounded,
-                            label: 'Peștele colorat pe hârtie',
+                            image: 'sprites/camera_sheet',
+                            fallback: Icons.photo_camera_rounded,
+                            label: 'De pe hârtie',
                             color: const Color(0xFF7FC0A3),
-                            size: layout.compact ? 56 : 72,
                             onTap: _scanning ? null : _scanPaper,
                           ),
                         ],
@@ -579,10 +600,13 @@ const foodPrice = 1;
 
 /// Pușculița: stelele copilului. Clatină ușor când nu ajung pentru mâncare.
 class _StarPurse extends StatelessWidget {
-  const _StarPurse({required this.stars, required this.shake});
+  const _StarPurse({required this.stars, required this.shake, required this.spent});
 
   final int stars;
   final int shake;
+
+  /// Câte mâini de mâncare s-au plătit (fiecare face pușculița să sară o dată).
+  final int spent;
 
   @override
   Widget build(BuildContext context) {
@@ -603,7 +627,13 @@ class _StarPurse extends StatelessWidget {
           ),
         ],
       ),
-    ).animate(key: ValueKey(shake), target: shake == 0 ? 0 : 1).shake(hz: 4, rotation: 0.04, duration: 450.ms);
+    )
+        .animate(key: ValueKey('spent-$spent'), target: spent == 0 ? 0 : 1)
+        .scaleXY(begin: 1, end: 1.15, duration: 140.ms, curve: Curves.easeOut)
+        .then()
+        .scaleXY(begin: 1.15, end: 1, duration: 260.ms, curve: Curves.easeOutBack)
+        .animate(key: ValueKey(shake), target: shake == 0 ? 0 : 1)
+        .shake(hz: 4, rotation: 0.04, duration: 450.ms);
   }
 }
 
