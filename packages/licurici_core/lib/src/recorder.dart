@@ -10,6 +10,8 @@ import 'game.dart';
 import 'build_copy.dart';
 import 'cause_effect.dart';
 import 'change.dart';
+import 'fitts.dart';
+import 'number_line.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -319,6 +321,52 @@ class SessionRecorder {
         stimulusId: 'eficienta-${(r.efficiency * 100).round()}',
         difficulty: (r.maze.cols * r.maze.rows).toDouble(),
         offTargetTaps: r.bumps,
+      ));
+    }
+  }
+
+  /// Un nivel „Linia numerelor”: câte o încercare pe număr; corectă dacă e la cel mult 10% din
+  /// linie; ținta și estimarea (rotunjită) se păstrează, ca PAE să se poată calcula oricând;
+  /// dificultatea = capătul liniei.
+  void numberLineLevel(NumberLineResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final m in result.marks) {
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: result.isClose(m),
+        promptLevel: PromptLevel.p0,
+        latencyMs: m.latencyMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: 'eroare-${(result.paeOf(m) * 100).round()}',
+        targetId: '${m.round.target}',
+        chosenId: m.estimate.toStringAsFixed(1),
+        difficulty: level.axes.max.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Atinge rapid”: câte o încercare pe bulă; corectă = atinsă din prima; latența =
+  /// timpul de mișcare; dificultatea = indicele Fitts (biți).
+  void fittsLevel(FittsResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final h in result.hits) {
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: h.misses == 0,
+        promptLevel: PromptLevel.p0,
+        latencyMs: h.movementMs,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: 'id-${(result.idOf(h.index) * 10).round()}',
+        difficulty: result.idOf(h.index),
+        offTargetTaps: h.misses,
       ));
     }
   }

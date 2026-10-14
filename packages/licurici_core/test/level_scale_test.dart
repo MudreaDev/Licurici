@@ -53,6 +53,8 @@ final Map<String, String Function(int)> axesSignature = {
     return '${a.cols} ${a.rows} ${a.model}';
   },
   'labirint': (l) => '${const MazeGame().sizeFor(l)}',
+  'linia-numerelor': (l) => '${const NumberLineGame().axesFor(l).toJson()}',
+  'atinge-rapid': (l) => '${const FittsGame().sizeFor(l).toStringAsFixed(3)} ${const FittsGame().reachFor(l).toStringAsFixed(3)}',
   'unde-se-uita': (l) {
     final a = const GazeGame().axesFor(l);
     return '${a.cue} ${a.similar}';

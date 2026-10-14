@@ -53,6 +53,11 @@ const uiPhrases = [
   'Bravo!',
   'Mai încearcă',
   'Ai terminat! Bravo!',
+  // Linia numerelor, Atinge rapid
+  'Atinge locul numărului pe linie.',
+  'Unde stă numărul',
+  'Uite unde stă.',
+  'Sparge bulele cât de repede poți.',
   // Urmărește peștele
   'Urmărește peștele!',
   'Acesta e peștele tău. Urmărește-l!',

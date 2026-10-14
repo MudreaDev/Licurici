@@ -168,6 +168,7 @@ const List<Ladder> ladders = [
     Step('AUT6', 'Alege ce e sănătos și ce e sigur; potrivește emoțiile', games: ['explorare-viata']),
   ]),
   Ladder(Domain.mot, [
+    Step('MOT0', 'Atinge repede și precis ținte tot mai mici, tot mai depărtate', games: ['atinge-rapid']),
     Step('MOT1', 'Duce degetul pe un drum lat, drept, de la start la țintă', games: ['traseaza', 'uneste-punctele']),
     Step('MOT2', 'Urmărește curbe și valuri fără să iasă de pe drum', games: ['traseaza', 'uneste-punctele']),
     Step('MOT3', 'Urmărește zig-zag și bucle pe un drum îngust, fără ajutor', games: ['traseaza', 'uneste-punctele']),
@@ -180,6 +181,7 @@ const List<Ladder> ladders = [
     Step('PAC-N3', 'Scrie cifrele urmărind conturul, în ordinea corectă a trăsăturilor',
         games: ['scriem-cifrele']),
     Step('PAC-N4', 'Compară cantități (mai mult / mai puțin)', games: ['comparam']),
+    Step('PAC-N5', 'Așază numerele pe o linie de la 0 la 10, 20, apoi 100 (estimare)', games: ['linia-numerelor']),
     Step('PAC-N6', 'Adună cu obiecte', games: ['adunam']),
     Step('PAC-N7', 'Scade cu obiecte', games: ['scadem']),
     Step('PAC-N8', 'Compară numere cu semnele < > =', games: ['semne']),
