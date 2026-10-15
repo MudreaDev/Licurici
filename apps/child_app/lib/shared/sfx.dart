@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_content/game_content.dart';
 
 import '../features/settings/settings.dart';
+import 'audio_context.dart';
 
 /// Sunetele interfeței (generate din cod: `tools/audio/gen_sfx.py`). Nu există sunet de
 /// „greșit” (README §15.1).
@@ -66,7 +67,7 @@ class _Sfx implements SoundEffects {
 
   AudioPlayer _player() {
     if (_pool.length < 4) {
-      final p = AudioPlayer()..audioCache = AudioCache(prefix: '');
+      final p = newAppPlayer();
       // Latența mică există doar pe Android/iOS; pe web modul implicit e deja rapid.
       if (!kIsWeb) p.setPlayerMode(PlayerMode.lowLatency).catchError((_) {});
       _pool.add(p);
@@ -121,7 +122,7 @@ class _Sfx implements SoundEffects {
     old?.dispose().catchError((_) {});
     if (loop == null || _ref.read(settingsProvider).calm) return;
     try {
-      final p = AudioPlayer()..audioCache = AudioCache(prefix: '');
+      final p = newAppPlayer();
       _loop = p;
       p.setReleaseMode(ReleaseMode.loop).catchError((_) {});
       p

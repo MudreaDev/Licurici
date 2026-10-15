@@ -128,7 +128,7 @@ class ChangeGame {
 
   String get id => 'ce-s-a-schimbat';
   String get name => 'Ce s-a schimbat?';
-  String get emoji => '🪄';
+  String get emoji => '✨';
   String get description => 'Privește bine și găsește schimbarea';
   Set<Grade> get grades => Grade.parseCodes('G12');
   List<String> get steps => const ['ATN5'];

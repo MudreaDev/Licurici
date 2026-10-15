@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/settings/settings.dart';
 import 'voice.dart';
+import 'audio_context.dart';
 
 /// Unde muzica tace: jocurile în care sunetul e chiar sarcina (notele felinarelor, toba,
 /// instrucțiunile de ascultat, sunetele de recunoscut) și acvariul, care are apa lui.
@@ -120,7 +121,7 @@ class _MusicDirectorState extends ConsumerState<MusicDirector> with WidgetsBindi
     final track = tracks[_next % tracks.length];
     _next++;
     try {
-      final p = _player ??= AudioPlayer()..audioCache = AudioCache(prefix: '');
+      final p = _player ??= newAppPlayer();
       await p.setReleaseMode(ReleaseMode.stop);
       _volume = 0;
       await p.setVolume(0);

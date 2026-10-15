@@ -94,7 +94,6 @@ const List<GameSpec> allGames = [
   TrecutGame(),
   SimboluriGame(),
   PersonalitatiGame(),
-  EnglezaGame(),
   CeSeAudeGame(),
   CeImbracGame(),
   CeSimteGame(),

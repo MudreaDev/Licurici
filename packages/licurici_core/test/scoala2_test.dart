@@ -77,13 +77,4 @@ void main() {
     }
   });
 
-  test('engleză: cuvântul se rostește cu voce englezească (prefixul en:), variantele sunt cuvinte englezești', () {
-    final en = {for (final w in englishWords) w.$2};
-    for (var seed = 0; seed < 20; seed++) {
-      for (final r in _build(const EnglezaGame(), 6, seed).rounds) {
-        expect(r.speak.last, 'en:${_correct(r)}');
-        expect(r.choices.every((c) => en.contains(c.label)), isTrue);
-      }
-    }
-  });
 }

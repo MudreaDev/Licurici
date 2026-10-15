@@ -168,7 +168,7 @@ class SwitchGame {
 
   String get id => 'regula-se-schimba';
   String get name => 'Regula se schimbă';
-  String get emoji => '🔀';
+  String get emoji => '🔁';
   String get description => 'Sortează după culoare, apoi după formă';
   Set<Grade> get grades => Grade.parseCodes('G12');
   List<String> get steps => const ['FEX3', 'FEX4'];

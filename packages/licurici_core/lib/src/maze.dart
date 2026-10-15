@@ -195,7 +195,7 @@ class MazeGame {
 
   String get id => 'labirint';
   String get name => 'Labirint';
-  String get emoji => '🌀';
+  String get emoji => '🗺️';
   String get description => 'Du peștișorul acasă prin labirint';
   Set<Grade> get grades => Grade.parseCodes('G1234');
   List<String> get steps => const ['FEX7'];

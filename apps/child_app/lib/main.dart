@@ -57,12 +57,15 @@ import 'features/games/sequence/simon_screen.dart';
 import 'features/settings/settings.dart';
 import 'shared/music.dart';
 import 'shared/voice.dart';
+import 'shared/audio_context.dart';
 
 /// Cheia setărilor copilului în tabela `meta`.
 const settingsKey = 'settings';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Vocea, muzica și sunetele se aud împreună (fără „audio focus” exclusiv pe Android).
+  await configureAppAudio();
   // Jocul se joacă doar în landscape (și în manifestul Android / Info.plist iOS).
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,

@@ -344,7 +344,7 @@ Anterior:  **prima sesiune de lucru**. Făcut: modelul de dezvoltare în cod (ar
 3. Recompensă imediată (< 1 s). Răsplătim efortul, nu doar corectitudinea.
 4. Culori calme, „modul calm” (stimulare redusă), sunet și mișcare comutabile, `reduce motion` respectat.
 5. Navigație identică și fixă; „Acasă” mereu în același loc.
-6. Voce naturală română pentru toate instrucțiunile (și engleză pentru materia Engleză).
+6. Voce naturală română pentru toate instrucțiunile (fără engleză — jocul „Engleză” a fost scos în sesiunea 12).
 7. **Offline-first**: aplicația merge complet fără internet și **fără cont**. Contul (părintelui) e opțional, doar pentru sincronizare și panou.
 8. **Fără reclame, fără cumpărături în aplicație pentru copil, fără tracking, fără clasamente între copii.**
 
@@ -1098,7 +1098,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 ### Engleză & creativ
 | # | id | Nume | Clase | Mecanică | Abilitate | Tip | Faza |
 |---|----|------|-------|----------|-----------|-----|------|
-| 57 | engleza | English | 1234 | choice | vocabular EN | 🔁 | S1 |
+| 57 | ~~engleza~~ | English | 1234 | choice | vocabular EN | ❌ scos (sesiunea 12, cerința utilizatorului: fără engleză în aplicație) | — |
 | 58 | colorare | Colorăm | G1234 | freePlay | creativitate, motricitate fină | 🆕 | S2 |
 
 **Total S1:** 48 de jocuri (≈ 83%) — țintă suficientă pentru „70% din aplicație”. **S2:** 10 jocuri + rafinare.
@@ -1113,7 +1113,7 @@ peste-in-mijloc (`choice`), traseaza (`trace`), pasii-rutinei, ce-urmeaza, mare-
 fa-ca-licuriciul (imitație), semaforul (așteptare), regula-se-schimba (DCCS), cauta (căutare vizuală), unde-se-uita
 (atenție comună), vorbeste (AAC), toba-magica (ritm), hraneste-pestii (tragere), atinge-si-vezi (cauză–efect),
 ce-s-a-schimbat, puzzle, unde-e-ursul, labirint, diferente, ce-face, orarul-meu, construieste, la-magazin, spune-propozitia, semne, numarul-lipsa, anotimpuri, habitate, silabe, cuvinte, plural, zeci, inmultim, impartim, ceasul,
-🆕 **sesiunea a opta:** bani, tabla, probleme, gramatica, simboluri, trecut, personalitati, engleza (`games/scoala2.dart`); explorare-stiinte, explorare-istorie, explorare-viata (`explore` — hartă cu opriri);
+🆕 **sesiunea a opta:** bani, tabla, probleme, gramatica, simboluri, trecut, personalitati (`games/scoala2.dart`; engleza scos în sesiunea 12); explorare-stiinte, explorare-istorie, explorare-viata (`explore` — hartă cu opriri);
 🆕 **sesiunea a noua:** urmareste-pestele (`track`), scriem-cifrele, scriem-literele (`write`), pozitii, calendar, forma-ascunsa (`choice`), colorare (`color`), pe-rand (`turns`), licuricii (`sequence`, Corsi), asculta-si-fa (`listen`).
 🆕 **sesiunea a unsprezecea (jocuri „frate”):** sortam-emotiile, la-locul-lui (`sort`), cum-se-simte, ajuta-l-pe-licurici (`choice`), floarea-creste (`wait`), uneste-punctele (`trace`).
 🆕 **sesiunea a douăsprezecea (metrici standard):** cat-de-tare, cine-e-prietenul (`choice`, fețe desenate din cod — `games/faces.dart`), cate-sunt (`choice` cu stimul arătat o clipă — `games/subitizing.dart`), ce-ai-auzit (`choice`, perechi minimale — `games/listening.dart`), linia-numerelor (`numberLine`, `number_line.dart`), atinge-rapid (`fitts`, `fitts.dart`), paznicul-farului (`reaction`), stop (`stop`, `stop_signal.dart`), acum-sau-mai-mult (`delay`, `delay.dart`). Niveluri noi: puzzle 11, labirint 9, diferente 13.

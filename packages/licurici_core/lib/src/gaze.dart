@@ -101,7 +101,7 @@ class GazeGame {
 
   String get id => 'unde-se-uita';
   String get name => 'Unde se uită?';
-  String get emoji => '👀';
+  String get emoji => '👁️';
   String get description => 'Urmărește privirea lui Licurici';
   Set<Grade> get grades => Grade.parseCodes('G1');
   List<String> get steps => const ['ATN3', 'ATN4'];

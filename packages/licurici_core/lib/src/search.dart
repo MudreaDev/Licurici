@@ -103,7 +103,7 @@ class SearchGame {
 
   String get id => 'cauta';
   String get name => 'Caută';
-  String get emoji => '🔍';
+  String get emoji => '🎯';
   String get description => 'Găsește obiectul cerut';
   Set<Grade> get grades => Grade.parseCodes('G12');
   List<String> get steps => const ['ATN2'];

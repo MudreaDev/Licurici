@@ -213,7 +213,6 @@ const List<Ladder> ladders = [
     Step('PAC-I2', 'Recunoaște simbolurile țării (drapel, stemă, imn)', games: ['simboluri']),
     Step('PAC-I3', 'Știe oameni importanți din istorie și literatură', games: ['personalitati']),
     Step('PAC-I4', 'Explorează cum se trăia demult', games: ['explorare-istorie']),
-    Step('PAC-E1', 'Primele cuvinte în engleză (culori, animale, lucruri)', games: ['engleza']),
   ]),
 ];
 

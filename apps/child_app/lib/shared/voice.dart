@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:game_content/game_content.dart';
 
 import '../features/settings/settings.dart';
+import 'audio_context.dart';
 
 /// Adevărat cât timp Licurici vorbește (muzica de fundal se face mai încet).
 final voiceActivityProvider = Provider<ValueNotifier<bool>>((ref) {
@@ -36,12 +37,10 @@ class SilentSpeaker implements Speaker {
 /// Voce naturală RO din clipuri pre-generate (ADR-16). Rostește fragmente în ordine;
 /// o cerere nouă o anulează pe cea în curs. Fragmentele fără clip sunt sărite.
 class Voice implements Speaker {
-  Voice(this._ref) {
-    _player.audioCache = AudioCache(prefix: '');
-  }
+  Voice(this._ref);
 
   final Ref _ref;
-  final AudioPlayer _player = AudioPlayer();
+  final AudioPlayer _player = newAppPlayer();
   int _generation = 0;
 
   @override

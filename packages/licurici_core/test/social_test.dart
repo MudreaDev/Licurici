@@ -38,6 +38,10 @@ void main() {
         }
       }
     }
+    // Cardul fiecărui joc din catalog (orice mecanică) are rezervă OpenMoji.
+    for (final e in catalog) {
+      if (!has(e.emoji)) missing.add('${e.id}: ${e.emoji}');
+    }
     expect(missing, isEmpty);
   });
 

@@ -81,7 +81,7 @@ class BuildGame {
 
   String get id => 'construieste';
   String get name => 'Construiește la fel';
-  String get emoji => '🧱';
+  String get emoji => '🟦';
   String get description => 'Fă la fel ca modelul';
   Set<Grade> get grades => Grade.parseCodes('G123');
   List<String> get steps => const ['IMI5'];

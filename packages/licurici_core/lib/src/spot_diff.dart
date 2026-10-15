@@ -77,7 +77,7 @@ class SpotDiffGame {
 
   String get id => 'diferente';
   String get name => 'Găsește diferențele';
-  String get emoji => '🔍';
+  String get emoji => '🔎';
   String get description => 'Ce e altfel în poza a doua?';
   Set<Grade> get grades => Grade.parseCodes('G1234');
   List<String> get steps => const ['POT8'];
