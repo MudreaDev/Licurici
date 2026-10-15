@@ -152,6 +152,9 @@ SessionRecord _session(ChildProfile c, int i, int total, DateTime start, Random 
       ));
     }
   }
+  // Jocurile măsurabile (metricile standard din panou), o dată la trei sesiuni. Au generatorul lor
+  // de numere și ceasul lor, ca restul demo-ului să rămână exact la fel.
+  if (i % 3 == 2) trials.addAll(_measured(c, progress, t, Random(i * 31 + c.nickname.codeUnitAt(0))));
   final events = <SessionEvent>[
     if (r.nextDouble() < 0.3) SessionEvent(SessionEventKind.pause, start.add(const Duration(minutes: 9))),
     if (r.nextDouble() < 0.2) SessionEvent(SessionEventKind.breathing, start.add(const Duration(minutes: 10))),
@@ -172,4 +175,64 @@ SessionRecord _session(ChildProfile c, int i, int total, DateTime start, Random 
     moodBefore: mood(0.2 * progress),
     moodAfter: mood(0.25 + 0.2 * progress),
   );
+}
+
+/// Câteva încercări din jocurile măsurabile pentru copilul demo (câte două jocuri pe copil).
+List<Trial> _measured(ChildProfile c, double progress, DateTime from, Random r) {
+  var at = from;
+  Trial t(String game, String step, {required bool correct, String? stim, String? target, int? latency, double? difficulty, int? level}) {
+    at = at.add(Duration(seconds: 4 + r.nextInt(5)));
+    return Trial(
+      stepId: step,
+      gameId: game,
+      correct: correct,
+      promptLevel: PromptLevel.p0,
+      at: at,
+      stimulusId: stim,
+      targetId: target,
+      latencyMs: latency,
+      difficulty: difficulty,
+      level: level,
+    );
+  }
+
+  final out = <Trial>[];
+  switch (c.nickname) {
+    case 'Ilinca':
+      for (var k = 0; k < 6; k++) {
+        final err = (22 - 14 * progress + r.nextInt(6)).round();
+        out.add(t('linia-numerelor', 'PAC-N5', correct: err <= 10, stim: 'eroare-$err', latency: 2500 + r.nextInt(2000), difficulty: 20));
+      }
+      var ssd = 250;
+      for (var k = 0; k < 16; k++) {
+        if (k % 4 == 3) {
+          final stopped = r.nextDouble() < 0.5;
+          out.add(t('stop', 'FEX2c', correct: stopped, stim: 'stop', difficulty: ssd.toDouble(), latency: stopped ? null : 500));
+          ssd += stopped ? 50 : -50;
+        } else {
+          out.add(t('stop', 'FEX2c', correct: true, stim: 'go', latency: (720 - 120 * progress + r.nextInt(120)).round()));
+        }
+      }
+    case 'Tudor':
+      for (var k = 0; k < 10; k++) {
+        out.add(t('atinge-rapid', 'MOT0', correct: r.nextDouble() < 0.9, difficulty: 1.5 + r.nextDouble() * 2, latency: (900 - 250 * progress + r.nextInt(200)).round()));
+      }
+      for (var k = 0; k < 24; k++) {
+        final go = k % 3 == 0;
+        final tired = k > 12 ? 0.25 * (1 - progress) : 0.0;
+        out.add(t('paznicul-farului', 'ATN6', correct: go ? r.nextDouble() > 0.1 + tired : r.nextDouble() > 0.1, stim: go ? 'go' : 'noGo', target: go ? 'atinge' : 'nu-atinge'));
+      }
+    default:
+      for (var n = 1; n <= 6; n++) {
+        for (var k = 0; k < 2; k++) {
+          out.add(t('cate-sunt', 'PAC-N1', correct: n <= 3 + (progress * 1.5).round() || r.nextDouble() < 0.3, stim: 'n-$n', level: 3));
+        }
+      }
+      for (var level = 1; level <= 5; level++) {
+        for (var k = 0; k < 4; k++) {
+          out.add(t('cat-de-tare', 'EMO2', correct: level <= 2 + (progress * 2).round() || r.nextDouble() < 0.4, level: level));
+        }
+      }
+  }
+  return out;
 }

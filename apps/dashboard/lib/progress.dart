@@ -301,3 +301,92 @@ class MasteryPanel extends StatelessWidget {
     );
   }
 }
+
+/// Metricile standard ale jocurilor măsurabile (PAE, throughput, SSRT, vigilență, prag, subitizare,
+/// amânare…): toate sesiunile și ultima sesiune în care s-a jucat jocul, cu săgeata tendinței.
+class StandardMetricsPanel extends StatelessWidget {
+  const StandardMetricsPanel(this.history, {super.key});
+  final ChildHistory history;
+
+  @override
+  Widget build(BuildContext context) {
+    final all = standardMetrics([for (final s in history.sessions) ...s.trials]);
+    if (all.isEmpty) return const SizedBox.shrink();
+    StandardMetric? lastOf(String game) {
+      for (final s in history.sessions.reversed) {
+        final ts = [for (final t in s.trials) if (t.gameId == game) t];
+        if (ts.isEmpty) continue;
+        return standardMetrics(ts).where((m) => m.gameId == game).firstOrNull;
+      }
+      return null;
+    }
+
+    final text = Theme.of(context).textTheme;
+    return Section(
+      'Metrici standard',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Măsurile folosite în cercetare pentru jocurile măsurabile, calculate din toate încercările. '
+            '„Ultima” = ultima sesiune în care copilul a jucat jocul.',
+            style: text.bodySmall,
+          ),
+          const SizedBox(height: 8),
+          for (final m in all)
+            Padding(
+              key: ValueKey('metric-${m.gameId}'),
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${catalogEntry(m.gameId)?.name ?? m.gameId} · ${m.name}', style: text.titleSmall),
+                        Text(m.meaning, style: text.bodySmall),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: Builder(
+                      builder: (context) {
+                        final last = lastOf(m.gameId);
+                        final better = last == null || last.raw == m.raw ? null : (last.raw > m.raw) == m.higherIsBetter;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(m.value, style: text.titleMedium, textAlign: TextAlign.end),
+                            if (last != null)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  if (better != null)
+                                    Icon(
+                                      better ? Icons.trending_up : Icons.trending_down,
+                                      size: 18,
+                                      semanticLabel: better ? 'mai bine' : 'mai slab',
+                                      color: better ? const Color(0xFF2E7D5B) : const Color(0xFF80622F),
+                                    ),
+                                  const SizedBox(width: 4),
+                                  Flexible(child: Text('ultima: ${last.value}', style: text.bodySmall, textAlign: TextAlign.end)),
+                                ],
+                              ),
+                            Text('${m.trials} încercări', style: text.bodySmall),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

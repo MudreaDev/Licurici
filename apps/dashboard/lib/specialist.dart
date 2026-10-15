@@ -253,7 +253,7 @@ class _ChildDetail extends StatelessWidget {
               _TabBody(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [ProgressPanel(history), MasteryPanel(history)],
+                  children: [ProgressPanel(history), MasteryPanel(history), StandardMetricsPanel(history)],
                 ),
               ),
               _TabBody(child: _Sessions(history)),
