@@ -64,6 +64,10 @@ const uiPhrases = [
   // Turnul
   'Pune inelele pe rând: întâi cel mai mare.',
   'Caută cel mai mare inel.',
+  // Adu-mi
+  'Adu-mi',
+  'și',
+  'Mulțumesc',
   // Acum sau mai mult?
   'O stea acum sau trei stele dacă aștepți?',
   'O stea acum sau două stele dacă aștepți?',

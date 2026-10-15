@@ -15,6 +15,7 @@ import 'number_line.dart';
 import 'stop_signal.dart';
 import 'delay.dart';
 import 'stacking.dart';
+import 'fetch.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -348,6 +349,30 @@ class SessionRecorder {
         targetId: '${m.round.target}',
         chosenId: m.estimate.toStringAsFixed(1),
         difficulty: level.axes.max.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Adu-mi”: câte o încercare pe cerere; corectă = niciun obiect greșit în coș;
+  /// ținta = primul cuvânt cerut, „alegerea” = primul obiect greșit (confuzii între cuvinte).
+  void fetchLevel(FetchResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final a in result.answers) {
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: a.clean,
+        promptLevel: PromptLevel.p0,
+        attempts: a.wrong + 1,
+        latencyMs: a.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: a.round.wanted.map((w) => w.word).join('+'),
+        targetId: a.round.wanted.first.word,
+        chosenId: a.firstWrong?.word,
+        difficulty: a.round.table.length.toDouble(),
       ));
     }
   }

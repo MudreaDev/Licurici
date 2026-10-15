@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_content/game_content.dart';
 import 'package:licurici/main.dart';
 import 'package:licurici/shared/voice.dart';
-import 'package:licurici_core/licurici_core.dart';
 
 import 'layout_test.dart' show devices, loadFonts, settle, settleUntil;
 

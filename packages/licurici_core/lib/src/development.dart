@@ -102,8 +102,8 @@ const List<Ladder> ladders = [
   ]),
   Ladder(Domain.lrc, [
     Step('LRC1', 'Arată obiectul numit, din două variante (obiecte foarte cunoscute)',
-        games: ['arata-mi']),
-    Step('LRC2', 'Arată obiectul numit, din 3–5 variante, peste 20 de obiecte', games: ['arata-mi']),
+        games: ['arata-mi', 'adu-mi']),
+    Step('LRC2', 'Arată obiectul numit, din 3–5 variante, peste 20 de obiecte', games: ['arata-mi', 'adu-mi']),
     Step('LRC3', 'Arată părțile corpului', games: ['corpul']),
     Step('LRC3b', 'Înțelege acțiuni: „cine doarme?”, „cine mănâncă?”', games: ['ce-face']),
     Step('LRC4', 'Înțelege un atribut: mare / mic, culoare („cartea verde”)',
