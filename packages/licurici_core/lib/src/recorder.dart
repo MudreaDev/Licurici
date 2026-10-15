@@ -16,6 +16,7 @@ import 'stop_signal.dart';
 import 'delay.dart';
 import 'stacking.dart';
 import 'fetch.dart';
+import 'paint_by_ear.dart';
 import 'place.dart';
 import 'feeding.dart';
 import 'gaze.dart';
@@ -400,6 +401,32 @@ class SessionRecorder {
         targetId: r.tasks.first.relation.at(r.landmark),
         chosenId: a.firstWrong?.at(r.landmark),
         difficulty: r.spots.length.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Colorează ce auzi”: câte o încercare pe cerere; corectă = nicio colorare greșită;
+  /// ținta = „obiect:culoare” cerut, „alegerea” = prima greșeală; dificultatea = culori în paletă.
+  void paintLevel(PaintResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final a in result.answers) {
+      final r = a.round;
+      final t = r.tasks.first;
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: a.clean,
+        promptLevel: PromptLevel.p0,
+        attempts: a.wrong + 1,
+        latencyMs: a.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: r.tasks.map((t) => t.color.name).join('+'),
+        targetId: '${r.slots[t.slot].name}:${t.color.word}',
+        chosenId: a.firstWrong,
+        difficulty: r.palette.length.toDouble(),
       ));
     }
   }

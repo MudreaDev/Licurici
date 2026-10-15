@@ -243,6 +243,15 @@ void main(List<String> args) {
       }
     }
   }
+  // Colorează ce auzi: fiecare obiect (și mare / mic) cu fiecare culoare.
+  for (final t in paintThings) {
+    for (final slot in [PaintSlot(t), PaintSlot(t, big: true), PaintSlot(t, big: false)]) {
+      for (final c in PaintColor.values) {
+        add('Colorează ${slot.name} cu ${c.word}', 'coloreaza-ce-auzi');
+        if (slot.big != null) add('${slot.name} cu ${c.word}', 'coloreaza-ce-auzi');
+      }
+    }
+  }
   add(DotsGame.says, 'uneste-punctele');
   for (final f in dotFigures) {
     add(f.name, 'uneste-punctele');

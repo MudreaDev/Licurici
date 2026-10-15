@@ -68,6 +68,7 @@ const gameScales = <String, LevelScale>{
   'turnul': LevelScale(7), // 7 inele la 5, pasul minim la 7, o singură culoare de la 6
   'adu-mi': LevelScale(6), // 6 obiecte la 5, două cerute deodată de la 6
   'pune-ursul': LevelScale(5), // toate cele 5 locuri la 4, două obiecte de la 5
+  'coloreaza-ce-auzi': LevelScale(7), // 6 culori la 5, mare / mic la 6, două colorări la 7
   'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
   'puzzle': LevelScale(11), // 4 × 4 fără model la 11
   'labirint': LevelScale(9), // 10 × 6 la 9
