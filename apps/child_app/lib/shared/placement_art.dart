@@ -36,7 +36,7 @@ class PlacementArt extends StatelessWidget {
       child: StimulusArt(placement.emoji, size: obj),
     );
     return Semantics(
-      label: '${placement.relation.word} ${placement.landmark.word}',
+      label: placement.relation.at(placement.landmark),
       child: SizedBox.square(
         dimension: s,
         child: Stack(
@@ -61,7 +61,7 @@ class PlacementArt extends StatelessWidget {
               ),
             Positioned.fill(
               child: CustomPaint(
-                painter: _LandmarkPainter(
+                painter: LandmarkPainter(
                   placement.landmark,
                   left: left,
                   right: right,
@@ -75,7 +75,7 @@ class PlacementArt extends StatelessWidget {
             if (box)
               Positioned.fill(
                 child: CustomPaint(
-                  painter: _LandmarkPainter(
+                  painter: LandmarkPainter(
                     placement.landmark,
                     left: left,
                     right: right,
@@ -91,8 +91,8 @@ class PlacementArt extends StatelessWidget {
   }
 }
 
-class _LandmarkPainter extends CustomPainter {
-  _LandmarkPainter(
+class LandmarkPainter extends CustomPainter {
+  LandmarkPainter(
     this.landmark, {
     required this.left,
     required this.right,
@@ -177,7 +177,7 @@ class _LandmarkPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_LandmarkPainter old) =>
+  bool shouldRepaint(LandmarkPainter old) =>
       old.landmark != landmark || old.front != front || old.top != top;
 }
 

@@ -79,16 +79,20 @@ enum Relation {
 
   /// Prepoziția rostită („sub”).
   final String word;
+
+  /// Locul rostit față de reper: „sub masă”, „în cutie”, dar „deasupra mesei” (cere genitivul).
+  String at(Landmark l) => this == deasupra ? '$word ${l.genitive}' : '$word ${l.word}';
 }
 
 /// Reperul unei scene spațiale, desenat din cod.
 enum Landmark {
-  masa('masă', 'masa'),
-  cutie('cutie', 'cutia');
+  masa('masă', 'masa', 'mesei'),
+  cutie('cutie', 'cutia', 'cutiei');
 
-  const Landmark(this.word, this.articulated);
+  const Landmark(this.word, this.articulated, this.genitive);
   final String word;
   final String articulated;
+  final String genitive;
 }
 
 /// O mică scenă: [emoji] așezat față de un [landmark] după [relation] („ursulețul sub masă”).

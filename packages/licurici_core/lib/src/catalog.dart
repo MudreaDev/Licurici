@@ -36,6 +36,7 @@ import 'stop_signal.dart';
 import 'delay.dart';
 import 'stacking.dart';
 import 'fetch.dart';
+import 'place.dart';
 import 'trace.dart';
 import 'tracking.dart';
 import 'turns.dart';
@@ -43,7 +44,7 @@ import 'writing.dart';
 import 'waiting.dart';
 
 /// Mecanica de care depinde ruta ecranului.
-enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff, build, shop, explore, track, write, color, turns, listen, numberLine, fitts, stop, delay, stacking, fetch }
+enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff, build, shop, explore, track, write, color, turns, listen, numberLine, fitts, stop, delay, stacking, fetch, place }
 
 /// Un joc din catalog, indiferent de mecanică.
 class CatalogEntry {
@@ -103,6 +104,7 @@ class CatalogEntry {
         GameKind.delay => '/acum-sau-mai-mult',
         GameKind.stacking => '/turnul',
         GameKind.fetch => '/adu-mi',
+        GameKind.place => '/pune-ursul',
       };
 
   @override
@@ -212,6 +214,15 @@ List<CatalogEntry> get catalog => [
           emoji: g.emoji,
           description: g.description,
           kind: GameKind.fetch,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [PlaceGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.place,
           domain: _domainOf(g.id, g.steps),
         ),
       for (final g in const [StackingGame()])

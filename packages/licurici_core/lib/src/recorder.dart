@@ -16,6 +16,7 @@ import 'stop_signal.dart';
 import 'delay.dart';
 import 'stacking.dart';
 import 'fetch.dart';
+import 'place.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -373,6 +374,32 @@ class SessionRecorder {
         targetId: a.round.wanted.first.word,
         chosenId: a.firstWrong?.word,
         difficulty: a.round.table.length.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Pune ursulețul”: câte o încercare pe propoziție; corectă = nicio așezare greșită;
+  /// ținta = locul cerut („sub masă”), „alegerea” = primul loc greșit (confuzii pe / deasupra);
+  /// dificultatea = câte locuri erau pe scenă.
+  void placeLevel(PlaceResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final a in result.answers) {
+      final r = a.round;
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: a.clean,
+        promptLevel: PromptLevel.p0,
+        attempts: a.wrong + 1,
+        latencyMs: a.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: r.tasks.map((t) => t.relation.name).join('+'),
+        targetId: r.tasks.first.relation.at(r.landmark),
+        chosenId: a.firstWrong?.at(r.landmark),
+        difficulty: r.spots.length.toDouble(),
       ));
     }
   }

@@ -233,6 +233,16 @@ void main(List<String> args) {
       add(aacSentence(c, w), 'vorbeste');
     }
   }
+  // Pune ursulețul: fiecare obiect, la fiecare loc al fiecărui reper (și ca a doua jumătate).
+  for (final (_, w) in PlaceGame.things) {
+    for (final l in Landmark.values) {
+      for (final r in Relation.values) {
+        if (!PlaceGame.fits(r, l)) continue;
+        add('Pune $w ${r.at(l)}', 'pune-ursul');
+        add('$w ${r.at(l)}', 'pune-ursul');
+      }
+    }
+  }
   add(DotsGame.says, 'uneste-punctele');
   for (final f in dotFigures) {
     add(f.name, 'uneste-punctele');

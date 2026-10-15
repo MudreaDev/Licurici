@@ -33,6 +33,7 @@ import 'features/games/fitts/fitts_screen.dart';
 import 'features/games/stop/stop_screen.dart';
 import 'features/games/delay/delay_screen.dart';
 import 'features/games/fetch/fetch_screen.dart';
+import 'features/games/place/place_screen.dart';
 import 'features/games/stacking/stacking_screen.dart';
 import 'features/games/order/order_screen.dart';
 import 'features/games/puzzle/puzzle_screen.dart';
@@ -298,6 +299,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/linia-numerelor',
         pageBuilder: (context, state) =>
             _fade(context, state, const NumberLineScreen()),
+      ),
+      GoRoute(
+        path: '/pune-ursul',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const PlaceScreen()),
       ),
       GoRoute(
         path: '/adu-mi',

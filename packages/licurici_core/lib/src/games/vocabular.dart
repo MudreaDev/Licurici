@@ -725,7 +725,7 @@ class UndeEUrsulGame extends ChoiceGame {
       target,
       ...ctx.sample(relations.where((r) => r != target && fits(r, landmark)).toList(), want - 1),
     ]..shuffle(ctx.random);
-    final phrase = '$word ${target.word} ${landmark.word}';
+    final phrase = '$word ${target.at(landmark)}';
     return ChoiceRound(
       prompt: 'Arată $phrase',
       speak: ['Arată $phrase'],
@@ -737,7 +737,7 @@ class UndeEUrsulGame extends ChoiceGame {
           Choice(
             placement: Placement(emoji, r, landmark),
             id: r.name,
-            speak: '${r.word} ${landmark.word}',
+            speak: r.at(landmark),
             correct: r == target,
           ),
       ],

@@ -63,11 +63,12 @@ const gameScales = <String, LevelScale>{
   // construcție, puzzle, labirint
   'construieste': LevelScale(7),
   'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
-  'atinge-rapid': LevelScale(9),
-  'stop': LevelScale(9),
-  'turnul': LevelScale(7),
-  'adu-mi': LevelScale(6), // 6 obiecte la 5, două cerute deodată de la 6 // 7 inele la 5, pasul minim la 7, o singură culoare de la 6
-  'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9 // 32 de încercări, 30% opriri, fereastra de 0,9 s la 9 // bula de 0,07 la 9 (distanța se oprește la 9)
+  'atinge-rapid': LevelScale(9), // bula de 0,07 la 9 (distanța se oprește la 9)
+  'stop': LevelScale(9), // 32 de încercări, 30% opriri, fereastra de 0,9 s la 9
+  'turnul': LevelScale(7), // 7 inele la 5, pasul minim la 7, o singură culoare de la 6
+  'adu-mi': LevelScale(6), // 6 obiecte la 5, două cerute deodată de la 6
+  'pune-ursul': LevelScale(5), // toate cele 5 locuri la 4, două obiecte de la 5
+  'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
   'puzzle': LevelScale(11), // 4 × 4 fără model la 11
   'labirint': LevelScale(9), // 10 × 6 la 9
   // atenție comună, imitație, ritm
