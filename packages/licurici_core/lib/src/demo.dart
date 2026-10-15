@@ -154,7 +154,8 @@ SessionRecord _session(ChildProfile c, int i, int total, DateTime start, Random 
   }
   // Jocurile măsurabile (metricile standard din panou), o dată la trei sesiuni. Au generatorul lor
   // de numere și ceasul lor, ca restul demo-ului să rămână exact la fel.
-  if (i % 3 == 2) trials.addAll(_measured(c, progress, t, Random(i * 31 + c.nickname.codeUnitAt(0))));
+  // Nu în ultima sesiune: „Prezentare” (oboseala, latența) rămâne cea a jocurilor obișnuite.
+  if (i % 3 == 1) trials.addAll(_measured(c, progress, t, Random(i * 31 + c.nickname.codeUnitAt(0))));
   final events = <SessionEvent>[
     if (r.nextDouble() < 0.3) SessionEvent(SessionEventKind.pause, start.add(const Duration(minutes: 9))),
     if (r.nextDouble() < 0.2) SessionEvent(SessionEventKind.breathing, start.add(const Duration(minutes: 10))),
