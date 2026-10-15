@@ -35,6 +35,7 @@ import 'features/games/delay/delay_screen.dart';
 import 'features/games/fetch/fetch_screen.dart';
 import 'features/games/paint_by_ear/paint_by_ear_screen.dart';
 import 'features/games/place/place_screen.dart';
+import 'features/games/sound_memory/sound_memory_screen.dart';
 import 'features/games/stacking/stacking_screen.dart';
 import 'features/games/order/order_screen.dart';
 import 'features/games/puzzle/puzzle_screen.dart';
@@ -305,6 +306,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/coloreaza-ce-auzi',
         pageBuilder: (context, state) =>
             _fade(context, state, const PaintByEarScreen()),
+      ),
+      GoRoute(
+        path: '/memorie-sunete',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const SoundMemoryScreen()),
       ),
       GoRoute(
         path: '/pune-ursul',

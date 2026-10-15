@@ -38,6 +38,7 @@ import 'stacking.dart';
 import 'fetch.dart';
 import 'paint_by_ear.dart';
 import 'place.dart';
+import 'sound_memory.dart';
 import 'trace.dart';
 import 'tracking.dart';
 import 'turns.dart';
@@ -45,7 +46,7 @@ import 'writing.dart';
 import 'waiting.dart';
 
 /// Mecanica de care depinde ruta ecranului.
-enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff, build, shop, explore, track, write, color, turns, listen, numberLine, fitts, stop, delay, stacking, fetch, place, paintByEar }
+enum GameKind { choice, reaction, sequence, memory, sort, calm, shell, trace, order, imitation, wait, rules, search, gaze, aac, rhythm, feed, cause, change, puzzle, maze, diff, build, shop, explore, track, write, color, turns, listen, numberLine, fitts, stop, delay, stacking, fetch, place, paintByEar, soundMemory }
 
 /// Un joc din catalog, indiferent de mecanică.
 class CatalogEntry {
@@ -107,6 +108,7 @@ class CatalogEntry {
         GameKind.fetch => '/adu-mi',
         GameKind.place => '/pune-ursul',
         GameKind.paintByEar => '/coloreaza-ce-auzi',
+        GameKind.soundMemory => '/memorie-sunete',
       };
 
   @override
@@ -234,6 +236,15 @@ List<CatalogEntry> get catalog => [
           emoji: g.emoji,
           description: g.description,
           kind: GameKind.paintByEar,
+          domain: _domainOf(g.id, g.steps),
+        ),
+      for (final g in const [SoundMemoryGame()])
+        CatalogEntry(
+          id: g.id,
+          name: g.name,
+          emoji: g.emoji,
+          description: g.description,
+          kind: GameKind.soundMemory,
           domain: _domainOf(g.id, g.steps),
         ),
       for (final g in const [StackingGame()])

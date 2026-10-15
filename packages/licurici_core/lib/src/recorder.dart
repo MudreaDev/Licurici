@@ -18,6 +18,7 @@ import 'stacking.dart';
 import 'fetch.dart';
 import 'paint_by_ear.dart';
 import 'place.dart';
+import 'sound_memory.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -427,6 +428,29 @@ class SessionRecorder {
         targetId: '${r.slots[t.slot].name}:${t.color.word}',
         chosenId: a.firstWrong,
         difficulty: r.palette.length.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Memorie cu sunete”: câte o încercare pe mutare (ca la Perechi); corectă = pereche
+  /// animal–sunet; ținta = prima carte, „alegerea” = a doua, la greșeală.
+  void soundMemoryLevel(SoundMemoryResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final m in result.moves) {
+      final match = result.isMatch(m);
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: match,
+        promptLevel: PromptLevel.p0,
+        latencyMs: m.ms,
+        at: _clock(),
+        seed: level.seed,
+        targetId: level.cards[m.first].id,
+        chosenId: match ? null : level.cards[m.second].id,
+        difficulty: level.pairs.toDouble(),
       ));
     }
   }

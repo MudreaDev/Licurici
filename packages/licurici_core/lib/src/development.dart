@@ -114,7 +114,7 @@ const List<Ladder> ladders = [
     Step('LRC7', 'Răspunde la întrebări despre o poveste ascultată', games: ['povesti']),
   ]),
   Ladder(Domain.com, [
-    Step('COM1', 'Asociază un sunet cu cine îl face (animale, lucruri)', games: ['ce-se-aude']),
+    Step('COM1', 'Asociază un sunet cu cine îl face (animale, lucruri)', games: ['ce-se-aude', 'memorie-sunete']),
     Step('COM2', 'Răspunde cu da/nu la întrebări despre ce vede', games: ['da-nu']),
     Step('COM3', 'Cere ce vrea cu pictograme („Vreau apă”)', games: ['vorbeste']),
     Step('COM4', 'Recunoaște primul sunet al unui cuvânt', games: ['primul-sunet', 'ce-ai-auzit']),

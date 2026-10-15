@@ -61,6 +61,7 @@ final Map<String, String Function(int)> axesSignature = {
   'acum-sau-mai-mult': (l) => '${const DelayGame().waitMsFor(l)} ${const DelayGame().laterFor(l)}',
   'adu-mi': (l) => '${const FetchGame().axesFor(l).toJson()}',
   'pune-ursul': (l) => '${const PlaceGame().axesFor(l).toJson()}',
+  'memorie-sunete': (l) => '${const SoundMemoryGame().axesFor(l).toJson()}',
   'coloreaza-ce-auzi': (l) => '${const PaintGame().axesFor(l).toJson()}',
   'turnul': (l) => '${const StackingGame().axesFor(l).toJson()}',
   'stop': (l) => '${const StopSignalGame().axesFor(l).toJson()}',

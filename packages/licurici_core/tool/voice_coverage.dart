@@ -252,6 +252,12 @@ void main(List<String> args) {
       }
     }
   }
+  // Memorie cu sunete: sunetul cărții întoarse și, la pereche, cine îl face.
+  add(SoundMemoryGame.instruction, 'memorie-sunete');
+  for (final x in soundSources) {
+    add(x.sound, 'memorie-sunete');
+    add(SoundMemoryGame.says(x), 'memorie-sunete');
+  }
   add(DotsGame.says, 'uneste-punctele');
   for (final f in dotFigures) {
     add(f.name, 'uneste-punctele');

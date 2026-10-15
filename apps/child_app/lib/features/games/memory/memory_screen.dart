@@ -272,7 +272,7 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
             alignment: WrapAlignment.center,
             children: [
               for (var i = 0; i < n; i++)
-                _MemoryCard(
+                MemoryCard(
                   key: ValueKey('memory-card-$i'),
                   face: _level.cards[i],
                   up: _up.contains(i),
@@ -291,8 +291,10 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
 }
 
 /// O carte: spatele (desenat din cod) sau fața (ilustrația), cu întoarcere 3D pe axa Y.
-class _MemoryCard extends StatelessWidget {
-  const _MemoryCard({
+/// Folosită și la „Memorie cu sunete” ([sound]: fața lavandă a cărților-sunet; [selected]: prima
+/// carte aleasă, când fețele stau la vedere).
+class MemoryCard extends StatelessWidget {
+  const MemoryCard({
     super.key,
     required this.face,
     required this.up,
@@ -301,11 +303,23 @@ class _MemoryCard extends StatelessWidget {
     required this.height,
     required this.motion,
     required this.onTap,
+    this.sound = false,
+    this.selected = false,
+    this.tappableUp = false,
+    this.label,
   });
 
   final String face;
   final bool up;
   final bool matched;
+  final bool sound;
+  final bool selected;
+
+  /// Cartea se poate alege și cu fața la vedere (animalele de la „Memorie cu sunete”).
+  final bool tappableUp;
+
+  /// Eticheta pentru cititorul de ecran când fața e la vedere (altfel „Carte întoarsă”).
+  final String? label;
   final double width;
   final double height;
   final MotionPolicy motion;
@@ -316,11 +330,11 @@ class _MemoryCard extends StatelessWidget {
     final radius = BorderRadius.circular(math.min(22, width * 0.16));
     final front = DecoratedBox(
       decoration: BoxDecoration(
-        color: matched ? Tokens.goodSoft : const Color(0xFFFFFDF8),
+        color: matched ? Tokens.goodSoft : (sound ? const Color(0xFFEFEBFF) : const Color(0xFFFFFDF8)),
         borderRadius: radius,
         border: Border.all(
-          color: matched ? Tokens.good : const Color(0xFFEDE3D2),
-          width: matched ? 4 : 2,
+          color: matched ? Tokens.good : (selected ? Tokens.primary : const Color(0xFFEDE3D2)),
+          width: matched || selected ? 4 : 2,
         ),
         boxShadow: [
           if (matched)
@@ -359,8 +373,8 @@ class _MemoryCard extends StatelessWidget {
       ),
     );
     return Semantics(
-      button: !up && !matched,
-      label: up || matched ? 'Carte întoarsă' : 'Carte',
+      button: !matched && (!up || tappableUp),
+      label: up || matched ? (label ?? 'Carte întoarsă') : 'Carte',
       child: GestureDetector(
         onTap: onTap,
         child: Juice(

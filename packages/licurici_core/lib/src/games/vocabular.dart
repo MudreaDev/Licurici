@@ -471,8 +471,9 @@ class AtributeGame extends ChoiceGame {
   }
 }
 
-class _Sound {
-  const _Sound(this.emoji, this.who, this.sound, {this.farm = false});
+/// Cine face un sunet („pisica” → „miau”); folosit la „Ce se aude?” și „Memorie cu sunete”.
+class SoundSource {
+  const SoundSource(this.emoji, this.who, this.sound, {this.farm = false});
   final String emoji;
 
   /// Cine face sunetul (articulat).
@@ -485,21 +486,21 @@ class _Sound {
   final bool farm;
 }
 
-const _sounds = [
-  _Sound('🐶', 'câinele', 'ham, ham', farm: true),
-  _Sound('🐱', 'pisica', 'miau', farm: true),
-  _Sound('🐄', 'vaca', 'muuu', farm: true),
-  _Sound('🐑', 'oaia', 'beee', farm: true),
-  _Sound('🦆', 'rața', 'mac, mac', farm: true),
-  _Sound('🐓', 'cocoșul', 'cucurigu', farm: true),
-  _Sound('🐖', 'porcul', 'guiț, guiț', farm: true),
-  _Sound('🐥', 'puiul', 'piu, piu', farm: true),
-  _Sound('🐎', 'calul', 'ihahaha', farm: true),
-  _Sound('🐝', 'albina', 'bzzz'),
-  _Sound('🦉', 'bufnița', 'uhu, uhu'),
-  _Sound('🐍', 'șarpele', 'sss'),
-  _Sound('🚗', 'mașina', 'tuuut, tuuut'),
-  _Sound('🥁', 'toba', 'bum, bum'),
+const soundSources = [
+  SoundSource('🐶', 'câinele', 'ham, ham', farm: true),
+  SoundSource('🐱', 'pisica', 'miau', farm: true),
+  SoundSource('🐄', 'vaca', 'muuu', farm: true),
+  SoundSource('🐑', 'oaia', 'beee', farm: true),
+  SoundSource('🦆', 'rața', 'mac, mac', farm: true),
+  SoundSource('🐓', 'cocoșul', 'cucurigu', farm: true),
+  SoundSource('🐖', 'porcul', 'guiț, guiț', farm: true),
+  SoundSource('🐥', 'puiul', 'piu, piu', farm: true),
+  SoundSource('🐎', 'calul', 'ihahaha', farm: true),
+  SoundSource('🐝', 'albina', 'bzzz'),
+  SoundSource('🦉', 'bufnița', 'uhu, uhu'),
+  SoundSource('🐍', 'șarpele', 'sss'),
+  SoundSource('🚗', 'mașina', 'tuuut, tuuut'),
+  SoundSource('🥁', 'toba', 'bum, bum'),
 ];
 
 /// Ce se aude? (COM1, catalog #22): vocea spune un sunet („Cine face miau?”), copilul alege
@@ -523,7 +524,7 @@ class CeSeAudeGame extends ChoiceGame {
       title: name,
       instruction: 'Ascultă sunetul și arată cine îl face.',
       rounds: [
-        for (final t in _targets(ctx, _sounds, 8))
+        for (final t in _targets(ctx, soundSources, 8))
           ChoiceRound(
             prompt: 'Cine face „${t.sound}”?',
             speak: ['Cine face ${t.sound}?'],
@@ -533,7 +534,7 @@ class CeSeAudeGame extends ChoiceGame {
               for (final o in [
                 t,
                 ...ctx.sample(
-                  _sounds
+                  soundSources
                       .where((o) => o != t && (!similar || !t.farm || o.farm))
                       .toList(),
                   4,
