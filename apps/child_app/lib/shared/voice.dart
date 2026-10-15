@@ -61,6 +61,10 @@ class Voice implements Speaker {
         try {
           await _player.play(AssetSource(asset));
           await done.timeout(const Duration(seconds: 8));
+        } on TimeoutException {
+          // Clipul n-a anunțat sfârșitul (ex. întrerupt de sistem): trecem la fragmentul
+          // următor, ca restul propoziției să se audă totuși.
+          continue;
         } on Object {
           return; // audio indisponibil (ex. browser fără interacțiune) — jocul continuă fără voce
         }

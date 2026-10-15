@@ -8,6 +8,13 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
 SDK="${FLUTTER_HOME:-$HOME/flutter-$FLUTTER_VERSION}"
 
+# Imaginea de build Vercel (Amazon Linux 2023) poate să nu aibă unzip/xz, de care are nevoie Flutter.
+for tool in unzip xz which; do
+  if ! command -v "$tool" >/dev/null 2>&1 && command -v dnf >/dev/null 2>&1; then
+    dnf install -y "$tool" >/dev/null 2>&1 || true
+  fi
+done
+
 if [ ! -x "$SDK/bin/flutter" ]; then
   echo "Instalez Flutter $FLUTTER_VERSION…"
   git clone --depth 1 --branch "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$SDK"
