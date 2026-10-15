@@ -83,9 +83,9 @@ const List<Ladder> ladders = [
   ]),
   Ladder(Domain.imi, [
     Step('IMI1', 'Imită o acțiune simplă pe ecran (atinge ce a atins Licurici)',
-        games: ['fa-ca-licuriciul']),
-    Step('IMI2', 'Imită două acțiuni în ordine', games: ['fa-ca-licuriciul']),
-    Step('IMI3', 'Imită trei acțiuni, inclusiv tragerea unui obiect', games: ['fa-ca-licuriciul']),
+        games: ['fa-ca-licuriciul', 'oglinda']),
+    Step('IMI2', 'Imită două acțiuni în ordine', games: ['fa-ca-licuriciul', 'oglinda']),
+    Step('IMI3', 'Imită trei acțiuni, inclusiv tragerea unui obiect', games: ['fa-ca-licuriciul', 'oglinda']),
     Step('IMI4', 'Repetă un ritm bătut la tobă', games: ['toba-magica']),
     Step('IMI5', 'Copiază un model din piese (construiește la fel)', games: ['construieste']),
   ]),

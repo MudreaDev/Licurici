@@ -66,7 +66,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 Doar lucrurile pe care asistentul **nu le poate face** din repo (instalări, conturi, bani, fotografii, oameni, decizii).
 Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 
-**Progres (15.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (**108 jocuri în aplicație**: 6 „frate” pentru generalizare în sesiunea 11 și 9 jocuri noi cu metrici standard în sesiunea 12; „Engleză” scos la cererea ta). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
+**Progres (15.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (**109 jocuri în aplicație**: toate cele 12 „frate” pentru generalizare — 6 în sesiunea 11, 6 în sesiunea 12 — și 9 jocuri noi cu metrici standard; „Engleză” scos la cererea ta). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
 
 **A. Pe calculatorul tău (verificare)**
 - [ ] Instalează **Docker Desktop**. Apoi: `cp infra/.env.example infra/.env` (schimbă parolele) → `docker compose -f infra/docker-compose.yml up -d --build`.
@@ -131,7 +131,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **Planul jocurilor măsurabile (cerut pe 11.10; estimare ≈ 45–53 de ore, 7–8 sesiuni):**
 1. ✅ **Calibrarea nivelurilor pe o scară comună** (`level_scale.dart`): fiecare joc își declară plafonul (nivelul de la care axele nu mai cresc); nivelul 1 = 1000, plafonul = 1400 pe scara rating-ului, în orice joc. Testul `level_scale_test.dart` verifică plafonul pe axele reale ale celor 32 de jocuri cu niveluri proprii (plus 3 explorări, pe scara „Sortăm”) și cere ca orice joc nou să-l declare (a prins două plafoane citite greșit). ✅ **Verificarea generalizării**: o treaptă stăpânită pe un singur joc primește în „Drumul de azi” o tură pe alt joc al ei; „generalizată” = ≥ 80% independență în două jocuri; panoul specialistului arată „Stăpânire și generalizare”.
-2. 🟨 **12 jocuri „frate”** (aceeași treaptă, alt material sau alt fel de răspuns) — **11 gata** (6 în sesiunea 11, 5 în sesiunea 12):
+2. ✅ **12 jocuri „frate”** (aceeași treaptă, alt material sau alt fel de răspuns) — **toate 12 gata** (6 în sesiunea 11, 6 în sesiunea 12):
    - ✅ **Sortăm emoțiile** (EMO2) și **La locul lui** (COG3): mecanica „Sortăm” generalizată (`SortGame.custom`, ruta `/sortam/:id`, nivel propriu);
    - ✅ **Cum se simte?** (EMO3, numit în plan „Termină povestea”): întâmplarea, iar răspunsul e **fața** aceleiași persoane cu emoții diferite; expresiile devin mai discrete la tier mare;
    - ✅ **Ajută-l pe Licurici** (AUT1–2): rutina pas cu pas — copilul alege doar ce urmează; la tier mare, greșelile vin din aceeași rutină;
@@ -142,7 +142,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
    - ✅ **Pune ursulețul** (LRC6): fratele lui „Unde e ursulețul?” — copilul **așază** obiectul pe locul spus (trage sau atinge cercul punctat); pe / sub → + lângă → + în → + deasupra, de la nivelul 5 două obiecte într-o propoziție; „deasupra mesei” se spune acum corect (genitiv) și în „Unde e ursulețul?”;
    - ✅ **Colorează ce auzi** (LRC4): fratele lui „Mare, mic, roșu” — „Colorează balonul cu roșu”: copilul ia culoarea din borcan și atinge (sau trage peste) obiectul, care se umple cu culoarea aleasă (filtru de culoare peste desenul OpenMoji, din cod); 2 → 6 culori, 2 obiecte de la nivelul 4, același obiect mare și mic la 6 („balonul mic cu galben”), două colorări într-o propoziție la 7;
    - ✅ **Memorie cu sunete** (COM1): fratele lui „Ce se aude?” — perechile sunt animalul și **sunetul** lui; cartea-sunet întoarsă îl face pe Licurici să spună sunetul („miau”), iar la pereche: „Pisica face miau.”; nivelurile 1–3 cu animalele la vedere (asociere), de la 4 toate întoarse (memorie), de la 6 doar animale de la fermă;
-   - ⬜ rămasă: Oglinda (IMI1–3).
+   - ✅ **Oglinda** (IMI1–3): fratele lui „Fă ca Licurici” — Licurici zboară și atinge, pe rând, părul, nasul, gura, un ochi sau o ureche pe fața unui prieten (fețele desenate din cod, cu nas adăugat); copilul repetă pe fața din oglindă. 1 → 3 atingeri (treapta IMI1/2/3 după câte), latura (ochiul din stânga ≠ dreapta) de la nivelul 4, alt copil în oglindă la 6; după două greșeli Licurici arată din nou (notat P4).
    - **Fețe desenate din cod** (`face.dart` + `drawn_face.dart`): ten, păr, coafură, ochi, accesorii, 7 emoții, intensitate 0…1 — oricâte persoane diferite; filtrul „Fețe furioase” le exclude. Sunt și baza pentru „Cât de tare?” și „Cine e prietenul?” (punctul 3).
 3. 🟨 **10 jocuri noi cu metrici standard** — **9 gata** (sesiunea 12): ✅ Câte sunt? (subitizare), ✅ Linia numerelor (eroarea procentuală absolută), ✅ Paznicul farului (atenție susținută), ✅ Stop! (SSRT), ✅ Acum sau mai mult? (amânarea recompensei), ✅ Cât de tare? (pragul de recunoaștere a emoției), ✅ Ce ai auzit? (numit în plan „Pară sau bară?”, discriminare auditivă pe perechi minimale), ✅ Atinge rapid (legea lui Fitts), ✅ Cine e prietenul? (recunoașterea feței); ⬜ Cum spune? (emoția din voce — cere înregistrări, §0.0 D).
 4. ✅ **Pescarul**: vietățile înoată ca în acvariu (`swim.dart`: reprize de înot și alunecare pe același drum total — timpul de reacție se măsoară la fel —, legănare, corpul după direcție; în aplicație, desenul pictat pe o plasă de 16 felii cu unda din corp spre coadă; caracatița pulsează, crabul pășește). Verificat în browser.
@@ -1284,7 +1284,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [x] `docs/gdpr/*` (politică, RoPA, DPIA, proceduri)
 - [ ] `docker-compose.prod.yml` + Traefik + TLS + backup; deploy pe VPS UE — 🟨 fișierele gata (`infra/docker-compose.prod.yml`, `infra/backup.sh`, imaginea panoului, [docs/operare.md](docs/operare.md)); netestate (fără Docker local), deploy-ul încă nefăcut
 - [ ] Sentry (app + API), testare de încărcare k6, audit accesibilitate — 🟨 accesibilitatea testată automat (33 de ecrane în aplicație, `test/a11y*_test.dart`; toate paginile panoului la 2 dimensiuni, `apps/dashboard/test/a11y_test.dart` — sesiunea 11); scriptul k6 gata (`tools/k6/sync.js`, 200 sync/s, p95 < 200 ms), nerulat; Sentry în API și worker, opțional (`SENTRY_DSN`; `common/sentry.ts` scoate cererea, utilizatorul, breadcrumbs și e-mailurile); în aplicația copilului încă nu
-- [x] Toate cele 48 de jocuri S1 funcționale; ADR-10…ADR-21 scrise — 108 jocuri, ADR-001…ADR-033
+- [x] Toate cele 48 de jocuri S1 funcționale; ADR-10…ADR-21 scrise — 109 jocuri, ADR-001…ADR-033
 - [ ] Demo pentru coordonator
 
 ### Semestrul 2 · feb – mai 2027

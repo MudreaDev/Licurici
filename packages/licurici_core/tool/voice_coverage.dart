@@ -258,6 +258,8 @@ void main(List<String> args) {
     add(x.sound, 'memorie-sunete');
     add(SoundMemoryGame.says(x), 'memorie-sunete');
   }
+  add(MirrorGame.instruction, 'oglinda');
+  add('Acum tu!', 'oglinda');
   add(DotsGame.says, 'uneste-punctele');
   for (final f in dotFigures) {
     add(f.name, 'uneste-punctele');

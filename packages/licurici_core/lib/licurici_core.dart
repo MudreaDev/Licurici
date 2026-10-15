@@ -63,6 +63,7 @@ export 'src/fetch.dart';
 export 'src/place.dart';
 export 'src/paint_by_ear.dart';
 export 'src/sound_memory.dart';
+export 'src/mirror.dart';
 export 'src/standard_metrics.dart';
 export 'src/puzzle.dart';
 export 'src/transfer.dart';

@@ -34,6 +34,7 @@ import 'features/games/stop/stop_screen.dart';
 import 'features/games/delay/delay_screen.dart';
 import 'features/games/fetch/fetch_screen.dart';
 import 'features/games/paint_by_ear/paint_by_ear_screen.dart';
+import 'features/games/mirror/mirror_screen.dart';
 import 'features/games/place/place_screen.dart';
 import 'features/games/sound_memory/sound_memory_screen.dart';
 import 'features/games/stacking/stacking_screen.dart';
@@ -311,6 +312,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/memorie-sunete',
         pageBuilder: (context, state) =>
             _fade(context, state, const SoundMemoryScreen()),
+      ),
+      GoRoute(
+        path: '/oglinda',
+        pageBuilder: (context, state) =>
+            _fade(context, state, const MirrorScreen()),
       ),
       GoRoute(
         path: '/pune-ursul',

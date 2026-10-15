@@ -19,6 +19,7 @@ import 'fetch.dart';
 import 'paint_by_ear.dart';
 import 'place.dart';
 import 'sound_memory.dart';
+import 'mirror.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -451,6 +452,30 @@ class SessionRecorder {
         targetId: level.cards[m.first].id,
         chosenId: match ? null : level.cards[m.second].id,
         difficulty: level.pairs.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Oglinda”: câte o încercare pe imitație; treapta după câte atingeri sunt de repetat
+  /// (IMI1–3); ajutorul prin model repetat se notează ca P4, ca la „Fă ca Licurici”.
+  void mirrorLevel(MirrorResult result) {
+    final level = result.level;
+    for (final a in result.answers) {
+      final n = a.round.touches.length;
+      add(Trial(
+        level: level.level,
+        stepId: 'IMI${n.clamp(1, 3)}',
+        gameId: level.gameId,
+        correct: a.clean,
+        promptLevel: a.modelRepeated ? PromptLevel.p4 : (a.clean ? PromptLevel.p0 : PromptLevel.p2),
+        attempts: a.wrong + 1,
+        latencyMs: a.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: a.round.touches.map((t) => t.id).join('+'),
+        targetId: a.round.touches.first.id,
+        chosenId: a.firstWrong?.id,
+        difficulty: n.toDouble(),
       ));
     }
   }
