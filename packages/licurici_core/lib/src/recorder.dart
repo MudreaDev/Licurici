@@ -14,6 +14,7 @@ import 'fitts.dart';
 import 'number_line.dart';
 import 'stop_signal.dart';
 import 'delay.dart';
+import 'stacking.dart';
 import 'feeding.dart';
 import 'gaze.dart';
 import 'imitation.dart';
@@ -347,6 +348,29 @@ class SessionRecorder {
         targetId: '${m.round.target}',
         chosenId: m.estimate.toStringAsFixed(1),
         difficulty: level.axes.max.toDouble(),
+      ));
+    }
+  }
+
+  /// Un nivel „Turnul”: câte o încercare pe turn; corectă = fără alegeri greșite; încercările =
+  /// alegeri greșite + 1; dificultatea = numărul de inele.
+  void stackingLevel(StackingResult result) {
+    final level = result.level;
+    final step = stepFor(level.gameId);
+    for (final b in result.builds) {
+      add(Trial(
+        level: level.level,
+        stepId: step,
+        gameId: level.gameId,
+        correct: b.clean,
+        promptLevel: PromptLevel.p0,
+        attempts: b.wrong + 1,
+        latencyMs: b.ms,
+        at: _clock(),
+        seed: level.seed,
+        stimulusId: 'inele-${b.tower.size}',
+        difficulty: b.tower.size.toDouble(),
+        offTargetTaps: b.wrong,
       ));
     }
   }

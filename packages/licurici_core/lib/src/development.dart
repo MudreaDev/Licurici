@@ -127,7 +127,7 @@ const List<Ladder> ladders = [
     Step('COG2', 'Găsește un obiect ascuns, chiar dacă s-a mutat (permanența obiectului)',
         games: ['cucu-bau']),
     Step('COG3', 'Sortează obiecte după categorie', games: ['sortam', 'la-locul-lui']),
-    Step('COG4', 'Ordonează după mărime (de la mic la mare)', games: ['mare-mic']),
+    Step('COG4', 'Ordonează după mărime (de la mic la mare)', games: ['mare-mic', 'turnul']),
     Step('COG5', 'Continuă un model (AB, AAB, ABC)', games: ['continua-sirul']),
     Step('COG7', 'Cunoaște anotimpurile și semnele lor', games: ['anotimpuri']),
     Step('COG8', 'Știe unde trăiesc animalele', games: ['habitate']),

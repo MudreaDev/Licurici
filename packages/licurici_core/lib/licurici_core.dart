@@ -58,6 +58,7 @@ export 'src/fitts.dart';
 export 'src/number_line.dart';
 export 'src/stop_signal.dart';
 export 'src/delay.dart';
+export 'src/stacking.dart';
 export 'src/standard_metrics.dart';
 export 'src/puzzle.dart';
 export 'src/transfer.dart';
