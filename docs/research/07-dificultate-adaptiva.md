@@ -113,7 +113,34 @@ Elo e folosit în același mod în educație (de ex. Pelánek, 2016, pentru sist
 
 ## 8. Rezumat pentru susținere (60 s)
 
-*Problema:* copilul trebuie să reușească ~80% din timp, pe 89 de jocuri foarte diferite, offline. *Ales:* trei bucle — ajutorul în rundă (P0–P4, most-to-least pe material nou), nivelul jocului după fiecare tură (praguri simple, explicabile), și un rating Elo pe fiecare treaptă de dezvoltare care alege obiectivele zilei, nivelul de pornire al jocurilor noi, pasul înapoi și jocul pe care se exersează generalizarea. *Alternative:* BKT și IRT cer date de calibrare pe care nu le avem; învățarea prin întărire e opacă clinic. *Verificat* prin teste pe proprietăți — care au și găsit o eroare reală de scară în modelul inițial.
+*Problema:* copilul trebuie să reușească ~80% din timp, pe peste 100 de jocuri foarte diferite, offline. *Ales:* trei bucle — ajutorul în rundă (P0–P4, most-to-least pe material nou), nivelul jocului după fiecare tură (praguri simple, explicabile), și un rating Elo pe fiecare treaptă de dezvoltare care alege obiectivele zilei, nivelul de pornire al jocurilor noi, pasul înapoi și jocul pe care se exersează generalizarea. *Alternative:* BKT și IRT cer date de calibrare pe care nu le avem; învățarea prin întărire e opacă clinic. *Verificat* prin teste pe proprietăți — care au și găsit o eroare reală de scară în modelul inițial.
+
+## 9. Jocurile cu metrici standard (sesiunea 12)
+
+Rating-ul pe trepte spune *dacă* o treaptă e stăpânită; specialistul are nevoie și de măsura pe care o cunoaște din
+literatură. Nouă jocuri calculează măsura standard a paradigmei lor (`standard_metrics.dart`, aceleași încercări ca
+peste tot), iar panoul o arată în „Progres → Metrici standard”, cu tendința față de ultima sesiune.
+
+| Joc (treapta) | Paradigma | Măsura | Cum o calculăm din încercări |
+|---|---|---|---|
+| Linia numerelor (PAC-N5) | estimarea pe axă (Siegler & Opfer, 2003) | **PAE** = \|estimare − număr\| / capătul liniei | `stimulusId = eroare-<procent>`; media pe încercări |
+| Atinge rapid (MOT0) | legea lui Fitts (Fitts, 1954; MacKenzie, 1992) | **throughput** = ID / MT, ID = log₂(D/W + 1) | `difficulty` = ID (biți), `latencyMs` = MT |
+| Stop! (FEX2c) | semnalul de oprire (Logan & Cowan, 1984; Verbruggen et al., 2019) | **SSRT** = RT median la „verde” − SSD medie | SSD în scară ±50 ms (oprire reușită → mai târziu), deci rata de oprire tinde spre 50% |
+| Paznicul farului (ATN6) | vigilență / CPT cu ținte rare (Rosvold et al., 1956) | **scăderea vigilenței**: ținte prinse în prima vs a doua jumătate | țintele (`targetId = atinge`) în ordine |
+| Cât de tare? (EMO2) | recunoașterea emoției pe fețe cu intensitate variabilă („morphing”) | **pragul**: cea mai mică diferență de intensitate recunoscută (≥ 75% din prima) | nivelul jocului ↔ diferența (0,40 → 0,10) |
+| Câte sunt? (PAC-N1) | subitizarea (Kaufman et al., 1949) | **cea mai mare cantitate** recunoscută dintr-o privire (≥ 80%) | stimulul arătat 2 s → 0,5 s; `stimulusId = n-<câte>` |
+| Acum sau mai mult? (FEX1b) | amânarea recompensei (Mischel et al., 1989) | rata de așteptare dusă la capăt, cea mai lungă așteptare | stelele sunt reale (pușculița acvariului) |
+| Ce ai auzit? (COM4) | discriminare auditivă pe perechi minimale | precizia pe perechi (câine/pâine, mere/pere…) | `stimulusId = pereche-…` → și matricea de confuzii |
+| Cine e prietenul? (EMO2) | potrivirea identității peste expresie (cf. Benton) | cel mai greu nivel cu ≥ 75% | distractorii diferă tot mai puțin (`FaceLook.differences`) |
+
+**Limitări.** Normele publicate sunt pe populații tipice și pe aparatură de laborator; pe tabletă, latența ecranului
+tactil (~50–100 ms) și degetul în loc de mouse schimbă valorile absolute. De aceea panoul arată **evoluția aceluiași
+copil**, nu o comparație cu norme. SSRT prin metoda mediei presupune o rată de oprire apropiată de 50% (de aceea
+scara); cu puține încercări (< 3 opriri) metrica nu se afișează. „Cum spune?” (emoția din voce) lipsește: vocea
+sintetică românească nu are intonații emoționale controlabile, iar înregistrările cer acordul unui vorbitor.
+
+**Verificat** în `standard_metrics_test.dart` (fiecare metrică pe date construite de mână, inclusiv pragurile
+minime de încercări) și în panou (`standard_metrics_panel_test.dart`, pe copiii demo).
 
 ## Surse
 
@@ -123,3 +150,11 @@ Elo e folosit în același mod în educație (de ex. Pelánek, 2016, pentru sist
 - Stokes, T. F., & Baer, D. M. (1977). An implicit technology of generalization. *Journal of Applied Behavior Analysis*, 10(2).
 - Corbett, A. T., & Anderson, J. R. (1995). Knowledge tracing: Modeling the acquisition of procedural knowledge. *User Modeling and User-Adapted Interaction*, 4(4).
 - Pelánek, R. (2016). Applications of the Elo rating system in adaptive educational systems. *Computers & Education*, 98.
+- Siegler, R. S., & Opfer, J. E. (2003). The development of numerical estimation: Evidence for multiple representations of numerical quantity. *Psychological Science*, 14(3).
+- Fitts, P. M. (1954). The information capacity of the human motor system in controlling the amplitude of movement. *Journal of Experimental Psychology*, 47(6).
+- MacKenzie, I. S. (1992). Fitts' law as a research and design tool in human-computer interaction. *Human-Computer Interaction*, 7(1).
+- Logan, G. D., & Cowan, W. B. (1984). On the ability to inhibit thought and action: A theory of an act of control. *Psychological Review*, 91(3).
+- Verbruggen, F., et al. (2019). A consensus guide to capturing the ability to inhibit actions and impulsive behaviors in the stop-signal task. *eLife*, 8.
+- Rosvold, H. E., et al. (1956). A continuous performance test of brain damage. *Journal of Consulting Psychology*, 20(5).
+- Kaufman, E. L., Lord, M. W., Reese, T. W., & Volkmann, J. (1949). The discrimination of visual number. *American Journal of Psychology*, 62(4).
+- Mischel, W., Shoda, Y., & Rodriguez, M. L. (1989). Delay of gratification in children. *Science*, 244(4907).

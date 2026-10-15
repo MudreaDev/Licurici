@@ -66,7 +66,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 Doar lucrurile pe care asistentul **nu le poate face** din repo (instalări, conturi, bani, fotografii, oameni, decizii).
 Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 
-**Progres (15.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (**104 jocuri în aplicație**: 6 „frate” pentru generalizare în sesiunea 11 și 9 jocuri noi cu metrici standard în sesiunea 12). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
+**Progres (15.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (**103 jocuri în aplicație**: 6 „frate” pentru generalizare în sesiunea 11 și 9 jocuri noi cu metrici standard în sesiunea 12; „Engleză” scos la cererea ta). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
 
 **A. Pe calculatorul tău (verificare)**
 - [ ] Instalează **Docker Desktop**. Apoi: `cp infra/.env.example infra/.env` (schimbă parolele) → `docker compose -f infra/docker-compose.yml up -d --build`.
@@ -1111,7 +1111,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**Gata în Flutter (104):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
+**Gata în Flutter (103):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
 🆕 simon / Felinarele (`sequence`), perechi (`memoryCards`), sortam (`dragDrop`), cucu-bau, respira, continua-sirul,
 🆕 **sesiunea a șaptea:** potriveste, arata-mi, corpul, intrusul, umbre, mingea-rosie, ce-se-aude, ce-imbrac, primul-sunet,
@@ -1279,7 +1279,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 - [x] `docs/gdpr/*` (politică, RoPA, DPIA, proceduri)
 - [ ] `docker-compose.prod.yml` + Traefik + TLS + backup; deploy pe VPS UE — 🟨 fișierele gata (`infra/docker-compose.prod.yml`, `infra/backup.sh`, imaginea panoului, [docs/operare.md](docs/operare.md)); netestate (fără Docker local), deploy-ul încă nefăcut
 - [ ] Sentry (app + API), testare de încărcare k6, audit accesibilitate — 🟨 accesibilitatea testată automat (33 de ecrane în aplicație, `test/a11y*_test.dart`; toate paginile panoului la 2 dimensiuni, `apps/dashboard/test/a11y_test.dart` — sesiunea 11); scriptul k6 gata (`tools/k6/sync.js`, 200 sync/s, p95 < 200 ms), nerulat; Sentry în API și worker, opțional (`SENTRY_DSN`; `common/sentry.ts` scoate cererea, utilizatorul, breadcrumbs și e-mailurile); în aplicația copilului încă nu
-- [x] Toate cele 48 de jocuri S1 funcționale; ADR-10…ADR-21 scrise — 104 jocuri, ADR-001…ADR-033
+- [x] Toate cele 48 de jocuri S1 funcționale; ADR-10…ADR-21 scrise — 103 jocuri, ADR-001…ADR-033
 - [ ] Demo pentru coordonator
 
 ### Semestrul 2 · feb – mai 2027
