@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Licurici — codul pentru tabletă</title>
+  <style>
+    :root { color-scheme: light; --ink: #2F3D3B; --soft: #5F716E; --primary: #3F7D96; --bg: #EEF5F4; --card: #FFFFFF; --sun: #F2CF6B; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 18px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    main { max-width: 560px; margin: 0 auto; padding: 32px 16px; }
+    .card { background: var(--card); border-radius: 24px; padding: 28px 24px; box-shadow: 0 6px 24px rgba(47, 61, 59, .08); }
+    h1 { font-size: 26px; margin: 0 0 8px; }
+    p { margin: 8px 0; color: var(--soft); }
+    .code { font-size: 44px; font-weight: 800; letter-spacing: 6px; text-align: center; padding: 18px 8px; margin: 18px 0; border-radius: 18px; background: #FFF8EC; border: 3px solid var(--sun); color: var(--ink); word-break: break-all; }
+    ol { padding-left: 22px; } li { margin: 8px 0; }
+    button { font: inherit; font-weight: 700; color: #fff; background: var(--primary); border: 0; border-radius: 999px; padding: 12px 22px; cursor: pointer; }
+    .muted { font-size: 15px; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1>✨ Licurici</h1>
+    <p>Terapeutul copilului tău ți-a trimis acest cod. Cu el, aplicația de pe tabletă trimite sesiunile de joc terapeutului și primește jocurile alese de el.</p>
+    <div class="code" id="code">—</div>
+    <p style="text-align:center"><button id="copy" type="button">Copiază codul</button></p>
+    <ol>
+      <li>Deschide aplicația <b>Licurici</b> pe tableta copilului.</li>
+      <li>Alege <b>„Am un cod de la terapeut”</b> (la prima pornire sau din „Pentru părinți”).</li>
+      <li>Scrie codul de mai sus, bifează acordul și apasă <b>„Leagă tableta”</b>.</li>
+    </ol>
+    <p class="muted">Codul merge o singură dată. Dacă nu merge, cere terapeutului un cod nou. Datele copilului: doar porecla, anul nașterii și rezultatele jocurilor — fără nume real.</p>
+  </div>
+</main>
+<script>
+  const m = location.pathname.match(/\/c\/([A-Za-z0-9-]+)\/?$/);
+  const code = m ? m[1].toUpperCase() : '';
+  document.getElementById('code').textContent = code || 'Cod lipsă';
+  document.getElementById('copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(code); document.getElementById('copy').textContent = 'Copiat ✓'; } catch (_) {}
+  });
+</script>
+</body>
+</html>

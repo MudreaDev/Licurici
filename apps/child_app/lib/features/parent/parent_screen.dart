@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import '../../app/theme.dart';
@@ -52,6 +53,14 @@ class ParentScreen extends ConsumerWidget {
                     color: const Color(0xFFA9A3D1),
                     label: 'Jocurile copilului',
                     onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ChildGamesScreen())),
+                  ),
+                  const SizedBox(width: 8),
+                  BarButton(
+                    key: const ValueKey('therapist-code'),
+                    icon: Icons.key_rounded,
+                    color: const Color(0xFF6E6AB8),
+                    label: 'Cod de la terapeut',
+                    onTap: () => context.go('/legare'),
                   ),
                   const SizedBox(width: 8),
                   BarButton(
@@ -130,6 +139,7 @@ class _AutoSyncLine extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(autoSyncProvider);
+    final linked = ref.watch(settingsProvider.select((s) => s.linkedNickname));
     if (!s.enabled && s.problem == null) return const SizedBox.shrink();
     final text = Theme.of(context).textTheme;
     final at = s.lastAt;
@@ -149,14 +159,20 @@ class _AutoSyncLine extends ConsumerWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              s.problem ?? 'Sesiunile se trimit automat pe server.$when',
+              s.problem ??
+                  (linked == null
+                      ? 'Sesiunile se trimit automat pe server.$when'
+                      : 'Legată de terapeut ($linked): sesiunile se trimit automat.$when'),
               style: text.bodyMedium!.copyWith(color: Tokens.inkSoft),
             ),
           ),
           if (s.enabled)
             TextButton(
               key: const ValueKey('auto-sync-off'),
-              onPressed: () => ref.read(autoSyncProvider.notifier).disable(),
+              onPressed: () {
+                ref.read(autoSyncProvider.notifier).disable();
+                ref.read(settingsProvider.notifier).clearLinked();
+              },
               child: const Text('Oprește'),
             ),
         ],

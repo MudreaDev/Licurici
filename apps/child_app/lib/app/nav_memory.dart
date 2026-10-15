@@ -43,4 +43,6 @@ bool isGameRoute(String path) =>
         path.startsWith('/acvariu') ||
         path == '/album' ||
         path == '/harta' ||
-        path == '/parinte');
+        path == '/parinte' ||
+        path == '/bun-venit' ||
+        path == '/legare');

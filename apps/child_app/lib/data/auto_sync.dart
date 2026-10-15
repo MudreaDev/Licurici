@@ -5,7 +5,11 @@ import 'session.dart';
 import 'sync.dart';
 import 'token_vault.dart';
 
-final syncClientProvider = Provider<SyncClient>((ref) => SyncClient());
+/// Clientul de sincronizare: către serverul terapeutului de care e legată tableta, altfel
+/// către adresa din build (`API_URL`).
+final syncClientProvider = Provider<SyncClient>(
+  (ref) => SyncClient(baseUrl: ref.watch(settingsProvider.select((s) => s.serverUrl)) ?? apiUrl),
+);
 
 /// Starea trimiterii automate, pentru „Pentru părinți”.
 class AutoSyncState {

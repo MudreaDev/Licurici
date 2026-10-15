@@ -26,6 +26,9 @@ class AppSettings {
     this.avoid = const {},
     this.music = true,
     this.musicTrack = MusicTrack.all,
+    this.welcomeSeen = true,
+    this.serverUrl,
+    this.linkedNickname,
   });
 
   final Grade grade;
@@ -84,6 +87,16 @@ class AppSettings {
   /// Ce piesă se cântă (sau toate, pe rând).
   final MusicTrack musicTrack;
 
+  /// A trecut de ecranul „Bun venit” (prima pornire). O instalare nouă pornește cu false
+  /// (`main()`); implicit true, ca testele și setările vechi să intre direct în aplicație.
+  final bool welcomeSeen;
+
+  /// Serverul terapeutului (din legătura sau codul primit), dacă tableta e legată.
+  final String? serverUrl;
+
+  /// Porecla copilului la terapeut (arătată adultului în „Pentru părinți”).
+  final String? linkedNickname;
+
   /// Nivelul cu care pornește jocul [gameId], ținând cont de plafon. Prima dată: cel mai mare
   /// dintre [fallback], nivelul transferat de la un joc de pe aceeași treaptă
   /// (`transferredLevel`) și nivelul estimat din rating-ul treptelor jocului ([ratings],
@@ -118,6 +131,9 @@ class AppSettings {
     if (avoid.isNotEmpty) 'avoid': avoid.toList()..sort(),
     'music': music,
     'musicTrack': musicTrack.name,
+    'welcomeSeen': welcomeSeen,
+    'serverUrl': ?serverUrl,
+    'linkedNickname': ?linkedNickname,
   };
 
   /// Valorile necunoscute (ex. după o actualizare) revin la implicit, fără să blocheze pornirea.
@@ -157,6 +173,9 @@ class AppSettings {
     },
     music: j['music'] != false,
     musicTrack: MusicTrack.values.asNameMap()[j['musicTrack']] ?? MusicTrack.all,
+    welcomeSeen: j['welcomeSeen'] != false,
+    serverUrl: j['serverUrl'] as String?,
+    linkedNickname: j['linkedNickname'] as String?,
   );
 
   AppSettings copyWith({
@@ -177,6 +196,10 @@ class AppSettings {
     Set<String>? avoid,
     bool? music,
     MusicTrack? musicTrack,
+    bool? welcomeSeen,
+    String? serverUrl,
+    String? linkedNickname,
+    bool unlink = false,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -195,6 +218,9 @@ class AppSettings {
     avoid: avoid ?? this.avoid,
     music: music ?? this.music,
     musicTrack: musicTrack ?? this.musicTrack,
+    welcomeSeen: welcomeSeen ?? this.welcomeSeen,
+    serverUrl: unlink ? null : (serverUrl ?? this.serverUrl),
+    linkedNickname: unlink ? null : (linkedNickname ?? this.linkedNickname),
   );
 }
 
@@ -317,6 +343,14 @@ class SettingsNotifier extends Notifier<AppSettings> {
       ),
     );
   }
+
+  void markWelcomeSeen() => _set(state.copyWith(welcomeSeen: true));
+
+  /// Tableta a fost legată de copilul [nickname] de la terapeutul de pe [server].
+  void setLinked(String server, String nickname) =>
+      _set(state.copyWith(serverUrl: server, linkedNickname: nickname, welcomeSeen: true));
+
+  void clearLinked() => _set(state.copyWith(unlink: true));
 
   /// Muzica aleasă în panou (vine cu planul, deci data planului e deja la zi).
   void applyMusic(bool on, String track) => _set(

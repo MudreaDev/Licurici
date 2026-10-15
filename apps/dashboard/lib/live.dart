@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -76,8 +78,58 @@ class SocketLiveChannel implements LiveChannel {
   }
 }
 
+/// Pe Vercel (versiunea de test) nu există WebSocket: panoul întreabă la 30 s lista copiilor și
+/// anunță singur o sincronizare nouă sau „Se joacă acum” (`--dart-define=LIVE_POLL=true`).
+const livePolling = bool.fromEnvironment('LIVE_POLL');
+
+class PollingLiveChannel implements LiveChannel {
+  PollingLiveChannel(this.api, {this.every = const Duration(seconds: 30)});
+
+  final ApiClient api;
+  final Duration every;
+  Timer? _timer;
+  final _lastSync = <String, String?>{};
+  final _playing = <String, bool>{};
+
+  @override
+  void open({
+    required Future<String?> Function() token,
+    required Iterable<String> childIds,
+    required void Function(String type, Map<String, dynamic> data) onEvent,
+  }) {
+    close();
+    var first = true;
+    Future<void> poll() async {
+      try {
+        final kids = await api.rawChildren();
+        for (final k in kids) {
+          final id = k['id'] as String;
+          final sync = k['lastSyncAt'] as String?;
+          final playing = k['playingSince'] != null;
+          if (!first && sync != null && sync != _lastSync[id]) onEvent('session.synced', {'childId': id, 'count': 1});
+          if (_playing[id] != playing) onEvent('presence', {'childId': id, 'playing': playing});
+          _lastSync[id] = sync;
+          _playing[id] = playing;
+        }
+        first = false;
+      } on Object {
+        // Fără rețea sau deconectat: încercăm la următorul pas.
+      }
+    }
+
+    unawaited(poll());
+    _timer = Timer.periodic(every, (_) => poll());
+  }
+
+  @override
+  void close() {
+    _timer?.cancel();
+    _timer = null;
+  }
+}
+
 final liveChannelProvider = Provider<LiveChannel>((ref) {
-  final channel = SocketLiveChannel();
+  final LiveChannel channel = livePolling ? PollingLiveChannel(ref.read(apiClientProvider)) : SocketLiveChannel();
   ref.onDispose(channel.close);
   return channel;
 });

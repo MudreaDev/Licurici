@@ -58,10 +58,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       switch (_mode) {
         case _Mode.login:
           await children.signIn(_email.text, _password.text, code: _askCode ? _code.text.trim() : null);
-          if (mounted) context.go('/');
+          // Specialistul ajunge direct la copiii lui; părintele alege unde merge.
+          final role = await ref.read(apiClientProvider).role();
+          if (mounted) context.go(role == 'THERAPIST' ? '/specialist' : '/');
         case _Mode.register:
           await children.register(_email.text, _password.text, role: _role);
-          if (mounted) context.go('/cont');
+          if (mounted) context.go(_role == 'THERAPIST' && therapistAddsChildren ? '/specialist' : '/cont');
         case _Mode.forgot:
           await ref.read(apiClientProvider).forgotPassword(_email.text);
           setState(

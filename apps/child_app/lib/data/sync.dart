@@ -12,6 +12,28 @@ const apiUrl = String.fromEnvironment(
   defaultValue: 'http://localhost:3000/api/v1',
 );
 
+/// Serverul terapeutului când părintele scrie doar codul (fără legătură): versiunea de test pe
+/// Vercel (`--dart-define=LINK_SERVER=…`).
+const linkServer = String.fromEnvironment('LINK_SERVER', defaultValue: 'https://licurici-panou.vercel.app');
+
+/// Adresa API-ului din ce a scris părintele: din legătura `https://…/c/COD` se ia serverul;
+/// un cod simplu merge la [linkServer].
+String serverForInput(String input) {
+  final uri = Uri.tryParse(input.trim());
+  if (uri != null && (uri.scheme == 'https' || uri.scheme == 'http') && uri.host.isNotEmpty) {
+    return '${uri.origin}/api/v1';
+  }
+  return '$linkServer/api/v1';
+}
+
+/// Codul din ce a scris părintele (cod sau legătură), ca `ABCD-2345`; null dacă nu arată a cod.
+String? codeFromInput(String input) {
+  final raw = input.trim().toUpperCase();
+  final m = RegExp(r'/C/([A-Z0-9-]+)/?$').firstMatch(raw);
+  final s = (m?.group(1) ?? raw).replaceAll(RegExp('[^A-Z0-9]'), '');
+  return s.length == 8 ? '${s.substring(0, 4)}-${s.substring(4)}' : null;
+}
+
 /// Versiunea politicii de confidențialitate acceptate la sincronizare (dovada consimțământului).
 const privacyPolicyVersion = '2026-10';
 
@@ -127,6 +149,21 @@ class SyncClient {
       }
     }
     return payload.length;
+  }
+
+  /// Legarea tabletei de copilul creat de terapeut, cu codul de unică folosință (acordul
+  /// părintelui e bifat pe tabletă). Întoarce refresh tokenul tabletei și porecla copilului.
+  Future<({String refreshToken, String nickname})> linkDevice(String code) async {
+    _token = null;
+    final r = await _call('POST', '/device/link', {
+      'code': code,
+      'consent': true,
+      'policyVersion': privacyPolicyVersion,
+    }) as Map;
+    return (
+      refreshToken: r['refreshToken'] as String,
+      nickname: ((r['child'] as Map?)?['nickname'] as String?) ?? 'copilul',
+    );
   }
 
   /// „Se joacă acum”: anunță serverul că a început o sesiune (doar cu trimiterea automată).

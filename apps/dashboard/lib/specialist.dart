@@ -1,5 +1,6 @@
 import 'api.dart';
 import 'ask_panel.dart';
+import 'child_card.dart';
 import 'game_plan.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -21,8 +22,12 @@ class SpecialistPage extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final compact = constraints.maxWidth < 900;
-        Widget childList() =>
-            _ChildrenList(children, childId, compact: compact);
+        Widget childList() => _ChildrenList(
+          children,
+          childId,
+          compact: compact,
+          canAdd: therapistAddsChildren && ref.watch(signedInProvider),
+        );
         return Scaffold(
           appBar: AppBar(
             title: const Text('Licurici · Specialist'),
@@ -40,7 +45,7 @@ class SpecialistPage extends ConsumerWidget {
                       onPressed: () => context.go('/'),
                       child: const Text('Schimbă rolul'),
                     ),
-                    const Padding(padding: EdgeInsets.all(16), child: Text('DEMO')),
+                    if (!ref.watch(signedInProvider)) const Padding(padding: EdgeInsets.all(16), child: Text('DEMO')),
                   ],
           ),
           drawer: compact ? Drawer(child: SafeArea(child: childList())) : null,
@@ -61,8 +66,11 @@ class SpecialistPage extends ConsumerWidget {
                               const SizedBox(height: 20),
                               Text(
                                 childId == null
-                                    ? 'Alege un copil pentru a vedea progresul.'
+                                    ? (children.isEmpty
+                                          ? 'Adaugă primul copil: completezi fișa și primești un cod pentru tableta lui.'
+                                          : 'Alege un copil pentru a vedea progresul.')
                                     : 'Copilul nu a fost găsit.',
+                                textAlign: TextAlign.center,
                                 style: Theme.of(
                                   context,
                                 ).textTheme.headlineSmall,
@@ -82,6 +90,7 @@ class SpecialistPage extends ConsumerWidget {
                     : _ChildDetail(
                         key: ValueKey(selected.child.id),
                         history: selected,
+                        withCard: therapistAddsChildren && ref.watch(signedInProvider),
                       ),
               ),
             ],
@@ -93,10 +102,13 @@ class SpecialistPage extends ConsumerWidget {
 }
 
 class _ChildrenList extends StatelessWidget {
-  const _ChildrenList(this.children, this.selectedId, {required this.compact});
+  const _ChildrenList(this.children, this.selectedId, {required this.compact, this.canAdd = false});
   final List<ChildHistory> children;
   final String? selectedId;
   final bool compact;
+
+  /// Terapeutul poate adăuga copii (versiunea de test pe Vercel).
+  final bool canAdd;
   @override
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(16),
@@ -108,7 +120,8 @@ class _ChildrenList extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      if (children.isEmpty) const Text('Nu există copii partajați încă.'),
+      if (canAdd) const Padding(padding: EdgeInsets.fromLTRB(12, 0, 12, 12), child: AddChildButton()),
+      if (children.isEmpty) Text(canAdd ? 'Niciun copil încă.' : 'Nu există copii partajați încă.'),
       for (final h in children)
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -176,11 +189,14 @@ class _ChildrenList extends StatelessWidget {
 }
 
 class _ChildDetail extends StatelessWidget {
-  const _ChildDetail({super.key, required this.history});
+  const _ChildDetail({super.key, required this.history, this.withCard = false});
   final ChildHistory history;
+
+  /// Cu tabul „Fișa copilului” (terapeutul a creat copilul și îi leagă tableta).
+  final bool withCard;
   @override
   Widget build(BuildContext context) => DefaultTabController(
-    length: 5,
+    length: withCard ? 6 : 5,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -208,20 +224,22 @@ class _ChildDetail extends StatelessWidget {
             ],
           ),
         ),
-        const TabBar(
+        TabBar(
           isScrollable: true,
           tabAlignment: TabAlignment.start,
           tabs: [
-            Tab(text: 'Prezentare'),
-            Tab(text: 'Progres'),
-            Tab(text: 'Sesiuni'),
-            Tab(text: 'Confuzii'),
-            Tab(text: 'Jocuri'),
+            if (withCard) const Tab(text: 'Fișa copilului'),
+            const Tab(text: 'Prezentare'),
+            const Tab(text: 'Progres'),
+            const Tab(text: 'Sesiuni'),
+            const Tab(text: 'Confuzii'),
+            const Tab(text: 'Jocuri'),
           ],
         ),
         Expanded(
           child: TabBarView(
             children: [
+              if (withCard) _TabBody(child: ChildCardPanel(key: ValueKey('card-${history.child.id}'), history: history)),
               _TabBody(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

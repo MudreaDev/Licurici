@@ -46,6 +46,7 @@ import 'features/album/album_screen.dart';
 import 'features/aquarium/aquarium_screen.dart';
 import 'features/aquarium/coloring_screen.dart';
 import 'features/home/home_screen.dart';
+import 'features/link/link_screen.dart';
 import 'features/games/track/track_screen.dart';
 import 'features/map/lantern_map_screen.dart';
 import 'features/games/listen/listen_screen.dart';
@@ -79,6 +80,8 @@ Future<void> main() async {
   var settings = const AppSettings();
   try {
     final raw = await db?.readMeta(settingsKey);
+    // Instalare nouă: întâi „Bun venit” (codul de la terapeut sau joc direct).
+    if (raw == null && db != null) settings = const AppSettings(welcomeSeen: false);
     if (raw != null) {
       settings = AppSettings.fromJson(
         (jsonDecode(raw) as Map).cast<String, Object?>(),
@@ -144,7 +147,18 @@ Page<void> _fade(BuildContext context, GoRouterState state, Widget child) {
 /// propria stare de navigare — important în teste și la repornirea aplicației.
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
+    // Prima pornire: „Bun venit” (codul de la terapeut sau joc direct).
+    redirect: (context, state) =>
+        state.uri.path == '/' && !ref.read(settingsProvider).welcomeSeen ? '/bun-venit' : null,
     routes: [
+      GoRoute(
+        path: '/bun-venit',
+        pageBuilder: (context, state) => _fade(context, state, const WelcomeScreen()),
+      ),
+      GoRoute(
+        path: '/legare',
+        pageBuilder: (context, state) => _fade(context, state, const LinkScreen()),
+      ),
       GoRoute(
         path: '/',
         pageBuilder: (context, state) =>

@@ -27,8 +27,9 @@ final importedSessionsProvider =
 final childrenProvider = Provider<List<ChildHistory>>((ref) {
   final server = ref.watch(serverChildrenProvider);
   final imported = ref.watch(importedSessionsProvider);
-  // După autentificare: doar copiii reali (fără demo, ca să nu se amestece datele).
-  if (server.isNotEmpty) {
+  // După autentificare: doar copiii reali (fără demo, ca să nu se amestece datele) — și când
+  // terapeutul încă n-a adăugat niciun copil.
+  if (server.isNotEmpty || ref.watch(signedInProvider)) {
     return [...server, if (imported.isNotEmpty) importedChild(imported)];
   }
   return [if (imported.isNotEmpty) importedChild(imported), ...demoChildren()];

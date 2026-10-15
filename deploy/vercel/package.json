@@ -1,0 +1,17 @@
+{
+  "name": "licurici-panou-vercel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Versiunea de test a panoului terapeutului pe Vercel: panoul Flutter Web + un API mic pe Vercel Blob.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "build": "bash build.sh"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.8.2"
+  }
+}

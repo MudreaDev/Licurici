@@ -80,6 +80,15 @@ class ApiClient {
     return (email: r['email'] as String?, verified: r['emailVerified'] == true);
   }
 
+  /// Rolul contului (`PARENT` / `THERAPIST`); null dacă serverul nu-l spune.
+  Future<String?> role() async {
+    try {
+      return ((await _send('GET', '/me')) as Map)['role'] as String?;
+    } on ApiException {
+      return null;
+    }
+  }
+
   Future<void> resendVerification() => _send('POST', '/me/verify-email');
 
   /// Legăturile din e-mailuri (fără autentificare: se pot deschide pe alt dispozitiv).
@@ -115,6 +124,51 @@ class ApiClient {
         ),
     ];
   }
+
+  /// Lista copiilor, așa cum vine (pentru interogarea periodică de pe Vercel).
+  Future<List<Map<String, dynamic>>> rawChildren() async =>
+      ((await _send('GET', '/children')) as List).cast<Map<String, dynamic>>();
+
+  /// Fișa copilului (versiunea de test pe Vercel): porecla, anul nașterii, observațiile
+  /// terapeutului, dacă tableta e legată și când s-a sincronizat ultima dată.
+  Future<ChildCard?> childCard(String childId) async {
+    final kids = ((await _send('GET', '/children')) as List).cast<Map<String, dynamic>>();
+    final k = kids.where((c) => c['id'] == childId).firstOrNull;
+    return k == null ? null : ChildCard.fromJson(k);
+  }
+
+  /// Terapeutul adaugă un copil; răspunsul are și codul de legare a tabletei.
+  Future<({ChildCard card, ChildLink link})> createChild({
+    required String nickname,
+    int? birthYear,
+    String notes = '',
+    String goals = '',
+  }) async {
+    final r = (await _send(
+      'POST',
+      '/children',
+      body: {'nickname': nickname, 'birthYear': ?birthYear, 'notes': notes, 'goals': goals},
+    )) as Map<String, dynamic>;
+    return (card: ChildCard.fromJson(r), link: ChildLink.fromJson(r));
+  }
+
+  Future<ChildCard> updateChild(String childId, {String? nickname, int? birthYear, String? notes, String? goals}) async =>
+      ChildCard.fromJson(
+        (await _send(
+          'PATCH',
+          '/children/$childId',
+          body: {'nickname': ?nickname, 'birthYear': ?birthYear, 'notes': ?notes, 'goals': ?goals},
+        )) as Map<String, dynamic>,
+      );
+
+  /// Codul de legare curent (null dacă a fost folosit).
+  Future<ChildLink> childLink(String childId) async =>
+      ChildLink.fromJson((await _send('GET', '/children/$childId/link')) as Map<String, dynamic>);
+
+  /// Cod nou; cu [unlink], tableta legată până acum e deconectată (ex. tabletă pierdută).
+  Future<ChildLink> newChildLink(String childId, {bool unlink = false}) async => ChildLink.fromJson(
+    (await _send('POST', '/children/$childId/link', body: {'unlink': unlink})) as Map<String, dynamic>,
+  );
 
   /// Consimțămintele părintelui: scop → acordat (README §13).
   Future<Map<String, bool>> consents() async =>
@@ -328,6 +382,70 @@ class ApiClient {
 
 final apiClientProvider = Provider<ApiClient>((ref) => ApiClient());
 
+/// Fișa unui copil, așa cum o completează terapeutul.
+class ChildCard {
+  const ChildCard({
+    required this.id,
+    required this.nickname,
+    this.birthYear,
+    this.notes = '',
+    this.goals = '',
+    this.linked = false,
+    this.linkedAt,
+    this.lastSyncAt,
+  });
+
+  factory ChildCard.fromJson(Map<String, dynamic> j) => ChildCard(
+    id: j['id'] as String,
+    nickname: j['nickname'] as String? ?? '',
+    birthYear: (j['birthYear'] as num?)?.toInt(),
+    notes: j['notes'] as String? ?? '',
+    goals: j['goals'] as String? ?? '',
+    linked: j['linked'] == true,
+    linkedAt: DateTime.tryParse(j['linkedAt'] as String? ?? ''),
+    lastSyncAt: DateTime.tryParse(j['lastSyncAt'] as String? ?? ''),
+  );
+
+  final String id;
+  final String nickname;
+  final int? birthYear;
+  final String notes;
+  final String goals;
+  final bool linked;
+  final DateTime? linkedAt;
+  final DateTime? lastSyncAt;
+}
+
+/// Codul de legare a tabletei (de unică folosință) și legătura pentru părinte.
+class ChildLink {
+  const ChildLink({this.code, this.url, this.linked = false, this.linkedAt});
+
+  factory ChildLink.fromJson(Map<String, dynamic> j) => ChildLink(
+    code: j['code'] as String?,
+    url: j['url'] as String?,
+    linked: j['linked'] == true,
+    linkedAt: DateTime.tryParse(j['linkedAt'] as String? ?? ''),
+  );
+
+  final String? code;
+  final String? url;
+  final bool linked;
+  final DateTime? linkedAt;
+}
+
+/// Autentificat pe server (atunci nu se mai arată copiii demo, nici când lista e goală).
+class SignedIn extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool v) => state = v;
+}
+
+final signedInProvider = NotifierProvider<SignedIn, bool>(SignedIn.new);
+
+/// Versiunea de test pe Vercel: copilul îl adaugă terapeutul (`--dart-define=THERAPIST_CHILDREN=true`).
+const therapistAddsChildren = bool.fromEnvironment('THERAPIST_CHILDREN');
+
 /// Muzica de fundal de pe tabletă: pornită/oprită și piesa (`all`, `lumini`, `valuri`, `gradina`).
 typedef MusicChoice = ({bool on, String track});
 
@@ -366,6 +484,7 @@ class ServerChildren extends Notifier<List<ChildHistory>> {
   Future<void> signIn(String email, String password, {String? code}) async {
     final api = ref.read(apiClientProvider);
     await api.login(email, password, code: code);
+    ref.read(signedInProvider.notifier).set(true);
     state = await api.children();
     _openLive();
   }
@@ -407,6 +526,7 @@ class ServerChildren extends Notifier<List<ChildHistory>> {
   Future<void> register(String email, String password, {String role = 'PARENT'}) async {
     final api = ref.read(apiClientProvider);
     await api.register(email, password, role: role);
+    ref.read(signedInProvider.notifier).set(true);
     state = await api.children();
     _openLive();
   }
@@ -414,6 +534,7 @@ class ServerChildren extends Notifier<List<ChildHistory>> {
   Future<void> signOut() async {
     ref.read(liveChannelProvider).close();
     await ref.read(apiClientProvider).logout();
+    ref.read(signedInProvider.notifier).set(false);
     state = const [];
   }
 }
