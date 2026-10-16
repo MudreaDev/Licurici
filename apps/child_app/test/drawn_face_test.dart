@@ -16,7 +16,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final r = Random(4);
-    final looks = [for (var i = 0; i < 5; i++) FaceLook.random(r)];
+    final looks = [for (var i = 0; i < 5; i++) FaceLook.anyRandom(r)];
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
