@@ -19,7 +19,9 @@ lines = [f'# Ilustrații — {name}', '']
 for f in sorted(glob.glob(os.path.join(out_dir, '*', '*.png'))):
     key = os.path.relpath(f, out_dir).replace(os.sep, '/')[:-4]
     if not key.startswith(prefixes): continue
-    src = gen.get(digest(f))
+    # Sursa: imaginea din generated_images (după conținut) sau, dacă a fost generată altfel
+    # (ex. salvată direct de Codex), chiar fișierul din out_dir.
+    src = gen.get(digest(f)) or os.path.abspath(f)
     job = jobs.get(key) or next((j for j in jobs.values() if key in j.get('cells', [])), None)
     if not src or job is None:
         print('fără sursă', key); continue

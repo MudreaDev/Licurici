@@ -1,6 +1,9 @@
 """Generează ilustrații cu Codex CLI, în paralel, dintr-o listă de lucrări.
 
     py tools/art/codex_batch.py jobs.json out_dir [--workers 3]
+    py tools/art/codex_batch.py jobs.json out_dir --split-only   # doar taie planșele deja salvate
+
+Căile din `refs` / `needs` sunt relative la folderul fișierului jobs.json.
 
 jobs.json: [{"name": "games/turnul", "prompt": "...", "refs": ["ref1.png", ...]}, ...]
 O planșă: {"name": "sheets/x", "grid": [rânduri, coloane], "cells": ["objects/a", ...], ...} — imaginea
@@ -113,11 +116,25 @@ def run(job, out_dir, exe, results):
 
 def main():
     jobs = json.load(open(sys.argv[1], encoding='utf-8'))
+    base = os.path.dirname(os.path.abspath(sys.argv[1]))
+    for j in jobs:
+        j['refs'] = [r if os.path.isabs(r) else os.path.join(base, r) for r in j.get('refs', [])]
+        if j.get('needs') and not os.path.isabs(j['needs']):
+            j['needs'] = os.path.join(base, j['needs'])
     out_dir = sys.argv[2]
     workers = int(sys.argv[sys.argv.index('--workers') + 1]) if '--workers' in sys.argv else 3
     os.makedirs(out_dir, exist_ok=True)
     rpath = os.path.join(out_dir, 'results.json')
     results = json.load(open(rpath, encoding='utf-8')) if os.path.exists(rpath) else {}
+    if '--split-only' in sys.argv:
+        # Planșele generate de mână (salvate ca out_dir/sheets/<nume>.png) se taie în celule.
+        for j in jobs:
+            sheet = os.path.join(out_dir, j['name'] + '.png')
+            if j.get('cells') and os.path.exists(sheet):
+                split(j, sheet, out_dir, results)
+                print('tăiată', j['name'], flush=True)
+        json.dump(results, open(rpath, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        return
     exe = codex_exe()
     # Câteva ture: lucrările care așteptau o imagine de bază pornesc după ce aceasta există.
     for _ in range(3):

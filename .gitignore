@@ -40,3 +40,6 @@ tools/gen-voice/mostre/
 # regenerarea vocii, în lucru (tools/gen-voice --toate)
 packages/game_content/audio/ro/regenerat.txt
 packages/game_content/audio/ro/*.nou.mp3
+
+# Lotul de imagini Codex: rezultatele brute (sursele pentru convert_codex.py) rămân doar local
+tools/art/batch/out/

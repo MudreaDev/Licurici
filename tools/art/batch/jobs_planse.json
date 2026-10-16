@@ -1,0 +1,865 @@
+[
+ {
+  "name": "sheets/a0_bucuros100_trist100_suparat100_speriat100",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a0_bucuros_100",
+   "faces2/a0_trist_100",
+   "faces2/a0_suparat_100",
+   "faces2/a0_speriat_100"
+  ],
+  "refs": [
+   "refs/faces2/a0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: a clear, full HAPPY, a warm open smile; top-right: a clear, full SAD, downturned mouth and sad eyebrows; bottom-left: a clear, full ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a clear, full SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a0_surprins100_obosit100",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "faces2/a0_surprins_100",
+   "faces2/a0_obosit_100"
+  ],
+  "refs": [
+   "refs/faces2/a0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 1x2 grid of 2 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — left: a clear, full SURPRISED, raised eyebrows, round eyes and a small round open mouth; right: a clear, full TIRED, sleepy half-closed eyes and a small yawn. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a1_bucuros100_trist100_suparat100_speriat100",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a1_bucuros_100",
+   "faces2/a1_trist_100",
+   "faces2/a1_suparat_100",
+   "faces2/a1_speriat_100"
+  ],
+  "refs": [
+   "refs/faces2/a1_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes and small round sky-blue glasses, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: a clear, full HAPPY, a warm open smile; top-right: a clear, full SAD, downturned mouth and sad eyebrows; bottom-left: a clear, full ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a clear, full SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a1_surprins100_obosit100",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "faces2/a1_surprins_100",
+   "faces2/a1_obosit_100"
+  ],
+  "refs": [
+   "refs/faces2/a1_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 1x2 grid of 2 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes and small round sky-blue glasses, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — left: a clear, full SURPRISED, raised eyebrows, round eyes and a small round open mouth; right: a clear, full TIRED, sleepy half-closed eyes and a small yawn. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a2_bucuros100_trist100_suparat100_speriat100",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a2_bucuros_100",
+   "faces2/a2_trist_100",
+   "faces2/a2_suparat_100",
+   "faces2/a2_speriat_100"
+  ],
+  "refs": [
+   "refs/faces2/a2_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a girl with fair skin, long straight brown hair past the shoulders, blue eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: a clear, full HAPPY, a warm open smile; top-right: a clear, full SAD, downturned mouth and sad eyebrows; bottom-left: a clear, full ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a clear, full SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a2_surprins100_obosit100",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "faces2/a2_surprins_100",
+   "faces2/a2_obosit_100"
+  ],
+  "refs": [
+   "refs/faces2/a2_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 1x2 grid of 2 SEPARATE portraits of the SAME child shown in the first attached image (a girl with fair skin, long straight brown hair past the shoulders, blue eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — left: a clear, full SURPRISED, raised eyebrows, round eyes and a small round open mouth; right: a clear, full TIRED, sleepy half-closed eyes and a small yawn. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a3_bucuros100_trist100_suparat100_speriat100",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a3_bucuros_100",
+   "faces2/a3_trist_100",
+   "faces2/a3_suparat_100",
+   "faces2/a3_speriat_100"
+  ],
+  "refs": [
+   "refs/faces2/a3_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a girl with fair skin, long straight light caramel-blond hair, blue eyes and a lavender headband, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: a clear, full HAPPY, a warm open smile; top-right: a clear, full SAD, downturned mouth and sad eyebrows; bottom-left: a clear, full ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a clear, full SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a3_surprins100_obosit100",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "faces2/a3_surprins_100",
+   "faces2/a3_obosit_100"
+  ],
+  "refs": [
+   "refs/faces2/a3_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 1x2 grid of 2 SEPARATE portraits of the SAME child shown in the first attached image (a girl with fair skin, long straight light caramel-blond hair, blue eyes and a lavender headband, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — left: a clear, full SURPRISED, raised eyebrows, round eyes and a small round open mouth; right: a clear, full TIRED, sleepy half-closed eyes and a small yawn. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b0_bucuros100_trist100_suparat100_speriat100",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b0_bucuros_100",
+   "faces2/b0_trist_100",
+   "faces2/b0_suparat_100",
+   "faces2/b0_speriat_100"
+  ],
+  "refs": [
+   "refs/faces2/b0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with deep brown skin, short black curly hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: a clear, full HAPPY, a warm open smile; top-right: a clear, full SAD, downturned mouth and sad eyebrows; bottom-left: a clear, full ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a clear, full SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b0_surprins100_obosit100",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "faces2/b0_surprins_100",
+   "faces2/b0_obosit_100"
+  ],
+  "refs": [
+   "refs/faces2/b0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 1x2 grid of 2 SEPARATE portraits of the SAME child shown in the first attached image (a boy with deep brown skin, short black curly hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — left: a clear, full SURPRISED, raised eyebrows, round eyes and a small round open mouth; right: a clear, full TIRED, sleepy half-closed eyes and a small yawn. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b1_bucuros100_trist100_suparat100_speriat100",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b1_bucuros_100",
+   "faces2/b1_trist_100",
+   "faces2/b1_suparat_100",
+   "faces2/b1_speriat_100"
+  ],
+  "refs": [
+   "refs/faces2/b1_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a girl with deep brown skin, black curly hair in a rounded puff, brown eyes and small round sky-blue glasses, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: a clear, full HAPPY, a warm open smile; top-right: a clear, full SAD, downturned mouth and sad eyebrows; bottom-left: a clear, full ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a clear, full SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b1_surprins100_obosit100",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "faces2/b1_surprins_100",
+   "faces2/b1_obosit_100"
+  ],
+  "refs": [
+   "refs/faces2/b1_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 1x2 grid of 2 SEPARATE portraits of the SAME child shown in the first attached image (a girl with deep brown skin, black curly hair in a rounded puff, brown eyes and small round sky-blue glasses, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — left: a clear, full SURPRISED, raised eyebrows, round eyes and a small round open mouth; right: a clear, full TIRED, sleepy half-closed eyes and a small yawn. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b2_bucuros100_trist100_suparat100_speriat100",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b2_bucuros_100",
+   "faces2/b2_trist_100",
+   "faces2/b2_suparat_100",
+   "faces2/b2_speriat_100"
+  ],
+  "refs": [
+   "refs/faces2/b2_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a girl with warm medium-brown skin, black curly shoulder-length hair, dark brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: a clear, full HAPPY, a warm open smile; top-right: a clear, full SAD, downturned mouth and sad eyebrows; bottom-left: a clear, full ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a clear, full SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b2_surprins100_obosit100",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "faces2/b2_surprins_100",
+   "faces2/b2_obosit_100"
+  ],
+  "refs": [
+   "refs/faces2/b2_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 1x2 grid of 2 SEPARATE portraits of the SAME child shown in the first attached image (a girl with warm medium-brown skin, black curly shoulder-length hair, dark brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — left: a clear, full SURPRISED, raised eyebrows, round eyes and a small round open mouth; right: a clear, full TIRED, sleepy half-closed eyes and a small yawn. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b3_bucuros100_trist100_suparat100_speriat100",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b3_bucuros_100",
+   "faces2/b3_trist_100",
+   "faces2/b3_suparat_100",
+   "faces2/b3_speriat_100"
+  ],
+  "refs": [
+   "refs/faces2/b3_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with warm medium-brown skin, short straight black hair, dark brown eyes and light freckles on the cheeks, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: a clear, full HAPPY, a warm open smile; top-right: a clear, full SAD, downturned mouth and sad eyebrows; bottom-left: a clear, full ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a clear, full SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b3_surprins100_obosit100",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "faces2/b3_surprins_100",
+   "faces2/b3_obosit_100"
+  ],
+  "refs": [
+   "refs/faces2/b3_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 1x2 grid of 2 SEPARATE portraits of the SAME child shown in the first attached image (a boy with warm medium-brown skin, short straight black hair, dark brown eyes and light freckles on the cheeks, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — left: a clear, full SURPRISED, raised eyebrows, round eyes and a small round open mouth; right: a clear, full TIRED, sleepy half-closed eyes and a small yawn. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a0_bucuros20_bucuros40_bucuros60_bucuros80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a0_bucuros_20",
+   "faces2/a0_bucuros_40",
+   "faces2/a0_bucuros_60",
+   "faces2/a0_bucuros_80"
+  ],
+  "refs": [
+   "refs/faces2/a0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of HAPPY, a warm open smile; top-right: a MILD HAPPY, a warm open smile; bottom-left: a MODERATE HAPPY, a warm open smile; bottom-right: a STRONG HAPPY, a warm open smile. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a0_trist20_trist40_trist60_trist80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a0_trist_20",
+   "faces2/a0_trist_40",
+   "faces2/a0_trist_60",
+   "faces2/a0_trist_80"
+  ],
+  "refs": [
+   "refs/faces2/a0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of SAD, downturned mouth and sad eyebrows; top-right: a MILD SAD, downturned mouth and sad eyebrows; bottom-left: a MODERATE SAD, downturned mouth and sad eyebrows; bottom-right: a STRONG SAD, downturned mouth and sad eyebrows. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a0_suparat20_suparat40_suparat60_suparat80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a0_suparat_20",
+   "faces2/a0_suparat_40",
+   "faces2/a0_suparat_60",
+   "faces2/a0_suparat_80"
+  ],
+  "refs": [
+   "refs/faces2/a0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; top-right: a MILD ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-left: a MODERATE ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a STRONG ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a0_surprins20_surprins40_surprins60_surprins80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a0_surprins_20",
+   "faces2/a0_surprins_40",
+   "faces2/a0_surprins_60",
+   "faces2/a0_surprins_80"
+  ],
+  "refs": [
+   "refs/faces2/a0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of SURPRISED, raised eyebrows, round eyes and a small round open mouth; top-right: a MILD SURPRISED, raised eyebrows, round eyes and a small round open mouth; bottom-left: a MODERATE SURPRISED, raised eyebrows, round eyes and a small round open mouth; bottom-right: a STRONG SURPRISED, raised eyebrows, round eyes and a small round open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/a0_speriat20_speriat40_speriat60_speriat80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/a0_speriat_20",
+   "faces2/a0_speriat_40",
+   "faces2/a0_speriat_60",
+   "faces2/a0_speriat_80"
+  ],
+  "refs": [
+   "refs/faces2/a0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with fair skin, short straight brown hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of SCARED, wide eyes, raised eyebrows and a small worried open mouth; top-right: a MILD SCARED, wide eyes, raised eyebrows and a small worried open mouth; bottom-left: a MODERATE SCARED, wide eyes, raised eyebrows and a small worried open mouth; bottom-right: a STRONG SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b0_bucuros20_bucuros40_bucuros60_bucuros80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b0_bucuros_20",
+   "faces2/b0_bucuros_40",
+   "faces2/b0_bucuros_60",
+   "faces2/b0_bucuros_80"
+  ],
+  "refs": [
+   "refs/faces2/b0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with deep brown skin, short black curly hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of HAPPY, a warm open smile; top-right: a MILD HAPPY, a warm open smile; bottom-left: a MODERATE HAPPY, a warm open smile; bottom-right: a STRONG HAPPY, a warm open smile. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b0_trist20_trist40_trist60_trist80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b0_trist_20",
+   "faces2/b0_trist_40",
+   "faces2/b0_trist_60",
+   "faces2/b0_trist_80"
+  ],
+  "refs": [
+   "refs/faces2/b0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with deep brown skin, short black curly hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of SAD, downturned mouth and sad eyebrows; top-right: a MILD SAD, downturned mouth and sad eyebrows; bottom-left: a MODERATE SAD, downturned mouth and sad eyebrows; bottom-right: a STRONG SAD, downturned mouth and sad eyebrows. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b0_suparat20_suparat40_suparat60_suparat80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b0_suparat_20",
+   "faces2/b0_suparat_40",
+   "faces2/b0_suparat_60",
+   "faces2/b0_suparat_80"
+  ],
+  "refs": [
+   "refs/faces2/b0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with deep brown skin, short black curly hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; top-right: a MILD ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-left: a MODERATE ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly; bottom-right: a STRONG ANGRY, a frown with lowered eyebrows and a pouting mouth, still gentle and child-friendly. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b0_surprins20_surprins40_surprins60_surprins80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b0_surprins_20",
+   "faces2/b0_surprins_40",
+   "faces2/b0_surprins_60",
+   "faces2/b0_surprins_80"
+  ],
+  "refs": [
+   "refs/faces2/b0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with deep brown skin, short black curly hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of SURPRISED, raised eyebrows, round eyes and a small round open mouth; top-right: a MILD SURPRISED, raised eyebrows, round eyes and a small round open mouth; bottom-left: a MODERATE SURPRISED, raised eyebrows, round eyes and a small round open mouth; bottom-right: a STRONG SURPRISED, raised eyebrows, round eyes and a small round open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/b0_speriat20_speriat40_speriat60_speriat80",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "faces2/b0_speriat_20",
+   "faces2/b0_speriat_40",
+   "faces2/b0_speriat_60",
+   "faces2/b0_speriat_80"
+  ],
+  "refs": [
+   "refs/faces2/b0_neutru_100.png",
+   "refs/faces_fericit.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy game for young and autistic children: a 2x2 grid of 4 SEPARATE portraits of the SAME child shown in the first attached image (a boy with deep brown skin, short black curly hair, brown eyes, plain mint t-shirt) — keep exactly the same face, hair, skin, clothes and the same soft painted storybook style. Each portrait is head and shoulders, straight-on, centered in its own cell with wide empty transparent space around it, all portraits the same size; nothing crosses into another cell. Only the facial expression changes — top-left: only a VERY SLIGHT, barely visible hint of SCARED, wide eyes, raised eyebrows and a small worried open mouth; top-right: a MILD SCARED, wide eyes, raised eyebrows and a small worried open mouth; bottom-left: a MODERATE SCARED, wide eyes, raised eyebrows and a small worried open mouth; bottom-right: a STRONG SCARED, wide eyes, raised eyebrows and a small worried open mouth. Real alpha transparency everywhere outside the children, no background, no grid lines, no frames or badges, no ground or cast shadow. Never text, letters, numerals, labels, watermark."
+ },
+ {
+  "name": "sheets/objects_o0",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/music",
+   "objects/bathtub",
+   "objects/hatching_chick",
+   "objects/candle",
+   "objects/phone",
+   "objects/crown",
+   "objects/tshirt",
+   "objects/coat",
+   "objects/puzzle"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: two joined musical notes in soft lavender, gently glossy; cell 2: one rounded white bathtub on little feet full of soft bubbles; cell 3: one fluffy yellow chick hatching from a cracked cream eggshell; cell 4: one cream candle with a small warm flame on a little peach holder; cell 5: one rounded smartphone with a lavender case and a soft sky-blue screen without any text; cell 6: one small golden crown with soft rounded points and three pastel gems; cell 7: one plain sky-blue t-shirt laid flat; cell 8: one cozy mint winter coat with round wooden buttons; cell 9: one single jigsaw puzzle piece in lavender. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o1",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/school",
+   "objects/speech",
+   "objects/lion",
+   "objects/sailboat",
+   "objects/tractor",
+   "objects/sprout",
+   "objects/snowman",
+   "objects/scarf",
+   "objects/paper"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small friendly school building with a clock-free bell tower, peach walls and a mint roof; cell 2: one rounded cream speech bubble with three small lavender dots inside; cell 3: one friendly cartoon lion sitting, with a fluffy golden mane; cell 4: one small wooden sailboat with a mint sail on a tiny sky-blue wave; cell 5: one small friendly farm tractor in mint with big rounded wheels; cell 6: one small green sprout with two leaves growing from a little mound of soil; cell 7: one friendly snowman with a carrot nose, a mint scarf and a little hat; cell 8: one cozy striped knitted scarf in peach and lavender; cell 9: one blank cream sheet of paper with a softly curled corner. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o2",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/envelope",
+   "objects/traffic_light",
+   "objects/sneaker",
+   "objects/door",
+   "objects/sunrise",
+   "objects/bed",
+   "objects/magnifier",
+   "objects/cart",
+   "objects/tiger"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one closed cream envelope with a small heart seal in peach; cell 2: one friendly traffic light with three round lights: green glowing, amber and red softly dim; cell 3: one child's sneaker in sky blue with cream laces, side view; cell 4: one rounded wooden door with a small round window and a golden knob, slightly open; cell 5: one soft sun rising over gentle mint hills with a peach sky glow; cell 6: one cozy child's bed with a lavender blanket and a cream pillow; cell 7: one magnifying glass with a honey wooden handle and a softly reflective lens; cell 8: one small shopping cart in sky blue with rounded wheels; cell 9: one friendly cartoon tiger sitting, soft orange with gentle stripes. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o3",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/shark",
+   "objects/tooth",
+   "objects/beach",
+   "objects/chestnut",
+   "objects/umbrella_rain",
+   "objects/umbrella",
+   "objects/box",
+   "objects/lotion",
+   "objects/pen"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly smiling cartoon shark in sky blue, closed mouth; cell 2: one shiny clean white tooth with a gentle sparkle; cell 3: one small beach scene: a striped peach umbrella on soft sand with a tiny sky-blue sea edge; cell 4: one glossy brown chestnut with a cream base; cell 5: one open lavender umbrella with a few soft raindrops falling on it; cell 6: one open umbrella with a curved handle, plain lavender canopy; cell 7: one closed cardboard box tied with soft string; cell 8: one squeeze bottle of lotion in mint with a cream cap, no label text; cell 9: one ballpoint pen in sky blue, lying diagonally. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o4",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/museum",
+   "objects/scroll",
+   "objects/radio",
+   "objects/tv",
+   "objects/salad",
+   "objects/toilet_paper",
+   "objects/jeans",
+   "objects/chair",
+   "objects/rain_cloud"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small classical museum building with cream columns and a peach triangular roof; cell 2: one rolled cream paper scroll, partly open, no writing; cell 3: one rounded retro radio in mint with a round speaker grille and a knob; cell 4: one rounded retro television in peach with a blank sky-blue screen and small antennas; cell 5: one bowl of fresh green salad with tomato slices and cucumbers; cell 6: one roll of soft white toilet paper; cell 7: one pair of child's blue jeans laid flat; cell 8: one simple wooden chair with a mint cushion; cell 9: one soft grey-blue cloud with gentle raindrops. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o5",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/spoon",
+   "objects/calendar",
+   "objects/speaker",
+   "objects/backpack",
+   "objects/die",
+   "objects/scales",
+   "objects/shorts",
+   "objects/gloves",
+   "objects/book_red"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one shiny round spoon, lying diagonally; cell 2: one small desk calendar with a mint top band and blank cream pages, no numbers; cell 3: one friendly sky-blue loudspeaker with soft cream sound waves; cell 4: one child's school backpack in mint with a peach front pocket; cell 5: one rounded cream dice showing round peach dots; cell 6: one old-fashioned golden balance scale with two pans, level; cell 7: one pair of child's shorts in peach laid flat; cell 8: one pair of cozy knitted mittens-style gloves in lavender; cell 9: one closed hardcover book with a soft coral-red cover, no title. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o6",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/book_green",
+   "objects/book_blue",
+   "objects/book_orange",
+   "objects/boot",
+   "objects/toilet",
+   "objects/kite",
+   "objects/bus",
+   "objects/paws",
+   "objects/hen"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one closed hardcover book with a soft green cover, no title; cell 2: one closed hardcover book with a soft blue cover, no title; cell 3: one closed hardcover book with a soft orange cover, no title; cell 4: one sturdy brown hiking boot with laces, side view; cell 5: one clean white toilet with the lid up, simple and friendly; cell 6: one diamond kite in lavender and peach with a wavy tail of small bows; cell 7: one friendly yellow school bus, side view, no text; cell 8: four small paw prints in a row in soft brown; cell 9: one friendly hen with soft cream and brown feathers and a small red comb. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o7",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/lettuce",
+   "objects/herb",
+   "objects/meat",
+   "objects/drumstick",
+   "objects/newspaper",
+   "objects/bottle",
+   "objects/cake",
+   "objects/fries",
+   "objects/knife"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one fresh head of green lettuce; cell 2: one small sprig of green herb leaves; cell 3: one cooked piece of meat on a bone, cartoon style; cell 4: one roasted chicken drumstick; cell 5: one folded newspaper with grey blocks instead of text; cell 6: one simple green glass bottle with a cork, no label; cell 7: one slice of strawberry cream cake with a strawberry on top; cell 8: one peach paper cone of golden french fries; cell 9: one rounded kitchen knife with a wooden handle, lying diagonally. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o8",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/plug",
+   "objects/bubbles",
+   "objects/tap",
+   "objects/sunset",
+   "objects/birthday_cake",
+   "objects/bird",
+   "objects/yoyo",
+   "objects/dress",
+   "objects/cap"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one electric plug with a short cable in cream; cell 2: three glossy translucent soap bubbles of different sizes; cell 3: one kitchen water tap with a small stream of water and a glass below; cell 4: one soft evening sky with the sun setting behind small houses in silhouette, peach and lavender; cell 5: one round birthday cake with cream frosting and three lit candles; cell 6: one small friendly sky-blue bird sitting; cell 7: one yo-yo in lavender and peach with its string; cell 8: one simple child's dress in peach laid flat; cell 9: one baseball cap in mint, side view. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o9",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/squid",
+   "objects/jellyfish",
+   "objects/lobster",
+   "objects/lock_closed",
+   "objects/lock_open",
+   "objects/desert",
+   "objects/top_hat",
+   "objects/palette",
+   "objects/pear"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly cartoon squid in lavender; cell 2: one friendly translucent jellyfish in lavender and pink; cell 3: one friendly cartoon lobster in soft coral; cell 4: one closed golden padlock; cell 5: one open golden padlock; cell 6: one small desert scene: a sand dune with one cactus and a soft sun; cell 7: one black top hat with a lavender ribbon; cell 8: one wooden painter's palette with blobs of mint, sky blue, lavender, peach and yellow paint and a brush; cell 9: one ripe green-yellow pear with a leaf. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o10",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/park",
+   "objects/train",
+   "objects/palm",
+   "objects/monkey",
+   "objects/parrot",
+   "objects/whale",
+   "objects/deer",
+   "objects/hedgehog",
+   "objects/penguin"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small park scene: a green meadow, a tree and a little pond; cell 2: one friendly little steam train engine in sky blue, side view; cell 3: one palm tree on a small sandy mound; cell 4: one friendly cartoon monkey sitting; cell 5: one friendly colorful parrot sitting on a small branch; cell 6: one friendly smiling blue whale with a little water spout; cell 7: one friendly young deer standing; cell 8: one friendly cartoon hedgehog; cell 9: one friendly cartoon penguin standing. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o11",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/polar_bear",
+   "objects/seal",
+   "objects/sun_rain",
+   "objects/ice_cream",
+   "objects/grapes",
+   "objects/skis",
+   "objects/clock",
+   "objects/eagle",
+   "objects/shield"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly white polar bear sitting; cell 2: one friendly grey seal lying; cell 3: one small sun peeking from behind a soft rain cloud with a few raindrops; cell 4: one soft-serve ice cream cone with pastel swirl; cell 5: one bunch of purple grapes with a green leaf; cell 6: one pair of skis with poles, crossed; cell 7: one round wall clock with a cream face and simple hands, no numbers; cell 8: one friendly eagle with open wings; cell 9: one rounded knight's shield in sky blue with a cream star. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_o12",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/alarm_clock",
+   "objects/brain",
+   "objects/wind",
+   "objects/trash",
+   "objects/sunglasses",
+   "objects/sun_hat"
+  ],
+  "refs": [
+   "refs/objects_apple.png",
+   "refs/objects_dog.png",
+   "refs/objects_house.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one round twin-bell alarm clock in mint, no numbers; cell 2: one friendly soft pink cartoon brain with a gentle smile; cell 3: soft swirling cream and sky-blue wind gusts with a couple of leaves; cell 4: one small rounded trash bin in mint with a lid; cell 5: one pair of round sunglasses with a lavender frame; cell 6: one wide straw sun hat with a peach ribbon. Leave the remaining cells completely empty. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_p0",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/ear",
+   "objects/wave",
+   "objects/writing",
+   "objects/hug",
+   "objects/boy",
+   "objects/girl",
+   "objects/dad",
+   "objects/mom",
+   "objects/grandma"
+  ],
+  "refs": [
+   "refs/faces_fericit.png",
+   "refs/actions_citeste.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly simple child's ear in warm peach skin tone, side view; cell 2: one curling sea wave in sky blue and mint with a soft cream foam crest; cell 3: one child's hand holding a yellow pencil writing a wavy line on a cream sheet of paper, no letters; cell 4: two small friendly children hugging each other happily, full body; cell 5: one friendly little boy, full body, short brown hair, mint t-shirt and blue shorts, gentle smile; cell 6: one friendly little girl, full body, brown hair in two short pigtails, peach dress, gentle smile; cell 7: one friendly young father, full body, short dark hair, sky-blue shirt, gentle smile; cell 8: one friendly young mother, full body, long brown hair, lavender dress, gentle smile; cell 9: one friendly grandmother, full body, grey hair in a bun, round glasses, peach cardigan, gentle smile. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_p1",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/grandpa",
+   "objects/family",
+   "objects/raise_hand",
+   "objects/handshake",
+   "objects/eye",
+   "objects/speaking",
+   "objects/hand",
+   "objects/nose",
+   "objects/hurt"
+  ],
+  "refs": [
+   "refs/faces_fericit.png",
+   "refs/actions_citeste.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly grandfather, full body, white hair, small mustache, mint sweater, gentle smile; cell 2: one small happy family standing together: mother, father and one child holding hands; cell 3: one friendly child raising one hand up high to ask something, full body; cell 4: two hands shaking in a friendly handshake, warm skin tones, peach and sky-blue sleeves; cell 5: one friendly single eye with long lashes and a brown iris; cell 6: one child's head in side profile speaking, with soft cream sound lines coming from the mouth; cell 7: one open child's hand with five fingers spread, palm facing forward, warm skin tone; cell 8: one friendly child's nose in warm peach skin tone, simple front view; cell 9: one child with a small bandage on the forehead and a slightly sad face, upper body. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_p2",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/walking",
+   "objects/please",
+   "objects/hands_up",
+   "objects/party",
+   "objects/clap",
+   "objects/swimming",
+   "objects/mouth",
+   "objects/leg",
+   "objects/foot"
+  ],
+  "refs": [
+   "refs/faces_fericit.png",
+   "refs/actions_citeste.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one child walking happily, side view, full body; cell 2: two hands pressed together politely, warm skin tone, peach sleeves; cell 3: two hands raised up in celebration, warm skin tone, with small sparkles; cell 4: one happy child wearing a party hat and blowing a party horn, upper body; cell 5: two hands clapping, warm skin tone, with small motion lines; cell 6: one child swimming happily in sky-blue water with goggles; cell 7: one friendly smiling child's mouth with lips, simple front view; cell 8: one child's leg with a short sock and a sneaker, side view; cell 9: one bare child's foot, simple side view, warm skin tone. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ },
+ {
+  "name": "sheets/objects_p3",
+  "grid": [
+   3,
+   3
+  ],
+  "cells": [
+   "objects/tongue",
+   "objects/arm"
+  ],
+  "refs": [
+   "refs/faces_fericit.png",
+   "refs/actions_citeste.png",
+   "refs/objects_teddy.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one cartoon mouth sticking out a pink tongue playfully; cell 2: one child's arm flexing a muscle, warm skin tone, mint sleeve. Leave the remaining cells completely empty. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces."
+ }
+]
