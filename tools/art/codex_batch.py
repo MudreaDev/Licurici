@@ -69,6 +69,14 @@ def split(job, src, out_dir, results):
 
 
 def run(job, out_dir, exe, results):
+    try:
+        _run(job, out_dir, exe, results)
+    except Exception:
+        import traceback
+        print('EROARE', job['name'], traceback.format_exc(), flush=True)
+
+
+def _run(job, out_dir, exe, results):
     target = os.path.join(out_dir, job['name'] + '.png')
     if job.get('cells'):
         if all(os.path.exists(os.path.join(out_dir, c + '.png')) for c in job['cells']):
