@@ -13,6 +13,7 @@ import '../../../shared/fx/scene_background.dart';
 import '../../../shared/illustration.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/motion.dart';
+import '../../../shared/parts.dart';
 import '../../../shared/reward_finish.dart';
 import '../../../shared/sfx.dart';
 import '../../../shared/top_bar.dart';
@@ -446,14 +447,60 @@ class _Flower extends StatelessWidget {
             tween: Tween(end: open ? 1 : 0),
             duration: const Duration(milliseconds: 320),
             curve: Curves.easeOutBack,
-            builder: (context, bloom, _) => CustomPaint(
-              painter: _FlowerPainter(grow: open ? 1 : grow, bloom: bloom, swell: light == _Light.flicker),
-            ),
+            builder: (context, bloom, _) => ['flower_pot', 'flower_stem', 'flower_bud', 'flower_bloom'].every(hasPart)
+                ? _PaintedFlower(grow: open ? 1 : grow, bloom: bloom, swell: light == _Light.flicker)
+                : CustomPaint(
+                    painter: _FlowerPainter(grow: open ? 1 : grow, bloom: bloom, swell: light == _Light.flicker),
+                  ),
           ),
         ),
       ),
     );
   }
+}
+
+/// Floarea din piese pictate (`parts/flower_*`): ghiveciul, tulpina care crește (întinsă pe
+/// înălțime), mugurul care se umflă la tentații și floarea deschisă la semnal.
+class _PaintedFlower extends StatelessWidget {
+  const _PaintedFlower({required this.grow, required this.bloom, required this.swell});
+
+  final double grow, bloom;
+  final bool swell;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final s = box.biggest.shortestSide;
+      final cx = box.maxWidth / 2;
+      final base = box.maxHeight * 0.8;
+      final stemH = s * (0.2 + 0.4 * grow);
+      final head = s * (0.2 + 0.1 * grow) * (swell ? 1.15 : 1);
+      final top = base - stemH;
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(left: cx - s * 0.11, width: s * 0.22, top: top + head * 0.2, height: stemH - head * 0.2 + s * 0.02, child: const Part('flower_stem')),
+          // Mugurul se strânge când se deschide floarea (și invers).
+          Positioned(
+            left: cx - head / 2,
+            top: top - head * 0.75,
+            width: head,
+            height: head,
+            child: Opacity(opacity: (1 - bloom).clamp(0.0, 1.0), child: const Part('flower_bud', fit: BoxFit.contain, alignment: Alignment.bottomCenter)),
+          ),
+          if (bloom > 0.02)
+            Positioned(
+              left: cx - head * 0.8,
+              top: top - head * 1.0,
+              width: head * 1.6,
+              height: head * 1.6,
+              child: Transform.scale(scale: 0.5 + 0.5 * bloom, child: Opacity(opacity: bloom.clamp(0.0, 1.0), child: const Part('flower_bloom', fit: BoxFit.contain))),
+            ),
+          Positioned(left: cx - s * 0.2, width: s * 0.4, top: base - s * 0.02, height: s * 0.24, child: const Part('flower_pot', fit: BoxFit.contain, alignment: Alignment.topCenter)),
+        ],
+      );
+    },
+  );
 }
 
 class _FlowerPainter extends CustomPainter {

@@ -6,9 +6,11 @@ import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/parts.dart';
 import '../../../shared/cheer.dart';
 import '../../../shared/drawn_face.dart';
 import '../../../shared/fx/scene_background.dart';
+import '../../../shared/illustration.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/mascot.dart';
 import '../../../shared/motion.dart';
@@ -307,16 +309,21 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
             shakeTick: _shake,
             popTick: _burst,
             child: Container(
-              padding: EdgeInsets.all(f * 0.06),
-              decoration: ShapeDecoration(
-                shape: const OvalBorder(side: BorderSide(color: Color(0xFFC8955A), width: 10)),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFF4FBFF), Color(0xFFD6ECF7), Color(0xFFF4FBFF)],
-                ),
-                shadows: Tokens.shadow,
-              ),
+              padding: EdgeInsets.all(f * (hasPart('mirror') ? 0.14 : 0.06)),
+              // Oglinda pictată (`parts/mirror`: rama ovală cu sticla) sau rama desenată.
+              decoration: hasPart('mirror')
+                  ? BoxDecoration(
+                      image: DecorationImage(image: illustration('parts/mirror'), fit: BoxFit.fill),
+                    )
+                  : ShapeDecoration(
+                      shape: const OvalBorder(side: BorderSide(color: Color(0xFFC8955A), width: 10)),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFF4FBFF), Color(0xFFD6ECF7), Color(0xFFF4FBFF)],
+                      ),
+                      shadows: Tokens.shadow,
+                    ),
               child: Semantics(
                 button: true,
                 label: 'Fața din oglindă',

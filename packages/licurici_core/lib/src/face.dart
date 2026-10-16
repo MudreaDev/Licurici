@@ -105,13 +105,23 @@ class FaceLook {
     return FaceLook(skin: d(0, skins), hair: d(1, hairs), hairStyle: d(2, hairStyles), eyes: d(3, eyeColors), accessory: d(4, accessories));
   }
 
-  static FaceLook random(Random r) => FaceLook(
+  /// Unul dintre copiii pictați ([paintedLooks]) — jocurile arată doar fețe care au ilustrații.
+  static FaceLook random(Random r) => paintedLooks[r.nextInt(paintedLooks.length)];
+
+  /// O identitate oarecare din toate combinațiile (pentru desenul din cod și teste).
+  static FaceLook anyRandom(Random r) => FaceLook(
         skin: r.nextInt(skins),
         hair: r.nextInt(hairs),
         hairStyle: r.nextInt(hairStyles),
         eyes: r.nextInt(eyeColors),
         accessory: r.nextInt(accessories),
       );
+
+  /// Numele ilustrațiilor copilului pictat (`a0`…`b3`), sau null dacă nu e unul dintre ei.
+  String? get paintedId {
+    final i = paintedLooks.indexOf(this);
+    return i < 0 ? null : paintedIds[i];
+  }
 
   /// Câte trăsături diferă (pentru „Cine e prietenul?”: distractori mai asemănători = mai greu).
   int differences(FaceLook o) =>
@@ -123,6 +133,25 @@ class FaceLook {
   @override
   int get hashCode => code.hashCode;
 }
+
+/// Copiii pictați (ilustrațiile `faces2/<id>_<emoție>_<intensitate>`, generate cu Codex): două
+/// „familii” de câte patru, ca la „Cine e prietenul?” să existe și copii care seamănă (1–2
+/// trăsături diferite), nu doar copii foarte diferiți (3–4 trăsături).
+const paintedIds = ['a0', 'a1', 'a2', 'a3', 'b0', 'b1', 'b2', 'b3'];
+const paintedLooks = [
+  FaceLook(skin: 0, hair: 1, hairStyle: 0, eyes: 0, accessory: 0), // băiat, păr castaniu scurt
+  FaceLook(skin: 0, hair: 1, hairStyle: 0, eyes: 0, accessory: 1), // la fel, cu ochelari
+  FaceLook(skin: 0, hair: 1, hairStyle: 1, eyes: 1, accessory: 0), // fată, păr castaniu lung, ochi albaștri
+  FaceLook(skin: 0, hair: 3, hairStyle: 1, eyes: 1, accessory: 2), // fată, păr blond-caramel, bentiță
+  FaceLook(skin: 4, hair: 4, hairStyle: 3, eyes: 0, accessory: 0), // băiat, păr negru creț
+  FaceLook(skin: 4, hair: 4, hairStyle: 3, eyes: 0, accessory: 1), // fată, păr negru creț, ochelari
+  FaceLook(skin: 3, hair: 4, hairStyle: 3, eyes: 3, accessory: 0), // fată, ten cafeniu, păr creț
+  FaceLook(skin: 3, hair: 4, hairStyle: 0, eyes: 3, accessory: 3), // băiat, păr negru scurt, pistrui
+];
+
+/// Copiii pictați și cu treptele de intensitate (20, 40, 60, 80, 100%) — pentru „Cât de tare?”.
+/// Ceilalți au doar expresia întreagă.
+const ladderLooks = [FaceLook(skin: 0, hair: 1, hairStyle: 0, eyes: 0, accessory: 0), FaceLook(skin: 4, hair: 4, hairStyle: 3, eyes: 0, accessory: 0)];
 
 /// O față: cine e, ce simte și cât de tare.
 class FaceSpec {

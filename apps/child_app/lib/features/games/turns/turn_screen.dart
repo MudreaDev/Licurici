@@ -8,6 +8,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/parts.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/juice.dart';
@@ -261,12 +262,7 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                         sticker: _sticker,
                         actions: [
                           FinishAction('Încă o dată', Icons.replay_rounded, Tokens.primary, () => _again(next: false)),
-                          FinishAction(
-                            'Mai departe',
-                            Icons.arrow_forward_rounded,
-                            Tokens.good,
-                            () => _again(next: true),
-                          ),
+                          FinishAction('Mai departe', Icons.arrow_forward_rounded, Tokens.good, () => _again(next: true)),
                         ],
                       )
                     : _board(motion, layout),
@@ -313,11 +309,7 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
-                                CandyPanel(
-                                  padding: EdgeInsets.zero,
-                                  radius: side * 0.12,
-                                  child: const SizedBox.expand(),
-                                ),
+                                CandyPanel(padding: EdgeInsets.zero, radius: side * 0.12, child: const SizedBox.expand()),
                                 AnimatedOpacity(
                                   opacity: childTurn && !_flying ? 1 : (_who == _Who.licurici ? 0.35 : 0),
                                   duration: motion.d(200),
@@ -326,8 +318,7 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                                     child: _Block(color: nextColor, size: side * 0.22, mine: true),
                                   ),
                                 ),
-                                if (_who == _Who.licurici)
-                                  Icon(Icons.front_hand_rounded, size: side * 0.3, color: const Color(0xCC8A9BB0)),
+                                if (_who == _Who.licurici) Icon(Icons.front_hand_rounded, size: side * 0.3, color: const Color(0xCC8A9BB0)),
                                 if (_nudge && childTurn)
                                   Positioned(
                                     right: side * 0.02,
@@ -363,10 +354,7 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                       width: block * 2.6,
                       height: block * 0.35,
                       margin: EdgeInsets.only(bottom: layout.compact ? 6 : 16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF9A6634),
-                        borderRadius: BorderRadius.circular(block * 0.12),
-                      ),
+                      decoration: BoxDecoration(color: const Color(0xFF9A6634), borderRadius: BorderRadius.circular(block * 0.12)),
                     ),
                   ],
                 ),
@@ -383,9 +371,7 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                       size: side * 0.62,
                       mood: _who == _Who.done && _placed > 0
                           ? MascotMood.celebrate
-                          : (_who == _Who.licurici
-                                ? (_thinking ? MascotMood.think : MascotMood.happy)
-                                : MascotMood.idle),
+                          : (_who == _Who.licurici ? (_thinking ? MascotMood.think : MascotMood.happy) : MascotMood.idle),
                     ),
                     AnimatedOpacity(
                       opacity: _who == _Who.licurici && !_flying ? 1 : 0,
@@ -469,27 +455,41 @@ class _Block extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cube = Container(
-      width: size * 1.6,
-      height: size,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(size * 0.16),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color.lerp(color, Colors.white, 0.3)!, color, shade(color, 0.2)],
-          stops: const [0, 0.35, 1],
-        ),
-        border: Border.all(color: shade(color, 0.3), width: 2),
-      ),
-      child: Center(
-        child: Icon(
-          mine ? Icons.star_rounded : Icons.nightlight_round,
-          size: size * 0.6,
-          color: Colors.white.withValues(alpha: 0.85),
-        ),
-      ),
-    );
+    final icon = Icon(mine ? Icons.star_rounded : Icons.nightlight_round, size: size * 0.6, color: Colors.white.withValues(alpha: 0.85));
+    // Cubul pictat (`parts/block`, crem, colorat), dacă există; altfel cel din cod.
+    final cube = hasPart('block')
+        ? SizedBox(
+            width: size * 1.6,
+            height: size,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned.fill(child: Part('block', tint: color)),
+                icon,
+              ],
+            ),
+          )
+        : Container(
+            width: size * 1.6,
+            height: size,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(size * 0.16),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color.lerp(color, Colors.white, 0.3)!, color, shade(color, 0.2)],
+                stops: const [0, 0.35, 1],
+              ),
+              border: Border.all(color: shade(color, 0.3), width: 2),
+            ),
+            child: Center(
+              child: Icon(
+                mine ? Icons.star_rounded : Icons.nightlight_round,
+                size: size * 0.6,
+                color: Colors.white.withValues(alpha: 0.85),
+              ),
+            ),
+          );
     if (!drop) return cube;
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),

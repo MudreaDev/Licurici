@@ -18,7 +18,7 @@ const _strength = {
 
 /// Cât de tare? (EMO2): aceeași persoană, aceeași emoție, la intensități diferite; copilul alege
 /// expresia cea mai puternică. Diferența dintre intensități scade cu tier-ul (de la 0,4 la
-/// 0,1) — ca într-o procedură „în scară”, nivelul la care copilul nu mai reușește dă **pragul**
+/// 0,2, treptele fețelor pictate) — ca într-o procedură „în scară”, nivelul la care copilul nu mai reușește dă **pragul**
 /// lui de recunoaștere a emoției (aceeași idee ca în studiile cu fețe „morfate”). Bucuros și
 /// trist la început; supărat, surprins și speriat de la tier 3.
 class CatDeTareGame extends ChoiceGame {
@@ -32,8 +32,9 @@ class CatDeTareGame extends ChoiceGame {
           gradeCodes: 'G1234',
         );
 
-  /// Diferența de intensitate dintre variante la [tier] (1 → 0,4; 7 → 0,1).
-  static double gapFor(int tier) => (0.45 - 0.05 * tier).clamp(0.1, 0.4);
+  /// Diferența de intensitate dintre variante la [tier]: 0,4 la început, apoi 0,2 — treptele
+  /// ilustrațiilor pictate (20, 40, 60, 80, 100%).
+  static double gapFor(int tier) => tier <= 2 ? 0.4 : 0.2;
 
   @override
   Lesson generate(GameContext ctx) {
@@ -52,12 +53,13 @@ class CatDeTareGame extends ChoiceGame {
   }
 
   ChoiceRound _round(GameContext ctx, FaceEmotion e, double gap) {
-    final look = FaceLook.random(ctx.random);
-    // Cea mai puternică are 0,9–1; celelalte câte un „pas” mai jos (cel puțin 0,15: încă se vede).
-    final top = 0.9 + 0.1 * ctx.random.nextDouble();
+    final look = ctx.pick(ladderLooks);
+    // Cea mai puternică e întreagă; celelalte câte un „pas” mai jos, fără să se repete (cel puțin
+    // 20%: încă se vede).
     final n = ctx.difficulty.optionCount;
     final faces = [
-      for (var k = 0; k < n; k++) FaceSpec(look, e, (top - gap * k).clamp(0.15, 1.0)),
+      for (var k = 0; k < n; k++)
+        if (1 - gap * k >= 0.19) FaceSpec(look, e, 1 - gap * k),
     ];
     final question = _strength[e]!;
     return ChoiceRound(
@@ -108,15 +110,15 @@ class CineEPrietenulGame extends ChoiceGame {
     final friend = FaceLook.random(ctx.random);
     final minDiff = minDifferencesFor(tier);
     final maxDiff = tier <= 2 ? 5 : (tier <= 4 ? 3 : 2);
-    final others = <FaceLook>[];
-    var guard = 0;
-    while (others.length < 4 && guard++ < 4000) {
-      final o = FaceLook.random(ctx.random);
+    // Ceilalți copii pictați, cei mai potriviți întâi: cât mai aproape de banda de asemănare a
+    // tier-ului (la egalitate, la întâmplare).
+    int off(FaceLook o) {
       final d = o.differences(friend);
-      if (d < minDiff || d > maxDiff) continue;
-      if (others.any((x) => x == o)) continue;
-      others.add(o);
+      return d < minDiff ? minDiff - d : (d > maxDiff ? d - maxDiff : 0);
     }
+    final others = ([for (final o in paintedLooks) if (o != friend) o]..shuffle(ctx.random))
+      ..sort((a, b) => off(a).compareTo(off(b)));
+    others.length = 4;
     // Poza prietenului: calm sau bucuros; în variante, toți au aceeași altă expresie (doar fața
     // contează, nu expresia).
     final shown = ctx.pick([FaceEmotion.neutru, FaceEmotion.bucuros]);

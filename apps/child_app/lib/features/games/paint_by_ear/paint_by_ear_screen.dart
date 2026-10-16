@@ -7,6 +7,7 @@ import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/parts.dart';
 import '../../../shared/cheer.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/juice.dart';
@@ -30,12 +31,12 @@ const _uncolored = ColorFilter.matrix([
   0, 0, 0, 1, 0,
 ]);
 
-/// Primul pas al colorării: luminozitatea întărită (umplutura → aproape albă, conturul → negru),
-/// apoi înmulțită cu culoarea aleasă — ca o pagină de colorat umplută cu o singură culoare.
+/// Primul pas al colorării: tonurile de gri ale desenului, ridicate (umbrele rămân, ca volumul
+/// ilustrațiilor pictate să se vadă), apoi înmulțite cu culoarea aleasă.
 const _brighten = ColorFilter.matrix([
-  0.4677, 1.5734, 0.1588, 0, 0, //
-  0.4677, 1.5734, 0.1588, 0, 0,
-  0.4677, 1.5734, 0.1588, 0, 0,
+  0.1913, 0.6437, 0.0650, 0, 76.5, //
+  0.1913, 0.6437, 0.0650, 0, 76.5,
+  0.1913, 0.6437, 0.0650, 0, 76.5,
   0, 0, 0, 1, 0,
 ]);
 
@@ -354,6 +355,36 @@ class _Pot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = Color(color.argb);
+    // Borcanul pictat (`parts/paint_pot`, crem, colorat cu vopseaua lui), dacă există.
+    if (hasPart('paint_pot')) {
+      return AnimatedScale(
+        scale: selected ? 1.15 : 1,
+        duration: const Duration(milliseconds: 150),
+        child: SizedBox.square(
+          dimension: size,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (selected)
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(color: c.withValues(alpha: 0.55), blurRadius: 16)],
+                  ),
+                ),
+              Positioned.fill(
+                child: Part('paint_pot', fit: BoxFit.contain, tint: c),
+              ),
+              if (selected)
+                Align(
+                  alignment: const Alignment(0.7, -0.7),
+                  child: Icon(Icons.brush_rounded, color: Colors.white, size: size * 0.42),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
     return AnimatedScale(
       scale: selected ? 1.12 : 1,
       duration: const Duration(milliseconds: 150),

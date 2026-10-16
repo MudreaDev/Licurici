@@ -296,18 +296,9 @@ class _PlaceScreenState extends ConsumerState<PlaceScreen> {
                       height: 3,
                       child: const ColoredBox(color: Color(0x33A9805F)),
                     ),
-                    Positioned.fill(
-                      child: IgnorePointer(
-                        child: CustomPaint(painter: LandmarkPainter(landmark, left: 0.16, right: 0.66, top: landmark == Landmark.cutie ? 0.52 : 0.56, front: false)),
-                      ),
-                    ),
+                    landmarkLayer(landmark, s, left: 0.16, right: 0.66, top: landmark == Landmark.cutie ? 0.52 : 0.56, front: false),
                     for (final MapEntry(key: r, value: t) in _placed.entries) at(r, StimulusArt(t.emoji, size: obj)),
-                    if (landmark == Landmark.cutie)
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: CustomPaint(painter: LandmarkPainter(landmark, left: 0.16, right: 0.66, top: 0.52, front: true)),
-                        ),
-                      ),
+                    if (landmark == Landmark.cutie) landmarkLayer(landmark, s, left: 0.16, right: 0.66, top: 0.52, front: true),
                     for (final r in _r.spots)
                       if (!_placed.containsKey(r))
                         at(

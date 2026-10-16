@@ -12,6 +12,7 @@ import '../../../shared/cheer.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/juice.dart';
 import '../../../shared/motion.dart';
+import '../../../shared/parts.dart';
 import '../../../shared/reward_finish.dart';
 import '../../../shared/sfx.dart';
 import '../../../shared/top_bar.dart';
@@ -212,7 +213,7 @@ class _StackingScreenState extends ConsumerState<StackingScreen> {
                           onTap: () => _pick(r),
                           child: Padding(
                             padding: const EdgeInsets.all(4),
-                            child: CustomPaint(size: Size(maxW * r.width, ringH), painter: _RingPainter(color(r))),
+                            child: _Ring(width: maxW * r.width, height: ringH, color: color(r)),
                           ),
                         ),
                       ),
@@ -231,16 +232,24 @@ class _StackingScreenState extends ConsumerState<StackingScreen> {
             child: Juice(
               enabled: motion.feedback,
               popTick: _burst,
-              child: CustomPaint(
-                key: const ValueKey('stacking-pole'),
-                size: Size(maxW + 40, ringH * (n + 1.2)),
-                painter: _PolePainter(
-                  rings: [for (final r in stacked) (r.width, color(r))],
-                  maxWidth: maxW,
-                  ringHeight: ringH,
-                  total: n,
-                ),
-              ),
+              child: hasPart('pole') && hasPart('ring')
+                  ? _PaintedPole(
+                      key: const ValueKey('stacking-pole'),
+                      rings: [for (final r in stacked) (r.width, color(r))],
+                      maxWidth: maxW,
+                      ringHeight: ringH,
+                      total: n,
+                    )
+                  : CustomPaint(
+                      key: const ValueKey('stacking-pole'),
+                      size: Size(maxW + 40, ringH * (n + 1.2)),
+                      painter: _PolePainter(
+                        rings: [for (final r in stacked) (r.width, color(r))],
+                        maxWidth: maxW,
+                        ringHeight: ringH,
+                        total: n,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(width: 24),
@@ -248,6 +257,53 @@ class _StackingScreenState extends ConsumerState<StackingScreen> {
       );
     },
   );
+}
+
+/// Un inel: piesa pictată (`parts/ring`, crem, colorată), sau desenul din cod.
+class _Ring extends StatelessWidget {
+  const _Ring({required this.width, required this.height, required this.color});
+
+  final double width, height;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: width,
+    height: height,
+    child: hasPart('ring') ? Part('ring', tint: color) : CustomPaint(painter: _RingPainter(color)),
+  );
+}
+
+/// Țărușul pictat (`parts/pole`: baza și bățul) cu inelele puse, de jos în sus.
+class _PaintedPole extends StatelessWidget {
+  const _PaintedPole({super.key, required this.rings, required this.maxWidth, required this.ringHeight, required this.total});
+
+  final List<(double, Color)> rings;
+  final double maxWidth, ringHeight;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final w = maxWidth + 40;
+    final h = ringHeight * (total + 1.2);
+    final baseH = ringHeight * 0.5;
+    return SizedBox(
+      width: w,
+      height: h,
+      child: Stack(
+        children: [
+          // Baza cât cel mai mare inel (plus puțin), bățul cât toate inelele.
+          Positioned(left: (w - maxWidth - 30) / 2, width: maxWidth + 30, bottom: 0, top: h - baseH - ringHeight * (total + 0.6) - ringHeight * 0.3, child: const Part('pole')),
+          for (final (i, (rw, c)) in rings.indexed)
+            Positioned(
+              left: (w - maxWidth * rw) / 2,
+              bottom: baseH + ringHeight * i,
+              child: _Ring(width: maxWidth * rw, height: ringHeight, color: c),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Un inel văzut din lateral: o „gogoașă” lucioasă cu gaura din mijloc sugerată.

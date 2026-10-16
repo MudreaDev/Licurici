@@ -9,6 +9,7 @@ import 'art_cache.dart';
 import 'drawn_face.dart';
 import 'emoji_art.dart';
 import 'illustration.dart';
+import 'painted_extra.dart';
 
 /// Stimulii din `licurici_core` sunt identificați prin emoji (logica e independentă de
 /// grafică). Unde avem o ilustrație pictată (`art/illustrations/…`), o folosim; altfel rămâne
@@ -106,6 +107,8 @@ const _paths = {
   '🐍': 'objects/snake',
   '🐿️': 'objects/squirrel',
   '🐛': 'objects/caterpillar',
+  // Obiectele din loturile Codex (generat, `tools/art/painted_map.py`).
+  ...paintedExtra,
 };
 
 /// Ce ilustrații există cu adevărat în pachet (din manifestul de resurse). Fără el, o
@@ -122,11 +125,28 @@ abstract final class IllustrationIndex {
       _keys.contains('packages/$contentPackage/art/illustrations/$path.webp');
 }
 
+/// Ilustrația copilului pictat pentru [face] (`faces2/<id>_<emoție>_<intensitate>`): treapta cea
+/// mai apropiată dintre cele pictate (20…100% la copiii din `ladderLooks`, altfel doar 100%).
+String? paintedFace(FaceSpec face) {
+  final id = face.look.paintedId;
+  if (id == null) return null;
+  final ladder = face.emotion != FaceEmotion.neutru && ladderLooks.contains(face.look);
+  final pct = ladder ? ((face.intensity * 5).round().clamp(1, 5) * 20) : 100;
+  final path = 'faces2/${id}_${face.emotion.name}_$pct';
+  return IllustrationIndex.has(path) ? path : null;
+}
+
 /// Ilustrația pictată a unui stimul, dacă există.
-AssetImage? spriteFor(String emoji) => switch (_paths[emoji]) {
-  final path? when IllustrationIndex.has(path) => illustration(path),
-  _ => null,
-};
+AssetImage? spriteFor(String emoji) {
+  if (FaceSpec.parse(emoji) case final face?) {
+    final path = paintedFace(face);
+    return path == null ? null : illustration(path);
+  }
+  return switch (_paths[emoji]) {
+    final path? when IllustrationIndex.has(path) => illustration(path),
+    _ => null,
+  };
+}
 
 /// Imaginile de pre-încărcat pentru o listă de stimuli.
 Iterable<AssetImage> spritesFor(Iterable<String> emojis) =>
@@ -178,8 +198,15 @@ class StimulusArt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Fețele desenate din cod (`face:…`, licurici_core/face.dart).
+    // Fețele (`face:…`, licurici_core/face.dart): copilul pictat, dacă există ilustrația;
+    // altfel fața desenată din cod.
     if (FaceSpec.parse(emoji) case final face?) {
+      if (paintedFace(face) case final path?) {
+        return SizedBox.square(
+          dimension: size,
+          child: Illustration(illustration(path), fallbackEmoji: '🧒', semanticLabel: semanticLabel ?? 'o față'),
+        );
+      }
       return DrawnFace(face, size: size, semanticLabel: semanticLabel);
     }
     final sprite = spriteFor(emoji);

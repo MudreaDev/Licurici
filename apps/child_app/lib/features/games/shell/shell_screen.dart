@@ -8,6 +8,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/parts.dart';
 import '../../../shared/nothing_to_show.dart';
 import '../../../shared/celebration.dart';
 import '../../../shared/fx/scene_background.dart';
@@ -475,7 +476,7 @@ class _CupWithThing extends StatelessWidget {
               width: width,
               top: -lift,
               height: height,
-              child: CustomPaint(painter: _CupPainter()),
+              child: hasPart('cup') ? const Part('cup') : CustomPaint(painter: _CupPainter()),
             ),
           ],
         ),

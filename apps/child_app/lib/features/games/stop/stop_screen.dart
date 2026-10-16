@@ -8,6 +8,7 @@ import 'package:licurici_core/licurici_core.dart';
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/parts.dart';
 import '../../../shared/cheer.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/reward_finish.dart';
@@ -245,10 +246,46 @@ class _Lantern extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) => SizedBox.square(
-    dimension: size,
-    child: CustomPaint(painter: _LanternPainter(light)),
-  );
+  Widget build(BuildContext context) {
+    if (!hasPart('lamp_rim') || !hasPart('lamp_glass')) {
+      return SizedBox.square(
+        dimension: size,
+        child: CustomPaint(painter: _LanternPainter(light)),
+      );
+    }
+    // Piesele pictate: rama de lemn și globul de sticlă (crem), colorat după lumină, cu halou.
+    final color = switch (light) {
+      _Light.green => const Color(0xFF5FD38A),
+      _Light.red => const Color(0xFFF07A6A),
+      _Light.off => const Color(0xFFB9C4C8),
+    };
+    final r = size * 0.36;
+    return SizedBox.square(
+      dimension: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (light != _Light.off)
+            Container(
+              width: r * 2.7,
+              height: r * 2.7,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(colors: [color.withValues(alpha: 0.55), color.withValues(alpha: 0)]),
+              ),
+            ),
+          SizedBox.square(
+            dimension: r * 2.2,
+            child: const Part('lamp_rim', fit: BoxFit.contain),
+          ),
+          SizedBox.square(
+            dimension: r * 1.95,
+            child: Part('lamp_glass', fit: BoxFit.contain, tint: color),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _LanternPainter extends CustomPainter {
@@ -265,7 +302,11 @@ class _LanternPainter extends CustomPainter {
       _Light.off => const Color(0xFFB9C4C8),
     };
     if (light != _Light.off) {
-      canvas.drawCircle(c, r * 1.35, Paint()..shader = ui.Gradient.radial(c, r * 1.35, [color.withValues(alpha: 0.55), color.withValues(alpha: 0)]));
+      canvas.drawCircle(
+        c,
+        r * 1.35,
+        Paint()..shader = ui.Gradient.radial(c, r * 1.35, [color.withValues(alpha: 0.55), color.withValues(alpha: 0)]),
+      );
     }
     // Rama de lemn și sticla.
     canvas.drawCircle(c, r * 1.08, Paint()..color = const Color(0xFF8A6A3A));
@@ -273,13 +314,17 @@ class _LanternPainter extends CustomPainter {
       c,
       r,
       Paint()
-        ..shader = ui.Gradient.radial(c - Offset(r * 0.3, r * 0.35), r * 1.2, [
-          Color.lerp(color, Colors.white, 0.65)!,
-          color,
-          Color.lerp(color, Colors.black, 0.25)!,
-        ], const [0, 0.55, 1]),
+        ..shader = ui.Gradient.radial(
+          c - Offset(r * 0.3, r * 0.35),
+          r * 1.2,
+          [Color.lerp(color, Colors.white, 0.65)!, color, Color.lerp(color, Colors.black, 0.25)!],
+          const [0, 0.55, 1],
+        ),
     );
-    canvas.drawOval(Rect.fromCenter(center: c - Offset(r * 0.35, r * 0.45), width: r * 0.55, height: r * 0.3), Paint()..color = Colors.white.withValues(alpha: 0.6));
+    canvas.drawOval(
+      Rect.fromCenter(center: c - Offset(r * 0.35, r * 0.45), width: r * 0.55, height: r * 0.3),
+      Paint()..color = Colors.white.withValues(alpha: 0.6),
+    );
   }
 
   @override

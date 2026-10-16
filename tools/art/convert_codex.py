@@ -19,6 +19,8 @@ sizes = {
     'faces': (320, 320),
     'objects': (256, 256),
     'actions': (384, 384),
+    'faces2': (320, 320),
+    'parts': (512, 512),
 }
 for m in re.finditer(r'## ([a-z_]+)/([a-z_\-]+)\.webp\s+Sursă PNG: `([^`]+)`', readme):
     folder, name, src = m.groups()
@@ -43,6 +45,11 @@ for m in re.finditer(r'## ([a-z_]+)/([a-z_\-]+)\.webp\s+Sursă PNG: `([^`]+)`', 
             im = im.crop((0, (ih - nh) // 2, iw, (ih - nh) // 2 + nh))
         im = im.resize((w, h), Image.LANCZOS)
     else:
+        if folder == 'parts':
+            # piesele se așază exact într-un dreptunghi: decupate la contur (alfa vizibil)
+            bbox = im.getchannel('A').point(lambda v: 255 if v > 12 else 0).getbbox()
+            if bbox:
+                im = im.crop(bbox)
         # păstrăm proporțiile (ex. spatele cărților, 3:4), doar micșorăm
         im.thumbnail((w, h), Image.LANCZOS)
     os.makedirs(os.path.join(root, folder), exist_ok=True)

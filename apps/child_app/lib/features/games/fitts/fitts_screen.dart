@@ -7,6 +7,7 @@ import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/theme.dart';
 import '../../../data/session.dart';
+import '../../../shared/parts.dart';
 import '../../../shared/cheer.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/motion.dart';
@@ -214,7 +215,12 @@ class _BubbleState extends State<_Bubble> with SingleTickerProviderStateMixin {
     animation: _c,
     builder: (context, _) => Transform.scale(
       scale: widget.animate ? Curves.easeOutBack.transform(_c.value) : 1,
-      child: CustomPaint(size: Size.square(widget.size), painter: _BubblePainter(widget.start)),
+      child: hasPart('bubble')
+          ? SizedBox.square(
+              dimension: widget.size,
+              child: Part('bubble', fit: BoxFit.contain, tint: widget.start ? const Color(0xFFF2C14E) : null),
+            )
+          : CustomPaint(size: Size.square(widget.size), painter: _BubblePainter(widget.start)),
     ),
   );
 }
@@ -232,17 +238,25 @@ class _BubblePainter extends CustomPainter {
       c,
       r,
       Paint()
-        ..shader = ui.Gradient.radial(c + Offset(-r * 0.3, -r * 0.35), r * 1.2, [
-          Colors.white.withValues(alpha: 0.9),
-          tint.withValues(alpha: 0.55),
-          tint.withValues(alpha: 0.85),
-        ], const [0, 0.55, 1]),
+        ..shader = ui.Gradient.radial(
+          c + Offset(-r * 0.3, -r * 0.35),
+          r * 1.2,
+          [Colors.white.withValues(alpha: 0.9), tint.withValues(alpha: 0.55), tint.withValues(alpha: 0.85)],
+          const [0, 0.55, 1],
+        ),
     );
-    canvas.drawCircle(c, r - 1.5, Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = math.max(2, r * 0.06)
-      ..color = Colors.white.withValues(alpha: 0.9));
-    canvas.drawOval(Rect.fromCenter(center: c + Offset(-r * 0.35, -r * 0.4), width: r * 0.5, height: r * 0.28), Paint()..color = Colors.white.withValues(alpha: 0.85));
+    canvas.drawCircle(
+      c,
+      r - 1.5,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = math.max(2, r * 0.06)
+        ..color = Colors.white.withValues(alpha: 0.9),
+    );
+    canvas.drawOval(
+      Rect.fromCenter(center: c + Offset(-r * 0.35, -r * 0.4), width: r * 0.5, height: r * 0.28),
+      Paint()..color = Colors.white.withValues(alpha: 0.85),
+    );
   }
 
   @override

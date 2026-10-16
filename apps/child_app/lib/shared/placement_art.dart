@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:licurici_core/licurici_core.dart';
 
+import 'parts.dart';
 import 'stimulus_art.dart';
 
 /// O mică scenă spațială (LRC6): reperul (masă sau cutie, desenat din cod) și obiectul
@@ -59,36 +60,59 @@ class PlacementArt extends StatelessWidget {
                 height: s * 0.08,
                 child: CustomPaint(painter: _FloatLines()),
               ),
-            Positioned.fill(
-              child: CustomPaint(
-                painter: LandmarkPainter(
-                  placement.landmark,
-                  left: left,
-                  right: right,
-                  top: topY,
-                  front: false,
-                ),
-              ),
-            ),
+            landmarkLayer(placement.landmark, s, left: left, right: right, top: topY, front: false),
             object,
             // Peretele din față al cutiei acoperă obiectul care e „în” ea.
-            if (box)
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: LandmarkPainter(
-                    placement.landmark,
-                    left: left,
-                    right: right,
-                    top: topY,
-                    front: true,
-                  ),
-                ),
-              ),
+            if (box) landmarkLayer(placement.landmark, s, left: left, right: right, top: topY, front: true),
           ],
         ),
       ),
     );
   }
+}
+
+/// Unde se termină, în jos, gura cutiei pictate (ca parte din latura scenei, sub marginea de
+/// sus a corpului): de aici în jos, peretele din față acoperă ce e „în” cutie.
+const boxRimBelowTop = 0.04;
+
+/// Stratul reperului (masa sau cutia) într-o scenă de latură [s]: piesa pictată (`parts/table`,
+/// `parts/box`), dacă există, altfel desenul din cod. [front]: doar peretele din față al cutiei.
+Widget landmarkLayer(Landmark landmark, double s, {required double left, required double right, required double top, required bool front}) {
+  final box = landmark == Landmark.cutie;
+  final name = box ? 'box' : 'table';
+  if (!hasPart(name)) {
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: CustomPaint(painter: LandmarkPainter(landmark, left: left, right: right, top: top, front: front)),
+      ),
+    );
+  }
+  if (front && !box) return const SizedBox.shrink();
+  // Masa: de la blat până la podea. Cutia: cu clapele deschise peste margini.
+  final r = box
+      ? Rect.fromLTRB((left - 0.08) * s, (top - 0.11) * s, (right + 0.08) * s, 0.95 * s)
+      : Rect.fromLTRB(left * s, (top - 0.02) * s, right * s, 0.95 * s);
+  Widget art = const Part('table');
+  if (box) {
+    art = const Part('box');
+    if (front) {
+      final rim = (top + boxRimBelowTop) * s - r.top;
+      art = ClipRect(clipper: _Below(rim), child: art);
+    }
+  }
+  return Positioned.fromRect(rect: r, child: IgnorePointer(child: art));
+}
+
+class _Below extends CustomClipper<Rect> {
+  _Below(this.y);
+
+  final double y;
+
+  @override
+  Rect getClip(Size size) => Rect.fromLTRB(0, y, size.width, size.height);
+
+  @override
+  bool shouldReclip(_Below old) => old.y != y;
 }
 
 class LandmarkPainter extends CustomPainter {

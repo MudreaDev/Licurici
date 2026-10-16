@@ -8,7 +8,7 @@ void main() {
     test('textul stimulului se citește înapoi la aceeași față', () {
       final r = Random(1);
       for (var i = 0; i < 200; i++) {
-        final f = FaceSpec(FaceLook.random(r), FaceEmotion.values[i % FaceEmotion.values.length], (i % 101) / 100);
+        final f = FaceSpec(FaceLook.anyRandom(r), FaceEmotion.values[i % FaceEmotion.values.length], (i % 101) / 100);
         final back = FaceSpec.parse(f.art)!;
         expect(back.look, f.look);
         expect(back.emotion, f.emotion);
@@ -51,7 +51,8 @@ void main() {
       final a = distinctFaces(Random(5), FaceEmotion.trist, 12);
       final b = distinctFaces(Random(5), FaceEmotion.trist, 12);
       expect(a.map((f) => f.art), b.map((f) => f.art));
-      expect(a.map((f) => f.look).toSet(), hasLength(12));
+      // Cel mult câți copii pictați sunt.
+      expect(a.map((f) => f.look).toSet(), hasLength(paintedLooks.length));
       expect(a.every((f) => f.emotion == FaceEmotion.trist && f.intensity >= 0.75), isTrue);
     });
   });
