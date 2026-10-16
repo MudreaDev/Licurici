@@ -100,7 +100,8 @@ def _run(job, out_dir, exe, results):
         except subprocess.TimeoutExpired:
             continue
         out = p.stdout + p.stderr
-        if 'usage limit' in out:
+        # Doar mesajul real de eroare (textul de ajutor al lui Codex poate conține și el „usage limit”).
+        if re.search(r"ERROR: You.ve hit your usage limit", out):
             limited.set()
             print('LIMITĂ', job['name'], re.search(r'try again at [^.]*', out).group(0) if 'try again' in out else '', flush=True)
             return
