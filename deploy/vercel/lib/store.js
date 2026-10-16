@@ -10,6 +10,7 @@
 export function memoryStore() {
   const docs = new Map();
   return {
+    kind: 'memory',
     async get(path) {
       const v = docs.get(path);
       return v === undefined ? null : structuredClone(v);
@@ -31,6 +32,7 @@ export async function blobStore() {
   const { get, put, del, list } = await import('@vercel/blob');
   const key = (path) => `db/${path}.json`;
   return {
+    kind: 'blob',
     async get(path) {
       const r = await get(key(path), { access: 'private', useCache: false });
       if (!r) return null;

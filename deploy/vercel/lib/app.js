@@ -199,7 +199,8 @@ export function createApp({ store, secret, publicUrl = '', now = () => new Date(
     routes.push({ method, re, keys, fn });
   };
 
-  route('GET', '/health', async () => ({ ok: true }));
+  // `storage`: „blob” = datele rămân; „memory” = Blob-ul nu e legat și datele se pierd la repornire.
+  route('GET', '/health', async () => ({ ok: true, storage: store.kind ?? 'memory' }));
 
   route('POST', '/auth/register', async ({ body }) => {
     const email = String(body?.email ?? '').trim().toLowerCase();

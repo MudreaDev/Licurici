@@ -136,4 +136,5 @@ test('rute necunoscute, metode greșite, erori fără detalii interne', async ()
   assert.equal((await call('GET', '/auth/login')).status, 405);
   assert.equal((await call('GET', '/children')).status, 401);
   assert.equal((await call('GET', '/health')).body.ok, true);
+  assert.equal((await call('GET', '/health')).body.storage, 'memory');
 });
