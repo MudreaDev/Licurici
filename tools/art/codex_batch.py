@@ -23,6 +23,7 @@ import shutil
 import subprocess
 import sys
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -37,6 +38,8 @@ GEN = os.path.expanduser(r'~\.codex\generated_images')
 lock = threading.Lock()
 # Codex a spus că s-a atins limita de utilizare: restul lucrărilor nu mai pornesc.
 limited = threading.Event()
+# Ora la care se poate relua (din mesajul lui Codex), pentru `--loop`.
+retry_at = []
 
 
 def split(job, src, out_dir, results):
@@ -103,7 +106,10 @@ def _run(job, out_dir, exe, results):
         # Doar mesajul real de eroare (textul de ajutor al lui Codex poate conține și el „usage limit”).
         if re.search(r"ERROR: You.ve hit your usage limit", out):
             limited.set()
-            print('LIMITĂ', job['name'], re.search(r'try again at [^.]*', out).group(0) if 'try again' in out else '', flush=True)
+            m = re.search(r'try again at ([^.\r\n]*)', out)
+            if m:
+                retry_at.append(m.group(1).strip())
+            print('LIMITĂ', job['name'], m.group(0) if m else '', flush=True)
             return
         m = re.search(r'session id:\s*([0-9a-f-]+)', out)
         pngs = glob.glob(os.path.join(GEN, m.group(1), '*.png')) if m else []
@@ -121,6 +127,20 @@ def _run(job, out_dir, exe, results):
             print('ok', job['name'], flush=True)
             return
     print('EȘUAT', job['name'], flush=True)
+
+
+def seconds_until(text):
+    """Secunde până la ora din „try again at 5:50 AM" sau „Oct 17th, 2026 12:35 AM" (implicit: o oră)."""
+    import datetime as dt
+    m = re.search(r'(\d{1,2}):(\d{2})\s*([AP]M)', text)
+    if not m:
+        return 3600
+    h, mi = int(m.group(1)) % 12 + (12 if m.group(3) == 'PM' else 0), int(m.group(2))
+    now = dt.datetime.now()
+    t = now.replace(hour=h, minute=mi, second=0, microsecond=0)
+    if t <= now:
+        t += dt.timedelta(days=1)
+    return int((t - now).total_seconds())
 
 
 def main():
@@ -145,13 +165,23 @@ def main():
         json.dump(results, open(rpath, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
         return
     exe = codex_exe()
-    # Câteva ture: lucrările care așteptau o imagine de bază pornesc după ce aceasta există.
-    for _ in range(3):
-        with ThreadPoolExecutor(workers) as pool:
-            for j in jobs:
-                pool.submit(run, j, out_dir, exe, results)
-        if limited.is_set() or all(os.path.exists(os.path.join(out_dir, c + '.png')) for j in jobs for c in (j.get('cells') or [j['name']])):
+    done = lambda: all(os.path.exists(os.path.join(out_dir, c + '.png')) for j in jobs for c in (j.get('cells') or [j['name']]))
+    # `--loop`: la limita de utilizare, așteaptă ora spusă de Codex și continuă (de cel mult 8 ori).
+    for _ in range(8 if '--loop' in sys.argv else 1):
+        # Câteva ture: lucrările care așteptau o imagine de bază pornesc după ce aceasta există.
+        for _ in range(3):
+            with ThreadPoolExecutor(workers) as pool:
+                for j in jobs:
+                    pool.submit(run, j, out_dir, exe, results)
+            if limited.is_set() or done():
+                break
+        if done() or not limited.is_set() or '--loop' not in sys.argv:
             break
+        wait = seconds_until(retry_at[-1] if retry_at else '') + 300
+        print(f'aștept {wait // 60} min (până la {retry_at[-1] if retry_at else "?"})', flush=True)
+        time.sleep(wait)
+        limited.clear()
+        retry_at.clear()
 
 
 if __name__ == '__main__':

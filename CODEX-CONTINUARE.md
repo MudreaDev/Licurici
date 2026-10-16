@@ -68,12 +68,12 @@ Tot ce trebuie e în **`tools/art/batch/`**:
 
 Din rădăcina proiectului:
 ```bash
-PYTHONIOENCODING=utf-8 py tools/art/codex_batch.py tools/art/batch/jobs_planse.json tools/art/batch/out --workers 3
+PYTHONIOENCODING=utf-8 py tools/art/codex_batch.py tools/art/batch/jobs_planse.json tools/art/batch/out --workers 3 --loop
 ```
 Scriptul rulează `codex exec` pentru fiecare planșă (promptul pe stdin, referințele atașate cu `-i`), găsește PNG-ul
 în `~/.codex/generated_images/<sesiune>/`, îl copiază în `out/sheets/` și **îl taie automat în celule**
 (`out/faces2/…png`, `out/objects/…png`, fiecare decupată la contur). Se poate relua oricând: ce există se sare.
-La „usage limit" se oprește singur și scrie ora la care se poate relua.
+La limita de utilizare, cu `--loop` așteaptă singur ora spusă de Codex și continuă (fără `--loop` se oprește și scrie ora).
 
 ### 2.2 Varianta B — Codex generează direct (în sesiunea interactivă)
 
