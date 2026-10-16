@@ -88,9 +88,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 - [x] 9 carduri ale jocurilor noi din sesiunea 12 ([docs/brief-codex-carduri-sesiunea12.md](docs/brief-codex-carduri-sesiunea12.md), `README-cards14.md`)
 
 **A2. Versiunea de test pe Vercel (panoul terapeutului + legarea tabletei prin cod)** — totul e gata în `deploy/vercel/`; pașii: [docs/deploy-vercel.md](docs/deploy-vercel.md)
-- [ ] Pe vercel.com: **Add New → Project → Import** `MudreaDev/Licurici`, **Root Directory** `deploy/vercel`, numele **`licurici-panou`**, variabila `AUTH_SECRET` (șir lung aleator) → Deploy. (Cheia Vercel a asistentului primește 403 la crearea proiectelor.)
-- [ ] **Storage → Blob → Private → Connect** la proiect, apoi Redeploy (altfel datele se pierd la repornire).
-- [ ] **Settings → Git → Production Branch** = `feat/fundatia-terapeutica` (sau unește în `main`). Spune-i apoi lui Claude adresa, ca să verifice cap-coadă.
+- [x] Proiectul `licurici-panou` creat (16.10): https://licurici-panou.vercel.app răspunde, ramura `main`, protecția Vercel oprită.
+- [ ] **Storage → Blob → Private → Connect** la proiect, apoi Redeploy — **încă lipsește**: https://licurici-panou.vercel.app/api/v1/health arată `"storage":"memory"` (datele se pierd la repornire); după legare trebuie să arate `"blob"`.
 - [ ] Pe tabletă (APK nou): „Bun venit” → „Am un cod de la terapeut” → codul din panou.
 
 **C. Conturi și servicii externe (pentru producție)**
