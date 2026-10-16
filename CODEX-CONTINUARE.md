@@ -47,7 +47,11 @@ pe pași, în ordine.
 - **Imagini Codex făcute în sesiunea asta:** 8 carduri de jocuri, 9 obiecte, 15 piese (masa, cutia, inelul, țărușul,
   ghiveciul, tulpina, mugurul, floarea, rama și globul felinarului, bula, cubul, paharul, oglinda, borcanul de vopsea)
   și **8 portrete de bază** ale copiilor pictați (`a0`…`b3`, expresia „neutru”).
-- **Rămase (231 de imagini):** 88 de portrete cu expresii + 143 de obiecte care încă apar ca pictograme OpenMoji.
+- **Rămase (231 de imagini la predare):** 88 de portrete cu expresii + 143 de obiecte care încă apar ca pictograme OpenMoji.
+- **17.10, noaptea (Claude):** lotul pe planșe merge (`codex_batch.py … --loop`): 9 obiecte integrate (cada,
+  lumânarea, haina, coroana, puiul din ou, nota muzicală, telefonul, piesa de puzzle, tricoul); portretele au ajuns
+  la 46 / 96 în `tools/art/batch/out/faces2/` (încă neintegrate — se activează la 96 / 96). Codex dă ~9 planșe pe
+  fereastră de utilizare; lotul așteaptă singur deblocarea.
 
 ---
 
