@@ -78,6 +78,8 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] **Muzica** (sesiunea 12): pe tabletă, „Pentru părinți” → „Muzică liniștită”; ascultă cele 3 piese și spune-mi dacă vreuna nu e potrivită (tempo, instrument, volum). Spune-mi și dacă vrei să pornească oprită implicit.
 - [ ] **Peștii 3D noi și acvariul** pe tabletă: arată bine? se mișcă fluid? (solzi, înotătoare, „Peștii mei”, fereastra acvariului de pe ecranul principal).
 - [ ] **Jocurile noi** (sesiunea 12) încercate pe tabletă: Cât de tare?, Cine e prietenul?, Câte sunt?, Ce ai auzit?, Linia numerelor, Atinge rapid, Paznicul farului, Stop!, Acum sau mai mult?
+- [ ] **Jocurile „frate” noi** pe tabletă: Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi, Memorie cu sunete, Oglinda.
+- [ ] **Imaginile Codex** (cerute pe 16.10: tot ce desenase Claude din cod → imagini Codex): după lotul de azi, uită-te pe tabletă la fețele noi (8 copii pictați), masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid și spune-mi ce nu se potrivește. Codex are o limită de utilizare: dacă rămân imagini negenerate, le continui în sesiunea următoare.
 
 **B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `python tools/art/convert_codex.py`
 Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de utilizare a contului ChatGPT poate opri un lot la jumătate.
