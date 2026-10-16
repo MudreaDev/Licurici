@@ -89,8 +89,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **A2. Versiunea de test pe Vercel (panoul terapeutului + legarea tabletei prin cod)** — totul e gata în `deploy/vercel/`; pașii: [docs/deploy-vercel.md](docs/deploy-vercel.md)
 - [x] Proiectul `licurici-panou` creat (16.10): https://licurici-panou.vercel.app răspunde, ramura `main`, protecția Vercel oprită.
-- [ ] **Storage → Blob → Private → Connect** la proiect, apoi Redeploy — **încă lipsește**: https://licurici-panou.vercel.app/api/v1/health arată `"storage":"memory"` (datele se pierd la repornire); după legare trebuie să arate `"blob"`.
-- [ ] Pe tabletă (APK nou): „Bun venit” → „Am un cod de la terapeut” → codul din panou.
+- [x] Blob legat (16.10): `/api/v1/health` arată `"storage":"blob"` — datele rămân.
+- [ ] **Testul cap-coadă online**: în https://licurici-panou.vercel.app → „Sunt specialist” → cont → „Adaugă copil” → copiezi codul; pe tabletă (APK nou, `app-arm64-v8a-release.apk`): „Bun venit” → „Am un cod de la terapeut” → codul → joacă un joc → „Gata pe azi”; în panou trebuie să apară sesiunea (în ≤ 30 s). Spune-mi ce n-a mers.
 
 **C. Conturi și servicii externe (pentru producție)**
 - [ ] Un **VPS în UE** + un **domeniu** (DNS: `api.<domeniu>`, `panou.<domeniu>`).
