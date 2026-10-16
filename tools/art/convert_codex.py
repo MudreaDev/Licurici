@@ -45,6 +45,16 @@ for m in re.finditer(r'## ([a-z_]+)/([a-z_\-]+)\.webp\s+Sursă PNG: `([^`]+)`', 
             im = im.crop((0, (ih - nh) // 2, iw, (ih - nh) // 2 + nh))
         im = im.resize((w, h), Image.LANCZOS)
     else:
+        if folder == 'faces2':
+            # portretele: decupate la contur, cu o margine egală, pe pătrat — aceeași încadrare
+            # fie că vin dintr-o imagine separată, fie dintr-o planșă
+            bbox = im.getchannel('A').point(lambda v: 255 if v > 12 else 0).getbbox()
+            if bbox:
+                im = im.crop(bbox)
+                side = round(max(im.size) * 1.08)
+                sq = Image.new('RGBA', (side, side), (0, 0, 0, 0))
+                sq.paste(im, ((side - im.width) // 2, side - im.height - round(0.02 * side)))
+                im = sq
         if folder == 'parts':
             # piesele se așază exact într-un dreptunghi: decupate la contur (alfa vizibil)
             bbox = im.getchannel('A').point(lambda v: 255 if v > 12 else 0).getbbox()

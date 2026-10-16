@@ -3,6 +3,9 @@
     py tools/art/codex_batch.py jobs.json out_dir [--workers 3]
 
 jobs.json: [{"name": "games/turnul", "prompt": "...", "refs": ["ref1.png", ...]}, ...]
+O planșă: {"name": "sheets/x", "grid": [rânduri, coloane], "cells": ["objects/a", ...], ...} — imaginea
+generată e tăiată în celule (rând cu rând), fiecare decupată la contur și salvată ca out_dir/<celulă>.png
+(sursa celulei rămâne lângă planșă, în generated_images/<sesiune>/cells/).
 Pentru fiecare lucrare: rulează `codex exec` cu promptul pe stdin și imaginile de stil atașate,
 găsește PNG-ul generat în ~/.codex/generated_images/<sesiune>/ și îl copiază în
 out_dir/<name>.png. Ce există deja în out_dir se sare (reluare după întrerupere).
@@ -33,9 +36,43 @@ lock = threading.Lock()
 limited = threading.Event()
 
 
+def split(job, src, out_dir, results):
+    """Taie planșa în celule; fiecare celulă e decupată la conturul ei (alfa vizibil)."""
+    from PIL import Image
+    im = Image.open(src).convert('RGBA')
+    rows, cols = job['grid']
+    w, h = im.width / cols, im.height / rows
+    cell_dir = os.path.join(os.path.dirname(src), 'cells')
+    os.makedirs(cell_dir, exist_ok=True)
+    for k, name in enumerate(job['cells']):
+        r, c = divmod(k, cols)
+        cell = im.crop((round(c * w), round(r * h), round((c + 1) * w), round((r + 1) * h)))
+        bbox = cell.getchannel('A').point(lambda v: 255 if v > 12 else 0).getbbox()
+        if not bbox:
+            print('celulă goală', name, flush=True)
+            continue
+        # o margine mică în jur, ca la imaginile generate una câte una
+        pad = round(0.06 * max(bbox[2] - bbox[0], bbox[3] - bbox[1]))
+        cell = cell.crop((max(0, bbox[0] - pad), max(0, bbox[1] - pad), min(cell.width, bbox[2] + pad), min(cell.height, bbox[3] + pad)))
+        side = max(cell.size)
+        sq = Image.new('RGBA', (side, side), (0, 0, 0, 0))
+        sq.paste(cell, ((side - cell.width) // 2, (side - cell.height) // 2))
+        cell_src = os.path.join(cell_dir, name.replace('/', '__') + '.png')
+        sq.save(cell_src)
+        target = os.path.join(out_dir, name + '.png')
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        sq.save(target)
+        results[name] = {'src': cell_src, 'prompt': job['prompt'], 'sheet': src}
+
+
 def run(job, out_dir, exe, results):
     target = os.path.join(out_dir, job['name'] + '.png')
-    if os.path.exists(target) or limited.is_set():
+    if job.get('cells'):
+        if all(os.path.exists(os.path.join(out_dir, c + '.png')) for c in job['cells']):
+            return
+    elif os.path.exists(target):
+        return
+    if limited.is_set():
         return
     # O lucrare care are nevoie de altă imagine (ex. portretul de bază al copilului) așteaptă tura următoare.
     if job.get('needs') and not os.path.exists(job['needs']):
@@ -65,6 +102,8 @@ def run(job, out_dir, exe, results):
             src = max(pngs, key=os.path.getmtime)
             shutil.copy(src, target)
             with lock:
+                if job.get('cells'):
+                    split(job, src, out_dir, results)
                 results[job['name']] = {'src': src, 'prompt': job['prompt']}
                 json.dump(results, open(os.path.join(out_dir, 'results.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
             print('ok', job['name'], flush=True)
@@ -85,7 +124,7 @@ def main():
         with ThreadPoolExecutor(workers) as pool:
             for j in jobs:
                 pool.submit(run, j, out_dir, exe, results)
-        if limited.is_set() or all(os.path.exists(os.path.join(out_dir, j['name'] + '.png')) for j in jobs):
+        if limited.is_set() or all(os.path.exists(os.path.join(out_dir, c + '.png')) for j in jobs for c in (j.get('cells') or [j['name']])):
             break
 
 
