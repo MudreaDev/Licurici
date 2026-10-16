@@ -16,6 +16,7 @@ import '../../../shared/mascot.dart';
 import '../../../shared/motion.dart';
 import '../../../shared/reward_finish.dart';
 import '../../../shared/sfx.dart';
+import '../../../shared/stimulus_art.dart';
 import '../../../shared/top_bar.dart';
 import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
@@ -23,10 +24,27 @@ import '../../settings/settings.dart';
 
 final mirrorLevelProvider = NotifierProvider<GameLevel, int>(() => GameLevel('oglinda'));
 
-/// Centrul unei părți a feței, ca parte din latura pătratului în care e desenată fața
-/// (aceeași geometrie ca `FacePainter`: centrul la 0,5 / 0,54, raza 0,38).
+/// Fața din oglindă e portretul pictat al copilului (`faces2/<id>_neutru_100`), dacă există.
+String? _portrait(FaceLook look) => paintedFace(FaceSpec(look, FaceEmotion.neutru));
+
+/// Din portretul pictat se arată doar capul: x 0,2…0,8, y 0,02…0,66 din imagine.
+const _crop = Rect.fromLTRB(0.2, 0.02, 0.8, 0.66);
+
+/// Centrul unei părți a feței, ca parte din latura pătratului în care e arătată fața: pe
+/// portretele pictate (aceeași încadrare la toți copiii, măsurată pe ele), altfel pe desenul din
+/// cod (`FacePainter`: centrul la 0,5 / 0,54, raza 0,38).
 Offset partCenter(FacePart part, [int? side]) {
   final s = (side ?? -1).toDouble();
+  if (_portrait(paintedLooks.first) != null) {
+    final p = switch (part) {
+      FacePart.par => const Offset(0.5, 0.13),
+      FacePart.nas => const Offset(0.5, 0.475),
+      FacePart.gura => const Offset(0.5, 0.545),
+      FacePart.ochi => Offset(0.5 + s * 0.088, 0.415),
+      FacePart.urechi => Offset(0.5 + s * 0.212, 0.455),
+    };
+    return Offset((p.dx - _crop.left) / _crop.width, (p.dy - _crop.top) / _crop.height);
+  }
   return switch (part) {
     FacePart.par => const Offset(0.5, 0.2),
     FacePart.nas => const Offset(0.5, 0.645),
@@ -383,7 +401,31 @@ class _Face extends StatelessWidget {
   final FaceLook look;
 
   @override
-  Widget build(BuildContext context) => Stack(
+  Widget build(BuildContext context) {
+    if (_portrait(look) case final path?) {
+      return LayoutBuilder(
+        builder: (context, box) {
+          final f = box.biggest;
+          return ClipRect(
+            child: Stack(
+              children: [
+                Positioned(
+                  left: -_crop.left / _crop.width * f.width,
+                  top: -_crop.top / _crop.height * f.height,
+                  width: f.width / _crop.width,
+                  height: f.height / _crop.height,
+                  child: Image(image: illustration(path), fit: BoxFit.fill, gaplessPlayback: true, excludeFromSemantics: true),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+    return _drawn();
+  }
+
+  Widget _drawn() => Stack(
     children: [
       Positioned.fill(child: DrawnFace(FaceSpec(look, FaceEmotion.bucuros, 0.6), size: double.infinity)),
       Positioned.fill(child: CustomPaint(painter: _NosePainter())),
