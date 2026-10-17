@@ -56,6 +56,8 @@ pe pași, în ordine.
   `convert_codex.py` acceptă acum cifre în nume (`faces2`, `a0_…_100`). „Oglinda” are geometrie pe copil
   (`_geometry` în `mirror_screen.dart`, test `test/mirror_painted_test.dart`). Rămân doar **obiectele** (lotul
   `jobs_planse.json` continuă); după fiecare fereastră: pașii din §2.4 (fără partea de fețe).
+- **De refăcut ca imagine unică** (din `jobs_unice.json`, după ce se termină planșele): `objects/shark` (tăiat în
+  dreapta de marginea celulei). Șterge `tools/art/batch/out/objects/shark.png`, generează lucrarea unică, apoi §2.4.
 
 ---
 
