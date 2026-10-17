@@ -127,7 +127,9 @@ class FishRenderer {
         final belly = math.max(0.0, top);
         final shade = (0.66 + 0.24 * math.pow(cs.abs(), 0.7) + 0.12 * round + caustic - roll * top * 0.16 - 0.08 * top - 0.14 * belly * belly)
             .clamp(0.42, 1.0);
-        _colors[i] = _argb(shade * absorbR, shade * absorbG, shade);
+        // Înotătoarele (marginile plasei și coada) sunt ușor translucide: apa se vede prin ele.
+        final finness = math.max(_smooth(0.72, 0.97, edge), _smooth(0.9, 1.0, tt) * edge);
+        _colors[i] = _argb(shade * absorbR, shade * absorbG, shade, 1 - 0.22 * finness);
         // Luciul: o dungă pe partea de sus a corpului, cea mai vie unde felia stă spre noi;
         // lumina rece pe margini: apa luminată din spatele peștelui.
         final band = math.exp(-math.pow((top + 0.45) / 0.24, 2));
@@ -462,8 +464,17 @@ double _softSign(double x) {
   return (1 - e) / (1 + e);
 }
 
-int _argb(double r, double g, double b) =>
-    0xFF000000 | ((r.clamp(0.0, 1.0) * 255).round() << 16) | ((g.clamp(0.0, 1.0) * 255).round() << 8) | (b.clamp(0.0, 1.0) * 255).round();
+int _argb(double r, double g, double b, [double a = 1]) =>
+    ((a.clamp(0.0, 1.0) * 255).round() << 24) |
+    ((r.clamp(0.0, 1.0) * 255).round() << 16) |
+    ((g.clamp(0.0, 1.0) * 255).round() << 8) |
+    (b.clamp(0.0, 1.0) * 255).round();
+
+/// 0 sub [a], 1 peste [b], lin între ele.
+double _smooth(double a, double b, double x) {
+  final t = ((x - a) / (b - a)).clamp(0.0, 1.0);
+  return t * t * (3 - 2 * t);
+}
 
 final _identity = Float64List.fromList(const [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 
