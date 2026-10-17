@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 
 import 'reef.dart';
 import 'reef_parts.dart';
+import 'reef_sprites.dart';
 
 /// Ce se mișcă în recif (ADR-028: animație procedurală, fără shadere). Totul e lent
 /// (≤ 0,5 Hz pentru lumină), fără clipiri.
@@ -284,6 +285,7 @@ class ReefAmbiencePainter extends CustomPainter {
       final ph = r.nextDouble() * 6;
       final c = Offset(lx + ox + math.sin(t * 0.9 + ph) * h * 0.008, ly + oy + math.sin(t * 0.7 + ph * 2) * h * 0.006);
       final len = h * (0.022 + r.nextDouble() * 0.008);
+      if (paintSchoolFishSprite(canvas, c, len * 1.3, t, ph, dir: dir > 0 ? 1 : -1)) continue;
       final wig = math.sin(t * 9 + ph) * 0.3;
       canvas.save();
       canvas.translate(c.dx, c.dy);
@@ -365,6 +367,7 @@ class ReefAmbiencePainter extends CustomPainter {
 
 /// Alga lungă care se leagănă în curent.
 void paintKelp(Canvas canvas, Offset base, double height, double width, double t, double phase, {double fog = 0, Color color = const Color(0xFF3E9A6A)}) {
+  if (paintKelpSprite(canvas, base, height, t, phase, fog: fog)) return;
   const segs = 14;
   final left = <Offset>[], right = <Offset>[];
   for (var s = 0; s <= segs; s++) {
@@ -410,6 +413,7 @@ void paintKelp(Canvas canvas, Offset base, double height, double width, double t
 
 /// Țestoasa văzută din profil: carapace cu plăci, cap, labe care vâslesc.
 void paintTurtle(Canvas canvas, Offset c, double len, double t, {int dir = 1, double fog = 0}) {
+  if (paintTurtleSprite(canvas, c, len, t, dir: dir, fog: fog)) return;
   canvas.save();
   canvas.translate(c.dx, c.dy);
   canvas.scale(dir.toDouble(), 1);
@@ -482,6 +486,7 @@ void paintTurtle(Canvas canvas, Offset c, double len, double t, {int dir = 1, do
 
 /// Crabul: carapace lată, ochi pe codițe, picioare care pășesc, clești care se ridică.
 void paintCrab(Canvas canvas, Offset base, double size, double t, {bool walking = true}) {
+  if (paintCrabSprite(canvas, base, size, t, walking: walking)) return;
   const red = Color(0xFFE5603E), dark = Color(0xFFB8432A), light = Color(0xFFF59A7A);
   final step = walking ? math.sin(t * 12) : 0.0;
   final up = math.sin(t * 0.7) > 0.85 ? 1.0 : 0.0; // din când în când ridică cleștii
@@ -547,6 +552,7 @@ void paintCrab(Canvas canvas, Offset base, double size, double t, {bool walking 
 
 /// Meduza: clopot translucid care se strânge și se desface, cu tentacule unduite.
 void paintJelly(Canvas canvas, Offset c, double r, double phase, {double fog = 0, double alpha = 1}) {
+  if (paintJellySprite(canvas, c, r, phase, fog: fog, alpha: alpha)) return;
   if (alpha <= 0) return;
   final pulse = 0.5 + 0.5 * math.sin(phase);
   final bw = r * (1 - 0.16 * pulse), bh = r * 0.85 * (1 + 0.14 * pulse);
@@ -605,6 +611,7 @@ void paintJelly(Canvas canvas, Offset c, double r, double phase, {double fog = 0
 /// Cufărul cu comori (vedere din față). [open] 0…1: capacul se ridică, înăuntru strălucesc
 /// monede.
 void paintChest(Canvas canvas, Offset base, double width, double open, {double fog = 0}) {
+  if (paintChestSprite(canvas, base, width, open, fog: fog)) return;
   final w = width, bh = w * 0.5, lidH = w * 0.32;
   final top = base.dy - bh;
   final wood = fogged(const Color(0xFF9A5B2E), fog), woodDark = fogged(const Color(0xFF5E3417), fog);
@@ -745,6 +752,7 @@ class ReefFrontPainter extends CustomPainter {
 
 /// Anemona: un smoc de tentacule care se leagănă, cu vârfuri luminoase.
 void paintAnemone(Canvas canvas, Offset base, double size, double t) {
+  if (paintAnemoneSprite(canvas, base, size, t)) return;
   const n = 24;
   final col = const Color(0xFFB45CC8), tip = const Color(0xFFFFC2E8);
   // Piciorul.

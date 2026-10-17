@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'reef_sprites.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,6 +87,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     super.initState();
     _ticker.start();
     unawaited(Caustics.load());
+    unawaited(ReefSprites.load());
     // Apa, foarte încet, cât stă copilul în acvariu.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;

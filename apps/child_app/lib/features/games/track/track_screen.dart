@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
+import '../../aquarium/reef_sprites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,6 +82,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     unawaited(Caustics.load());
+    unawaited(ReefSprites.load());
     _ticker.start();
     _start();
   }

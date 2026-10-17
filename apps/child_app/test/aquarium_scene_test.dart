@@ -6,10 +6,13 @@ import 'package:licurici/features/aquarium/aquarium_store.dart';
 import 'package:licurici/features/aquarium/fish_art.dart';
 import 'package:licurici/features/aquarium/reef.dart';
 import 'package:licurici/features/aquarium/reef_life.dart';
+import 'package:licurici/features/aquarium/reef_scene.dart';
+import 'package:licurici/features/aquarium/reef_sprites.dart';
+import 'package:licurici/shared/stimulus_art.dart';
 import 'package:licurici/features/aquarium/tank_painter.dart';
 import 'package:licurici_core/licurici_core.dart';
 
-import 'layout_test.dart' show shots;
+import 'layout_test.dart' show settle, shots;
 
 /// Scena acvariului (recif + pești în spațiu), fără restul ecranului: se desenează fără
 /// erori la mai multe dimensiuni și cu peștii în toate pozele (profil, întorși, din spate,
@@ -71,4 +74,44 @@ void main() {
       }
     });
   }
+
+  // Cu straturile pictate (recif, vietăți) încărcate: doar captură, pentru inspecție.
+  testWidgets('scena acvariului, pictată', (tester) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.runAsync(() async {
+      await IllustrationIndex.load();
+      await ReefSprites.load();
+      await Caustics.load();
+    });
+    final owned = <String, OwnedFish>{};
+    final sim = Aquarium(width: 1.6, seed: 3);
+    for (final (i, (sp, x, y, z, yaw)) in [('clovn', 0.55, 0.42, 0.05, 0.0), ('inger', 1.15, 0.33, 0.45, pi), ('balon', 0.35, 0.6, 0.3, 0.3)].indexed) {
+      final s = fishSpeciesById(sp)!;
+      final art = (await tester.runAsync(() async => buildFishImage(s, await paintGiftDrawing(s, seed: i + 1))))!;
+      final f = SwimmingFish(id: 'f$i', species: sp, length: 0.27, cruise: 0.12, at: Point(x, y), z: z, yaw: yaw)
+        ..thrust = 0.7
+        ..phase = i * 1.3;
+      sim.fish.add(f);
+      owned[f.id] = OwnedFish(AquariumEntry(id: f.id, species: sp, created: DateTime(2026)), s, art);
+    }
+    final time = ValueNotifier(18.0);
+    final chest = ReefChest()..openedAt = 11.6;
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: ReefScene(
+          ambient: time,
+          chest: chest,
+          child: CustomPaint(
+            painter: TankPainter(aquarium: sim, fish: owned, time: time, fx: const [], gather: ValueNotifier(null)),
+          ),
+        ),
+      ),
+    );
+    await settle(tester, 8);
+    expect(tester.takeException(), isNull);
+    await expectLater(find.byType(ReefScene), matchesGoldenFile('shots/acvariu-pictat.png'));
+  }, skip: !shots);
 }

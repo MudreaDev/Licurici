@@ -29,6 +29,8 @@ class FishRenderer {
   final _pos = Float32List(_n * 2);
   final _tex = Float32List(_n * 2);
   final _colors = Int32List(_n);
+  // Al doilea strat al plasei: luciul de pe spate și lumina rece de pe margini.
+  final _gloss = Int32List(_n);
   final _idx = Uint16List(_cols * _rows * 6);
   final _psi = Float64List(_cols + 1);
   final _sx = Float64List(_cols + 1);
@@ -120,8 +122,18 @@ class FishRenderer {
         final wx = (px + _pos[i * 2] * k) / h, wy = (py + _pos[i * 2 + 1] * k) / h;
         final caustic = 0.07 * math.sin(wx * 21 + t * 1.6) * math.sin(wy * 17 - t * 1.25 + wx * 5);
         final top = (by - midY) / halfH; // −1 sus … +1 jos
-        final shade = (0.72 + 0.28 * math.pow(cs.abs(), 0.7) + caustic - roll * top * 0.16 - 0.04 * top).clamp(0.0, 1.0);
+        // Volumul: lumina vine de sus, prin apă — spatele e mai luminos, burta și marginile
+        // rotunjite intră în umbră (ca la un corp, nu ca la o foaie).
+        final belly = math.max(0.0, top);
+        final shade = (0.66 + 0.24 * math.pow(cs.abs(), 0.7) + 0.12 * round + caustic - roll * top * 0.16 - 0.08 * top - 0.14 * belly * belly)
+            .clamp(0.42, 1.0);
         _colors[i] = _argb(shade * absorbR, shade * absorbG, shade);
+        // Luciul: o dungă pe partea de sus a corpului, cea mai vie unde felia stă spre noi;
+        // lumina rece pe margini: apa luminată din spatele peștelui.
+        final band = math.exp(-math.pow((top + 0.45) / 0.24, 2));
+        final spec = 0.42 * band * cs * cs * (0.25 + 0.75 * profile) * (1 - fog * 2.2) * (1 + caustic * 3);
+        final rim = 0.24 * math.pow(edge, 6) * (top < 0 ? 1.0 : 0.55) * (1 - fog * 2);
+        _gloss[i] = _glossColor(spec, rim);
         i++;
       }
     }
@@ -155,6 +167,17 @@ class FishRenderer {
     // În viraj corpul se apleacă: văzut puțin de sus sau de jos, pare mai scund.
     if (roll != 0) canvas.scale(1, 1 - 0.14 * roll.abs());
     final v = ui.Vertices.raw(ui.VertexMode.triangles, _pos, textureCoordinates: _tex, colors: _colors, indices: _idx);
+    // Un strat cât peștele: luciul se pune doar peste pixelii corpului (srcATop).
+    var minX = double.infinity, minY = double.infinity, maxX = -double.infinity, maxY = -double.infinity;
+    for (var q = 0; q < _n; q++) {
+      final x = _pos[q * 2], y = _pos[q * 2 + 1];
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+    final glossy = fog < 0.2;
+    if (glossy) canvas.saveLayer(Rect.fromLTRB(minX, minY, maxX, maxY).inflate(4), Paint());
     canvas.drawVertices(
       v,
       BlendMode.modulate,
@@ -164,6 +187,26 @@ class FishRenderer {
         ..colorFilter = fog > 0.01 ? _fogFilter(fog) : null,
     );
     v.dispose();
+    if (glossy) {
+      final g = ui.Vertices.raw(ui.VertexMode.triangles, _pos, colors: _gloss, indices: _idx);
+      canvas.drawVertices(g, BlendMode.dst, Paint()..blendMode = BlendMode.srcATop);
+      g.dispose();
+      canvas.restore();
+    }
+
+    // Ochiul: o sclipire mică, ca pe un ochi umed (doar cu peștele din profil).
+    final headSide = math.cos(_psi[_cols]);
+    if (headSide.abs() > 0.35 && puff < 0.6) {
+      final (eye, er) = species.eye;
+      final ef = ((eye.x - x0) / (x1 - x0) * _cols).clamp(0.0, _cols - 1.0);
+      final ei = ef.floor(), erem = ef - ei;
+      final ex = _sx[ei] + (_sx[ei + 1] - _sx[ei]) * erem - ox;
+      final forward = (_sx[_cols] - _sx[0]).sign;
+      final c = Offset(ex + forward * er * 0.22, eye.y - midY - er * 0.3);
+      final a = (0.85 * math.min(1.0, (headSide.abs() - 0.35) * 4) * (1 - fog * 2.5)).clamp(0.0, 1.0);
+      canvas.drawCircle(c, er * 0.3, Paint()..color = Color.fromRGBO(255, 255, 255, a));
+      canvas.drawCircle(c + Offset(-forward * er * 0.38, er * 0.42), er * 0.12, Paint()..color = Color.fromRGBO(255, 255, 255, a * 0.6));
+    }
 
     // Înotătoarea pectorală (cea dinspre noi): vâslește repede când peștele stă pe loc sau
     // frânează, se lipește de corp când țâșnește.
@@ -403,6 +446,15 @@ class FishRenderer {
       );
     }
   }
+}
+
+/// Culoarea luciului: alb pentru dunga de pe spate, albastru-deschis pentru lumina de pe margini.
+int _glossColor(double spec, double rim) {
+  final a = (spec + rim).clamp(0.0, 0.6);
+  if (a <= 0.002) return 0;
+  final k = rim / (spec + rim);
+  final r = (255 - 64 * k).round(), g = (255 - 11 * k).round();
+  return ((a * 255).round() << 24) | (r << 16) | (g << 8) | 255;
 }
 
 double _softSign(double x) {

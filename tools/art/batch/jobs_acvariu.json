@@ -1,0 +1,52 @@
+[
+ {
+  "name": "scenes/aquarium_back",
+  "refs": [
+   "refs/scenes_aquarium_mini.png",
+   "refs/scenes_pond.png"
+  ],
+  "prompt": "Create one production illustration for Licurici, therapy games for young and autistic children. Match the attached images as STYLE references only (soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, fine polished brushwork, large simple readable shapes, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC). Landscape 3:2, 1536x1024, OPAQUE full-bleed. A calm, friendly underwater coral reef seen from the side, like looking into a big aquarium. Water: soft turquoise at the top gently deepening to calm medium blue, very low contrast, no dark areas. A pale sandy floor seen slightly from above: its far edge is at about y=800 (gently wavy) and it comes toward the viewer down to the bottom edge, smooth sand with a few tiny pebbles and soft light dapples. Far in the background, very faded blue-tinted hazy silhouettes of rounded rocks and branching corals. Near the LEFT and RIGHT edges only (each within the outer 18% of the width), resting on the sand: a few soft rounded rocks with mint moss, one pink branching coral, one peach fan coral, one lavender tube coral cluster, one small yellow brain coral. The central 64% of the width, from the top down to the sand, stays calm open water with nothing in it. No fish, no animals, no seaweed, no light rays, no bubbles, no particles, no water surface line, no treasure chest. No text, letters, numerals, labels, watermark, border, harsh red, frightening shapes."
+ },
+ {
+  "name": "scenes/aquarium_front",
+  "refs": [
+   "refs/scenes_aquarium_mini.png"
+  ],
+  "prompt": "Create one production illustration for Licurici, therapy games for young and autistic children. Match the attached image as STYLE reference only (soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, fine polished brushwork, large simple readable shapes, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC). Landscape 3:2, 1536x1024, transparent RGBA foreground layer for an aquarium. Everything is true alpha=0 EXCEPT two clusters in the bottom corners: bottom-left (x 0-260, y 680-1023) and bottom-right (x 1276-1535, y 680-1023): a few large soft rounded rocks with a little mint moss, one small branching coral and two round shells, slightly darker and closer than a background would be, softly lit from above. The whole middle and the entire upper area are empty transparent pixels. No seaweed, no fish, no animals, no bubbles, no sand strip across the width, no ground plane, no cast shadow. No text, letters, numerals, labels, watermark, border, harsh red, frightening shapes. Real transparent alpha background, no white backdrop or checkerboard pixels."
+ },
+ {
+  "name": "sheets/aquarium_life",
+  "grid": [
+   2,
+   2
+  ],
+  "cells": [
+   "parts/kelp",
+   "parts/anemone",
+   "parts/school_fish",
+   "parts/turtle_side"
+  ],
+  "refs": [
+   "refs/objects_turtle.png",
+   "refs/sprites_crab.png",
+   "refs/objects_apple.png"
+  ],
+  "prompt": "Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young children: a 2x2 grid of separate illustrations, each centered in its own cell with wide empty transparent space around it, nothing crossing into another cell. Match the attached style references (soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, fine polished brushwork, large simple readable shapes, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC). Top-left: one tall cluster of three gently curved mint-green seaweed blades rising from a tiny bit of sand, straight front view, about four times taller than wide. Top-right: one friendly sea anemone with soft peach-pink rounded tentacles on a small lavender base, side view. Bottom-left: one tiny slender silver-blue fish in exact side view facing right, simple. Bottom-right: one friendly green sea turtle swimming, seen exactly from the side facing right, flippers spread, gentle smile. Real alpha transparency, no background, no grid lines, no ground, no cast shadows. No text, letters, numerals, labels, watermark, border, harsh red, frightening shapes."
+ },
+ {
+  "name": "sheets/aquarium_chest",
+  "grid": [
+   1,
+   2
+  ],
+  "cells": [
+   "parts/chest_closed",
+   "parts/chest_open"
+  ],
+  "refs": [
+   "refs/rewards_chest.png",
+   "refs/objects_apple.png"
+  ],
+  "prompt": "Create ONE transparent RGBA PNG sheet for Licurici, a therapy app for young children, with TWO separate illustrations side by side, each centered in its own half with wide empty transparent space around it. Match the attached style references (soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, fine polished brushwork, large simple readable shapes, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC). The SAME small friendly wooden treasure chest with a sunshine-yellow lock, seen from the front, twice: left half CLOSED; right half with the lid OPEN, a soft golden glow and a few round golden coins inside. Same size and position in both halves. Real alpha transparency, no background, no ground, no cast shadow. No text, letters, numerals, labels, watermark, border, harsh red, frightening shapes."
+ }
+]
