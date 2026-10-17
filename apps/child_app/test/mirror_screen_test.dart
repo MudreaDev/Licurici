@@ -41,9 +41,9 @@ void main() {
       await tester.pump(const Duration(seconds: 5));
       if (shots) await expectLater(find.byType(MirrorScreen), matchesGoldenFile('shots/oglinda-$device-$level.png'));
       final l = const MirrorGame().generate(level, seed: 3);
-      Future<void> touch(MirrorTouch t) async {
+      Future<void> touch(MirrorTouch t, FaceLook look) async {
         final rect = tester.getRect(find.byKey(const ValueKey('mirror-face')));
-        final c = partCenter(t.part, t.side ?? -1);
+        final c = partCenter(t.part, t.side ?? -1, look);
         await tester.tapAt(rect.topLeft + Offset(c.dx * rect.width, c.dy * rect.height));
         await tester.pump(const Duration(milliseconds: 200));
       }
@@ -53,11 +53,11 @@ void main() {
         await tester.pump(const Duration(seconds: 6));
         if (i == 0) {
           final wrong = FacePart.values.firstWhere((p) => p != r.touches.first.part);
-          await touch(MirrorTouch(wrong, wrong.paired ? -1 : null));
+          await touch(MirrorTouch(wrong, wrong.paired ? -1 : null), r.mirror);
           if (shots) await expectLater(find.byType(MirrorScreen), matchesGoldenFile('shots/oglinda-atinsa-$device-$level.png'));
         }
         for (final t in r.touches) {
-          await touch(t);
+          await touch(t, r.mirror);
         }
         await tester.pump(const Duration(seconds: 2));
       }

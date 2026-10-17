@@ -22,7 +22,7 @@ sizes = {
     'faces2': (320, 320),
     'parts': (512, 512),
 }
-for m in re.finditer(r'## ([a-z_]+)/([a-z_\-]+)\.webp\s+Sursă PNG: `([^`]+)`', readme):
+for m in re.finditer(r'## ([a-z0-9_]+)/([a-z0-9_\-]+)\.webp\s+Sursă PNG: `([^`]+)`', readme):
     folder, name, src = m.groups()
     if not os.path.exists(src):
         print('lipsă', folder, name)

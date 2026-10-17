@@ -33,15 +33,17 @@ const _crop = Rect.fromLTRB(0.2, 0.02, 0.8, 0.66);
 /// Centrul unei părți a feței, ca parte din latura pătratului în care e arătată fața: pe
 /// portretele pictate (aceeași încadrare la toți copiii, măsurată pe ele), altfel pe desenul din
 /// cod (`FacePainter`: centrul la 0,5 / 0,54, raza 0,38).
-Offset partCenter(FacePart part, [int? side]) {
+Offset partCenter(FacePart part, [int? side, FaceLook? look]) {
   final s = (side ?? -1).toDouble();
   if (_portrait(paintedLooks.first) != null) {
+    // Măsurate pe portretele „neutru”: (păr y, ochi dx, ochi y, nas y, gură y, ureche dx, ureche y).
+    final g = _geometry[look?.paintedId] ?? _geometry[null]!;
     final p = switch (part) {
-      FacePart.par => const Offset(0.5, 0.13),
-      FacePart.nas => const Offset(0.5, 0.475),
-      FacePart.gura => const Offset(0.5, 0.545),
-      FacePart.ochi => Offset(0.5 + s * 0.088, 0.415),
-      FacePart.urechi => Offset(0.5 + s * 0.212, 0.455),
+      FacePart.par => Offset(0.5, g.$1),
+      FacePart.nas => Offset(0.5, g.$4),
+      FacePart.gura => Offset(0.5, g.$5),
+      FacePart.ochi => Offset(0.5 + s * g.$2, g.$3),
+      FacePart.urechi => Offset(0.5 + s * g.$6, g.$7),
     };
     return Offset((p.dx - _crop.left) / _crop.width, (p.dy - _crop.top) / _crop.height);
   }
@@ -54,13 +56,22 @@ Offset partCenter(FacePart part, [int? side]) {
   };
 }
 
+/// Geometria fiecărui copil pictat (cei cu ochelari și cu părul bogat au capul încadrat altfel);
+/// `null` = valorile comune.
+const Map<String?, (double, double, double, double, double, double, double)> _geometry = {
+  null: (0.13, 0.088, 0.415, 0.475, 0.545, 0.212, 0.455),
+  'a1': (0.15, 0.09, 0.445, 0.51, 0.575, 0.22, 0.49),
+  'b1': (0.2, 0.08, 0.495, 0.55, 0.6, 0.18, 0.52),
+  'b2': (0.15, 0.095, 0.39, 0.47, 0.53, 0.19, 0.45),
+};
+
 /// Partea cea mai apropiată de punctul [p] (în fracții din latură), dacă e destul de aproape.
-MirrorTouch? touchAt(Offset p) {
+MirrorTouch? touchAt(Offset p, [FaceLook? look]) {
   MirrorTouch? best;
   var bestD = 0.15;
   for (final part in FacePart.values) {
     for (final side in part.paired ? const [-1, 1] : const [null]) {
-      final d = (partCenter(part, side) - p).distance;
+      final d = (partCenter(part, side, look) - p).distance;
       if (d < bestD) {
         bestD = d;
         best = MirrorTouch(part, side);
@@ -145,12 +156,12 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
     if (intro) ref.read(voiceProvider).say([MirrorGame.instruction]);
     if (!await _wait(intro ? 1200 : 400, gen)) return;
     for (final t in _r.touches) {
-      setState(() => _pointer = partCenter(t.part, t.side));
+      setState(() => _pointer = partCenter(t.part, t.side, _r.model));
       if (!await _wait(650, gen)) return;
       ref.read(sfxProvider).play(Sfx.bubble);
       setState(() {
         _modelRing++;
-        _modelRingAt = partCenter(t.part, t.side);
+        _modelRingAt = partCenter(t.part, t.side, _r.model);
       });
       if (!await _wait(750, gen)) return;
     }
@@ -172,12 +183,12 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
 
   void _touch(Offset p) {
     if (_demo || _result != null || _step >= _r.touches.length) return;
-    final t = touchAt(p);
+    final t = touchAt(p, _r.mirror);
     if (t == null) return;
     final ok = _r.touches[_step].accepts(t);
     setState(() {
       _mirrorRing++;
-      _mirrorRingAt = partCenter(t.part, t.side);
+      _mirrorRingAt = partCenter(t.part, t.side, _r.mirror);
     });
     if (!ok) {
       _wrong++;

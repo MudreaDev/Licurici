@@ -126,6 +126,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
+**17.10 (noaptea–dimineața):** **fețele pictate Codex sunt active** în locul celor desenate din cod: 8 copii (`a0`…`b3`) × 7 emoții + treptele 20/40/60/80% pentru „Cât de tare?” (96 de portrete, `art/illustrations/faces2/`); „Oglinda” are geometria măsurată pe fiecare copil (test pe toate punctele). Lotul de obiecte continuă pe planșe 3×3 (`tools/art/codex_batch.py … --loop`, așteaptă singur limita Codex).
+
 **Predare Claude → Codex (16.10, seara):** pașii exacți pentru imaginile rămase (88 de fețe cu expresii, 143 de obiecte, în `tools/art/batch/`) și pentru ce urmează sunt în **[CODEX-CONTINUARE.md](CODEX-CONTINUARE.md)**; regulile comune în `CLAUDE.md` / `AGENTS.md`. Panoul e online la https://licurici-panou.vercel.app (Blob legat); `main` = producția.
 
 **Sesiunea 12, partea a doua (16.10) — pe scurt:** vocea tăiată pe Android reparată (focusul audio: `mixWithOthers`); „Engleză” scos; **versiunea de test pe Vercel** gata în `deploy/vercel/` (panoul terapeutului + legarea tabletei prin codul/linkul copilului; așteaptă proiectul creat de tine, `docs/deploy-vercel.md`); metricile standard în panou; capitolul 07; **toate cele 12 jocuri „frate”**: Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi, Memorie cu sunete, Oglinda (109 jocuri). Teste: nucleu 652, aplicație 377. **Urmează:** cardurile ilustrate pentru jocurile noi (Codex, punctul 5 de mai jos), „Cum spune?” (cere înregistrări), APK-ul nou, verificarea deploy-ului Vercel după ce creezi proiectul.

@@ -52,6 +52,10 @@ pe pași, în ordine.
   lumânarea, haina, coroana, puiul din ou, nota muzicală, telefonul, piesa de puzzle, tricoul); portretele au ajuns
   la 46 / 96 în `tools/art/batch/out/faces2/` (încă neintegrate — se activează la 96 / 96). Codex dă ~9 planșe pe
   fereastră de utilizare; lotul așteaptă singur deblocarea.
+- **17.10, dimineața (Claude):** **toate cele 96 de portrete sunt integrate și active** (`faces2/` în pubspec);
+  `convert_codex.py` acceptă acum cifre în nume (`faces2`, `a0_…_100`). „Oglinda” are geometrie pe copil
+  (`_geometry` în `mirror_screen.dart`, test `test/mirror_painted_test.dart`). Rămân doar **obiectele** (lotul
+  `jobs_planse.json` continuă); după fiecare fereastră: pașii din §2.4 (fără partea de fețe).
 
 ---
 
