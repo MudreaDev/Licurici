@@ -79,7 +79,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] **Peștii 3D noi și acvariul** pe tabletă: arată bine? se mișcă fluid? (solzi, înotătoare, „Peștii mei”, fereastra acvariului de pe ecranul principal).
 - [ ] **Jocurile noi** (sesiunea 12) încercate pe tabletă: Cât de tare?, Cine e prietenul?, Câte sunt?, Ce ai auzit?, Linia numerelor, Atinge rapid, Paznicul farului, Stop!, Acum sau mai mult?
 - [ ] **Jocurile „frate” noi** pe tabletă: Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi, Memorie cu sunete, Oglinda.
-- [ ] **Imaginile Codex** (cerute pe 16.10: tot ce desenase Claude din cod → imagini Codex): după lotul de azi, uită-te pe tabletă la fețele noi (8 copii pictați), masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid și spune-mi ce nu se potrivește. Codex are o limită de utilizare: dacă rămân imagini negenerate, le continui în sesiunea următoare.
+- [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
 
 **B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `python tools/art/convert_codex.py`
 Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de utilizare a contului ChatGPT poate opri un lot la jumătate.
@@ -126,7 +126,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**17.10 (noaptea–dimineața):** **fețele pictate Codex sunt active** în locul celor desenate din cod: 8 copii (`a0`…`b3`) × 7 emoții + treptele 20/40/60/80% pentru „Cât de tare?” (96 de portrete, `art/illustrations/faces2/`); „Oglinda” are geometria măsurată pe fiecare copil (test pe toate punctele). Lotul de obiecte continuă pe planșe 3×3 (`tools/art/codex_batch.py … --loop`, așteaptă singur limita Codex).
+**17.10, 11:20:** **toate imaginile Codex sunt gata**: 143 de obiecte pictate în locul pictogramelor OpenMoji (rămân doar simbolurile, cifrele și formele geometrice, intenționat). **17.10 (noaptea–dimineața):** **fețele pictate Codex sunt active** în locul celor desenate din cod: 8 copii (`a0`…`b3`) × 7 emoții + treptele 20/40/60/80% pentru „Cât de tare?” (96 de portrete, `art/illustrations/faces2/`); „Oglinda” are geometria măsurată pe fiecare copil (test pe toate punctele). Lotul de obiecte continuă pe planșe 3×3 (`tools/art/codex_batch.py … --loop`, așteaptă singur limita Codex).
 
 **Predare Claude → Codex (16.10, seara):** pașii exacți pentru imaginile rămase (88 de fețe cu expresii, 143 de obiecte, în `tools/art/batch/`) și pentru ce urmează sunt în **[CODEX-CONTINUARE.md](CODEX-CONTINUARE.md)**; regulile comune în `CLAUDE.md` / `AGENTS.md`. Panoul e online la https://licurici-panou.vercel.app (Blob legat); `main` = producția.
 

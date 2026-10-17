@@ -56,8 +56,11 @@ pe pași, în ordine.
   `convert_codex.py` acceptă acum cifre în nume (`faces2`, `a0_…_100`). „Oglinda” are geometrie pe copil
   (`_geometry` în `mirror_screen.dart`, test `test/mirror_painted_test.dart`). Rămân doar **obiectele** (lotul
   `jobs_planse.json` continuă); după fiecare fereastră: pașii din §2.4 (fără partea de fețe).
-- **De refăcut ca imagine unică** (din `jobs_unice.json`, după ce se termină planșele): `objects/shark` (tăiat în
-  dreapta de marginea celulei). Șterge `tools/art/batch/out/objects/shark.png`, generează lucrarea unică, apoi §2.4.
+- **17.10, 11:20 (Claude): LOTUL E GATA.** Toate cele **143 de obiecte** sunt pictate și integrate (`painted_extra.dart`,
+  `README-objects7.md` / `objects8.md`); la tăierea planșelor, bucățile din celulele vecine se șterg automat
+  (`drop_fragments`, cere `scipy`); rechinul a fost refăcut ca imagine unică. Au rămas ca pictograme OpenMoji doar
+  simbolurile și formele (săgeți, + − × ÷, cifre, steaguri, cercuri / pătrate colorate) — intenționat, sunt
+  stimuli „curați” în jocurile de matematică și forme. **Sarcina principală (§2) e încheiată**; urmează §3–§5.
 
 ---
 

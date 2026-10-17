@@ -42,6 +42,27 @@ limited = threading.Event()
 retry_at = []
 
 
+def drop_fragments(cell):
+    """Șterge bucățile din celulele vecine: componentele care ating marginea celulei și sunt mult
+    mai mici decât obiectul principal (picăturile, steluțele din jurul obiectului rămân)."""
+    import numpy as np
+    from PIL import Image
+    from scipy import ndimage
+    a = np.array(cell)
+    mask = a[..., 3] > 12
+    labels, n = ndimage.label(mask, structure=np.ones((3, 3)))
+    if n <= 1:
+        return cell
+    sizes = ndimage.sum(mask, labels, range(1, n + 1))
+    big = sizes.max()
+    h, w = mask.shape
+    edge = set(np.unique(np.concatenate([labels[0], labels[-1], labels[:, 0], labels[:, -1]]))) - {0}
+    for k in edge:
+        if sizes[k - 1] < 0.35 * big:
+            a[labels == k, 3] = 0
+    return Image.fromarray(a)
+
+
 def split(job, src, out_dir, results):
     """Taie planșa în celule; fiecare celulă e decupată la conturul ei (alfa vizibil)."""
     from PIL import Image
@@ -53,6 +74,7 @@ def split(job, src, out_dir, results):
     for k, name in enumerate(job['cells']):
         r, c = divmod(k, cols)
         cell = im.crop((round(c * w), round(r * h), round((c + 1) * w), round((r + 1) * h)))
+        cell = drop_fragments(cell)
         bbox = cell.getchannel('A').point(lambda v: 255 if v > 12 else 0).getbbox()
         if not bbox:
             print('celulă goală', name, flush=True)
