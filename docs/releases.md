@@ -5,7 +5,7 @@ APK-urile și arhivele compilate sunt atașamente ale versiunii, nu fișiere ad�
 
 ## 0.1.1 (build 2) — 25.10.2026
 
-Tag: `v0.1.1-preview.1`. Aplicația copilului și panoul au aceeași versiune.
+Publicată: [v0.1.1-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.1-preview.1), sursa `fc8baea`. Aplicația copilului și panoul au aceeași versiune. Cele 5 atașamente și digesturile SHA-256 au fost verificate pe GitHub după încărcare.
 
 - `licurici-0.1.1-arm64-v8a.apk`: tablete și telefoane Android actuale.
 - `licurici-0.1.1-armeabi-v7a.apk`: dispozitive Android mai vechi, pe 32 de biți.
