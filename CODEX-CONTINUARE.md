@@ -34,7 +34,19 @@ pe pași, în ordine.
 
 ---
 
-## 1. Starea de acum (16.10.2026, seara)
+## 1. Starea de acum (actualizată 25.10.2026)
+
+### Continuare 25.10.2026
+
+- [x] Lotul principal (§2) era încheiat: verificate 96 de portrete, activarea `faces2/` în pubspec și existența tuturor obiectelor din `mapping.json`.
+- [x] Lotul suplimentar `tools/art/batch/jobs_acvariu.json`: cele 6 PNG-uri existau local din 17.10; integrate acum ca `parts/kelp`, `anemone`, `school_fish`, `turtle_side`, `chest_closed`, `chest_open`. Surse și prompturi: `README-aquarium4.md`. Fundalurile `aquarium_back` / `aquarium_front` erau deja integrate; nu se regenerează.
+- [x] Acvariu: mânuța de ghidaj nu mai animă în modul calm / reduce motion; particulele de interacțiune sunt oprite în aceste moduri, inclusiv cele deja active. În modul normal, cel mult 5 efecte simultane (maximum 7 particule per efect). Politica de mișcare este citită la construirea ecranului, nu din callback-ul fiecărui cadru.
+- [x] Testele existente de acvariu extinse: modul calm activat în timpul indiciului, atingeri repetate, oprirea particulelor. Captură verificată vizual: `apps/child_app/test/shots/acvariu-pictat.png` (locală, ignorată de git).
+- **Validare:** nucleu 652, panou 36, backend 90, Vercel 7 și cele 3 teste de scenă cu `SHOTS=true` trec; analiza Flutter fără probleme. Aplicația copilului: **381 teste trecute, 15 capturi opționale sărite** fără `SHOTS`. **APK-urile release construite cu succes** după teste: arm64 84,2 MB (pentru tabletă), armeabi-v7a 82,6 MB, x86_64 85,7 MB, în `apps/child_app/build/app/outputs/flutter-apk/`. Build-ul emite avertismente de mediu (SDK XML / acces nativ Java) și despre fontul CupertinoIcons; nu au blocat construirea. Nu s-au actualizat SDK-uri sau dependențe.
+- **Pentru următoarea sesiune:** continuă §3 cu farul/bărcile din „Paznicul farului”, baza din „Rândul meu”, semnul din „Regula se schimbă”; verifică întâi mecanica fiecărui desen înainte de înlocuire (contururile de colorat și formele educative nu sunt simple decorații). §5 rămâne dependent de verificarea pe tabletă, înregistrările vocale și infrastructura utilizatorului.
+- **Mediu:** comenzile `py` / Flutter au necesitat acces în afara restricțiilor implicite pentru instalările și cache-urile existente. Nu s-au adăugat dependențe. Folderul neversionat `output/` exista înaintea sesiunii și a fost lăsat intact.
+
+### Istoricul predării (16–17.10)
 
 - **109 jocuri** în aplicație; toate cele 12 jocuri „frate” gata (Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi,
   Memorie cu sunete, Oglinda și cele 6 din sesiunea 11). Vocea: 2763/2763 fraze cu clip (`edge-tts`, vezi §6).
@@ -173,6 +185,8 @@ cifrele și literele rămân din cod (sunt stimuli „curați", nu ilustrații).
 ---
 
 ## 4. Comenzi de verificare
+
+**Ordine pe Windows:** termină testele Flutter înainte să construiești APK-ul. Testele și build-ul folosesc aceleași fișiere generate Android; în sesiunea 25.10, rularea lor simultană a lăsat o referință la `IntegrationTestPlugin` în compilarea release. Reia comanda standard de build (cu rezolvarea dependențelor, fără `--no-pub`) după teste; nu modifica manual `GeneratedPluginRegistrant.java`.
 
 ```bash
 # nucleul (Dart pur)

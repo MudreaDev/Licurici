@@ -74,6 +74,14 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   bool _usedGather = false, _usedChest = false, _hintedGather = false, _hintedChest = false;
   int _broke = 0, _spent = 0;
   bool _scanning = false;
+  MotionPolicy _motion = const MotionPolicy(MotionLevel.full);
+
+  void _addFx(TankFx effect) {
+    if (!_motion.particles) return;
+    // Cel mult 5 efecte × 7 particule, inclusiv la atingeri repetate.
+    if (_fx.length >= 5) _fx.removeAt(0);
+    _fx.add(effect);
+  }
 
   /// Peștele adus de pe hârtie chiar acum (intră de sus, ca cel colorat pe ecran).
   String? _diveId;
@@ -126,12 +134,12 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     for (final e in sim.drainEvents()) {
       switch (e) {
         case FishAte():
-          _fx.add(TankFx(e.at, TankFxKind.ate, _time.value));
+          _addFx(TankFx(e.at, TankFxKind.ate, _time.value));
           ref.read(sfxProvider).play(Sfx.bubble);
         case FishPecked():
-          _fx.add(TankFx(e.at, TankFxKind.sand, _time.value));
+          _addFx(TankFx(e.at, TankFxKind.sand, _time.value));
         case FishTickled():
-          _fx.add(TankFx(e.at, TankFxKind.joy, _time.value));
+          _addFx(TankFx(e.at, TankFxKind.joy, _time.value));
           ref.read(sfxProvider).play(Sfx.bubble);
       }
     }
@@ -139,7 +147,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     _time.value += dt;
     _hints();
     // În modul calm fundalul stă; peștii înoată mai departe.
-    if (MotionPolicy.of(context, ref).ambient) _ambient.value += dt;
+    if (_motion.ambient) _ambient.value += dt;
   }
 
   /// Ține simularea la zi cu peștii salvați (unul nou intră de sus).
@@ -347,6 +355,8 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
 
   @override
   Widget build(BuildContext context) {
+    _motion = MotionPolicy.of(context, ref);
+    if (!_motion.particles) _fx.clear();
     final fish = ref.watch(aquariumProvider);
     final layout = AppLayout.of(context);
     final list = fish.value;
@@ -380,7 +390,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                           }
                           final p = _toTank(d.localPosition);
                           _sim!.tap(p);
-                          _fx.add(TankFx(p, TankFxKind.tap, _time.value));
+                          _addFx(TankFx(p, TankFxKind.tap, _time.value));
                         },
                         onLongPressStart: (d) {
                           _touched();
@@ -422,6 +432,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                   key: ValueKey(h),
                   at: h == _Hint.chest ? ReefChest.hitRect(_size).center : Offset(_size.width * 0.5, _size.height * 0.45),
                   hold: h == _Hint.gather,
+                  animate: _motion.movement,
                 ),
               SafeArea(
                 child: Column(
@@ -513,17 +524,35 @@ enum _Hint { gather, chest }
 
 /// Mânuța care arată un gest: apasă și ține (cu un cerc care crește) sau atinge scurt.
 class _HandHint extends StatefulWidget {
-  const _HandHint({super.key, required this.at, required this.hold});
+  const _HandHint({super.key, required this.at, required this.hold, required this.animate});
 
   final Offset at;
   final bool hold;
+  final bool animate;
 
   @override
   State<_HandHint> createState() => _HandHintState();
 }
 
 class _HandHintState extends State<_HandHint> with SingleTickerProviderStateMixin {
-  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..repeat();
+  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.animate) _c.repeat();
+  }
+
+  @override
+  void didUpdateWidget(_HandHint oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.animate == oldWidget.animate) return;
+    if (widget.animate) {
+      _c.repeat();
+    } else {
+      _c.stop();
+    }
+  }
 
   @override
   void dispose() {
@@ -536,7 +565,7 @@ class _HandHintState extends State<_HandHint> with SingleTickerProviderStateMixi
     child: AnimatedBuilder(
       animation: _c,
       builder: (context, _) {
-        final k = _c.value;
+        final k = widget.animate ? _c.value : 0.5;
         // Coboară, apasă (ține sau atinge), se ridică.
         final press = widget.hold ? (k < 0.2 ? k / 0.2 : (k < 0.8 ? 1.0 : (1 - k) / 0.2)) : math.sin(k * math.pi).clamp(0.0, 1.0);
         final ring = widget.hold ? ((k - 0.2) / 0.6).clamp(0.0, 1.0) : 0.0;
@@ -614,22 +643,22 @@ class _StarPurse extends StatelessWidget {
   Widget build(BuildContext context) {
     final compact = AppLayout.of(context).compact;
     return CandyPanel(
-      key: const ValueKey('stars'),
-      radius: 999,
-      lip: 4,
-      padding: EdgeInsets.symmetric(horizontal: compact ? 12 : 18, vertical: compact ? 4 : 8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.star_rounded, color: const Color(0xFFF2C14E), size: compact ? 30 : 40),
-          const SizedBox(width: 6),
-          Text(
-            '$stars',
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Tokens.ink, fontSize: compact ? 22 : 28),
+          key: const ValueKey('stars'),
+          radius: 999,
+          lip: 4,
+          padding: EdgeInsets.symmetric(horizontal: compact ? 12 : 18, vertical: compact ? 4 : 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.star_rounded, color: const Color(0xFFF2C14E), size: compact ? 30 : 40),
+              const SizedBox(width: 6),
+              Text(
+                '$stars',
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Tokens.ink, fontSize: compact ? 22 : 28),
+              ),
+            ],
           ),
-        ],
-      ),
-    )
+        )
         .animate(key: ValueKey('spent-$spent'), target: spent == 0 ? 0 : 1)
         .scaleXY(begin: 1, end: 1.15, duration: 140.ms, curve: Curves.easeOut)
         .then()

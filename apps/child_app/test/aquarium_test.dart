@@ -9,6 +9,7 @@ import 'package:licurici_core/licurici_core.dart' show fishSpecies;
 import 'package:licurici/features/aquarium/aquarium_screen.dart';
 import 'package:licurici/features/aquarium/aquarium_store.dart';
 import 'package:licurici/features/aquarium/coloring_screen.dart';
+import 'package:licurici/features/aquarium/tank_painter.dart';
 import 'package:licurici/features/settings/settings.dart';
 import 'package:licurici/shared/stimulus_art.dart';
 import 'package:licurici/shared/voice.dart';
@@ -43,16 +44,16 @@ void main() {
       addTearDown(tester.view.reset);
       final store = MemoryAquariumStore();
       final container = ProviderContainer(
-        overrides: [
-          voiceProvider.overrideWithValue(const SilentSpeaker()),
-          aquariumStoreProvider.overrideWithValue(store),
-        ],
+        overrides: [voiceProvider.overrideWithValue(const SilentSpeaker()), aquariumStoreProvider.overrideWithValue(store)],
       );
       addTearDown(container.dispose);
       final router = GoRouter(
         initialLocation: '/acvariu',
         routes: [
-          GoRoute(path: '/', builder: (_, _) => const Scaffold(body: Text('Acasă'))),
+          GoRoute(
+            path: '/',
+            builder: (_, _) => const Scaffold(body: Text('Acasă')),
+          ),
           GoRoute(
             path: '/acvariu',
             builder: (_, s) => AquariumScreen(newFishId: s.uri.queryParameters['nou']),
@@ -84,6 +85,31 @@ void main() {
       }
       expect(hand, findsOneWidget);
       if (shots) await expectLater(find.byType(AquariumScreen), matchesGoldenFile('shots/acvariu-indiciu-$device.png'));
+
+      // Indiciul rămâne vizibil, dar nu se mișcă în modul calm.
+      container.read(settingsProvider.notifier).toggleCalm();
+      await tester.pump();
+      final stillHand = tester.getRect(hand);
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(tester.getRect(hand), stillHand);
+      container.read(settingsProvider.notifier).toggleCalm();
+      await tester.pump();
+
+      TankPainter tankPainter() =>
+          tester.widgetList<CustomPaint>(find.byType(CustomPaint)).map((w) => w.painter).whereType<TankPainter>().single;
+      final water = tester.getCenter(find.byType(AquariumScreen));
+      for (var i = 0; i < 12; i++) {
+        await tester.tapAt(water);
+      }
+      expect(tankPainter().fx, isNotEmpty);
+      expect(tankPainter().fx.length, lessThanOrEqualTo(5));
+      container.read(settingsProvider.notifier).toggleCalm();
+      await tester.pump();
+      await tester.tapAt(water);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tankPainter().fx, isEmpty);
+      container.read(settingsProvider.notifier).toggleCalm();
+      await tester.pump();
 
       // Noaptea: apa se întunecă, degetul ținut e lanterna; apoi iar zi.
       await tester.tap(find.byKey(const ValueKey('night')));

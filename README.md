@@ -66,7 +66,7 @@ Legendă status folosită peste tot: ⬜ neînceput · 🟨 în lucru · ✅ gat
 Doar lucrurile pe care asistentul **nu le poate face** din repo (instalări, conturi, bani, fotografii, oameni, decizii).
 Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 
-**Progres (15.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (**109 jocuri în aplicație**: toate cele 12 „frate” pentru generalizare — 6 în sesiunea 11, 6 în sesiunea 12 — și 9 jocuri noi cu metrici standard; „Engleză” scos la cererea ta). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
+**Progres (25.10.2026, numărat din §21):** semestrul 1 — **32 din 38 de puncte (~84%, ținta era 70%)**; foaia de parcurs întreagă (S1 + S2) — **35 din 46 (~76%)**; jocurile din catalogul pe arii — **52 din 52** (**109 jocuri în aplicație**: toate cele 12 „frate” pentru generalizare — 6 în sesiunea 11, 6 în sesiunea 12 — și 9 jocuri noi cu metrici standard; „Engleză” scos la cererea ta). Ce lipsește ține aproape tot de lista de mai jos (Docker, deploy, ilustrații, oameni, teză).
 
 **A. Pe calculatorul tău (verificare)**
 - [ ] Instalează **Docker Desktop**. Apoi: `cp infra/.env.example infra/.env` (schimbă parolele) → `docker compose -f infra/docker-compose.yml up -d --build`.
@@ -81,9 +81,10 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] **Jocurile „frate” noi** pe tabletă: Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi, Memorie cu sunete, Oglinda.
 - [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
 
-**B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `python tools/art/convert_codex.py`
+**B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `py tools/art/convert_codex.py`
 Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de utilizare a contului ChatGPT poate opri un lot la jumătate.
-- [ ] Fundalul acvariului: [docs/brief-codex-acvariu.md](docs/brief-codex-acvariu.md) — opțional (recif desenat din cod e deja bogat)
+- [x] Fundalul și colțurile pictate ale acvariului (17.10); cele 6 piese ale recifului integrate pe 25.10: alge, anemonă, peștișor de banc, țestoasă, cufăr închis/deschis.
+- [ ] Pe tabletă, verifică reciful nou și modul calm: mânuța de ghidaj trebuie să stea pe loc, iar atingerile să nu producă particule.
 - [x] 11 carduri școlare · 8 carduri ale jocurilor din sesiunea 9 · 6 carduri „frate” · fereastra acvariului + butoanele pictate ale acvariului (sesiunea 12, Codex)
 - [x] 9 carduri ale jocurilor noi din sesiunea 12 ([docs/brief-codex-carduri-sesiunea12.md](docs/brief-codex-carduri-sesiunea12.md), `README-cards14.md`)
 
@@ -126,7 +127,9 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**17.10, 11:20:** **toate imaginile Codex sunt gata**: 143 de obiecte pictate în locul pictogramelor OpenMoji (rămân doar simbolurile, cifrele și formele geometrice, intenționat). **17.10 (noaptea–dimineața):** **fețele pictate Codex sunt active** în locul celor desenate din cod: 8 copii (`a0`…`b3`) × 7 emoții + treptele 20/40/60/80% pentru „Cât de tare?” (96 de portrete, `art/illustrations/faces2/`); „Oglinda” are geometria măsurată pe fiecare copil (test pe toate punctele). Lotul de obiecte continuă pe planșe 3×3 (`tools/art/codex_batch.py … --loop`, așteaptă singur limita Codex).
+**25.10.2026 — continuarea predării:** cele 6 imagini din `jobs_acvariu.json` existau deja ca PNG local; sunt acum integrate în `parts/` (surse și prompturi: `README-aquarium4.md`). Fundalul și stratul din față erau deja integrate în commit-urile din 17.10. În acvariu, mânuța de ghidaj rămâne statică în modul calm / reduce motion; efectele de atingere, mâncat și bucurie respectă politica de particule, iar lista este limitată la 5 efecte simultane. Testele de acvariu verifică schimbarea modului calm în timpul indiciului și atingerile repetate. **Urmează:** verificarea APK-ului pe tabletă; piesele pictate pentru „Paznicul farului”, baza din „Rândul meu” și semnul din „Regula se schimbă” (§3 din predare). **Validare:** analiza Flutter curată; teste: aplicație 381, nucleu 652, panou 36, backend 90, Vercel 7; 3 teste vizuale de acvariu. APK-urile release reconstruite pe 25.10 (arm64: 84,2 MB). Detalii în `CODEX-CONTINUARE.md` §1.
+
+**17.10, 11:20:** **toate imaginile Codex sunt gata**: 143 de obiecte pictate în locul pictogramelor OpenMoji (rămân doar simbolurile, cifrele și formele geometrice, intenționat). **17.10 (noaptea–dimineața):** **fețele pictate Codex sunt active** în locul celor desenate din cod: 8 copii (`a0`…`b3`) × 7 emoții + treptele 20/40/60/80% pentru „Cât de tare?” (96 de portrete, `art/illustrations/faces2/`); „Oglinda” are geometria măsurată pe fiecare copil (test pe toate punctele). Lotul de obiecte este încheiat; nu trebuie repornit.
 
 **Predare Claude → Codex (16.10, seara):** pașii exacți pentru imaginile rămase (88 de fețe cu expresii, 143 de obiecte, în `tools/art/batch/`) și pentru ce urmează sunt în **[CODEX-CONTINUARE.md](CODEX-CONTINUARE.md)**; regulile comune în `CLAUDE.md` / `AGENTS.md`. Panoul e online la https://licurici-panou.vercel.app (Blob legat); `main` = producția.
 
@@ -1123,6 +1126,8 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
+**25.10.2026:** acvariul folosește cele 6 piese pictate ale recifului; ghidajul și efectele de interacțiune respectă modul calm. Numărul jocurilor nu se schimbă (109).
+
 **Gata în Flutter (103):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
 🆕 simon / Felinarele (`sequence`), perechi (`memoryCards`), sortam (`dragDrop`), cucu-bau, respira, continua-sirul,
@@ -1243,6 +1248,8 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 ## 21. Roadmap (Sem. 1 = 70%)
 
 Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
+
+**Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 
 ### Sprint 0–1 · 28 sep – 11 oct 2026 — Fundația
 - [x] Monorepo: mută prototipul în `legacy/electron/`, creează `apps/`, `packages/`, `backend/`, `infra/`, `docs/`
