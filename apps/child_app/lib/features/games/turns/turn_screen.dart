@@ -354,7 +354,10 @@ class _TurnScreenState extends ConsumerState<TurnScreen> {
                       width: block * 2.6,
                       height: block * 0.35,
                       margin: EdgeInsets.only(bottom: layout.compact ? 6 : 16),
-                      decoration: BoxDecoration(color: const Color(0xFF9A6634), borderRadius: BorderRadius.circular(block * 0.12)),
+                      decoration: hasPart('tower_base')
+                          ? null
+                          : BoxDecoration(color: const Color(0xFF9A6634), borderRadius: BorderRadius.circular(block * 0.12)),
+                      child: hasPart('tower_base') ? const Part('tower_base') : null,
                     ),
                   ],
                 ),

@@ -38,12 +38,16 @@ pe pași, în ordine.
 
 ### Continuare 25.10.2026
 
+- [x] Continuarea graficii: `parts/tower_base.webp` generată și integrată în „Rândul meu”, cu rezerva din cod păstrată; promptul și sursa sunt în `README-parts4.md`. Testul de joc poate încărca ilustrațiile reale la `SHOTS=true`.
+- [x] Revizuită lista veche din §3: bărcile din „Paznicul farului” sunt deja pictate prin `StimulusArt` → `objects/sailboat`; nu există un far desenat în ecranul actual. Indiciile geometrice din „Regula se schimbă” rămân din cod, fiind stimuli educativi, nu decorații. Nu relua aceste puncte ca imagini lipsă.
+- **Livrare 0.1.1+2:** aplicația copilului și panoul au versiunile incrementate. APK-uri și panou web compilat în GitHub Releases, tag `v0.1.1-preview.1`; procedura și conținutul pachetelor în `docs/releases.md`. Verifică publicarea tagului înainte de a indica descărcarea utilizatorului.
+
 - [x] Lotul principal (§2) era încheiat: verificate 96 de portrete, activarea `faces2/` în pubspec și existența tuturor obiectelor din `mapping.json`.
 - [x] Lotul suplimentar `tools/art/batch/jobs_acvariu.json`: cele 6 PNG-uri existau local din 17.10; integrate acum ca `parts/kelp`, `anemone`, `school_fish`, `turtle_side`, `chest_closed`, `chest_open`. Surse și prompturi: `README-aquarium4.md`. Fundalurile `aquarium_back` / `aquarium_front` erau deja integrate; nu se regenerează.
 - [x] Acvariu: mânuța de ghidaj nu mai animă în modul calm / reduce motion; particulele de interacțiune sunt oprite în aceste moduri, inclusiv cele deja active. În modul normal, cel mult 5 efecte simultane (maximum 7 particule per efect). Politica de mișcare este citită la construirea ecranului, nu din callback-ul fiecărui cadru.
 - [x] Testele existente de acvariu extinse: modul calm activat în timpul indiciului, atingeri repetate, oprirea particulelor. Captură verificată vizual: `apps/child_app/test/shots/acvariu-pictat.png` (locală, ignorată de git).
 - **Validare:** nucleu 652, panou 36, backend 90, Vercel 7 și cele 3 teste de scenă cu `SHOTS=true` trec; analiza Flutter fără probleme. Aplicația copilului: **381 teste trecute, 15 capturi opționale sărite** fără `SHOTS`. **APK-urile release construite cu succes** după teste: arm64 84,2 MB (pentru tabletă), armeabi-v7a 82,6 MB, x86_64 85,7 MB, în `apps/child_app/build/app/outputs/flutter-apk/`. Build-ul emite avertismente de mediu (SDK XML / acces nativ Java) și despre fontul CupertinoIcons; nu au blocat construirea. Nu s-au actualizat SDK-uri sau dependențe.
-- **Pentru următoarea sesiune:** continuă §3 cu farul/bărcile din „Paznicul farului”, baza din „Rândul meu”, semnul din „Regula se schimbă”; verifică întâi mecanica fiecărui desen înainte de înlocuire (contururile de colorat și formele educative nu sunt simple decorații). §5 rămâne dependent de verificarea pe tabletă, înregistrările vocale și infrastructura utilizatorului.
+- **Pentru următoarea sesiune:** lista grafică din §3 este revizuită mai jos. Verifică feedbackul cufărului în modul calm (folosește timpul ambiental oprit), apoi celelalte interacțiuni ale acvariului cu `reduce motion`; nu înlocui contururile de colorat sau formele educative cu decorații. §5 rămâne dependent de verificarea pe tabletă, înregistrările vocale și infrastructura utilizatorului.
 - **Mediu:** comenzile `py` / Flutter au necesitat acces în afara restricțiilor implicite pentru instalările și cache-urile existente. Nu s-au adăugat dependențe. Folderul neversionat `output/` exista înaintea sesiunii și a fost lăsat intact.
 
 ### Istoricul predării (16–17.10)
@@ -173,6 +177,8 @@ Actualizează README §0.1 și §0.0 („Imaginile Codex" — ce a rămas de ver
 ---
 
 ## 3. Alte imagini care încă nu sunt pictate (după lotul de mai sus)
+
+**Audit 25.10:** baza din „Rândul meu” este acum pictată. Barca este deja `objects/sailboat`, afișată prin `StimulusArt`; farul este tema jocului, nu un desen procedural prezent în ecran. Semnul regulii folosește culorile/formele exacte din `cardColors` / `cardShapes` și rămâne din cod conform excepției pentru stimuli curați. Contururile fișelor de colorat sunt necesare umplerii și scanării, iar `drawn_face.dart` este rezerva intenționată. Lista de mai jos este istoric de candidați, nu un lot restant de generat automat.
 
 Caută în cod desenele rămase din cod și înlocuiește-le pe rând cu piese Codex, la fel ca piesele existente
 (`apps/child_app/lib/shared/parts.dart`: `hasPart('nume')` + `Part('nume', tint: …)`, imaginea în

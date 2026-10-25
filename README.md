@@ -72,7 +72,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] Instalează **Docker Desktop**. Apoi: `cp infra/.env.example infra/.env` (schimbă parolele) → `docker compose -f infra/docker-compose.yml up -d --build`.
 - [ ] După `docker compose … up`: **`node tools/e2e/stack.mjs`** — testul automat cap-coadă pe stiva reală (cont → confirmare din Mailpit → acord → sincronizare → statistici din worker → partajare + audit → export → ștergere); spune-i lui Claude ce pică.
 - [ ] Test cap-coadă în dev: cont nou în panou (`http://localhost:8080`) → e-mailul de confirmare în Mailpit (`http://localhost:8025`) → „Am uitat parola” → pe tabletă „Trimite pe server” cu bifa „trimite automat” (și cu 2FA pornită) → în panou apar „Se joacă acum” și „Sesiune nouă” → cozile în Bull Board (`http://localhost:3001`). Spune-i lui Claude ce n-a mers.
-- [ ] Instalează APK-ul (`apps/child_app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` — tabletele de azi; `app-release.apk` e un build vechi, nu-l folosi) pe o **tabletă reală**: fluiditatea acvariului, sunetul, landscape.
+- [ ] Descarcă versiunea de test din [GitHub Releases](https://github.com/MudreaDev/Licurici/releases) și instalează APK-ul (`apps/child_app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` — tabletele de azi; `app-release.apk` e un build vechi, nu-l folosi) pe o **tabletă reală**: fluiditatea acvariului, sunetul, landscape.
 - [ ] Cu tableta conectată prin USB (depanare USB pornită): `cd apps/child_app` → `flutter test integration_test -d <id-ul tabletei>` (`flutter devices` îl arată). Testul joacă singur un joc și trimite sesiunea la un server local; spune-i lui Claude dacă pică. Fără tabletă, merge și pe Windows: pornește „Developer Mode” (Setări → Sistem → Pentru dezvoltatori), apoi `flutter test integration_test -d windows`.
 - [ ] **Acvariul pe hârtie**: printează fișa („Acvariul meu” → 🖨), colorează, fotografiază în lumină diferită; dacă scanarea greșește des → ADR-030.
 - [ ] **Muzica** (sesiunea 12): pe tabletă, „Pentru părinți” → „Muzică liniștită”; ascultă cele 3 piese și spune-mi dacă vreuna nu e potrivită (tempo, instrument, volum). Spune-mi și dacă vrei să pornească oprită implicit.
@@ -127,7 +127,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**25.10.2026 — continuarea predării:** cele 6 imagini din `jobs_acvariu.json` existau deja ca PNG local; sunt acum integrate în `parts/` (surse și prompturi: `README-aquarium4.md`). Fundalul și stratul din față erau deja integrate în commit-urile din 17.10. În acvariu, mânuța de ghidaj rămâne statică în modul calm / reduce motion; efectele de atingere, mâncat și bucurie respectă politica de particule, iar lista este limitată la 5 efecte simultane. Testele de acvariu verifică schimbarea modului calm în timpul indiciului și atingerile repetate. **Urmează:** verificarea APK-ului pe tabletă; piesele pictate pentru „Paznicul farului”, baza din „Rândul meu” și semnul din „Regula se schimbă” (§3 din predare). **Validare:** analiza Flutter curată; teste: aplicație 381, nucleu 652, panou 36, backend 90, Vercel 7; 3 teste vizuale de acvariu. APK-urile release reconstruite pe 25.10 (arm64: 84,2 MB). Detalii în `CODEX-CONTINUARE.md` §1.
+**25.10.2026 — continuarea predării:** cele 6 imagini din `jobs_acvariu.json` existau deja ca PNG local; sunt acum integrate în `parts/` (surse și prompturi: `README-aquarium4.md`). Fundalul și stratul din față erau deja integrate în commit-urile din 17.10. În acvariu, mânuța de ghidaj rămâne statică în modul calm / reduce motion; efectele de atingere, mâncat și bucurie respectă politica de particule, iar lista este limitată la 5 efecte simultane. Testele de acvariu verifică schimbarea modului calm în timpul indiciului și atingerile repetate. **Continuare:** baza din „Rândul meu” este acum pictată; bărcile erau deja pictate, iar semnul regulii rămâne din forme clare. Versiunile copilului și panoului sunt `0.1.1+2`; pachetele descărcabile sunt descrise în [docs/releases.md](docs/releases.md). **Urmează:** testarea pe tabletă și verificarea feedbackului cufărului în modul calm. **Validare:** analiza Flutter curată; teste: aplicație 381, nucleu 652, panou 36, backend 90, Vercel 7; 3 teste vizuale de acvariu. APK-urile release reconstruite pe 25.10 (arm64: 84,2 MB). Detalii în `CODEX-CONTINUARE.md` §1.
 
 **17.10, 11:20:** **toate imaginile Codex sunt gata**: 143 de obiecte pictate în locul pictogramelor OpenMoji (rămân doar simbolurile, cifrele și formele geometrice, intenționat). **17.10 (noaptea–dimineața):** **fețele pictate Codex sunt active** în locul celor desenate din cod: 8 copii (`a0`…`b3`) × 7 emoții + treptele 20/40/60/80% pentru „Cât de tare?” (96 de portrete, `art/illustrations/faces2/`); „Oglinda” are geometria măsurată pe fiecare copil (test pe toate punctele). Lotul de obiecte este încheiat; nu trebuie repornit.
 
@@ -1126,7 +1126,7 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
-**25.10.2026:** acvariul folosește cele 6 piese pictate ale recifului; ghidajul și efectele de interacțiune respectă modul calm. Numărul jocurilor nu se schimbă (109).
+**25.10.2026:** acvariul folosește cele 6 piese pictate ale recifului; ghidajul și efectele de interacțiune respectă modul calm. Baza din „Rândul meu” este și ea pictată. Numărul jocurilor nu se schimbă (109).
 
 **Gata în Flutter (103):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
@@ -1249,7 +1249,7 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 
 Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
-**Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; fără puncte noi în roadmap (S1: 32/38, total: 35/46).
+**Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și pregătirea pachetelor 0.1.1 pentru GitHub Releases; fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 
 ### Sprint 0–1 · 28 sep – 11 oct 2026 — Fundația
 - [x] Monorepo: mută prototipul în `legacy/electron/`, creează `apps/`, `packages/`, `backend/`, `infra/`, `docs/`

@@ -1,5 +1,7 @@
 # Licurici — instrucțiuni de lucru
 
+**Predare 25.10.2026:** acvariul pictat și corecțiile modului calm sunt gata; baza pictată din „Rândul meu” este integrată. Bărcile din „Paznicul farului” erau deja pictate; semnele geometrice ale regulilor rămân intenționat din cod. Versiuni descărcabile și publicare: [docs/releases.md](docs/releases.md). Citește starea detaliată și verificările din [CODEX-CONTINUARE.md §1](CODEX-CONTINUARE.md) înainte de a relua sarcinile vechi.
+
 **Sursa unică de adevăr este [README.md](README.md).** Citește întâi **§0.1 (unde am rămas și ce urmează)**, apoi §0 (starea proiectului) și §22 (ghid de lucru). La finalul fiecărei sesiuni actualizează §0.1.
 
 **Sincronizare cu Codex:** proiectul e lucrat pe rând de Claude (acest fișier) și de Codex ([AGENTS.md](AGENTS.md) — aceleași reguli; cine schimbă o regulă o schimbă în amândouă). Predarea și pașii în curs (imaginile Codex, ce urmează): **[CODEX-CONTINUARE.md](CODEX-CONTINUARE.md)** — citește-l la începutul sesiunii și actualizează-i secțiunea „1. Starea de acum” la final, împreună cu README §0.1 / §0.0. Verifică în `git log` ce a făcut Codex între timp.

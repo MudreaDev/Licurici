@@ -9,6 +9,7 @@ import 'package:licurici/data/session.dart';
 import 'package:licurici/features/games/turns/turn_screen.dart';
 import 'package:licurici/shared/reward_finish.dart';
 import 'package:licurici/shared/voice.dart';
+import 'package:licurici/shared/stimulus_art.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import 'layout_test.dart' show devices, loadFonts, settle, shots;
@@ -25,6 +26,7 @@ void main() {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
+      if (shots) await tester.runAsync(IllustrationIndex.load);
       final container = ProviderContainer(overrides: [voiceProvider.overrideWithValue(const SilentSpeaker())]);
       addTearDown(container.dispose);
       container.read(turnLevelProvider.notifier).setLevel(5); // începe Licurici; copilul dă rândul
@@ -57,7 +59,10 @@ void main() {
           }
           await tester.pump(Duration(milliseconds: level.axes.waitMs + 500));
           await tester.pump(const Duration(milliseconds: 500));
-          if (cycle == 2 && shots) await expectLater(find.byType(TurnScreen), matchesGoldenFile('shots/pe-rand-$device.png'));
+          if (cycle == 2 && shots) {
+            await settle(tester, 3); // Lasă imaginile reale să se decodeze înaintea capturii.
+            await expectLater(find.byType(TurnScreen), matchesGoldenFile('shots/pe-rand-$device.png'));
+          }
           // Rândul copilului: pune cubul.
           await tester.tap(tray);
           await tester.pump(const Duration(milliseconds: 500));
