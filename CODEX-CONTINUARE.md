@@ -36,6 +36,14 @@ pe pași, în ordine.
 
 ## 1. Starea de acum (actualizată 25.10.2026)
 
+### Documentație universitară 12.11.2026
+
+- [x] Laborator 3 PSI adaptat aplicației Licurici: `output/docx/Laborator_3_PSI_Mudrea_Mihail_Licurici.docx`, 25 de pagini, 9 diagrame, 11 tabele. Copertă: Mudrea Mihail, TI-233, coordonator Cojocaru Svetlana, UTM.
+- [x] Regulile UTM furnizate ulterior de utilizator au prioritate față de aspectul PDF-ului: Times New Roman, corp 12 pt / 1,5, capitole 13 pt, tabele 11 pt / 1, margini sus/stânga/jos 20 mm și dreapta 10 mm; lista de abrevieri înainte de Introducere și pagini preliminare fără număr vizibil.
+- [x] Modelul are 4 funcții și 14 subfuncții; codul real de plan, sesiuni și sincronizare a fost consultat. Sunt separate utilizarea locală, confirmarea transferului și statisticile centrale. Sursele de generare/verificare: `tools/docs/build_lab3.py`, `lab3_diagrams.py`, `render_lab3_word.ps1`, `check_lab3.py`.
+- Randarea standard cu LibreOffice nu este disponibilă pe calculator; verificarea s-a făcut cu Microsoft Word în fundal, export PDF și inspectarea paginilor. PDF-ul de verificare și imaginile sunt în `tmp/lab3/`, nu reprezintă livrabile. Bibliografia are referințe numerice în stil IEEE; Zotero nu este instalat.
+- Nu s-au modificat jocuri, date despre copil, tehnologii sau reguli ale proiectului. Modificările aplicației existente la începutul sesiunii nu fac parte din acest livrabil. §2–§5 păstrează starea anterioară.
+
 ### Continuare 25.10.2026
 
 - [x] Continuarea graficii: `parts/tower_base.webp` generată și integrată în „Rândul meu”, cu rezerva din cod păstrată; promptul și sursa sunt în `README-parts4.md`. Testul de joc poate încărca ilustrațiile reale la `SHOTS=true`.

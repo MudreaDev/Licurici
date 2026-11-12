@@ -118,6 +118,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 - [ ] Decizii: 2FA obligatorie pentru specialiști? · preț în stele pentru peștii noi? · Sentry și în aplicația copilului?
 
 **E. Universitate**
+- [x] **12.11.2026 — Laboratorul 3 PSI:** document Word pentru Licurici, Mudrea Mihail / TI-233, cu 9 diagrame IDEF0, IDEF3 și DFD; redactare conform regulilor UTM furnizate. Fișier: `output/docx/Laborator_3_PSI_Mudrea_Mihail_Licurici.docx`; surse și verificare: `tools/docs/*lab3*`.
 - [ ] Demo pentru coordonator (§21, Sprint 6).
 - [ ] Testare cu copii / educatori — doar cu acord parental și regulile din §13.6.
 - [ ] Redactarea tezei (§23) — **cele 8 capitole de cercetare sunt scrise** în `docs/research/` (sesiunea 11), fiecare cu „Rezumat pentru susținere (60 s)” la final: citește-le și spune ce vrei schimbat.
@@ -126,6 +127,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
+
+**12.11.2026 — laborator PSI:** redactat documentul Word „Gestionarea sesiunilor educative și a progresului copilului”, cu coperta confirmată (Mudrea Mihail, TI-233, Cojocaru Svetlana). Structură după exemplul furnizat, tipografie după regulile UTM ulterioare: Times New Roman 12 pt / 1,5, capitole 13 pt, tabele 11 pt, margini 20/10/20/20 mm. 25 de pagini, 9 diagrame, 11 tabele, cuprins actualizat în Word; cele 3 pagini preliminare nu afișează numere. Modelele separă stocarea locală de sincronizarea opțională; interfețele ICOM și DFD sunt verificate. Nu s-a schimbat codul aplicației; modificările locale anterioare rămân ale sesiunii 25.10. Următoarele sarcini ale aplicației rămân cele din predarea de mai jos.
 
 **25.10.2026 — continuarea predării:** cele 6 imagini din `jobs_acvariu.json` existau deja ca PNG local; sunt acum integrate în `parts/` (surse și prompturi: `README-aquarium4.md`). Fundalul și stratul din față erau deja integrate în commit-urile din 17.10. În acvariu, mânuța de ghidaj rămâne statică în modul calm / reduce motion; efectele de atingere, mâncat și bucurie respectă politica de particule, iar lista este limitată la 5 efecte simultane. Testele de acvariu verifică schimbarea modului calm în timpul indiciului și atingerile repetate. **Continuare:** baza din „Rândul meu” este acum pictată; bărcile erau deja pictate, iar semnul regulii rămâne din forme clare. Versiunile copilului și panoului sunt `0.1.1+2`; pachetele sunt publicate în [GitHub Release 0.1.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.1-preview.1) (3 APK-uri + panou web + SHA-256), detalii în [docs/releases.md](docs/releases.md). **Urmează:** testarea pe tabletă și verificarea feedbackului cufărului în modul calm. **Validare:** analiza Flutter curată; teste: aplicație 381, nucleu 652, panou 36, backend 90, Vercel 7; 3 teste vizuale de acvariu. APK-urile release reconstruite pe 25.10 (arm64: 84,2 MB). Detalii în `CODEX-CONTINUARE.md` §1.
 
@@ -1246,6 +1249,8 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 ---
 
 ## 21. Roadmap (Sem. 1 = 70%)
+
+**Progres documentație 12.11.2026:** laboratorul 3 PSI în Word este redactat și verificat pentru Licurici (25 de pagini, 9 diagrame). Este un livrabil universitar separat; nu bifează redactarea integrală a tezei și nu schimbă totalurile roadmap-ului.
 
 Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
