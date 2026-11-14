@@ -8,15 +8,19 @@ Pagina: **https://licurici-mudrea.vercel.app**
 - **Nu se împinge această ramură pe `main` sau `master`.** Excepția pentru sarcina aceasta provine din cererea explicită a utilizatorului, nu schimbă regulile generale ale proiectului. Nu se modifică `licurici-panou`.
 
 ## Ce conține
-Prezentare responsivă, patru capturi de telefon într-o galerie manuală, dialog pentru mărire, acvariu, principii, rolurile adulților, prezentarea tezei și întrebări cu răspunsuri. Fără autoplay, conturi, formulare, analytics sau dependențe externe la încărcarea paginii. Respectă `prefers-reduced-motion`, are navigare cu tastatura, link de salt și etichete pentru capturi.
+Prezentare responsivă, șase capturi de telefon într-un autoslider la 7 secunde, dialog pentru mărire, acvariu, principii, rolurile adulților, prezentarea tezei și întrebări cu răspunsuri. Fără conturi, formulare, analytics sau dependențe externe la încărcarea paginii. Respectă `prefers-reduced-motion`, are navigare cu tastatura, link de salt și etichete pentru capturi.
+
+Sliderul pornește când intră în ecran. Se oprește la ascunderea paginii, la inspectarea imaginii, la focus în comenzi și în dialog. Alegerea manuală îl oprește până la reluarea explicită; `prefers-reduced-motion` îl pornește oprit. Butoane anterioară/următoare/pauză, fără anunțuri live repetate la schimbările automate.
+
+Secțiuni suplimentare: șase lumi ilustrate cu legături la exemple, pașii unei sesiuni și trei direcții de cercetare. Resursele `domain-*.webp` provin din `packages/game_content/art/illustrations/domains/`.
 
 ## Date academice de confirmat
-- „Teză de master” este cerut explicit în mesajul din 14.11, deși README-ul istoric spune „licență”.
+- **Proiect de licență**, confirmat explicit de utilizator în corecția din 14.11. Mențiunea inițială despre master a fost înlocuită.
 - Autorul **Mudrea Mihail**, UTM, și numele **Cojocaru Svetlana** provin din coperta laboratorului PSI și `tools/docs/build_lab3.py`. Coperta nu dovedește coordonarea tezei: pagina o marchează pentru confirmare.
 - „Licurici — platformă educativă adaptivă pentru copii” este **titlu de lucru**, nu formulare oficială pretinsă.
 
 ## Resurse vizuale și proveniență
-- `assets/home.png`, `emotions.png`, `language.png`, `tower.png`: capturi Flutter la 844×390, generate la 14.11.2026 prin `apps/child_app/test/landing_shots_test.dart`. Fără date reale de copii; numele din poveștile jocurilor sunt conținut fictiv. Pictograme Material încărcate explicit în test; fără panglica debug.
+- `assets/home.png`, `emotions.png`, `language.png`, `tower.png`, `mirror.png`, `painting.png`: capturi Flutter la 844×390, generate la 14.11.2026 prin `apps/child_app/test/landing_shots_test.dart`. Testul preîncarcă `MascotRig.available()` și verifică `LayeredMascot` în meniul principal, prevenind revenirea la desenul vechi de rezervă în captură. Fără date reale de copii; numele din poveștile jocurilor sunt conținut fictiv. Pictograme Material încărcate explicit în test; fără panglica debug.
 - `assets/aquarium.png`: captura existentă `apps/child_app/test/shots/acvariu-pictat.png`, din verificarea scenei pictate. Nu este o captură a modificărilor locale necomise.
 - `assets/mascot.webp`: ilustrația existentă `packages/game_content/art/illustrations/mascot/wave.webp`.
 - `assets/meadow.webp`: ilustrație nouă generată pentru acest landing, convertită WebP cu Pillow (aceeași bibliotecă folosită în `tools/art/`). Sursa PNG rămâne local în `tmp/landing-meadow-source.png`, în checkout-ul original.
@@ -29,6 +33,7 @@ Din rădăcina checkout-ului acestei ramuri:
 ```powershell
 node tools/preview/serve.mjs deploy/landing 5181
 node tools/landing/check.mjs
+node --test tools/landing/carousel.test.mjs
 node --check deploy/landing/app.js
 ```
 Capturi, din `apps/child_app` (după rezolvarea dependențelor):

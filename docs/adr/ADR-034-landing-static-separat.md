@@ -17,4 +17,4 @@ Publicare în proiectul Vercel separat `licurici-prezentare`, din ramura `codex/
 - Integrarea în panoul existent ar amesteca prezentarea publică și produsul și ar încălca izolarea cerută.
 
 ## Consecințe
-Conținutul academic se editează în `index.html`. Titlul oficial al tezei și coordonatorul tezei necesită confirmare; pagina distinge titlul de lucru și sursa numelui coordonatorului. „Master” urmează cererea utilizatorului din 14.11; documentația veche spune „licență”. Nu se adaugă date despre copil. Nu se afirmă validarea clinică sau lansarea în magazine.
+Conținutul academic se editează în `index.html`. Titlul oficial al tezei și coordonatorul tezei necesită confirmare; pagina distinge titlul de lucru și sursa numelui coordonatorului. „Licență” urmează corecția explicită a utilizatorului din 14.11. Sliderul automat are pauză, oprire în afara ecranului și respectă reducerea mișcării. Nu se adaugă date despre copil. Nu se afirmă validarea clinică sau lansarea în magazine.
