@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#faf8f1">
+  <title>Licurici — Pași mici. Descoperiri mari.</title>
+  <meta name="description" content="Descoperă Licurici: jocuri educative în limba română, în ritmul fiecărui copil. Prezentare generală a unui proiect de master aflat în dezvoltare.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ro_RO">
+  <meta property="og:title" content="Licurici — Pași mici. Descoperiri mari.">
+  <meta property="og:description" content="O lume blândă de jocuri, emoții și descoperiri. Explorează aplicația și proiectul din spatele ei.">
+  <meta property="og:image" content="https://licurici-prezentare.vercel.app/assets/social.jpg">
+  <meta property="og:url" content="https://licurici-prezentare.vercel.app/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/mascot.webp" type="image/webp">
+  <link rel="preload" href="assets/Nunito-ExtraBold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#continut">Sari la conținut</a>
+  <header class="header wrap">
+    <a class="brand" href="#" aria-label="Licurici — începutul paginii"><img src="assets/mascot.webp" alt="" width="45" height="48">Licurici<span class="brand-dot">.</span></a>
+    <nav aria-label="Navigație principală"><a href="#descopera">Aplicația</a><a href="#principii">Abordarea</a><a href="#proiect">Proiectul</a></nav>
+    <a class="nav-cta" href="#descopera">Aruncă o privire <span aria-hidden="true">↗</span></a>
+  </header>
+  <main id="continut">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot"></span> O LUME MICĂ, PLINĂ DE POSIBILITĂȚI</p>
+          <h1>Pași mici.<br> Descoperiri <span>mari.</span></h1>
+          <p class="lead">Învățarea începe cu joaca. Licurici îi însoțește pe copii într-o lume blândă de culori, emoții și descoperiri. În limba română. În ritmul lor.</p>
+          <div class="hero-actions"><a class="button primary" href="#descopera">Descoperă aplicația <span aria-hidden="true">↗</span></a><a class="text-link" href="#proiect">Povestea proiectului <span aria-hidden="true">→</span></a></div>
+          <div class="project-note"><span class="status-dot"></span> Proiect de master · În dezvoltare</div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-orbit" aria-hidden="true"></div>
+          <span class="hand-note note-top">O aventură în fiecare zi <span aria-hidden="true">↴</span></span>
+          <div class="device hero-device"><img src="assets/home.png" width="844" height="390" alt="Ecranul principal Licurici pe telefon, cu Drumul de azi și ariile de joc" fetchpriority="high"></div>
+          <img class="hero-mascot" src="assets/mascot.webp" width="220" height="220" alt="Licurici, mascota care îl însoțește pe copil">
+          <span class="floating-note"><span aria-hidden="true">✦</span> Fiecare pas merită încurajat.</span>
+        </div>
+      </div>
+      <div class="wrap trust-line"><span>Creat pentru curiozitatea copilăriei</span><ul><li>Voce în română</li><li>Joacă și fără internet</li><li>Fără reclame</li></ul></div>
+    </section>
+
+    <section class="section wrap showcase" id="descopera" aria-labelledby="showcase-title">
+      <div class="section-top"><div><p class="eyebrow">O PRIVIRE ÎN LUMEA LICURICI</p><h2 id="showcase-title">Micile lor aventuri,<br> chiar pe ecran.</h2></div><p>De la prima alegere la „am reușit!”.<br> Explorează câteva ecrane reale din aplicație.</p></div>
+      <div class="showcase-stage">
+        <div class="preview-text"><span class="counter" id="screen-number">01 / 04</span><h3 id="screen-title">Un început prietenos</h3><p id="screen-description">„Drumul de azi” aduce activitățile la un loc. Copilul descoperă lumea jocurilor, pas cu pas, cu Licurici alături.</p><span class="screen-tag">Captură reală · Telefon în landscape</span></div>
+        <div class="device preview-device"><button class="image-button" type="button" id="enlarge" aria-label="Mărește captura aplicației"><img id="screen-image" src="assets/home.png" width="844" height="390" alt="Ecranul principal cu Drumul de azi" loading="lazy"><span class="enlarge-label">Vezi mai mare <span aria-hidden="true">↗</span></span></button></div>
+      </div>
+      <div class="screen-select" role="group" aria-label="Alege un ecran al aplicației">
+        <button type="button" data-screen="home" aria-pressed="true"><span>01</span> Drumul de azi</button>
+        <button type="button" data-screen="emotions" aria-pressed="false"><span>02</span> Descoperim emoții</button>
+        <button type="button" data-screen="language" aria-pressed="false"><span>03</span> Înțelegem cuvinte</button>
+        <button type="button" data-screen="tower" aria-pressed="false"><span>04</span> Construim și învățăm</button>
+      </div>
+      <p class="sr-only" aria-live="polite" id="screen-announcement"></p>
+      <noscript><p>Poți vedea și capturile: <a href="assets/emotions.png">Emoții</a>, <a href="assets/language.png">Limbaj</a>, <a href="assets/tower.png">Turnul</a>.</p></noscript>
+    </section>
+
+    <section class="principles section" id="principii" aria-labelledby="principles-title">
+      <div class="wrap"><div class="section-top"><div><p class="eyebrow">CU GRIJĂ PENTRU FIECARE COPIL</p><h2 id="principles-title">Mai multă încredere.<br> În propriul ritm.</h2></div><p>O experiență gândită pentru copii de 3–10 ani,<br> cu atenție la nevoi și sensibilități diferite.</p></div>
+      <div class="principle-grid">
+        <article><span class="feature-symbol" aria-hidden="true">✦</span><h3>Încurajare, la fiecare pas</h3><p>Indicii blânde și bucuria de a încerca din nou. Efortul contează, fără pedepse sau comparații între copii.</p></article>
+        <article><span class="feature-symbol" aria-hidden="true">◐</span><h3>Mai puțini stimuli</h3><p>Modul calm reduce mișcarea și efectele vizuale. O singură sarcină pe ecran, cu ținte mari și clare.</p></article>
+        <article><span class="feature-symbol" aria-hidden="true">⌁</span><h3>Joaca merge mai departe</h3><p>Activitățile sunt disponibile offline, fără cont pentru copil. Sincronizarea cu panoul adultului este opțională.</p></article>
+      </div></div>
+    </section>
+
+    <section class="section wrap aquarium-section" aria-labelledby="aquarium-title">
+      <div class="aquarium-visual"><img src="assets/aquarium.png" alt="Acvariul din Licurici: pești colorați, corali pictați și un cufăr pe nisip" width="1280" height="800" loading="lazy"><span class="photo-caption">Acvariul meu · Captură din aplicație</span></div>
+      <div class="aquarium-copy"><p class="eyebrow">UN STROP DE MAGIE, DOAR AL LOR</p><h2 id="aquarium-title">După joacă,<br> o lume de explorat.</h2><p>Un peștișor colorat de copil. Un colț de recif. Un cufăr de descoperit. Acvariul transformă micile reușite într-un spațiu personal de explorare.</p><p>Copilul poate colora pești, îi poate hrăni și îi poate privi înotând. Iar modul calm păstrează experiența liniștită.</p><div class="small-note"><span aria-hidden="true">✧</span> Curiozitate, creativitate și bucuria de a descoperi.</div></div>
+    </section>
+
+    <section class="section wrap adults" aria-labelledby="adults-title">
+      <div class="adults-heading"><p class="eyebrow">COPILUL EXPLOREAZĂ. ADULTUL ÎL ÎNSOȚEȘTE.</p><h2 id="adults-title">Un drum pe care<br> îl parcurgem împreună.</h2><p>Licurici leagă joaca de o perspectivă mai clară asupra progresului, prin zone dedicate adulților.</p></div>
+      <div class="adult-card"><span class="card-kicker">01 / PENTRU PĂRINȚI</span><h3>Mai aproape de<br> micile reușite.</h3><p>Rezumate ale sesiunilor, istoricul activităților și setări potrivite copilului. Părintele alege dacă trimite datele și dacă invită un specialist.</p><span class="card-bottom">Observă. Înțelege. Încurajează.</span></div>
+      <div class="adult-card peach"><span class="card-kicker">02 / PENTRU SPECIALIȘTI</span><h3>Un sprijin pentru<br> lucrul de zi cu zi.</h3><p>Planuri de activități, progres pe abilități și notițe, pentru copiii partajați cu acordul părintelui. Un punct de plecare pentru discuții mai concrete.</p><span class="card-bottom">Planifică. Urmărește. Adaptează.</span></div>
+    </section>
+
+    <section class="academic section" id="proiect" aria-labelledby="project-title"><div class="wrap academic-grid">
+      <div><p class="eyebrow">DINTR-O IDEE, UN PROIECT DE CERCETARE</p><h2 id="project-title">Tehnologie cu grijă<br> pentru copilărie.</h2><p>Licurici este un proiect realizat în cadrul unei teze de master. Explorează cum pot jocurile educative, dificultatea adaptivă și o interfață atent construită să susțină învățarea în limba română.</p><p class="development-notice"><span class="status-dot"></span><strong>Proiect în dezvoltare</strong><br> Această pagină este o prezentare generală. Ecranele ilustrează versiunea de lucru, iar funcționalitățile pot evolua. Evaluarea cu utilizatori este un pas următor al proiectului.</p></div>
+      <div class="thesis-card"><span class="card-kicker">TEZĂ DE MASTER · 2026</span><h3>Licurici — platformă educativă adaptivă pentru copii</h3><p class="provisional">Titlu de lucru al temei</p><dl><div><dt>Autor</dt><dd>Mudrea Mihail</dd></div><div><dt>Instituție</dt><dd>Universitatea Tehnică a Moldovei</dd></div><div><dt>Coordonator*</dt><dd>Cojocaru Svetlana</dd></div><div><dt>Stadiu</dt><dd><span class="status-dot"></span> În dezvoltare</dd></div></dl><p class="academic-note">*Nume preluat din documentația universitară a proiectului; coordonarea tezei urmează a fi confirmată.</p></div>
+    </div></section>
+
+    <section class="section wrap questions" aria-labelledby="faq-title"><div><p class="eyebrow">BINE DE ȘTIUT</p><h2 id="faq-title">Câteva întrebări,<br> răspunsuri simple.</h2></div><div class="faq-list">
+      <details><summary>Pot folosi deja aplicația?</summary><p>Există versiuni Android de test în <a href="https://github.com/MudreaDev/Licurici/releases">pagina de versiuni a proiectului</a>. Aplicația este în dezvoltare; nu este încă o lansare finală în magazinele de aplicații.</p></details>
+      <details><summary>Pe ce dispozitive funcționează?</summary><p>Aplicația copilului este gândită pentru telefoane și tablete, cu ecranul în poziție orizontală. Sunt disponibile versiuni Android de test. Versiunea iOS nu a fost încă validată. Panoul adulților se accesează în browser.</p></details>
+      <details><summary>Este nevoie de internet sau de cont?</summary><p>Pentru jocurile de pe dispozitiv, nu. Contul adultului și conexiunea sunt necesare doar pentru funcțiile online, precum sincronizarea și accesul la panou.</p></details>
+      <details><summary>Este un instrument de diagnostic sau tratament?</summary><p>Licurici este un proiect educativ. Nu oferă diagnostice și nu înlocuiește evaluarea, recomandările sau intervenția unui specialist. Adaptările de interfață urmăresc o experiență mai accesibilă; eficiența lor urmează să fie evaluată.</p></details>
+    </div></section>
+
+    <section class="closing"><div class="wrap"><img src="assets/mascot.webp" alt="" width="100" height="100" loading="lazy"><h2>Fiecare descoperire<br> începe cu un pas mic.</h2><a class="button primary" href="#descopera">Înapoi în lumea Licurici <span aria-hidden="true">↑</span></a></div></section>
+  </main>
+  <footer class="wrap footer"><a class="brand" href="#">Licurici<span class="brand-dot">.</span></a><p>Un proiect de Mudrea Mihail · 2026<br> <span>Prezentare generală · Proiect în dezvoltare</span></p><a href="https://github.com/MudreaDev/Licurici/tree/codex/landing-prezentare">Despre codul proiectului <span aria-hidden="true">↗</span></a></footer>
+  <dialog id="image-dialog" aria-labelledby="dialog-title"><div class="dialog-bar"><h2 id="dialog-title">Captură din aplicație</h2><button type="button" id="close-dialog" autofocus>Închide <span aria-hidden="true">×</span></button></div><img id="dialog-image" src="assets/home.png" alt="Ecranul principal Licurici" width="844" height="390"><p>Captură reală din versiunea de lucru. Aplicația copilului se folosește în poziție orizontală.</p></dialog>
+</body>
+</html>
