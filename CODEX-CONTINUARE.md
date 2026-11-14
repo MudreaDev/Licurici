@@ -39,7 +39,7 @@ pe pași, în ordine.
 ### Landing separat — 14.11.2026
 
 - [x] `deploy/landing/`: prezentare responsivă cu 4 capturi reale Flutter la 844×390, galerie manuală și dialog, acvariu, principii, rolurile adulților, teză și FAQ. Imagine decorativă nouă, fonturi locale și mascotă existente. Fără dependențe noi la rulare, date de copii sau formulare.
-- [x] Ramură `codex/landing-prezentare`, checkout izolat `tmp/landing-prezentare/`; proiect Vercel **separat** `licurici-prezentare`, `https://licurici-prezentare.vercel.app`. **Excepția cerută explicit de utilizator: nu se urcă pe main/master și nu se schimbă panoul existent.**
+- [x] Ramură `codex/landing-prezentare`, checkout izolat `tmp/landing-prezentare/`; proiect Vercel **separat** `licurici-prezentare`, `https://licurici-mudrea.vercel.app`. **Excepția cerută explicit de utilizator: nu se urcă pe main/master și nu se schimbă panoul existent.**
 - [x] 14 teste vizuale existente și 4 capturi noi trecute; pagina verificată la 320, 390, 768 și 1440 px, galerie, dialog și FAQ. Script de verificare statică în `tools/landing/check.mjs`. Detalii și comenzi: `docs/landing-prezentare.md`, ADR-034.
 - [ ] Confirmare ulterioară a titlului oficial și a coordonatorului tezei. „Master” provine din cererea din 14.11; titlul este de lucru, Cojocaru Svetlana provine din coperta laboratorului PSI și apare cu notă explicită.
 - Modificările locale preexistente din aplicație și documentație nu au fost preluate sau comise; §§2–5 păstrează starea anterioară. Nu relua jocurile ca parte a landingului.

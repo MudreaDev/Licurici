@@ -1,6 +1,6 @@
 # Landing Licurici — 14.11.2026
 
-Pagina: **https://licurici-prezentare.vercel.app**
+Pagina: **https://licurici-mudrea.vercel.app**
 
 - Sursă: `deploy/landing/`; ramură: `codex/landing-prezentare`.
 - Proiect Vercel: `licurici-prezentare` (`prj_GDDQs9IB4fKC1s9bFIUIzKP9TMbf`), echipa `mudreadevs-projects`.
