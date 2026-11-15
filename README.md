@@ -1381,4 +1381,4 @@ copii, buget 0) → *Ce am ales* → *2 alternative și de ce nu* → *Când aș
 - Cercetarea UX pentru autism: vezi `DESIGN.md` (surse la final)
 - OpenMoji — licență CC BY-SA 4.0 (openmoji.org)
 
-**Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; buton de pauză și respectarea preferinței de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.
+**Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; fără buton separat pentru fundal, la cererea utilizatorului; respectă în continuare preferința de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.

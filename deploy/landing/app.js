@@ -61,16 +61,3 @@ dialog.addEventListener('click', event => {
   const rect = dialog.getBoundingClientRect();
   if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
 });
-
-const ambientToggle = document.querySelector('#ambient-toggle');
-let ambientPaused = motion.matches;
-function updateAmbient() {
-  document.body.classList.toggle('ambient-paused', ambientPaused);
-  ambientToggle.setAttribute('aria-pressed', String(ambientPaused));
-  ambientToggle.textContent = ambientPaused ? 'Pornește fundalul animat' : 'Oprește fundalul animat';
-  ambientToggle.disabled = motion.matches;
-  if (motion.matches) ambientToggle.textContent = 'Fundal static · mișcare redusă';
-}
-ambientToggle.addEventListener('click', () => { ambientPaused = !ambientPaused; updateAmbient(); });
-motion.addEventListener('change', event => { ambientPaused = event.matches; updateAmbient(); });
-updateAmbient();

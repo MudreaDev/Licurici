@@ -269,4 +269,4 @@ metoda de înregistrare în `recorder.dart`) + ecranul în `apps/child_app/lib/f
 `main.dart` + calea în `test/a11y_games_test.dart` + test de widget + vocea + cardul Codex
 (`art/illustrations/games/<id>.webp`) + README §16 / §0.1.
 
-**Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; buton de pauză și respectarea preferinței de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.
+**Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; fără buton separat pentru fundal, la cererea utilizatorului; respectă în continuare preferința de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.

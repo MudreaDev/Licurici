@@ -50,4 +50,4 @@ Fără build sau instalare de dependențe. Vercel primește sursa din commitul �
 
 Vezi ADR-034 pentru motivarea separării. După modificări se verifică pagina, imaginile, galeria, închiderea dialogului cu Escape și butonul dedicat, întrebările, legăturile și lățimile mobile înainte de o nouă publicare.
 
-**Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; buton de pauză și respectarea preferinței de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.
+**Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; fără buton separat pentru fundal, la cererea utilizatorului; respectă în continuare preferința de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.

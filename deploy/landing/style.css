@@ -25,9 +25,6 @@ body{isolation:isolate;background:#f4f2e6}
 .ambient-backdrop i:nth-of-type(4){left:15%;top:84%;animation-delay:-5s;animation-duration:26s}
 .ambient-backdrop i:nth-of-type(5){left:65%;top:10%;animation-delay:-17s;width:4px;height:4px}
 .ambient-backdrop i:nth-of-type(6){left:42%;top:66%;animation-delay:-10s;animation-duration:29s;width:4px;height:4px}
-.ambient-toggle{border:1px solid #a8b79a;background:#faf8efcc;border-radius:22px;padding:9px 15px;font-size:11px;min-height:40px;margin-top:-8px}
-.ambient-toggle:hover{background:#edf1df}
-.ambient-paused .ambient-backdrop *{animation-play-state:paused}
 @keyframes watercolor-drift{from{transform:translate3d(-2%,-1%,0) rotate(-3deg)}to{transform:translate3d(2%,2%,0) rotate(3deg)}}
 @keyframes firefly-drift{from{transform:translate3d(-12px,18px,0)}to{transform:translate3d(20px,-28px,0)}}
 @media(prefers-reduced-motion:reduce){.ambient-backdrop *{animation:none!important}}
