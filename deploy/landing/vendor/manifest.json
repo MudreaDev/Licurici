@@ -1,0 +1,12 @@
+{
+  "package": "@splidejs/splide",
+  "version": "4.1.4",
+  "license": "MIT",
+  "source": "https://registry.npmjs.org/@splidejs/splide/-/splide-4.1.4.tgz",
+  "integrity": "sha512-5I30evTJcAJQXt6vJ26g2xEkG+l1nXcpEw4xpKh0/FWQ8ozmAeTbtniVtVmz2sH1Es3vgfC4SS8B2X4o5JMptA==",
+  "sha256": {
+    "splide.esm.js": "ae3c6f47fe5171ac24a6179ac2aa93b742d2728b20fcd0aded6ca411378db846",
+    "splide-core.min.css": "6405c8982634e928d5b88ac97d65044e4c8272d5f968674bd40544057e42c590",
+    "SPLIDE-LICENSE": "0e9b1d2f301b38a230deb2d5a3b487959ecafd3fb80c7aefaf168c7a72337a14"
+  }
+}

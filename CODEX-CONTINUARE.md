@@ -36,12 +36,12 @@ pe pași, în ordine.
 
 ## 1. Starea de acum (actualizată 25.10.2026)
 
-### Landing separat — 14.11.2026
+### Landing separat — 15.11.2026
 
-- [x] `deploy/landing/`: prezentare responsivă cu 6 capturi reale Flutter la 844×390, autoslider cu pauză și dialog, 6 arii ilustrate, pașii unei sesiuni și teme de cercetare, acvariu, principii, rolurile adulților, teză și FAQ. Imagine decorativă nouă, fonturi locale și mascotă existente. Fără dependențe noi la rulare, date de copii sau formulare.
+- [x] `deploy/landing/`: prezentare responsivă cu 6 capturi reale Flutter la 844×390, carusel Splide 4.1.4 cu autoplay, swipe, pauză și dialog (ADR-035), 6 arii ilustrate, pașii unei sesiuni și teme de cercetare, acvariu, principii, rolurile adulților, teză și FAQ. Imagine decorativă nouă, fonturi locale și mascotă existente. Splide 4.1.4 livrat local (ADR-035); fără date de copii sau formulare.
 - [x] Ramură `codex/landing-prezentare`, checkout izolat `tmp/landing-prezentare/`; proiect Vercel **separat** `licurici-prezentare`, `https://licurici-mudrea.vercel.app`. **Excepția cerută explicit de utilizator: nu se urcă pe main/master și nu se schimbă panoul existent.**
-- [x] 14 teste vizuale existente și 6 capturi noi trecute; 5 teste ale caruselului; pagina verificată la 320, 390, 768 și 1440 px, galerie, dialog și FAQ. Script de verificare statică în `tools/landing/check.mjs`. Detalii și comenzi: `docs/landing-prezentare.md`, ADR-034.
-- [ ] Confirmare ulterioară a titlului oficial și a coordonatorului tezei. „Licență” este confirmat de utilizator în corecția din 14.11; titlul este de lucru, Cojocaru Svetlana provine din coperta laboratorului PSI și apare cu notă explicită.
+- [x] 14 teste vizuale existente și 6 capturi noi trecute; carusel Splide verificat în browser; pagina verificată la 320, 390, 768 și 1440 px, galerie, dialog și FAQ. Script de verificare statică în `tools/landing/check.mjs`. Detalii și comenzi: `docs/landing-prezentare.md`, ADR-034.
+- [ ] Confirmare ulterioară a titlului oficial. Proiectul de licență și coordonatorul **Mihail Musteața** sunt confirmați explicit de utilizator. Nota despre coordonatorul laboratorului a fost eliminată.
 - [x] Mascota veche din captura inițială era rezerva păstrată de proba asincronă din test. `MascotRig.available()` este acum rezolvat în `setUpAll`, iar captura principală cere explicit un `LayeredMascot`. Toate capturile și previzualizarea socială au fost regenerate. Nu s-a modificat codul aplicației.
 - Modificările locale preexistente din aplicație și documentație nu au fost preluate sau comise; §§2–5 păstrează starea anterioară. Nu relua jocurile ca parte a landingului.
 
@@ -268,3 +268,5 @@ Un joc nou = logica în `licurici_core/lib/src/<joc>.dart` (+ export în `licuri
 metoda de înregistrare în `recorder.dart`) + ecranul în `apps/child_app/lib/features/games/<joc>/` + ruta în
 `main.dart` + calea în `test/a11y_games_test.dart` + test de widget + vocea + cardul Codex
 (`art/illustrations/games/<id>.webp`) + README §16 / §0.1.
+
+**Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; buton de pauză și respectarea preferinței de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.

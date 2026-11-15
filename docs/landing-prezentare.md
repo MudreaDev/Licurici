@@ -7,16 +7,19 @@ Pagina: **https://licurici-mudrea.vercel.app**
 - Checkout izolat: `tmp/landing-prezentare/` în checkout-ul original. Modificările locale anterioare ale aplicației nu sunt incluse.
 - **Nu se împinge această ramură pe `main` sau `master`.** Excepția pentru sarcina aceasta provine din cererea explicită a utilizatorului, nu schimbă regulile generale ale proiectului. Nu se modifică `licurici-panou`.
 
-## Ce conține
-Prezentare responsivă, șase capturi de telefon într-un autoslider la 7 secunde, dialog pentru mărire, acvariu, principii, rolurile adulților, prezentarea tezei și întrebări cu răspunsuri. Fără conturi, formulare, analytics sau dependențe externe la încărcarea paginii. Respectă `prefers-reduced-motion`, are navigare cu tastatura, link de salt și etichete pentru capturi.
+## Carusel
+Splide 4.1.4, MIT, livrat local și verificat prin hash-uri. ADR-035 documentează selecția bibliotecii. Motorul propriu anterior a fost înlocuit.
 
-Sliderul pornește când intră în ecran. Se oprește la ascunderea paginii, la inspectarea imaginii, la focus în comenzi și în dialog. Alegerea manuală îl oprește până la reluarea explicită; `prefers-reduced-motion` îl pornește oprit. Butoane anterioară/următoare/pauză, fără anunțuri live repetate la schimbările automate.
+## Ce conține
+Prezentare responsivă, șase capturi de telefon într-un autoslider Splide 4.1.4 la 5 secunde, dialog pentru mărire, acvariu, principii, rolurile adulților, prezentarea tezei și întrebări cu răspunsuri. Fără conturi, formulare, analytics sau dependențe externe la încărcarea paginii. Respectă `prefers-reduced-motion`, are navigare cu tastatura, link de salt și etichete pentru capturi.
+
+Sliderul pornește când intră în ecran. Se oprește la ascunderea paginii, la deschiderea imaginii, la focus în comenzi și în dialog. Navigarea folosește track real, loop și glisare tactilă; `prefers-reduced-motion` îl pornește oprit. Butoane anterioară/următoare/pauză, fără anunțuri live repetate la schimbările automate.
 
 Secțiuni suplimentare: șase lumi ilustrate cu legături la exemple, pașii unei sesiuni și trei direcții de cercetare. Resursele `domain-*.webp` provin din `packages/game_content/art/illustrations/domains/`.
 
 ## Date academice de confirmat
 - **Proiect de licență**, confirmat explicit de utilizator în corecția din 14.11. Mențiunea inițială despre master a fost înlocuită.
-- Autorul **Mudrea Mihail**, UTM, și numele **Cojocaru Svetlana** provin din coperta laboratorului PSI și `tools/docs/build_lab3.py`. Coperta nu dovedește coordonarea tezei: pagina o marchează pentru confirmare.
+- Autor: **Mudrea Mihail**, UTM. Coordonator: **Mihail Musteața**, confirmat explicit de utilizator; înlocuiește referința inițială la coordonatorul laboratorului PSI.
 - „Licurici — platformă educativă adaptivă pentru copii” este **titlu de lucru**, nu formulare oficială pretinsă.
 
 ## Resurse vizuale și proveniență
@@ -33,7 +36,6 @@ Din rădăcina checkout-ului acestei ramuri:
 ```powershell
 node tools/preview/serve.mjs deploy/landing 5181
 node tools/landing/check.mjs
-node --test tools/landing/carousel.test.mjs
 node --check deploy/landing/app.js
 ```
 Capturi, din `apps/child_app` (după rezolvarea dependențelor):
@@ -47,3 +49,5 @@ Pe Windows rezolvarea inițială a dependențelor a avertizat despre symlink-uri
 Fără build sau instalare de dependențe. Vercel primește sursa din commitul împins pe ramura dedicată, `rootDirectory: deploy/landing`, `outputDirectory: .`, `framework: null`, comenzi de build/install goale. Ținta `production` se referă **numai la noul proiect de prezentare**, nu la panoul existent. Nu se configurează auto-deploy din `main` pentru acest proiect.
 
 Vezi ADR-034 pentru motivarea separării. După modificări se verifică pagina, imaginile, galeria, închiderea dialogului cu Escape și butonul dedicat, întrebările, legăturile și lățimile mobile înainte de o nouă publicare.
+
+**Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; buton de pauză și respectarea preferinței de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.

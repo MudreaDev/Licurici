@@ -12,3 +12,22 @@
 @media(max-width:1000px){.world-label{font-size:16px}.world-card{padding:20px}.world-card img{height:140px}.journey-steps{gap:30px}.journey-steps h3{font-size:19px}}
 @media(max-width:760px){.slider-controls{align-items:start;gap:12px}.slider-controls p{font-size:10px;max-width:145px;padding-top:9px}.slider-controls button{padding:8px 12px;font-size:11px}.slider-controls>div{gap:5px}.screen-select{grid-template-columns:1fr 1fr}.showcase-stage{min-height:450px}.preview-text{min-height:205px}.worlds{padding-top:0}.world-grid{grid-template-columns:1fr 1fr;gap:13px}.world-card{padding:15px;border-radius:18px}.world-card img{height:115px;margin-bottom:13px}.world-label{font-size:15px}.world-label>span{font-size:18px}.world-card p{font-size:11px;margin-top:9px}.journey-intro{margin-bottom:36px}.journey-steps{grid-template-columns:1fr;gap:30px}.journey-steps li{padding-top:22px}.step-number{margin-bottom:13px}.journey-steps h3{font-size:21px}.journey-steps p{font-size:13px}.research-strip{grid-template-columns:1fr;gap:26px;margin-top:35px;padding-top:30px}.research-strip h3{margin-bottom:10px}.research-strip span{margin-bottom:10px}}
 @media(max-width:370px){.header .brand img{display:none}.world-grid{gap:10px}.world-card{padding:13px}.world-card img{height:95px}.world-label{font-size:13px}.world-card p{font-size:11px}.slider-controls p{max-width:110px;font-size:9px}.slider-controls button{padding:8px 10px}.slider-controls>div{gap:4px}}
+/* Splide owns the track, transitions, touch gestures and autoplay. */
+#app-carousel{visibility:visible}#app-carousel:not(.is-initialized) .splide__slide:not(:first-child){display:none}#app-carousel:not(.is-initialized) .splide__list{display:block}#app-carousel .splide__track{border-radius:28px}#app-carousel .showcase-stage{height:100%;min-height:420px}#app-carousel .splide__slide{padding:0!important}#app-carousel .preview-device{min-width:0}#app-carousel .splide__progress{height:3px;background:#e1e7d8;margin:18px 0 0;border-radius:4px;overflow:hidden}#app-carousel .splide__progress__bar{height:100%;background:#6b8655;width:0}#app-carousel .slider-controls{margin-top:12px}#app-carousel .splide__toggle{display:inline-flex;align-items:center;justify-content:center}#app-carousel .splide__slide:focus-visible{outline:3px solid #a46a26;outline-offset:-4px}@media(max-width:760px){#app-carousel .showcase-stage{min-height:465px}#app-carousel .splide__track{border-radius:20px}}
+
+/* A quiet watercolor atmosphere, independent of the readable content. */
+body{isolation:isolate;background:#f4f2e6}
+.ambient-backdrop{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:linear-gradient(110deg,#f7f3e9b3,#f5f3e5b3),url('assets/meadow.webp') center/cover}
+.ambient-wash{position:absolute;inset:-12%;background:radial-gradient(ellipse at 12% 25%,#b1c69f99,transparent 48%),radial-gradient(ellipse at 88% 62%,#e8c69c88,transparent 48%),radial-gradient(ellipse at 55% 100%,#cbd7aa88,transparent 48%);animation:watercolor-drift 32s ease-in-out infinite alternate}
+.ambient-backdrop i{position:absolute;width:7px;height:7px;border-radius:50%;background:#edcf78;box-shadow:0 0 18px 7px #e9ce7840;left:7%;top:28%;animation:firefly-drift 19s ease-in-out infinite alternate}
+.ambient-backdrop i:nth-of-type(2){left:91%;top:18%;animation-delay:-8s;animation-duration:23s}
+.ambient-backdrop i:nth-of-type(3){left:83%;top:77%;animation-delay:-13s;width:5px;height:5px}
+.ambient-backdrop i:nth-of-type(4){left:15%;top:84%;animation-delay:-5s;animation-duration:26s}
+.ambient-backdrop i:nth-of-type(5){left:65%;top:10%;animation-delay:-17s;width:4px;height:4px}
+.ambient-backdrop i:nth-of-type(6){left:42%;top:66%;animation-delay:-10s;animation-duration:29s;width:4px;height:4px}
+.ambient-toggle{border:1px solid #a8b79a;background:#faf8efcc;border-radius:22px;padding:9px 15px;font-size:11px;min-height:40px;margin-top:-8px}
+.ambient-toggle:hover{background:#edf1df}
+.ambient-paused .ambient-backdrop *{animation-play-state:paused}
+@keyframes watercolor-drift{from{transform:translate3d(-2%,-1%,0) rotate(-3deg)}to{transform:translate3d(2%,2%,0) rotate(3deg)}}
+@keyframes firefly-drift{from{transform:translate3d(-12px,18px,0)}to{transform:translate3d(20px,-28px,0)}}
+@media(prefers-reduced-motion:reduce){.ambient-backdrop *{animation:none!important}}

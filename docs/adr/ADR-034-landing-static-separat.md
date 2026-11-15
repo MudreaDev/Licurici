@@ -6,7 +6,7 @@ Status: Acceptat pentru prezentare · Data: 2026-11-14
 Este necesară o prezentare publică a aplicației și a proiectului universitar, accesibilă pe telefon. Cererea explicită este să lucrăm pe o ramură separată și să publicăm pe Vercel fără modificări pe `main`/`master` sau asupra panoului existent.
 
 ## Decizie
-HTML semantic, CSS responsiv și JavaScript nativ în `deploy/landing/`, fără pachete noi, server, formulare sau analytics. Fonturile Nunito și mascota sunt cele existente. Capturile sunt produse de Flutter, nu reconstruite. O ilustrație nouă este decorativă, fără reprezentarea inventată a interfeței.
+HTML semantic, CSS responsiv și JavaScript nativ în `deploy/landing/`, cu Splide pentru carusel (ADR-035), fără server, formulare sau analytics. Fonturile Nunito și mascota sunt cele existente. Capturile sunt produse de Flutter, nu reconstruite. O ilustrație nouă este decorativă, fără reprezentarea inventată a interfeței.
 
 Publicare în proiectul Vercel separat `licurici-prezentare`, din ramura `codex/landing-prezentare`. Proiectul `licurici-panou`, ramura sa de producție și infrastructura aplicației rămân independente. Publicarea se face explicit din commitul verificat, cu rădăcina `deploy/landing`.
 
@@ -17,4 +17,4 @@ Publicare în proiectul Vercel separat `licurici-prezentare`, din ramura `codex/
 - Integrarea în panoul existent ar amesteca prezentarea publică și produsul și ar încălca izolarea cerută.
 
 ## Consecințe
-Conținutul academic se editează în `index.html`. Titlul oficial al tezei și coordonatorul tezei necesită confirmare; pagina distinge titlul de lucru și sursa numelui coordonatorului. „Licență” urmează corecția explicită a utilizatorului din 14.11. Sliderul automat are pauză, oprire în afara ecranului și respectă reducerea mișcării. Nu se adaugă date despre copil. Nu se afirmă validarea clinică sau lansarea în magazine.
+Conținutul academic se editează în `index.html`. Titlul oficial al tezei necesită confirmare; coordonatorul Mihail Musteață este confirmat explicit de utilizator. „Licență” urmează corecția explicită a utilizatorului din 14.11. Sliderul automat are pauză, oprire în afara ecranului și respectă reducerea mișcării. Nu se adaugă date despre copil. Nu se afirmă validarea clinică sau lansarea în magazine.
