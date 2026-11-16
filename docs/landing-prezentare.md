@@ -57,3 +57,5 @@ Vezi ADR-034 pentru motivarea separării. După modificări se verifică pagina,
 Buton în secțiunea finală `#descarca`, APK 0.1.1 ARM64 (88 MB) la `/descarcari/licurici-0.1.1-arm64-v8a.apk`. Pagina nu mai conține linkuri GitHub. Sursa pachetului este release-ul public 0.1.1, folosit exclusiv la build. Un hash/dimensiune diferit sau o descărcare eșuată oprește publicarea. Versiunea 0.1.2 nu era publicată la verificare.
 
 Actualizare viitoare: schimbă versiunea, URL-ul, dimensiunea și SHA-256 în `build.mjs`, apoi textul/linkul HTML, antetul Content-Disposition și verificarea din `tools/landing/check.mjs`. Rulează build și verificarea înainte de publicare. `dist/` este ignorat în Git. Nu se adaugă un serviciu de stocare sau o tehnologie nouă. Descărcările consumă traficul existent al proiectului Vercel.
+
+**Corecții 16.11.2026, cerute de coordonator:** zona de sub carusel (progres, comenzi și cele șase etichete) eliminată. Caruselul păstrează glisarea, tastatura și autoplay cu pauză la hover/focus și mișcare redusă. Subsol: Autorul proiectului — Mudrea Mihail, grupa TI-233; Coordonator — Mihail Musteața. Autorul și grupa sunt completate și în fișa proiectului.

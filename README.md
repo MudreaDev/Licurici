@@ -130,6 +130,9 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
+
+**Corecții 16.11.2026, cerute de coordonator:** zona de sub carusel (progres, comenzi și cele șase etichete) eliminată. Caruselul păstrează glisarea, tastatura și autoplay cu pauză la hover/focus și mișcare redusă. Subsol: Autorul proiectului — Mudrea Mihail, grupa TI-233; Coordonator — Mihail Musteața. Autorul și grupa sunt completate și în fișa proiectului.
+
 **16.11.2026 — descărcare directă:** buton Android la finalul prezentării, fără legături GitHub în pagină. APK 0.1.1 ARM64 (88 MB) inclus în publicarea statică, cu SHA-256 verificat la build; fără dependențe noi. Ramura rămâne `codex/landing-prezentare`. Urmează instalarea pe dispozitiv real.
 
 **15.11.2026 — prezentarea publică:** landing responsiv în `deploy/landing/`, pe ramura izolată `codex/landing-prezentare`. Proiect Vercel dedicat: `licurici-prezentare`, URL `https://licurici-mudrea.vercel.app`. Capturi Flutter reale pe telefon cu mascota pictată verificată explicit, carusel Splide 4.1.4 cu 6 ecrane, autoplay și pauză (ADR-035), 6 arii ilustrate, pașii unei sesiuni, teme de cercetare, galerie cu mărire, ilustrație decorativă originală, acvariu, principii, rolurile adulților, teză și FAQ. 14 teste vizuale existente + 6 capturi noi trecute; carusel Splide verificat în browser; analiza testului și verificarea resurselor, plus control în browser la 320/390/768/1440 px. Nu sunt incluse modificările locale preexistente ale aplicației și **nu se împinge pe main/master**. Urmează confirmarea datelor academice (titlul oficial; „licență” și coordonatorul Mihail Musteața sunt confirmați). Instrucțiuni și proveniența resurselor: [docs/landing-prezentare.md](docs/landing-prezentare.md), ADR-034. Sarcinile aplicației de mai jos rămân neschimbate.

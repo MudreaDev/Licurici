@@ -38,6 +38,9 @@ pe pași, în ordine.
 
 ### Descărcare din site — 16.11.2026
 
+**Corecții 16.11.2026, cerute de coordonator:** zona de sub carusel (progres, comenzi și cele șase etichete) eliminată. Caruselul păstrează glisarea, tastatura și autoplay cu pauză la hover/focus și mișcare redusă. Subsol: Autorul proiectului — Mudrea Mihail, grupa TI-233; Coordonator — Mihail Musteața. Autorul și grupa sunt completate și în fișa proiectului.
+
+
 - [x] Buton „Descarcă pentru Android” la finalul prezentării; GitHub eliminat din pagina publică. APK 0.1.1 ARM64 (88 MB), versiunea publicată disponibilă; tagul 0.1.2 nu există în Releases la verificare.
 - [x] `deploy/landing/build.mjs` copiază resursele în `dist/` și descarcă pachetul public fixat, verificând dimensiunea și SHA-256 înainte de publicare. Vizitatorii primesc fișierul direct de pe domeniul site-ului, cu Content-Disposition attachment. Nicio dependență nouă, fără binare în Git.
 - Publicare exclusiv în `licurici-prezentare`, din ramura dedicată; verificarea pe tabletă rămâne utilizatorului.

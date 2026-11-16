@@ -13,7 +13,7 @@ const motion = matchMedia('(prefers-reduced-motion: reduce)');
 const root = document.querySelector('#app-carousel');
 const carousel = new Splide(root, {
   type: 'loop', perPage: 1, perMove: 1, gap: 24, speed: 650,
-  autoplay: true, interval: 5000, pauseOnHover: false, pauseOnFocus: true,
+  autoplay: true, interval: 5000, pauseOnHover: true, pauseOnFocus: true,
   resetProgress: true, arrows: false, pagination: false, keyboard: 'focused',
   drag: true, snap: true, live: true,
   reducedMotion: { speed: 0, rewindSpeed: 0, autoplay: 'pause' },
@@ -21,29 +21,17 @@ const carousel = new Splide(root, {
 });
 let manualPause = motion.matches;
 let inView = false;
-const status = document.querySelector('#autoplay-status');
-function updateSelection() {
-  const key = keys[carousel.index];
-  for (const button of document.querySelectorAll('[data-screen]')) button.setAttribute('aria-pressed', String(button.dataset.screen === key));
-}
-carousel.on('mounted moved', updateSelection);
-carousel.on('autoplay:play', () => { status.textContent = 'Prezentare automată · 5 secunde / ecran'; });
-carousel.on('autoplay:pause', () => { status.textContent = 'Prezentare în pauză · Glisează sau alege un ecran'; });
 carousel.mount();
 const autoplay = carousel.Components.Autoplay;
 function syncVisibility() {
   if (document.hidden || !inView || dialog.open || manualPause) autoplay.pause();
-  else if (!root.contains(document.activeElement)) autoplay.play();
+  else if (!root.contains(document.activeElement) && !root.matches(':hover')) autoplay.play();
 }
 new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; syncVisibility(); }, {threshold:.15}).observe(root);
 document.addEventListener('visibilitychange', syncVisibility);
 root.addEventListener('mouseleave', syncVisibility);
 root.addEventListener('focusout', () => queueMicrotask(syncVisibility));
-document.querySelector('#autoplay').addEventListener('click', () => { manualPause = autoplay.isPaused(); });
 motion.addEventListener('change', event => { if (event.matches) { manualPause = true; autoplay.pause(); } });
-document.querySelector('#previous-screen').addEventListener('click', () => carousel.go('<'));
-document.querySelector('#next-screen').addEventListener('click', () => carousel.go('>'));
-for (const button of document.querySelectorAll('[data-screen]')) button.addEventListener('click', () => carousel.go(keys.indexOf(button.dataset.screen)));
 for (const link of document.querySelectorAll('[data-preview]')) link.addEventListener('click', () => carousel.go(keys.indexOf(link.dataset.preview)));
 root.addEventListener('click', event => {
   const button = event.target.closest('[data-enlarge]');
