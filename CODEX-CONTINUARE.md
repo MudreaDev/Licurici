@@ -36,6 +36,12 @@ pe pași, în ordine.
 
 ## 1. Starea de acum (actualizată 25.10.2026)
 
+### Descărcare din site — 16.11.2026
+
+- [x] Buton „Descarcă pentru Android” la finalul prezentării; GitHub eliminat din pagina publică. APK 0.1.1 ARM64 (88 MB), versiunea publicată disponibilă; tagul 0.1.2 nu există în Releases la verificare.
+- [x] `deploy/landing/build.mjs` copiază resursele în `dist/` și descarcă pachetul public fixat, verificând dimensiunea și SHA-256 înainte de publicare. Vizitatorii primesc fișierul direct de pe domeniul site-ului, cu Content-Disposition attachment. Nicio dependență nouă, fără binare în Git.
+- Publicare exclusiv în `licurici-prezentare`, din ramura dedicată; verificarea pe tabletă rămâne utilizatorului.
+
 ### Landing separat — 15.11.2026
 
 - [x] `deploy/landing/`: prezentare responsivă cu 6 capturi reale Flutter la 844×390, carusel Splide 4.1.4 cu autoplay, swipe, pauză și dialog (ADR-035), 6 arii ilustrate, pașii unei sesiuni și teme de cercetare, acvariu, principii, rolurile adulților, teză și FAQ. Imagine decorativă nouă, fonturi locale și mascotă existente. Splide 4.1.4 livrat local (ADR-035); fără date de copii sau formulare.

@@ -28,3 +28,5 @@ body{isolation:isolate;background:#f4f2e6}
 @keyframes watercolor-drift{from{transform:translate3d(-2%,-1%,0) rotate(-3deg)}to{transform:translate3d(2%,2%,0) rotate(3deg)}}
 @keyframes firefly-drift{from{transform:translate3d(-12px,18px,0)}to{transform:translate3d(20px,-28px,0)}}
 @media(prefers-reduced-motion:reduce){.ambient-backdrop *{animation:none!important}}
+
+.download-button{min-height:64px;max-width:100%;text-align:center}.download-details{font-size:13px;line-height:1.8;margin:20px auto 0;color:var(--muted)}.download-help{max-width:460px;margin:12px auto 0;font-size:13px;line-height:1.8;color:var(--muted)}

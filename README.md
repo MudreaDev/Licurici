@@ -72,7 +72,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] Instalează **Docker Desktop**. Apoi: `cp infra/.env.example infra/.env` (schimbă parolele) → `docker compose -f infra/docker-compose.yml up -d --build`.
 - [ ] După `docker compose … up`: **`node tools/e2e/stack.mjs`** — testul automat cap-coadă pe stiva reală (cont → confirmare din Mailpit → acord → sincronizare → statistici din worker → partajare + audit → export → ștergere); spune-i lui Claude ce pică.
 - [ ] Test cap-coadă în dev: cont nou în panou (`http://localhost:8080`) → e-mailul de confirmare în Mailpit (`http://localhost:8025`) → „Am uitat parola” → pe tabletă „Trimite pe server” cu bifa „trimite automat” (și cu 2FA pornită) → în panou apar „Se joacă acum” și „Sesiune nouă” → cozile în Bull Board (`http://localhost:3001`). Spune-i lui Claude ce n-a mers.
-- [ ] Descarcă versiunea de test din [GitHub Releases](https://github.com/MudreaDev/Licurici/releases) și instalează APK-ul (`apps/child_app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` — tabletele de azi; `app-release.apk` e un build vechi, nu-l folosi) pe o **tabletă reală**: fluiditatea acvariului, sunetul, landscape.
+- [ ] Descarcă versiunea Android 0.1.1 de test de pe [licurici.online](https://licurici.online/#descarca) și instalează APK-ul (`apps/child_app/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` — tabletele de azi; `app-release.apk` e un build vechi, nu-l folosi) pe o **tabletă reală**: fluiditatea acvariului, sunetul, landscape.
 - [ ] Cu tableta conectată prin USB (depanare USB pornită): `cd apps/child_app` → `flutter test integration_test -d <id-ul tabletei>` (`flutter devices` îl arată). Testul joacă singur un joc și trimite sesiunea la un server local; spune-i lui Claude dacă pică. Fără tabletă, merge și pe Windows: pornește „Developer Mode” (Setări → Sistem → Pentru dezvoltatori), apoi `flutter test integration_test -d windows`.
 - [ ] **Acvariul pe hârtie**: printează fișa („Acvariul meu” → 🖨), colorează, fotografiază în lumină diferită; dacă scanarea greșește des → ADR-030.
 - [ ] **Muzica** (sesiunea 12): pe tabletă, „Pentru părinți” → „Muzică liniștită”; ascultă cele 3 piese și spune-mi dacă vreuna nu e potrivită (tempo, instrument, volum). Spune-mi și dacă vrei să pornească oprită implicit.
@@ -129,6 +129,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
+
+**16.11.2026 — descărcare directă:** buton Android la finalul prezentării, fără legături GitHub în pagină. APK 0.1.1 ARM64 (88 MB) inclus în publicarea statică, cu SHA-256 verificat la build; fără dependențe noi. Ramura rămâne `codex/landing-prezentare`. Urmează instalarea pe dispozitiv real.
 
 **15.11.2026 — prezentarea publică:** landing responsiv în `deploy/landing/`, pe ramura izolată `codex/landing-prezentare`. Proiect Vercel dedicat: `licurici-prezentare`, URL `https://licurici-mudrea.vercel.app`. Capturi Flutter reale pe telefon cu mascota pictată verificată explicit, carusel Splide 4.1.4 cu 6 ecrane, autoplay și pauză (ADR-035), 6 arii ilustrate, pașii unei sesiuni, teme de cercetare, galerie cu mărire, ilustrație decorativă originală, acvariu, principii, rolurile adulților, teză și FAQ. 14 teste vizuale existente + 6 capturi noi trecute; carusel Splide verificat în browser; analiza testului și verificarea resurselor, plus control în browser la 320/390/768/1440 px. Nu sunt incluse modificările locale preexistente ale aplicației și **nu se împinge pe main/master**. Urmează confirmarea datelor academice (titlul oficial; „licență” și coordonatorul Mihail Musteața sunt confirmați). Instrucțiuni și proveniența resurselor: [docs/landing-prezentare.md](docs/landing-prezentare.md), ADR-034. Sarcinile aplicației de mai jos rămân neschimbate.
 
@@ -1253,6 +1255,8 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 ---
 
 ## 21. Roadmap (Sem. 1 = 70%)
+
+**Progres prezentare 16.11.2026:** descărcare APK directă din site adăugată, fără schimbări ale jocurilor sau punctajului roadmap.
 
 **Progres prezentare 15.11.2026:** landing de prezentare gata în ramură și proiect Vercel separate, cu verificări vizuale și capturi reale. Este prezentare generală a lucrului în dezvoltare; nu bifează validarea cu utilizatori sau redactarea integrală a tezei. Vezi `docs/landing-prezentare.md`.
 

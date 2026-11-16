@@ -1,6 +1,6 @@
 # Landing Licurici — 14.11.2026
 
-Pagina: **https://licurici-mudrea.vercel.app**
+Pagina: **https://licurici.online** (și https://licurici-mudrea.vercel.app)
 
 - Sursă: `deploy/landing/`; ramură: `codex/landing-prezentare`.
 - Proiect Vercel: `licurici-prezentare` (`prj_GDDQs9IB4fKC1s9bFIUIzKP9TMbf`), echipa `mudreadevs-projects`.
@@ -34,7 +34,8 @@ Secțiuni suplimentare: șase lumi ilustrate cu legături la exemple, pașii une
 ## Rulare și verificare
 Din rădăcina checkout-ului acestei ramuri:
 ```powershell
-node tools/preview/serve.mjs deploy/landing 5181
+node deploy/landing/build.mjs
+node tools/preview/serve.mjs deploy/landing/dist 5181
 node tools/landing/check.mjs
 node --check deploy/landing/app.js
 ```
@@ -46,8 +47,13 @@ flutter analyze --no-pub test/landing_shots_test.dart
 Pe Windows rezolvarea inițială a dependențelor a avertizat despre symlink-uri/Developer Mode. Pachetele s-au rezolvat, iar testele cu `--no-pub` au trecut fără schimbarea setărilor sistemului.
 
 ## Publicare
-Fără build sau instalare de dependențe. Vercel primește sursa din commitul împins pe ramura dedicată, `rootDirectory: deploy/landing`, `outputDirectory: .`, `framework: null`, comenzi de build/install goale. Ținta `production` se referă **numai la noul proiect de prezentare**, nu la panoul existent. Nu se configurează auto-deploy din `main` pentru acest proiect.
+Build fără dependențe: `node build.mjs` descarcă APK-ul public fixat și verifică SHA-256 înainte de copierea în `dist/`. Vercel primește sursa din commitul împins pe ramura dedicată, `rootDirectory: deploy/landing`, `outputDirectory: dist`, `framework: null`, build `node build.mjs`, install gol. Ținta `production` se referă **numai la noul proiect de prezentare**, nu la panoul existent. Nu se configurează auto-deploy din `main` pentru acest proiect.
 
 Vezi ADR-034 pentru motivarea separării. După modificări se verifică pagina, imaginile, galeria, închiderea dialogului cu Escape și butonul dedicat, întrebările, legăturile și lățimile mobile înainte de o nouă publicare.
 
 **Actualizare landing 15.11.2026:** fundal pictat cu tonuri salvie și miere, mișcare lentă și șase puncte luminoase fără clipire; fără buton separat pentru fundal, la cererea utilizatorului; respectă în continuare preferința de mișcare redusă. Carusel Splide 4.1.4 local; coordonator Mihail Musteața. Publicare exclusiv din `codex/landing-prezentare`, fără schimbări pe main/master.
+
+## Descărcare directă — 16.11.2026
+Buton în secțiunea finală `#descarca`, APK 0.1.1 ARM64 (88 MB) la `/descarcari/licurici-0.1.1-arm64-v8a.apk`. Pagina nu mai conține linkuri GitHub. Sursa pachetului este release-ul public 0.1.1, folosit exclusiv la build. Un hash/dimensiune diferit sau o descărcare eșuată oprește publicarea. Versiunea 0.1.2 nu era publicată la verificare.
+
+Actualizare viitoare: schimbă versiunea, URL-ul, dimensiunea și SHA-256 în `build.mjs`, apoi textul/linkul HTML, antetul Content-Disposition și verificarea din `tools/landing/check.mjs`. Rulează build și verificarea înainte de publicare. `dist/` este ignorat în Git. Nu se adaugă un serviciu de stocare sau o tehnologie nouă. Descărcările consumă traficul existent al proiectului Vercel.

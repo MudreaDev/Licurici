@@ -13,6 +13,11 @@ assert.equal(ids.length, new Set(ids).size, 'ID duplicat');
 const refs = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m => m[1]);
 for (const ref of refs) {
   if (ref === '#') continue;
+  if (ref.startsWith('/descarcari/')) {
+    const apk = fs.readFileSync(path.join(root, 'dist', ref.slice(1)));
+    assert.equal(crypto.createHash('sha256').update(apk).digest('hex'), '7a2817469588e3117d837f18907571f95278e78ffa94543733fd7991201e6dc3');
+    continue;
+  }
   if (ref.startsWith('#')) assert(ids.includes(ref.slice(1)), `Ancoră absentă: ${ref}`);
   else if (!ref.startsWith('https://')) assert(fs.existsSync(path.join(root, ref)), `Resursă absentă: ${ref}`);
 }
@@ -46,7 +51,9 @@ assert(!/<form\b|<iframe\b/.test(html));
 assert(!/fetch\(|XMLHttpRequest|localStorage|document\.cookie/.test(js));
 const config = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
 assert.equal(config.framework, null);
-assert.equal(config.outputDirectory, '.');
-assert.equal(config.buildCommand, '');
+assert.equal(config.outputDirectory, 'dist');
+assert.equal(config.buildCommand, 'node build.mjs');
+assert(!html.includes('github.com'));
+assert(html.includes('download="licurici-0.1.1-arm64-v8a.apk"'));
 assert.equal(config.installCommand, '');
 console.log('OK: ancore, resurse HTML/CSS/JS, 7 PNG + JPEG social, dimensiuni capturi, licență și configurație statică.');
