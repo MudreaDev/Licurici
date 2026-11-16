@@ -45,6 +45,9 @@ pe pași, în ordine.
 - [x] `deploy/landing/build.mjs` copiază resursele în `dist/` și descarcă pachetul public fixat, verificând dimensiunea și SHA-256 înainte de publicare. Vizitatorii primesc fișierul direct de pe domeniul site-ului, cu Content-Disposition attachment. Nicio dependență nouă, fără binare în Git.
 - Publicare exclusiv în `licurici-prezentare`, din ramura dedicată; verificarea pe tabletă rămâne utilizatorului.
 
+
+**Verificare publicare 16.11.2026:** codul `f7656f5`, deployment `dpl_6dHyHzapE9hzuag6EKFF1HJf8dKP`, READY pe licurici.online. Verificarea statică și sintaxa JS trec; confirmat în browser butonul, subsolul și eliminarea zonei de sub carusel (autoplay funcțional). Descărcat integral de pe www.licurici.online fără redirect: HTTP 200, 88.251.748 octeți, Content-Disposition attachment, SHA-256 identic cu pachetul sursă. Instalarea pe dispozitiv rămâne de verificat de utilizator.
+
 ### Landing separat — 15.11.2026
 
 - [x] `deploy/landing/`: prezentare responsivă cu 6 capturi reale Flutter la 844×390, carusel Splide 4.1.4 cu autoplay, swipe, pauză și dialog (ADR-035), 6 arii ilustrate, pașii unei sesiuni și teme de cercetare, acvariu, principii, rolurile adulților, teză și FAQ. Imagine decorativă nouă, fonturi locale și mascotă existente. Splide 4.1.4 livrat local (ADR-035); fără date de copii sau formulare.
