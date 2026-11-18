@@ -10,6 +10,8 @@ void main() {
     expect(g.axesFor(1).step, greaterThan(g.axesFor(7).step));
     expect(g.axesFor(5).sameColor, isFalse);
     expect(g.axesFor(6).sameColor, isTrue);
+    expect(g.axesFor(8).step, lessThan(g.axesFor(7).step));
+    expect(g.axesFor(9).step, lessThan(g.axesFor(8).step));
     for (var level = 1; level <= 9; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = g.generate(level, seed: seed);

@@ -258,8 +258,9 @@ class _FetchScreenState extends ConsumerState<FetchScreen> {
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(color: const Color(0xFFD9B26A), width: 4),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        runSpacing: 4,
                         children: [
                           StimulusArt('🧺', size: math.min(110, box.maxHeight * 0.26)),
                           for (final o in _inBasket) StimulusArt(o.emoji, size: math.min(64, box.maxHeight * 0.15)),

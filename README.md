@@ -80,6 +80,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] **Jocurile noi** (sesiunea 12) încercate pe tabletă: Cât de tare?, Cine e prietenul?, Câte sunt?, Ce ai auzit?, Linia numerelor, Atinge rapid, Paznicul farului, Stop!, Acum sau mai mult?
 - [ ] **Jocurile „frate” noi** pe tabletă: Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi, Memorie cu sunete, Oglinda.
 - [ ] După construirea și instalarea unei versiuni noi, testează cu specialistul limita zilnică, poarta părintelui și progresul după două jocuri și repornire; setează limita/repetările din planul copilului. Timpul numărat este cel din prim-plan, cu ceasul local al tabletei.
+- [ ] După următorul APK, verifică pe tabletă treptele noi din Turnul, Adu-mi, Pune ursulețul și Oglinda; APK-ul 0.1.2 publicat nu le conține.
 - [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
 
 **B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `py tools/art/convert_codex.py`
@@ -130,6 +131,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
 **18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
+
+**Continuare niveluri:** patru jocuri au trepte mai dificile: Turnul până la 9, Adu-mi până la 8, Pune ursulețul până la 7 și Oglinda până la 10; după aceste puncte mecanicile lor încă au plafon. Extinderea tuturor celorlalte jocuri rămâne de făcut, pe mecanici și conținut real. Activitățile libere (colorare, respirație, comunicare) nu primesc niveluri competitive. Aceste modificări nu sunt incluse în APK-ul 0.1.2 publicat anterior.
 
 **Continuare 18.11:** 37 de obiecte tăiate au fost refăcute; blocul din „Rândul meu” are volum. Auditul pe planșe și limitele lui sunt în raport. În acvariu, indiciul cadoului, pușculița și raftul respectă modul calm, țintele raftului au minimum 64 dp, iar particulele împart un plafon comun de 40. Salvarea parțială nu mai numără un joc ca terminat. Rămâne verificarea pe tabletă a scenelor și a limitei zilnice.
 
@@ -1147,6 +1150,8 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 **Continuare:** 37 de obiecte refăcute și blocul pictat din „Rândul meu”; detalii în [auditul vizual](docs/audit-imagini-2026-11-18.md). Nu s-a schimbat numărul jocurilor.
 
+**Niveluri:** trepte suplimentare implementate pentru Turnul, Adu-mi, Pune ursulețul și Oglinda; extinderea la celelalte mecanici este încă în lucru.
+
 **25.10.2026:** acvariul folosește cele 6 piese pictate ale recifului; ghidajul și efectele de interacțiune respectă modul calm. Baza din „Rândul meu” este și ea pictată. Cufărul este accesibil și în modul calm, fără suprapunere cu bara de comenzi (0.1.2). Numărul jocurilor nu se schimbă (109).
 
 **Gata în Flutter (103):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
@@ -1275,6 +1280,8 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 **Progres 18.11.2026:** planul poate limita timpul zilnic și seta 1–5 jocuri pe nivel, cu contoare locale; verificarea pe dispozitiv și auditul vizual complet rămân deschise. Nu se schimbă totalurile roadmap-ului.
 
 **Continuare 18.11:** auditul pe planșe, 37 obiecte refăcute și blocul cu volum; acvariul respectă plafonul comun de particule și modul calm pentru accesorii. Capturile și testele nu înlocuiesc verificarea pe dispozitiv.
+
+**Niveluri suplimentare:** 4 jocuri extinse și testate; restul jocurilor adaptive necesită extinderi proprii. Progresul foii de parcurs nu se modifică până la finalizarea cererii.
 
 **Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; corecția cufărului și a barei de comenzi (0.1.2); fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 

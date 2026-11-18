@@ -38,6 +38,8 @@ pe pași, în ordine.
 
 ### Continuare 18.11.2026
 
+- **Niveluri suplimentare, parțial:** `turnul` distinge inelele mai apropiate până la nivelul 9; `adu-mi` cere trei obiecte de la 8; `pune-ursul` cere trei așezări de la 7; `oglinda` folosește patru atingeri de la 8 și cinci de la 10. Tăvile au fost adaptate și testate pe telefon mic. Scările reale au fost actualizate în `level_scale.dart`; asta schimbă și normalizarea dificultății pentru aceste jocuri. Clipurile vocale sunt acoperite (2765/2765). **Nu este gata cererea pentru toate jocurile:** celelalte plafonări din `gameScales` și jocurile choice trebuie extinse mecanică cu mecanică, fără a confunda numere mai mari cu dificultate nouă; colorarea, respirația și AAC sunt activități libere, fără niveluri competitive.
+- Verificări pentru nivelurile suplimentare: nucleu 652, copil 400 (15 capturi opționale omise), panou 37, backend 90, Vercel 7; analiza Flutter fără probleme. Testele includ noile niveluri pe telefon mic simulat. Verificarea pe dispozitiv rămâne deschisă.
 - Inel pictat cu volum și filtru de colorare corectat. Audit: 37 obiecte decupate incorect refăcute, plus blocul din „Rândul meu”; au fost inspectate planșele obiectelor, cardurilor și portretelor, precum și capturile turnului de blocuri. Surse, prompturi și limite: `docs/audit-imagini-2026-11-18.md`.
 - Panoul permite limită zilnică și 1–5 jocuri încheiate la același nivel; planul se sincronizează, contoarele rămân în setările locale. Verifică pe tabletă fluxul și reluarea; vezi detaliile în README §0.1, §11 și §13. Ceasul și Zilele și lunile există în „Numere și litere”.
 - Salvarea parțială (AAC și atingerea limitei zilnice) nu mai contează ca joc terminat; la atingerea limitei se salvează încercările deja înregistrate.

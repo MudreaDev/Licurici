@@ -3,7 +3,7 @@
 /// „Unde e ursulețul?”, alt fel de răspuns — copilul produce poziția, nu doar o recunoaște.
 ///
 /// Axe: câte locuri sunt de ales (pe / sub → + lângă → + în → + deasupra) și, de la nivelul 5,
-/// două obiecte de așezat după aceeași propoziție („Pune ursulețul sub masă și mingea pe masă”).
+/// două obiecte de așezat după aceeași propoziție, apoi trei de la nivelul 7.
 library;
 
 import 'dart:math';
@@ -17,7 +17,7 @@ class PlaceAxes {
   /// Prepozițiile folosite la nivelul ăsta (locurile de pe scenă, cât permite reperul).
   final List<Relation> relations;
 
-  /// Câte obiecte de așezat după aceeași propoziție (1 sau 2).
+  /// Câte obiecte de așezat după aceeași propoziție (1–3).
   final int objects;
 
   Map<String, Object> toJson() => {'relations': [for (final r in relations) r.name], 'objects': objects};
@@ -117,7 +117,7 @@ class PlaceGame {
           3 => const [Relation.pe, Relation.sub, Relation.inauntru, Relation.langa],
           _ => Relation.values,
         },
-        objects: level >= 5 ? 2 : 1,
+        objects: level >= 7 ? 3 : (level >= 5 ? 2 : 1),
       );
 
   PlaceLevel generate(int level, {int? seed}) {
@@ -136,7 +136,8 @@ class PlaceGame {
       // Locurile cerute: diferite între ele și, pe cât se poate, nu același ca data trecută.
       final free = [for (final x in spots) if (x != last) x]..shuffle(random);
       final places = <Relation>[free.first];
-      if (axes.objects == 2) places.add(([...spots]..remove(free.first)..shuffle(random)).first);
+      final remaining = ([...spots]..remove(free.first)..shuffle(random));
+      places.addAll(remaining.take(axes.objects - 1));
       last = places.first;
       list.add(PlaceRound(
         landmark: landmark,

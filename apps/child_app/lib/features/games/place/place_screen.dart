@@ -235,10 +235,12 @@ class _PlaceScreenState extends ConsumerState<PlaceScreen> {
               CandyPanel(
                 padding: const EdgeInsets.all(12),
                 child: SizedBox(
-                  width: obj * 1.25,
-                  height: math.max(1, _r.tasks.length) * obj * 1.15,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  width: _r.tasks.length > 2 ? obj * 2 + 8 : obj * 1.25,
+                  height: _r.tasks.length > 2 ? obj * 2 + 8 : math.max(1, _r.tasks.length) * obj * 1.15,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
                       for (final t in left)
                         Juice(

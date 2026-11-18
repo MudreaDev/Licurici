@@ -19,7 +19,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 5), ('tableta', 3)]) {
+  for (final (device, level) in [('telefon-mic', 5), ('tableta', 3), ('telefon-mic', 7)]) {
     testWidgets('Pune ursulețul: nivelul $level pe $device, o greșeală la prima cerere, apoi corect', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -39,7 +39,7 @@ void main() {
         UncontrolledProviderScope(container: container, child: MaterialApp.router(theme: buildTheme(calm: false), routerConfig: router)),
       );
       await settle(tester, 2);
-      if (shots) await expectLater(find.byType(PlaceScreen), matchesGoldenFile('shots/pune-ursul-$device.png'));
+      if (shots && level != 7) await expectLater(find.byType(PlaceScreen), matchesGoldenFile('shots/pune-ursul-$device.png'));
       final l = const PlaceGame().generate(level, seed: 3);
       expect(find.byKey(const ValueKey('place-scene')), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('place-repeat')));

@@ -5,7 +5,9 @@ void main() {
   const game = MirrorGame();
 
   test('atingerile: din părțile nivelului, fără aceeași atingere de două ori la rând', () {
-    for (var level = 1; level <= 7; level++) {
+    expect(game.axesFor(8).touches, 4);
+    expect(game.axesFor(10).touches, 5);
+    for (var level = 1; level <= 11; level++) {
       final axes = game.axesFor(level);
       for (var seed = 0; seed < 40; seed++) {
         final l = game.generate(level, seed: seed);

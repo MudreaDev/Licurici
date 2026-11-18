@@ -57,7 +57,7 @@ void main() {
     expect(saved.levelOf('turnul'), 2);
   });
 
-  for (final (device, level) in [('telefon-mic', 5), ('tableta', 2)]) {
+  for (final (device, level) in [('telefon-mic', 5), ('tableta', 2), ('telefon-mic', 9)]) {
     testWidgets('Turnul: nivelul $level pe $device, o greșeală la primul turn, apoi corect', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -77,7 +77,7 @@ void main() {
         UncontrolledProviderScope(container: container, child: MaterialApp.router(theme: buildTheme(calm: false), routerConfig: router)),
       );
       await settle(tester, 2);
-      if (shots) await expectLater(find.byType(StackingScreen), matchesGoldenFile('shots/turnul-$device.png'));
+      if (shots && level != 9) await expectLater(find.byType(StackingScreen), matchesGoldenFile('shots/turnul-$device.png'));
       final l = const StackingGame().generate(level, seed: 2);
       for (final (ti, t) in l.towers.indexed) {
         if (ti == 0) {

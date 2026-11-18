@@ -5,7 +5,7 @@ void main() {
   const game = PlaceGame();
 
   test('locurile cerute există pe scenă, sunt diferite și se potrivesc reperului', () {
-    for (var level = 1; level <= 7; level++) {
+    for (var level = 1; level <= 9; level++) {
       for (var seed = 0; seed < 40; seed++) {
         final l = game.generate(level, seed: seed);
         expect(l.rounds, hasLength(PlaceGame.rounds));
@@ -16,7 +16,7 @@ void main() {
           expect(r.tasks.every((t) => r.spots.contains(t.relation)), isTrue);
           expect(r.tasks.map((t) => t.relation).toSet(), hasLength(r.tasks.length));
           expect(r.tasks.map((t) => t.word).toSet(), hasLength(r.tasks.length));
-          expect(r.tasks, hasLength(level >= 5 ? 2 : 1));
+          expect(r.tasks, hasLength(level >= 7 ? 3 : (level >= 5 ? 2 : 1)));
         }
       }
     }

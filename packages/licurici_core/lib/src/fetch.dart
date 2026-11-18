@@ -4,7 +4,7 @@
 ///
 /// Axe: câte obiecte pe masă (2 → 6), doar cuvinte foarte cunoscute la început, distractori din
 /// aceeași grupă (fructe între fructe) de la nivelul 4, două obiecte cerute deodată („Adu-mi
-/// mingea și mărul”) de la nivelul 6.
+/// mingea și mărul”) de la nivelul 6, apoi trei obiecte de la nivelul 8.
 library;
 
 import 'dart:math';
@@ -20,7 +20,7 @@ class FetchAxes {
   final bool familiarOnly;
   final bool sameGroup;
 
-  /// Câte obiecte se cer deodată (1 sau 2).
+  /// Câte obiecte se cer deodată (1–3).
   final int wanted;
 
   Map<String, Object> toJson() => {'objects': objects, 'familiarOnly': familiarOnly, 'sameGroup': sameGroup, 'wanted': wanted};
@@ -101,7 +101,7 @@ class FetchGame {
         objects: min(6, 1 + level),
         familiarOnly: level <= 2,
         sameGroup: level >= 4,
-        wanted: level >= 6 ? 2 : 1,
+        wanted: level >= 8 ? 3 : (level >= 6 ? 2 : 1),
       );
 
   /// [avoid]: imaginile de evitat (`avoidedEmojis`) — nu apar deloc pe masă.
@@ -118,8 +118,7 @@ class FetchGame {
       final candidates = [for (final w in pool) if (w != last) w]..shuffle(random);
       final target = candidates.first;
       last = target;
-      final wanted = <ObjectWord>[target];
-      if (axes.wanted == 2) wanted.add(candidates.firstWhere((w) => w != target));
+      final wanted = candidates.take(axes.wanted).toList();
       // Distractorii: din aceeași grupă când nivelul o cere (și dacă ajung), altfel oricare.
       final same = [for (final w in words) if (!wanted.contains(w) && w.group == target.group) w]..shuffle(random);
       final other = [for (final w in words) if (!wanted.contains(w) && !same.contains(w)) w]..shuffle(random);

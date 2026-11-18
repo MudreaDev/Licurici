@@ -65,10 +65,10 @@ const gameScales = <String, LevelScale>{
   'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
   'atinge-rapid': LevelScale(9), // bula de 0,07 la 9 (distanța se oprește la 9)
   'stop': LevelScale(9), // 32 de încercări, 30% opriri, fereastra de 0,9 s la 9
-  'turnul': LevelScale(7), // 7 inele la 5, pasul minim la 7, o singură culoare de la 6
-  'adu-mi': LevelScale(6), // 6 obiecte la 5, două cerute deodată de la 6
-  'pune-ursul': LevelScale(5), // toate cele 5 locuri la 4, două obiecte de la 5
-  'oglinda': LevelScale(6), // trei atingeri cu latura la 5, alt copil în oglindă de la 6
+  'turnul': LevelScale(9), // 7 inele la 5, diferența minimă la 9, o singură culoare de la 6
+  'adu-mi': LevelScale(8), // 6 obiecte la 5, două cerute de la 6, trei de la 8
+  'pune-ursul': LevelScale(7), // toate cele 5 locuri la 4, două obiecte de la 5, trei de la 7
+  'oglinda': LevelScale(10), // alt copil de la 6, patru atingeri de la 8, cinci de la 10
   'memorie-sunete': LevelScale(7), // 6 perechi la 7 (la 4 se întorc și animalele, deci perechile scad)
   'coloreaza-ce-auzi': LevelScale(7), // 6 culori la 5, mare / mic la 6, două colorări la 7
   'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9

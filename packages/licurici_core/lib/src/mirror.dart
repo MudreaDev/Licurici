@@ -2,7 +2,7 @@
 /// (nasul, gura, părul, un ochi, o ureche), iar copilul face la fel pe fața din oglindă. Aceeași
 /// imitație cu model, alt material — propriul corp, desenat (fețele din `face.dart`).
 ///
-/// Axe: câte părți (3 → 5), câte atingeri de repetat (1 → 3), dacă partea contează (ochiul din
+/// Axe: câte părți (3 → 5), câte atingeri de repetat (1 → 5), dacă partea contează (ochiul din
 /// stânga ≠ cel din dreapta, de la nivelul 4) și, de la nivelul 6, fața din oglindă e alt copil
 /// decât modelul (generalizare).
 library;
@@ -124,7 +124,7 @@ class MirrorGame {
 
   MirrorAxes axesFor(int level) => MirrorAxes(
         parts: level == 1 ? const [FacePart.par, FacePart.nas, FacePart.gura] : FacePart.values,
-        touches: level <= 2 ? 1 : (level <= 4 ? 2 : 3),
+        touches: level <= 2 ? 1 : (level <= 4 ? 2 : (level < 8 ? 3 : (level < 10 ? 4 : 5))),
         sided: level >= 4,
         otherChild: level >= 6,
       );

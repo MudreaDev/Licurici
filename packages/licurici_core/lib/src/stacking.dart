@@ -4,7 +4,8 @@
 ///
 /// Axe: câte inele (3 → 7), cât de diferite sunt ca mărime (pași mari → mici) și culoarea (la
 /// început fiecare inel are culoarea lui, ca un indiciu în plus; de la nivelul 6 sunt toate la fel
-/// — rămâne doar mărimea). KPI: alegeri greșite pe turn, timpul pe turn.
+/// — rămâne doar mărimea). La nivelurile 8–9 diferența dintre inele se micșorează treptat.
+/// KPI: alegeri greșite pe turn, timpul pe turn.
 library;
 
 import 'dart:math';
@@ -101,7 +102,7 @@ class StackingGame {
 
   StackingAxes axesFor(int level) => StackingAxes(
         rings: min(7, 2 + level),
-        step: max(0.09, 0.2 - 0.02 * (level - 1)),
+        step: level <= 7 ? max(0.09, 0.2 - 0.02 * (level - 1)) : max(0.07, 0.09 - 0.01 * (level - 7)),
         sameColor: level >= 6,
       );
 

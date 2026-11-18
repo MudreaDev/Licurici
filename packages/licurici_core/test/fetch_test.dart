@@ -10,7 +10,8 @@ void main() {
     expect(g.axesFor(2).familiarOnly, isTrue);
     expect(g.axesFor(3).familiarOnly, isFalse);
     expect(g.axesFor(6).wanted, 2);
-    for (var level = 1; level <= 8; level++) {
+    expect(g.axesFor(8).wanted, 3);
+    for (var level = 1; level <= 10; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = g.generate(level, seed: seed);
         expect(l.rounds, hasLength(FetchGame.rounds));
@@ -27,6 +28,7 @@ void main() {
           last = r.wanted.first.word;
           expect(r.speak.first, 'Adu-mi');
           if (r.wanted.length == 2) expect(r.speak, ['Adu-mi', r.wanted[0].word, 'și', r.wanted[1].word]);
+          if (r.wanted.length == 3) expect(r.speak, ['Adu-mi', r.wanted[0].word, 'și', r.wanted[1].word, 'și', r.wanted[2].word]);
         }
       }
     }
