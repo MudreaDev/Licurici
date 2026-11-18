@@ -109,6 +109,9 @@ void main() {
 
   test('licuriciul apare des și zboară, puțin la început, mai mult apoi', () {
     const g = PrindeLicuriciulGame();
+    expect(g.axesFor(18).count, 18);
+    expect(g.axesFor(23).count, 22);
+    expect(g.generate(23, seed: 5).stimuli, hasLength(22));
     final first = g.generate(1, seed: 5), later = g.generate(12, seed: 5);
     expect(first.stimuli.first.gapBeforeMs, 700);
     expect(first.stimuli.skip(1).every((s) => s.gapBeforeMs <= 840), isTrue);
@@ -119,6 +122,13 @@ void main() {
     expect(later.stimuli.any((s) => s.driftY != 0), isTrue);
     // Peștele înoată doar orizontal.
     expect(const PescarulGame().generate(8, seed: 5).stimuli.every((s) => s.driftY == 0), isTrue);
+  });
+
+  test('farul reduce treptat durata apariției la nivelurile avansate', () {
+    const game = PaznicFaruluiGame();
+    expect(game.axesFor(15).visibleMs, 1100);
+    expect(game.axesFor(20).visibleMs, 1000);
+    expect(game.generate(20, seed: 5).stimuli, hasLength(60));
   });
 
   test('registrul găsește jocurile după id', () {

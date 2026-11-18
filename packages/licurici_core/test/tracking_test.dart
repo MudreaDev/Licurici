@@ -17,7 +17,7 @@ void main() {
   });
 
   test('același seed → același nivel; drumurile rămân în zona de înot', () {
-    for (final level in [1, 3, 6, 9, 15, 16]) {
+    for (final level in [1, 3, 6, 9, 15, 16, 20]) {
       final x = game.generate(level, seed: 7), y = game.generate(level, seed: 7);
       expect(x.trials.length, x.axes.trials);
       for (var t = 0; t < x.trials.length; t++) {

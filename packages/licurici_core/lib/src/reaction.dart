@@ -425,7 +425,7 @@ class PrindeLicuriciulGame extends ReactionGame {
 
   @override
   ReactionAxes axesFor(int level) => ReactionAxes(
-        count: ramp(level, 10, 18, 8).round(),
+        count: (level <= 18 ? ramp(level, 10, 18, 8) : ramp(level - 18, 18, 22, 5)).round(),
         gapMs: ramp(level, 700, 450, 12).round(),
         visibleMs: ramp(level, 4000, 1500, 14).round(),
         noGoRatio: 0,
@@ -480,7 +480,7 @@ class PaznicFaruluiGame extends ReactionGame {
   ReactionAxes axesFor(int level) => ReactionAxes(
         count: ramp(level, 24, 60, 10).round(),
         gapMs: ramp(level, 2200, 1300, 10).round(),
-        visibleMs: ramp(level, 1800, 1100, 10).round(),
+        visibleMs: (level <= 15 ? ramp(level, 1800, 1100, 10) : ramp(level - 15, 1100, 1000, 5)).round(),
         noGoRatio: level <= 10 ? ramp(level, 0.5, 0.75, 8) : ramp(level - 10, 0.75, 0.8, 5),
         similarity: level < 4 ? 0 : (level < 8 ? 1 : 2),
         sizeFactor: ramp(level, 1.2, 0.9, 10),

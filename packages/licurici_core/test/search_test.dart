@@ -2,6 +2,11 @@ import 'package:licurici_core/licurici_core.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('nivelurile avansate cresc numărul rundelor de căutare', () {
+    const game = SearchGame();
+    expect(game.axesFor(15).rounds, 5);
+    expect(game.generate(19, seed: 3).rounds, hasLength(7));
+  });
   const game = SearchGame();
 
   test('ținta apare exact o dată; obiectele nu ies din zonă și nu se suprapun', () {

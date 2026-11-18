@@ -134,7 +134,7 @@ class ChangeGame {
   List<String> get steps => const ['ATN5'];
 
   ChangeAxes axesFor(int level) => ChangeAxes(
-        items: min(8, 2 + (level + 1) ~/ 2),
+        items: level < 17 ? min(8, 2 + (level + 1) ~/ 2) : (level < 19 ? 9 : 10),
         lookMs: (level <= 11 ? ramp(level, 4000, 2500, 10) : ramp(level - 11, 2500, 2100, 4)).round(),
         kinds: level <= 3
             ? const [ChangeKind.appear]

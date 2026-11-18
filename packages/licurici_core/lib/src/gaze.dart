@@ -111,7 +111,7 @@ class GazeGame {
         cue: level <= 3 ? GazeCue.point : GazeCue.look,
         similar: level >= 6,
         closePairs: level >= 8,
-        rounds: 6,
+        rounds: level >= 10 ? 8 : 6,
       );
 
   /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
@@ -128,7 +128,10 @@ class GazeGame {
     final rounds = <GazeRound>[];
     final used = <String>{};
     for (final side in sides) {
-      final pool = safeWords(avoid).where((o) => !used.contains(o.emoji)).toList();
+      final available = safeWords(avoid);
+      var pool = available.where((o) => !used.contains(o.emoji)).toList();
+      // Refolosim doar imagini permise dacă lista filtrată nu ajunge pentru toate rundele.
+      if (pool.length < 2) pool = available;
       // La obiecte asemănătoare, ținta vine dintr-o grupă care mai are măcar un obiect liber.
       final starts = axes.similar
           ? pool.where((o) => pool.any((p) => p != o && p.group == o.group)).toList()
@@ -143,7 +146,8 @@ class GazeGame {
         a = pool.firstWhere((o) => o.emoji == pair.$1);
         b = pool.firstWhere((o) => o.emoji == pair.$2);
       } else {
-        a = starts[random.nextInt(starts.length)];
+        final possibleStarts = starts.isEmpty ? pool : starts;
+        a = possibleStarts[random.nextInt(possibleStarts.length)];
         final others = pool.where((o) => o != a && (axes.similar ? o.group == a.group : o.group != a.group)).toList();
         final candidates = others.isEmpty ? pool.where((o) => o != a).toList() : others;
         b = candidates[random.nextInt(candidates.length)];

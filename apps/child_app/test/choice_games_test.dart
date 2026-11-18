@@ -28,6 +28,7 @@ void main() {
       for (final game in allGames.where((game) => game.id == 'pozitii')) (game, 9),
       for (final game in allGames.where((game) => game.id == 'povesti')) (game, 10),
       for (final game in allGames.where((game) => game.id == 'ce-ai-auzit')) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'continua-sirul')) (game, 8),
     ]) {
       testWidgets('${game.id} pe $device, nivel $level', (tester) async {
         tester.view.physicalSize = devices[device]!;

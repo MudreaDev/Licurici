@@ -5,6 +5,19 @@ import 'package:licurici_core/src/games/content.dart' show ortograme, stories;
 import 'package:test/test.dart';
 
 void main() {
+  test('șirurile avansate folosesc modele de patru poziții', () {
+    for (var seed = 0; seed < 30; seed++) {
+      final ctx = GameContext(difficulty: const Difficulty(8), grade: Grade.clasa1, random: Random(seed));
+      final rounds = const SirulGame().build(ctx).rounds;
+      for (final round in rounds.skip(2)) {
+        final sequence = round.visuals.whereType<PatternVisual>().single.items;
+        expect(sequence.take(4).toSet(), hasLength(3));
+        expect(sequence[0], sequence[4]);
+        expect(sequence[1], sequence[5]);
+        expect(round.choices.where((c) => c.correct), hasLength(1));
+      }
+    }
+  });
   test('potrivirea avansată are șase variante distincte', () {
     for (final game in [const CuloriGame(), const FormeGame(), const PotrivesteGame(), const UmbreGame(), const IntrusulGame(), const ArataMiGame(), const CorpulGame(), const CeFaceGame()]) {
       final ctx = GameContext(difficulty: const Difficulty(8), grade: Grade.clasa1, random: Random(42));

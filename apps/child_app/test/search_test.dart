@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 14), ('tableta', 6), ('telefon-mic', 15)]) {
+  for (final (device, level) in [('telefon-mic', 14), ('tableta', 6), ('telefon-mic', 19)]) {
     testWidgets('caută: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,7 +49,7 @@ void main() {
       );
       await settle(tester, 3);
       final l = const SearchGame().generate(level, seed: 8);
-      if (shots && level != 15) {
+      if (shots && level != 19) {
         await expectLater(
           find.byType(SearchScreen),
           matchesGoldenFile('shots/cauta-$device.png'),

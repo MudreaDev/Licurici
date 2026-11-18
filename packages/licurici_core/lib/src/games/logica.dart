@@ -37,6 +37,7 @@ class SirulGame extends ChoiceGame {
 
   /// Modelele, de la simplu la complex (literele = poziții distincte).
   static const units = ['AB', 'ABB', 'AAB', 'ABC', 'AABB', 'ABCD'];
+  static const advancedUnits = ['ABAC', 'ABBC', 'AABC'];
 
   @override
   Lesson generate(GameContext ctx) {
@@ -49,7 +50,9 @@ class SirulGame extends ChoiceGame {
       rounds: [
         for (var i = 0; i < rounds; i++)
           // Primele runde sunt mereu cele mai simple (încălzire).
-          _round(ctx, units[i < 2 ? 0 : ctx.random.nextInt(open)]),
+          _round(ctx, i < 2 ? units[0] : ctx.difficulty.tier >= 8
+              ? advancedUnits[ctx.random.nextInt(advancedUnits.length)]
+              : units[ctx.random.nextInt(open)]),
       ],
     );
   }

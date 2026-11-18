@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, startLevel) in [('telefon-mic', 6), ('tableta', 6), ('telefon-mic', 16)]) {
+  for (final (device, startLevel) in [('telefon-mic', 6), ('tableta', 6), ('telefon-mic', 20)]) {
     testWidgets('urmărește peștele: nivelul $startLevel ($device)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -50,7 +50,7 @@ void main() {
       final field = find.byKey(const ValueKey('track-field'));
       expect(field, findsOneWidget);
       final level = const TrackGame().generate(startLevel, seed: 4);
-      expect(level.axes.fish, startLevel == 16 ? 6 : 3);
+      expect(level.axes.fish, startLevel == 20 ? 6 : 3);
 
       Future<void> untilAnswer() async {
         // Arătarea + înotul, în pași mici (fizica merge pe cadre).
@@ -74,7 +74,7 @@ void main() {
         final pick = i < 4 ? t.target : (t.target + 1) % t.fish.length;
         final f = sim.fish.firstWhere((f) => f.id == 'f$pick');
         await tester.tapAt(tester.getTopLeft(field) + Offset(f.pos.x * h, f.pos.y * h));
-        if (i == 0 && shots && startLevel != 16) await expectLater(find.byType(TrackScreen), matchesGoldenFile('shots/urmareste-$device.png'));
+        if (i == 0 && shots && startLevel != 20) await expectLater(find.byType(TrackScreen), matchesGoldenFile('shots/urmareste-$device.png'));
         await tester.pump(const Duration(milliseconds: 2500));
       }
       await tester.pump(const Duration(seconds: 1));

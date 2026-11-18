@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 6), ('tableta', 2), ('telefon-mic', 8)]) {
+  for (final (device, level) in [('telefon-mic', 6), ('tableta', 2), ('telefon-mic', 10)]) {
     testWidgets('unde se uită: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -51,7 +51,7 @@ void main() {
       final l = const GazeGame().generate(level, seed: 3);
       for (final (i, r) in l.rounds.indexed) {
         await tester.pump(const Duration(milliseconds: 950));
-        if (shots && i == 0 && level != 8) {
+        if (shots && i == 0 && level != 10) {
           await expectLater(
             find.byType(GazeScreen),
             matchesGoldenFile('shots/privire-$device.png'),

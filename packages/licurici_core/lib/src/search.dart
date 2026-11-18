@@ -113,7 +113,7 @@ class SearchGame {
         items: ramp(level, 4, 25, 14).round(),
         similar: level >= 5,
         sameGroupOnly: level >= 15,
-        rounds: 5,
+        rounds: level < 17 ? 5 : (level < 19 ? 6 : 7),
       );
 
   /// Grila pentru [n] obiecte pe o zonă lată (landscape ~16:9).

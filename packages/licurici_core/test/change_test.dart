@@ -5,7 +5,7 @@ void main() {
   const game = ChangeGame();
 
   test('exact o schimbare, de tipul cerut; celulele nu se suprapun', () {
-    for (var level = 1; level <= 14; level++) {
+    for (var level = 1; level <= 19; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = game.generate(level, seed: seed);
         for (final r in l.rounds) {
@@ -37,12 +37,19 @@ void main() {
     }
   });
 
+  test('nivelurile avansate adaugă obiecte fără a reduce timpul de observare', () {
+    expect(game.axesFor(15).items, 8);
+    expect(game.axesFor(17).items, 9);
+    expect(game.axesFor(19).items, 10);
+    expect(game.axesFor(19).lookMs, game.axesFor(15).lookMs);
+  });
+
   test('progresia: apare → înlocuit → dispărut; mai multe obiecte, mai puțin timp', () {
     expect(game.axesFor(1).kinds, [ChangeKind.appear]);
     expect(game.axesFor(5).kinds, contains(ChangeKind.replace));
     expect(game.axesFor(8).kinds, contains(ChangeKind.disappear));
     expect(game.axesFor(1).items, 3);
-    expect(game.axesFor(30).items, 8);
+    expect(game.axesFor(30).items, 10);
     expect(game.axesFor(30).lookMs, 2100);
   });
 

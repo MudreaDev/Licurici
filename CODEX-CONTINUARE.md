@@ -36,6 +36,15 @@ pe pași, în ordine.
 
 ## 1. Starea de acum (actualizată 25.10.2026)
 
+### Continuare 19.11.2026
+
+- Verificări pentru a doua trecere Atenție: nucleu 665 teste, aplicația copilului 454 (15 capturi opționale sărite), panou 37, backend 90, Vercel 7; analiza Flutter fără probleme. Țintele noului nivel „Ce s-a schimbat?” au fost măsurate la minimum 64 dp pe telefon mic simulat.
+
+- „Continuă șirul” din Gândim are modele ABAC, ABBC și AABC de la nivelul 8, testate pe telefon și tabletă simulate. Celelalte zece jocuri din secțiune rămân de abordat în ordine; lista exactă este în `docs/progres-niveluri-jocuri.md`.
+- Clipurile pentru „Super!” și „Super! Ai terminat!” au fost regenerate cu transcriere silabisită pentru sinteză. Manifestul și textul afișat au rămas aceleași; pronunția trebuie ascultată pe dispozitiv înainte de confirmare.
+- Utilizatorul a cerut reluarea în ordine de la **Atenție**: verificați și continuați dezvoltarea tuturor celor șase jocuri din această secțiune înainte de a trece la Fac și eu și celelalte. Extinderea deja realizată la „Continuă șirul” rămâne consemnată, dar restul secțiunii Gândim așteaptă rândul.
+- A doua trecere prin Atenție: niveluri suplimentare pentru toate cele șase jocuri, individual în `docs/progres-niveluri-jocuri.md`. Testele de generator și cele de parcurgere pe telefon mic sunt rulate pentru noile trepte. În continuare, a doua trecere prin Fac și eu, apoi Potrivim etc.; nu presupuneți că o primă trecere înseamnă dificultate nelimitată.
+
 ### Continuare 18.11.2026
 
 - Validarea secțiunii Ascult și înțeleg: nucleu 659 teste, aplicația copilului 442 (15 capturi opționale sărite), panou 37, backend 90, Vercel 7, analiză Flutter fără probleme. Acoperirea vocală verificată exhaustiv pentru sumele de bani: 2883/2883 fraze, clipuri prezente și nenule.

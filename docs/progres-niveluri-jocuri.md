@@ -7,6 +7,17 @@ Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg** și
 
 ## Atenție (ATN) — 6 jocuri
 
+**A doua trecere, începută la cererea utilizatorului pe 19.11:**
+
+- [x] Prinde licuriciul — până la 22 de apariții la nivelul 23; nivelul parcurs pe telefon mic simulat.
+- [x] Paznicul farului — durata apariției scade până la 1 secundă la nivelul 20; nivelul parcurs pe telefon mic simulat.
+- [x] Ce s-a schimbat? — 9 obiecte la nivelul 17 și 10 la 19, fără scurtarea suplimentară a observării; nivelul parcurs pe telefon mic simulat.
+- [x] Unde se uită? — 8 runde de la nivelul 10, cu reutilizarea imaginilor permise dacă este nevoie; testat pe telefon mic simulat.
+- [x] Caută — 6 runde la nivelul 17 și 7 la 19; testat pe telefon mic simulat.
+- [x] Urmărește peștele — 7 runde la nivelul 18 și 8 la 20; testat pe telefon mic simulat.
+
+Prima trecere:
+
 - [x] Prinde licuriciul (`prinde-licuriciul`, reaction) — deplasare mai mare până la nivelul 18; ținta păstrează minimum 64 dp.
 - [x] Paznicul farului (`paznicul-farului`, reaction) — distractori mai frecvenți până la nivelul 15.
 - [x] Ce s-a schimbat? (`ce-s-a-schimbat`, change) — timp de observare redus treptat până la nivelul 15.
@@ -68,7 +79,7 @@ Verificări: generare la nivelurile noi și parcurgere pe telefon simulat; varia
 
 ## Gândim (COG) — 11 jocuri
 
-- [ ] Continuă șirul (`continua-sirul`, choice)
+- [x] Continuă șirul (`continua-sirul`, choice) — de la nivelul 8, modele noi ABAC, ABBC și AABC; verificate prin generare și pe telefon/tabletă simulate.
 - [ ] Anotimpuri (`anotimpuri`, choice)
 - [ ] Unde trăiește? (`habitate`, choice)
 - [ ] Sortăm (`sortam`, sort)

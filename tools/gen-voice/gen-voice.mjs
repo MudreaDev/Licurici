@@ -33,19 +33,26 @@ const RATE = '-5%';
 const PITCH = '+15Hz';
 // Frazele cu prefixul „en:” (jocul Engleză) se rostesc cu o voce englezească de copil, fără prefix.
 const VOICE_EN = 'en-US-AnaNeural';
+// „Super” este uneori pronunțat ca în engleză de vocea românească. Despărțirea
+// silabică se folosește doar pentru sinteză; cheia și textul afișat rămân intacte.
+const pronunciation = (text) => text.replace(/\bSuper\b/g, 'Su-per');
 const voiceOf = (text) =>
   text.startsWith('en:')
     ? { voice: VOICE_EN, lang: 'en-US', text: text.slice(3), rate: '+0%', pitch: '+0Hz' }
-    : { voice: VOICE, lang: 'ro-RO', text, rate: RATE, pitch: PITCH };
+    : { voice: VOICE, lang: 'ro-RO', text: pronunciation(text), rate: RATE, pitch: PITCH };
 // Setările de acum: un clip refăcut cu alte setări se reface din nou.
 const SETTINGS = `${VOICE} ${RATE} ${PITCH}`;
 
 const all = process.argv.includes('--toate');
+const superOnly = process.argv.includes('--super');
 const manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
 
 let todo;
 let redone = new Set();
-if (all) {
+if (superOnly) {
+  todo = ['Super!', 'Super! Ai terminat!'];
+  if (todo.some((t) => !manifest[t])) throw new Error('Lipsește o cheie Super din manifest.');
+} else if (all) {
   if (fs.existsSync(REDONE)) {
     const [head, ...lines] = fs.readFileSync(REDONE, 'utf8').split('\n');
     if (head === SETTINGS) redone = new Set(lines.filter(Boolean));
@@ -124,14 +131,16 @@ let done = 0;
 // Câteva clipuri deodată (fiecare pornește un proces): de ~4 ori mai repede. La clipurile noi,
 // numele se dau înainte, în ordine.
 const CONCURRENCY = Number(process.env.VOICE_JOBS ?? 4);
-const jobs = todo.map((text) => ({ text, file: all ? manifest[text] : fileName() }));
+const jobs = todo.map((text) => ({ text, file: all || superOnly ? manifest[text] : fileName() }));
 async function one({ text, file }) {
   const out = path.join(DIR, file);
   // La regenerare, clipul nou se scrie alături și îl înlocuiește pe cel vechi doar dacă a reușit.
-  const tmp = all ? `${out}.nou.mp3` : out;
+  const tmp = all || superOnly ? `${out}.nou.mp3` : out;
   try {
     await synthesize(text, tmp);
-    if (all) {
+    if (superOnly) {
+      fs.renameSync(tmp, out);
+    } else if (all) {
       fs.renameSync(tmp, out);
       fs.appendFileSync(REDONE, `${text}\n`);
     } else {

@@ -164,7 +164,7 @@ class TrackGame {
   List<String> get steps => const ['ATN2b'];
 
   TrackAxes axesFor(int level) => TrackAxes(
-    trials: 6,
+    trials: level < 18 ? 6 : (level < 20 ? 7 : 8),
     fish: level <= 2 ? 1 : (level <= 4 ? 2 : (level <= 7 ? 3 : (level <= 10 ? 4 : (level < 16 ? 5 : 6)))),
     similarity: level <= 5
         ? TrackSimilarity.species

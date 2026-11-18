@@ -38,6 +38,11 @@ void main() {
     }
   });
 
+  test('de la nivelul 10 atenția este exersată în opt runde', () {
+    expect(game.generate(8, seed: 2).rounds, hasLength(6));
+    expect(game.generate(10, seed: 2).rounds, hasLength(8));
+  });
+
   test('înregistrarea: treapta după indiciu, partea aleasă la greșeală', () {
     final l = game.generate(5, seed: 3);
     final rec = SessionRecorder(childId: 'c')

@@ -43,7 +43,7 @@ const choiceScale = LevelScale(7);
 const extendedChoiceGames = {
   'numaram', 'adunam', 'scadem', 'numarul-lipsa', 'inmultim', 'impartim',
   'bani', 'tabla', 'probleme', 'cate-sunt', 'ceasul', 'culori', 'forme', 'potriveste', 'umbre', 'intrusul',
-  'arata-mi', 'corpul', 'ce-face', 'mingea-rosie', 'unde-e-ursul', 'primul-sunet', 'ce-se-aude', 'da-nu',
+  'arata-mi', 'corpul', 'ce-face', 'mingea-rosie', 'unde-e-ursul', 'primul-sunet', 'ce-se-aude', 'da-nu', 'continua-sirul',
 };
 
 /// Plafonul fiecărui joc cu niveluri proprii, citit din funcția lui `axesFor` / generator
@@ -52,8 +52,8 @@ const extendedChoiceGames = {
 const gameScales = <String, LevelScale>{
   // reacție
   'pescarul': LevelScale(16), // viteza și proporția no-go cresc până la 16
-  'prinde-licuriciul': LevelScale(18),
-  'paznicul-farului': LevelScale(15), // nivelurile 12–15 cresc ponderea distractorilor
+  'prinde-licuriciul': LevelScale(23), // până la 22 de apariții pentru atenția susținută
+  'paznicul-farului': LevelScale(20), // distractori mai frecvenți, apoi apariții mai scurte
   // secvențe
   'simon': LevelScale(25), // span 9 și fără sunet de la 25
   'licuricii': LevelScale(22), // secvențe de până la 9 pași
@@ -62,9 +62,9 @@ const gameScales = <String, LevelScale>{
   'sortam': LevelScale(10),
   'la-locul-lui': LevelScale(10),
   'sortam-emotiile': LevelScale(10),
-  'cauta': LevelScale(15),
+  'cauta': LevelScale(19),
   'cucu-bau': LevelScale(14),
-  'ce-s-a-schimbat': LevelScale(15),
+  'ce-s-a-schimbat': LevelScale(19),
   'diferente': LevelScale(15), // 16 obiecte la 13, 8 diferențe la 15
   'la-magazin': LevelScale(10),
   // construcție, puzzle, labirint
@@ -82,10 +82,10 @@ const gameScales = <String, LevelScale>{
   'puzzle': LevelScale(13), // 5 × 4 fără model la 13
   'labirint': LevelScale(9), // 10 × 6 la 9
   // atenție comună, imitație, ritm
-  'unde-se-uita': LevelScale(8),
+  'unde-se-uita': LevelScale(10),
   'fa-ca-licuriciul': LevelScale(11),
   'toba-magica': LevelScale(13),
-  'urmareste-pestele': LevelScale(16),
+  'urmareste-pestele': LevelScale(20),
   // funcții executive
   'regula-se-schimba': LevelScale(10),
   'semaforul': LevelScale(10),

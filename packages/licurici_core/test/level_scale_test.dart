@@ -36,7 +36,7 @@ final Map<String, String Function(int)> axesSignature = {
     },
   'cauta': (l) {
     final a = const SearchGame().axesFor(l);
-    return '${a.items} ${a.similar} ${a.sameGroupOnly}';
+    return '${a.items} ${a.similar} ${a.sameGroupOnly} ${a.rounds}';
   },
   'cucu-bau': (l) {
     final a = const ShellGame().axesFor(l);
@@ -69,7 +69,7 @@ final Map<String, String Function(int)> axesSignature = {
   'atinge-rapid': (l) => '${const FittsGame().sizeFor(l).toStringAsFixed(3)} ${const FittsGame().reachFor(l).toStringAsFixed(3)}',
   'unde-se-uita': (l) {
     final a = const GazeGame().axesFor(l);
-    return '${a.cue} ${a.similar} ${a.closePairs}';
+    return '${a.cue} ${a.similar} ${a.closePairs} ${a.rounds}';
   },
   'fa-ca-licuriciul': (l) {
     final a = const ImitationGame().axesFor(l);
@@ -81,7 +81,7 @@ final Map<String, String Function(int)> axesSignature = {
   },
   'urmareste-pestele': (l) {
     final a = const TrackGame().axesFor(l);
-    return '${a.fish} ${a.similarity} ${a.speed} ${a.swimMs} ${a.waypoints} ${a.depth}';
+    return '${a.fish} ${a.similarity} ${a.speed} ${a.swimMs} ${a.waypoints} ${a.depth} ${a.trials}';
   },
   'regula-se-schimba': (l) {
     final a = const SwitchGame().axesFor(l);
