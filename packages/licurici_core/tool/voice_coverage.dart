@@ -146,6 +146,11 @@ void main(List<String> args) {
   for (final m in Mood.values) {
     add(m.label, 'dispoziție');
   }
+  // Bancnotele pot totaliza cel mult 300 lei; distractorii vecini ajung până la 303.
+  // Acoperire exhaustivă, deoarece eșantionarea seed-urilor poate rata valori rare.
+  for (var value = 1; value <= 303; value++) {
+    add('$value lei', 'bani');
+  }
   for (final game in allGames) {
     for (final tier in [1, 2, 3, 4, 5, 6, 8, 12]) {
       for (var seed = 0; seed < 60; seed++) {

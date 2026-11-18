@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('potrivirea avansată are șase variante distincte', () {
-    for (final game in [const CuloriGame(), const FormeGame(), const PotrivesteGame(), const UmbreGame(), const IntrusulGame()]) {
+    for (final game in [const CuloriGame(), const FormeGame(), const PotrivesteGame(), const UmbreGame(), const IntrusulGame(), const ArataMiGame(), const CorpulGame(), const CeFaceGame()]) {
       final ctx = GameContext(difficulty: const Difficulty(8), grade: Grade.clasa1, random: Random(42));
       final lesson = game.build(ctx);
       for (final round in lesson.rounds) {
@@ -26,7 +26,7 @@ void main() {
               random: Random(seed),
             );
             final lesson = game.build(ctx);
-            expect(lesson.rounds, hasLength(ctx.difficulty.roundCount));
+            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 10 ? 4 : 5) : ctx.difficulty.roundCount));
             for (final r in lesson.rounds) {
               expect(r.choices.where((c) => c.correct), hasLength(1));
               // Variantele fixe (ex. grupele din „Comparăm”, Da/Nu) nu se taie după tier.
@@ -36,7 +36,7 @@ void main() {
               expect(r.choices.length, greaterThanOrEqualTo(2));
               final keys = r.choices
                   .map(
-                    (c) => '${c.label}|${c.art}|${c.color}|${c.objects?.count}|${c.scale}|${c.placement?.relation}',
+                    (c) => '${c.label}|${c.art}|${c.color}|${c.objects?.count}|${c.scale}|${c.placement?.relation}|${c.placement?.landmark}',
                   )
                   .toSet();
               expect(
@@ -241,7 +241,7 @@ void main() {
   });
 
   test('povești: pașii sunt în ordine, finalul e mereu inclus, nimic nu se pierde din poveste', () {
-    for (final tier in [1, 3, 8]) {
+    for (final tier in [1, 3, 8, 10]) {
       for (var seed = 0; seed < 30; seed++) {
         final ctx = GameContext(difficulty: Difficulty(tier), grade: Grade.clasa1, random: Random(seed));
         final lesson = const PovestiGame().build(ctx);

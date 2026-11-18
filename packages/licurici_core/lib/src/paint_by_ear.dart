@@ -154,7 +154,7 @@ class PaintGame {
 
   PaintAxes axesFor(int level) => PaintAxes(
         colors: switch (level) { 1 => 2, 2 => 3, 3 || 4 => 4, _ => 6 },
-        objects: level >= 4 ? 2 : 1,
+        objects: level >= 9 ? 3 : (level >= 4 ? 2 : 1),
         sized: level >= 6,
         pair: level >= 7,
       );
@@ -169,7 +169,7 @@ class PaintGame {
     for (var r = 0; r < rounds; r++) {
       final things = [...paintThings]..shuffle(random);
       final slots = axes.sized
-          ? ([PaintSlot(things.first, big: true), PaintSlot(things.first, big: false)]..shuffle(random))
+          ? ([PaintSlot(things.first, big: true), PaintSlot(things.first, big: false), if (axes.objects >= 3) PaintSlot(things[1], big: true)]..shuffle(random))
           : [for (final t in things.take(axes.objects)) PaintSlot(t)];
       // Paleta: culorile în ordine fixă (copilul le găsește mereu în același loc).
       final chosen = ([...PaintColor.values]..shuffle(random)).take(axes.colors).toSet();
@@ -179,7 +179,10 @@ class PaintGame {
       last = first.color;
       final tasks = [
         first,
-        if (axes.pair) PaintTask(1 - first.slot, colors[1]),
+        if (axes.pair) ...[
+          for (final (i, slot) in ([for (var j = 0; j < slots.length; j++) if (j != first.slot) j]..shuffle(random)).indexed)
+            PaintTask(slot, colors[i + 1]),
+        ],
       ];
       list.add(PaintRound(slots: slots, palette: palette, tasks: tasks));
     }

@@ -184,6 +184,17 @@ void main() {
     expect(catalogEntry('unde-e-ursul')!.domain, Domain.lrc);
   });
 
+  test('unde e ursulețul avansat diferențiază și reperul', () {
+    for (var seed = 0; seed < 30; seed++) {
+      for (final round in _build(const UndeEUrsulGame(), 8, seed).rounds) {
+        final correct = round.choices.singleWhere((c) => c.correct).placement!;
+        expect(round.choices, hasLength(6));
+        expect(round.choices.any((c) => c.placement!.landmark != correct.landmark), isTrue);
+        expect(round.choices.map((c) => c.key).toSet(), hasLength(6));
+      }
+    }
+  });
+
   test('ce face: corectul e acțiunea din întrebare', () {
     for (var seed = 0; seed < 30; seed++) {
       for (final r in _build(const CeFaceGame(), 4, seed).rounds) {

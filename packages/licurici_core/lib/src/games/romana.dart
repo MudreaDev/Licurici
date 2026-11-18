@@ -170,7 +170,9 @@ class PovestiGame extends ChoiceGame {
     final steps = story.steps;
     // Câte întrebări cere tier-ul; finalul poveștii e mereu inclus. Pașii săriți nu se pierd:
     // povestirea lor se spune înaintea următoarei întrebări.
-    final n = ctx.difficulty.roundCount.clamp(1, steps.length);
+    // La niveluri mai mari, copilul ascultă mai multe fragmente înainte de întrebare.
+    final desired = ctx.difficulty.tier >= 10 ? 4 : (ctx.difficulty.tier >= 8 ? 5 : ctx.difficulty.roundCount);
+    final n = desired.clamp(1, steps.length);
     final asked = {
       ...ctx.sample([for (var i = 0; i < steps.length - 1; i++) i], n - 1),
       steps.length - 1,

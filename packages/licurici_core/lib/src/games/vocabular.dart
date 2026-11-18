@@ -170,18 +170,20 @@ class ArataMiGame extends ChoiceGame {
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final pool = tier <= 2 ? objectWords.where((o) => o.familiar).toList() : objectWords;
+    final advanced = tier >= 8;
     return Lesson(
       title: name,
       instruction: 'Ascultă și arată.',
       rounds: [
-        for (final t in _targets(ctx, pool, 8))
+        for (final t in _targets(ctx, advanced ? _matchingTargets(true) : pool, 8))
           ChoiceRound(
+            fixedChoices: advanced,
             prompt: 'Arată ${t.word}',
             speak: ['Arată ${t.word}'],
             visuals: [TextVisual(t.word)],
             hint: 'Acesta este ${t.word}.',
             choices: [
-              for (final o in [t, ..._distractors(ctx, t, pool, similar: tier >= 4)]..shuffle(ctx.random))
+              for (final o in [t, ..._distractors(ctx, t, pool, similar: tier >= 4, count: advanced ? 5 : 4)]..shuffle(ctx.random))
                 Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
             ],
           ),
@@ -228,12 +230,13 @@ class CorpulGame extends ChoiceGame {
         rounds: [
           for (final t in _targets(ctx, _body, 8))
             ChoiceRound(
+              fixedChoices: ctx.difficulty.tier >= 8,
               prompt: 'Arată ${t.word}',
               speak: ['Arată ${t.word}'],
               visuals: [TextVisual(t.word)],
               hint: 'Acesta este ${t.word}.',
               choices: [
-                for (final o in [t, ...ctx.sample(_body.where((b) => b != t).toList(), 4)]..shuffle(ctx.random))
+                for (final o in [t, ...ctx.sample(_body.where((b) => b != t).toList(), ctx.difficulty.tier >= 8 ? 5 : 4)]..shuffle(ctx.random))
                   Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
               ],
             ),
@@ -429,7 +432,7 @@ class AtributeGame extends ChoiceGame {
       instruction: 'Ascultă bine cum este și arată.',
       rounds: [
         for (var i = 0; i < 8; i++)
-          if (tier < 4 || i.isEven) _sizeRound(ctx, tier) else _colorRound(ctx),
+          if (tier < 4 || i.isEven) _sizeRound(ctx, tier) else _colorRound(ctx, tier),
       ],
     );
   }
@@ -438,6 +441,7 @@ class AtributeGame extends ChoiceGame {
     final t = ctx.pick(_sizedObjects);
     final big = ctx.random.nextBool();
     final other = ctx.pick(_sizedObjects.where((o) => o != t).toList());
+    final third = tier >= 8 ? ctx.pick(_sizedObjects.where((o) => o != t && o != other).toList()) : null;
     Choice option(_Sized o, bool isBig, {bool correct = false}) {
       final phrase = '${o.word} ${o.adjective(isBig)}';
       return Choice(art: o.emoji, scale: isBig ? 1 : 0.5, id: phrase, speak: phrase, correct: correct);
@@ -455,17 +459,18 @@ class AtributeGame extends ChoiceGame {
         option(t, !big),
         if (tier >= 2) option(other, big),
         if (tier >= 3) option(other, !big),
+        if (third != null) ...[option(third, big), option(third, !big)],
       ]..shuffle(ctx.random),
     );
   }
 
-  ChoiceRound _colorRound(GameContext ctx) {
+  ChoiceRound _colorRound(GameContext ctx, int tier) {
     final t = ctx.pick(_coloredObjects);
     final sameFamily = _coloredObjects.where((o) => o.word == t.word && o != t).toList();
     final sameColor = _coloredObjects
         .where((o) => o.word != t.word && _colorRoot(o.color) == _colorRoot(t.color))
         .toList();
-    final options = [t, ...ctx.sample(sameFamily, 2), ...ctx.sample(sameColor, 1)]
+    final options = [t, ...ctx.sample(sameFamily, 2), ...ctx.sample(sameColor, tier >= 8 ? 2 : 1)]
       ..shuffle(ctx.random);
     return ChoiceRound(
       prompt: 'Arată ${t.phrase}',
@@ -713,11 +718,11 @@ class UndeEUrsulGame extends ChoiceGame {
     return Lesson(
       title: name,
       instruction: 'Ascultă unde e și arată.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, relations)],
+      rounds: [for (var i = 0; i < 8; i++) _round(ctx, relations, tier)],
     );
   }
 
-  ChoiceRound _round(GameContext ctx, List<Relation> relations) {
+  ChoiceRound _round(GameContext ctx, List<Relation> relations, int tier) {
     final (emoji, word) = ctx.pick(_things);
     final target = ctx.pick(relations);
     // „În” doar la cutie (în masă nu se poate); „sub cutie” sună ciudat, deci la cutie fără „sub”.
@@ -736,6 +741,12 @@ class UndeEUrsulGame extends ChoiceGame {
       ...ctx.sample(relations.where((r) => r != target && fits(r, landmark)).toList(), want - 1),
     ]..shuffle(ctx.random);
     final phrase = '$word ${target.at(landmark)}';
+    final otherLandmark = landmark == Landmark.masa ? Landmark.cutie : Landmark.masa;
+    final placements = [
+      for (final r in options) Placement(emoji, r, landmark),
+      if (tier >= 8)
+        for (final r in ctx.sample(relations.where((r) => fits(r, otherLandmark)).toList(), 2)) Placement(emoji, r, otherLandmark),
+    ]..shuffle(ctx.random);
     return ChoiceRound(
       prompt: 'Arată $phrase',
       speak: ['Arată $phrase'],
@@ -743,12 +754,12 @@ class UndeEUrsulGame extends ChoiceGame {
       stimulusId: target.name,
       fixedChoices: true,
       choices: [
-        for (final r in options)
+        for (final p in placements)
           Choice(
-            placement: Placement(emoji, r, landmark),
-            id: r.name,
-            speak: r.at(landmark),
-            correct: r == target,
+            placement: p,
+            id: tier >= 8 ? '${p.relation.name}:${p.landmark.name}' : p.relation.name,
+            speak: p.relation.at(p.landmark),
+            correct: p.relation == target && p.landmark == landmark,
           ),
       ],
     );
@@ -798,6 +809,7 @@ class PozitiiGame extends ChoiceGame {
       <= 4 => (1, 2, [0, 1]),
       // La trecere amestecăm și rundele vechi (sus / jos) printre cele noi.
       <= 6 => i.isEven ? (3, 3, [1, 3, 4, 5, 7]) : (3, 3, [1, 3, 5, 7]),
+      >= 9 => (3, 3, [0, 1, 2, 3, 4, 5, 6, 7, 8]),
       _ => (3, 3, ctx.sample([0, 1, 2, 3, 4, 5, 6, 7, 8], 6)),
     };
     final things = ctx.sample(objectWords, cells.length);
@@ -805,7 +817,7 @@ class PozitiiGame extends ChoiceGame {
     final target = ctx.pick(cells);
     final where = place(rows, cols, target ~/ cols, target % cols);
     // Variantele: obiectul întrebat + altele din dulap (cel mult 4 în total).
-    final others = ctx.sample([for (final c in cells) if (c != target) c], min(3, cells.length - 1));
+    final others = ctx.sample([for (final c in cells) if (c != target) c], min(tier >= 9 ? 5 : 3, cells.length - 1));
     return ChoiceRound(
       prompt: 'Ce e $where?',
       speak: ['Ce e $where?'],
@@ -859,13 +871,14 @@ class CeFaceGame extends ChoiceGame {
         rounds: [
           for (final (emoji, verb) in _targets(ctx, actions, 8))
             ChoiceRound(
+              fixedChoices: ctx.difficulty.tier >= 8,
               prompt: 'Cine $verb?',
               speak: ['Cine $verb?'],
               hint: 'Copilul acesta $verb.',
               choices: [
                 for (final (e, v) in [
                   (emoji, verb),
-                  ...ctx.sample(actions.where((a) => a.$1 != emoji).toList(), 4),
+                  ...ctx.sample(actions.where((a) => a.$1 != emoji).toList(), ctx.difficulty.tier >= 8 ? 5 : 4),
                 ]..shuffle(ctx.random))
                   Choice(art: e, id: v, speak: v, correct: e == emoji),
               ],

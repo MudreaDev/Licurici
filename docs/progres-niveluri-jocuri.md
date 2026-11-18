@@ -3,7 +3,7 @@
 Sursa listei: `catalog` din `licurici_core`; `dart run tool/catalog_levels_inventory.dart` generează inventarul.
 O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
 
-Ordine: **Atenție**, **Fac și eu** și **Potrivim** (prima trecere completă), apoi Ascult și înțeleg, Vorbim, Gândim, Emoții și prieteni, Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
+Ordine: **Atenție**, **Fac și eu**, **Potrivim** și **Ascult și înțeleg** (prima trecere completă), apoi Vorbim, Gândim, Emoții și prieteni, Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
 
 ## Atenție (ATN) — 6 jocuri
 
@@ -40,17 +40,19 @@ Verificări: generatoarele și ecranele celor opt jocuri au trecut teste pe tele
 
 ## Ascult și înțeleg (LRC) — 11 jocuri
 
-- [ ] Arată-mi (`arata-mi`, choice)
-- [ ] Corpul meu (`corpul`, choice)
-- [ ] Ce face? (`ce-face`, choice)
-- [ ] Mare, mic, roșu (`mingea-rosie`, choice)
-- [ ] Unde e ursulețul? (`unde-e-ursul`, choice)
-- [ ] Sus, jos, stânga, dreapta (`pozitii`, choice)
-- [ ] Povești (`povesti`, choice)
-- [ ] Adu-mi (`adu-mi`, fetch)
-- [ ] Pune ursulețul (`pune-ursul`, place)
-- [ ] Colorează ce auzi (`coloreaza-ce-auzi`, paintByEar)
-- [ ] Ascultă și fă (`asculta-si-fa`, listen)
+- [x] Arată-mi (`arata-mi`, choice) — șase obiecte asemănătoare de la nivelul 8.
+- [x] Corpul meu (`corpul`, choice) — șase variante de la nivelul 8.
+- [x] Ce face? (`ce-face`, choice) — șase acțiuni de la nivelul 8.
+- [x] Mare, mic, roșu (`mingea-rosie`, choice) — distractori suplimentari de mărime și culoare de la nivelul 8.
+- [x] Unde e ursulețul? (`unde-e-ursul`, choice) — variante cu ambele repere, masă și cutie, de la nivelul 8.
+- [x] Sus, jos, stânga, dreapta (`pozitii`, choice) — nouă compartimente și șase variante de la nivelul 9.
+- [x] Povești (`povesti`, choice) — mai multe fragmente ascultate înaintea întrebărilor la nivelurile 8 și 10; povestea completă rămâne în ordine.
+- [x] Adu-mi (`adu-mi`, fetch) — trei obiecte cerute de la nivelul 8.
+- [x] Pune ursulețul (`pune-ursul`, place) — trei așezări de la nivelul 7.
+- [x] Colorează ce auzi (`coloreaza-ce-auzi`, paintByEar) — trei colorări de la nivelul 9.
+- [x] Ascultă și fă (`asculta-si-fa`, listen) — patru instrucțiuni în ordine de la nivelul 13.
+
+Verificări: generatoarele au fost testate pe mai multe seed-uri; jocurile de acțiune au fost parcurse la nivelurile noi pe telefon simulat, iar jocurile cu alegere au fost deschise la nivelurile noi pe telefon și, pentru majoritatea, pe tabletă simulate. Poveștile au fost verificate pentru ordinea și integritatea fragmentelor și deschise pe telefon. Acoperire vocală: 2883/2883 fraze verificate, inclusiv valorile rare ale banilor. Validarea pe dispozitiv real și cu specialistul rămâne necesară.
 
 ## Vorbim (COM) — 7 jocuri
 

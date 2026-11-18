@@ -153,7 +153,7 @@ class InstructionGame {
 
   InstructionAxes axesFor(int level) => InstructionAxes(
     rounds: 6,
-    steps: level <= 2 ? 1 : (level <= 6 ? 2 : 3),
+    steps: level <= 2 ? 1 : (level <= 6 ? 2 : (level < 13 ? 3 : 4)),
     objects: ramp(level, 3, 7, 10).round(),
     familiarOnly: level <= 4,
     reversed: level >= 9,

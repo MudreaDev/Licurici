@@ -132,7 +132,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Se lucrează în ordinea secțiunilor din aplicație; bifa înseamnă prima extindere implementată și testată, nu dificultate infinită. Atenție, Fac și eu și Potrivim au fost parcurse; urmează Ascult și înțeleg, apoi celelalte secțiuni în ordine.
+**Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Se lucrează în ordinea secțiunilor din aplicație; bifa înseamnă prima extindere implementată și testată, nu dificultate infinită. Atenție, Fac și eu, Potrivim și Ascult și înțeleg au fost parcurse; urmează Vorbim, apoi celelalte secțiuni în ordine.
 
 **18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
 
@@ -1293,7 +1293,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
 **Niveluri suplimentare:** jocurile enumerate în §0.1 și cele trei explorări au fost extinse; celelalte mecanici adaptive necesită în continuare extinderi proprii. Progresul foii de parcurs nu se modifică până la finalizarea cererii.
 
-**Inventar pe secțiuni:** Atenție (6/6), Fac și eu (4/4), Potrivim (8/8) au trecut prima extindere; restul secțiunilor sunt urmărite în [lista pe jocuri](docs/progres-niveluri-jocuri.md).
+**Inventar pe secțiuni:** Atenție (6/6), Fac și eu (4/4), Potrivim (8/8), Ascult și înțeleg (11/11) au trecut prima extindere; restul secțiunilor sunt urmărite în [lista pe jocuri](docs/progres-niveluri-jocuri.md).
 
 **Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; corecția cufărului și a barei de comenzi (0.1.2); fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 

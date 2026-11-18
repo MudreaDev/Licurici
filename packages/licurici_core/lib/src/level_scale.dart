@@ -43,6 +43,7 @@ const choiceScale = LevelScale(7);
 const extendedChoiceGames = {
   'numaram', 'adunam', 'scadem', 'numarul-lipsa', 'inmultim', 'impartim',
   'bani', 'tabla', 'probleme', 'cate-sunt', 'ceasul', 'culori', 'forme', 'potriveste', 'umbre', 'intrusul',
+  'arata-mi', 'corpul', 'ce-face', 'mingea-rosie', 'unde-e-ursul',
 };
 
 /// Plafonul fiecărui joc cu niveluri proprii, citit din funcția lui `axesFor` / generator
@@ -76,7 +77,7 @@ const gameScales = <String, LevelScale>{
   'pune-ursul': LevelScale(7), // toate cele 5 locuri la 4, două obiecte de la 5, trei de la 7
   'oglinda': LevelScale(10), // alt copil de la 6, patru atingeri de la 8, cinci de la 10
   'memorie-sunete': LevelScale(7), // 6 perechi la 7 (la 4 se întorc și animalele, deci perechile scad)
-  'coloreaza-ce-auzi': LevelScale(7), // 6 culori la 5, mare / mic la 6, două colorări la 7
+  'coloreaza-ce-auzi': LevelScale(9), // 6 culori la 5, două colorări la 7, trei la 9
   'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
   'puzzle': LevelScale(13), // 5 × 4 fără model la 13
   'labirint': LevelScale(9), // 10 × 6 la 9
@@ -91,7 +92,7 @@ const gameScales = <String, LevelScale>{
   'floarea-creste': LevelScale(10),
   'pe-rand': LevelScale(12),
   // limbaj
-  'asculta-si-fa': LevelScale(11),
+  'asculta-si-fa': LevelScale(13),
   // motricitate și scris
   'traseaza': LevelScale(10),
   'uneste-punctele': LevelScale(10),
@@ -116,5 +117,5 @@ const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
 LevelScale scaleFor(String gameId) => gameScales[gameId] ??
-    (gameId == 'forma-ascunsa' ? const LevelScale(12) :
+    (gameId == 'forma-ascunsa' ? const LevelScale(12) : gameId == 'povesti' ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(9) :
     (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale));
