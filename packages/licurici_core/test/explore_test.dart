@@ -39,4 +39,17 @@ void main() {
       expect(entry.route, '/exploreaza/${e.id}');
     }
   });
+
+  test('toate opririle au exemple suplimentare la nivelul avansat', () {
+    for (final episode in exploreEpisodes) {
+      for (final stop in episode.stops) {
+        final basic = episode.levelFor(stop, seed: 1);
+        final advanced = episode.levelFor(stop, seed: 1, level: 3);
+        expect(advanced.level, 3);
+        expect(advanced.items.length, greaterThan(basic.items.length), reason: '${episode.id}/${stop.id}');
+        expect(advanced.items.map((item) => item.emoji).toSet(), hasLength(advanced.items.length));
+        expect(advanced.items.every((item) => stop.bins.any((bin) => bin.id == item.binId)), isTrue);
+      }
+    }
+  });
 }

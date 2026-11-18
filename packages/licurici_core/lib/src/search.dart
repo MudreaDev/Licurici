@@ -12,16 +12,17 @@ import 'grades.dart';
 import 'reaction.dart' show ramp;
 
 class SearchAxes {
-  const SearchAxes({required this.items, required this.similar, required this.rounds});
+  const SearchAxes({required this.items, required this.similar, required this.rounds, this.sameGroupOnly = false});
 
   /// Câte obiecte sunt pe ecran (inclusiv ținta).
   final int items;
 
   /// Distractorii sunt din aceeași grupă cu ținta (mai greu de deosebit).
   final bool similar;
+  final bool sameGroupOnly;
   final int rounds;
 
-  Map<String, Object> toJson() => {'items': items, 'similar': similar, 'rounds': rounds};
+  Map<String, Object> toJson() => {'items': items, 'similar': similar, 'rounds': rounds, 'sameGroupOnly': sameGroupOnly};
 }
 
 class SearchItem {
@@ -111,6 +112,7 @@ class SearchGame {
   SearchAxes axesFor(int level) => SearchAxes(
         items: ramp(level, 4, 25, 14).round(),
         similar: level >= 5,
+        sameGroupOnly: level >= 15,
         rounds: 5,
       );
 
@@ -135,7 +137,7 @@ class SearchGame {
       final same = others.where((o) => o.group == target.group).toList();
       final rest = others.where((o) => o.group != target.group).toList();
       // Distractorii pot să se repete (mulți pe ecran), dar niciunul nu e ținta.
-      final pool = axes.similar ? [...same, ...same, ...rest.take(4)] : rest;
+      final pool = axes.sameGroupOnly && same.isNotEmpty ? same : (axes.similar ? [...same, ...same, ...rest.take(4)] : rest);
       final n = axes.items;
       final distractors = [for (var i = 0; i < n - 1; i++) pool[random.nextInt(pool.length)]];
       final (cols, rows) = grid(n);

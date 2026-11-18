@@ -8,6 +8,7 @@ import 'package:licurici/app/theme.dart';
 import 'package:licurici/data/session.dart';
 import 'package:licurici/features/games/explore/explore_screen.dart';
 import 'package:licurici/features/games/sort/sort_screen.dart';
+import 'package:licurici/features/settings/settings.dart';
 import 'package:licurici/shared/reward_finish.dart';
 import 'package:licurici/shared/voice.dart';
 import 'package:licurici_core/licurici_core.dart';
@@ -21,13 +22,17 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final device in ['telefon-mic', 'tableta']) {
-    testWidgets('explorare: harta, povestea opririi, sortarea, steaua, finalul ($device)', (tester) async {
+  for (final (device, startLevel, repeats) in [('telefon-mic', 1, 1), ('tableta', 1, null), ('telefon-mic', 3, 1)]) {
+    testWidgets('explorare: harta, opririle și finalul ($device, nivel $startLevel)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       final episode = exploreEpisodeById('explorare-istorie')!;
-      final container = ProviderContainer(overrides: [voiceProvider.overrideWithValue(const SilentSpeaker())]);
+      var settings = AppSettings(levelRepeats: repeats, levels: {episode.id: startLevel});
+      final container = ProviderContainer(overrides: [
+        voiceProvider.overrideWithValue(const SilentSpeaker()),
+        settingsProvider.overrideWith(() => SettingsNotifier(settings, (s) => settings = s)),
+      ]);
       addTearDown(container.dispose);
       final router = GoRouter(
         initialLocation: '/exploreaza/${episode.id}',
@@ -44,7 +49,7 @@ void main() {
         ),
       );
       await settleUntil(tester, find.byKey(ValueKey('stop-${episode.stops.first.id}')));
-      if (shots) await expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/explorare-$device.png'));
+      if (shots && startLevel == 1) await expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/explorare-$device.png'));
 
       for (final stop in episode.stops) {
         await tester.tap(find.byKey(ValueKey('stop-${stop.id}')));
@@ -52,6 +57,7 @@ void main() {
         await tester.tap(find.byKey(const ValueKey('stop-go')));
         await settleUntil(tester, find.byKey(const ValueKey('sort-item-0')));
         final level = tester.widget<SortScreen>(find.byType(SortScreen)).preset!;
+        expect(level.level, startLevel);
         for (final it in level.items) {
           await tester.tap(find.byKey(ValueKey('sort-item-${it.index}')));
           await tester.pump();
@@ -64,13 +70,16 @@ void main() {
         expect(find.byType(SortScreen), findsNothing, reason: 'înapoi pe hartă după ${stop.id}');
         if (stop != episode.stops.last) {
           expect(find.byKey(ValueKey('stop-done-${stop.id}')), findsOneWidget);
+          expect(container.read(settingsProvider).levels[episode.id], startLevel);
         }
       }
       await settleUntil(tester, find.byType(RewardFinish));
       expect(find.text(episode.outro), findsWidgets);
       // Fiecare lucru pus = o încercare, pe treapta episodului.
       final trials = container.read(sessionProvider)!.trials;
-      expect(trials, hasLength(episode.stops.fold<int>(0, (n, s) => n + s.items.length)));
+      final expected = episode.stops.fold<int>(0, (n, s) => n + episode.levelFor(s, level: startLevel).items.length);
+      expect(trials, hasLength(expected));
+      expect(container.read(settingsProvider).levels[episode.id], startLevel + 1);
       expect(trials.every((t) => t.stepId == 'PAC-I4' && t.correct), isTrue);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());

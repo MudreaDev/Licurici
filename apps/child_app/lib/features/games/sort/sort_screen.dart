@@ -166,7 +166,7 @@ class _SortScreenState extends ConsumerState<SortScreen> {
     final result = SortResult(_level, _placements);
     final session = ref.read(sessionProvider.notifier);
     session.record((r) => r.sortLevel(result));
-    session.checkpoint();
+    session.checkpoint(countCompletion: widget.onComplete == null);
     if (widget.onComplete case final done?) {
       done(result);
       return;

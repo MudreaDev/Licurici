@@ -81,6 +81,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] **Jocurile „frate” noi** pe tabletă: Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi, Memorie cu sunete, Oglinda.
 - [ ] După construirea și instalarea unei versiuni noi, testează cu specialistul limita zilnică, poarta părintelui și progresul după două jocuri și repornire; setează limita/repetările din planul copilului. Timpul numărat este cel din prim-plan, cu ceasul local al tabletei.
 - [ ] După următorul APK, verifică pe tabletă treptele noi din Turnul, Adu-mi, Pune ursulețul și Oglinda; APK-ul 0.1.2 publicat nu le conține.
+- [ ] În următorul APK, verifică reluarea explorărilor și repetările configurate: progresul trebuie să se schimbe doar după terminarea episodului.
 - [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
 
 **B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `py tools/art/convert_codex.py`
@@ -135,6 +136,10 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 **Continuare niveluri:** patru jocuri au trepte mai dificile: Turnul până la 9, Adu-mi până la 8, Pune ursulețul până la 7 și Oglinda până la 10; după aceste puncte mecanicile lor încă au plafon. Extinderea tuturor celorlalte jocuri rămâne de făcut, pe mecanici și conținut real. Activitățile libere (colorare, respirație, comunicare) nu primesc niveluri competitive. Aceste modificări nu sunt incluse în APK-ul 0.1.2 publicat anterior.
 
 **Continuare:** secvențele „Felinarele” și „Licuricii” ajung la 9 pași, imitația la 4 acțiuni, toba la 8 bătăi, iar „Regula se schimbă” are schimbări mai dese; „Construiește” are trepte suplimentare de memorie. Ceasul are variante mai apropiate, iar mai multe jocuri numerice folosesc distractori mai apropiați la nivelul 8. Panoul permite alegerea nivelurilor până la 40. Cererea pentru toate jocurile rămâne deschisă; un număr mai mare nu înseamnă neapărat o sarcină nouă.
+
+Explorările folosesc acum nivelul salvat al episodului și adaugă exemple la opriri de la nivelul 3. Repetările se numără la terminarea episodului, nu după fiecare oprire; conținutul explorărilor trebuie extins și după nivelul 3.
+
+În „Caută”, de la nivelul 15 distractorii sunt din aceeași grupă cu ținta, când există suficiente imagini permise. Restul plafonărilor trebuie evaluate și extinse separat.
 
 **Continuare 18.11:** 37 de obiecte tăiate au fost refăcute; blocul din „Rândul meu” are volum. Auditul pe planșe și limitele lui sunt în raport. În acvariu, indiciul cadoului, pușculița și raftul respectă modul calm, țintele raftului au minimum 64 dp, iar particulele împart un plafon comun de 40. Salvarea parțială nu mai numără un joc ca terminat. Rămâne verificarea pe tabletă a scenelor și a limitei zilnice.
 
@@ -1283,7 +1288,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
 **Continuare 18.11:** auditul pe planșe, 37 obiecte refăcute și blocul cu volum; acvariul respectă plafonul comun de particule și modul calm pentru accesorii. Capturile și testele nu înlocuiesc verificarea pe dispozitiv.
 
-**Niveluri suplimentare:** 4 jocuri extinse și testate; restul jocurilor adaptive necesită extinderi proprii. Progresul foii de parcurs nu se modifică până la finalizarea cererii.
+**Niveluri suplimentare:** jocurile enumerate în §0.1 și cele trei explorări au fost extinse; celelalte mecanici adaptive necesită în continuare extinderi proprii. Progresul foii de parcurs nu se modifică până la finalizarea cererii.
 
 **Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; corecția cufărului și a barei de comenzi (0.1.2); fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 

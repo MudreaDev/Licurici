@@ -36,7 +36,7 @@ final Map<String, String Function(int)> axesSignature = {
     },
   'cauta': (l) {
     final a = const SearchGame().axesFor(l);
-    return '${a.items} ${a.similar}';
+    return '${a.items} ${a.similar} ${a.sameGroupOnly}';
   },
   'cucu-bau': (l) {
     final a = const ShellGame().axesFor(l);
@@ -190,5 +190,6 @@ void main() {
         );
     expect(t('construieste', 10).ratingDifficulty, t('simon', 25).ratingDifficulty);
     expect(t('simon', 7).ratingDifficulty, lessThan(t('construieste', 10).ratingDifficulty));
+    expect(t('ceasul', 7).ratingDifficulty, lessThan(t('ceasul', 8).ratingDifficulty));
   });
 }

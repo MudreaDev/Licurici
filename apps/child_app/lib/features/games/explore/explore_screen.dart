@@ -8,6 +8,7 @@ import 'package:licurici_core/licurici_core.dart';
 
 import '../../../app/layout.dart';
 import '../../../app/theme.dart';
+import '../../../data/session.dart';
 import '../../../shared/fx/scene_background.dart';
 import '../../../shared/mascot.dart';
 import '../../../shared/motion.dart';
@@ -45,11 +46,11 @@ GoRoute exploreRoute({
           return wrap(
             context,
             state,
-            SortScreen(
-              preset: e.levelFor(stop),
+            Consumer(builder: (context, ref, _) => SortScreen(
+              preset: e.levelFor(stop, level: ref.read(sortLevelProvider(e.id))),
               title: stop.name,
               onComplete: (result) => context.pop(result),
-            ),
+            )),
           );
         },
       ),
@@ -72,6 +73,7 @@ class ExploreScreen extends ConsumerStatefulWidget {
 class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   /// Opririle făcute → stele (1–3, după sortare).
   final _done = <String, int>{};
+  final _results = <String, SortResult>{};
   String _bubble = 'Alege o oprire pe hartă.';
   String? _sticker;
   bool _finished = false;
@@ -118,8 +120,15 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     if (!mounted) return;
     setState(() {
       _done[stop.id] = result.stars;
+      _results[stop.id] = result;
       if (_done.length == _e.stops.length) {
         _finished = true;
+        final placements = [for (final r in _results.values) ...r.placements];
+        final accuracy = placements.isEmpty ? 0.0 : placements.where((p) => p.firstTry).length / placements.length;
+        final current = result.level.level;
+        final next = accuracy == 1 ? current + 1 : (accuracy < 0.6 ? math.max(1, current - 1) : current);
+        ref.read(settingsProvider.notifier).setGameLevel(_e.id, next);
+        ref.read(sessionProvider.notifier).checkpoint();
         _sticker = ref.read(settingsProvider.notifier).awardSticker();
         _bubble = _e.outro;
       } else {
@@ -160,6 +169,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                             Tokens.primary,
                             () => setState(() {
                               _done.clear();
+                              _results.clear();
                               _finished = false;
                               _sticker = null;
                               _bubble = 'Alege o oprire pe hartă.';

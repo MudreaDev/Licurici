@@ -64,12 +64,13 @@ class ExploreEpisode {
   Set<Grade> get grades => Grade.parseCodes(gradeCodes);
 
   /// Sortarea opririi [stop], cu lucrurile amestecate din [seed].
-  SortLevel levelFor(ExploreStop stop, {int? seed}) {
+  SortLevel levelFor(ExploreStop stop, {int? seed, int level = 1}) {
     final s = seed ?? Random().nextInt(1 << 31);
-    final items = [...stop.items]..shuffle(Random(s));
+    final extra = _advancedExploreItems['$id/${stop.id}'] ?? const <(String, String)>[];
+    final items = [...stop.items, if (level >= 3) ...extra]..shuffle(Random(s));
     return SortLevel(
       gameId: id,
-      level: 1,
+      level: level,
       seed: s,
       axes: SortAxes(bins: stop.bins.length, perBin: (items.length / stop.bins.length).ceil()),
       bins: stop.bins,
@@ -81,8 +82,23 @@ class ExploreEpisode {
   Set<String> get art => {
         emoji,
         for (final s in stops) ...{s.emoji, ...s.bins.map((b) => b.emoji), ...s.items.map((i) => i.$1)},
+        for (final s in stops) ...?_advancedExploreItems['$id/${s.id}']?.map((item) => item.$1),
       };
 }
+
+/// Exemple suplimentare potrivite categoriei fiecărei opriri, folosite la treptele avansate.
+const _advancedExploreItems = <String, List<(String, String)>>{
+  'explorare-stiinte/habitate': [('🐑', 'ferma'), ('🦉', 'padure'), ('🐬', 'ocean')],
+  'explorare-stiinte/anotimpuri': [('🌸', 'primavara'), ('🏊', 'vara'), ('🍂', 'toamna'), ('🧤', 'iarna')],
+  'explorare-stiinte/hrana': [('🍎', 'iepure')],
+  'explorare-stiinte/reciclare': [('📄', 'hartie'), ('🥤', 'plastic'), ('🥕', 'resturi')],
+  'explorare-istorie/acasa': [('💡', 'prezent')],
+  'explorare-istorie/simboluri': [('📖', 'obiect')],
+  'explorare-istorie/vesti': [('🐎', 'trecut')],
+  'explorare-viata/emotii': [('😀', 'bucuros'), ('😔', 'trist')],
+  'explorare-viata/mancare': [('🍐', 'sanatos'), ('🍦', 'rar')],
+  'explorare-viata/siguranta': [('📚', 'sigur')],
+};
 
 const exploreEpisodes = [
   ExploreEpisode(

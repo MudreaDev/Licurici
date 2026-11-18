@@ -37,6 +37,12 @@ void main() {
     expect(game.axesFor(30).items, 25);
     expect(game.axesFor(4).similar, isFalse);
     expect(game.axesFor(5).similar, isTrue);
+    expect(game.axesFor(15).sameGroupOnly, isTrue);
+    for (var seed = 0; seed < 30; seed++) {
+      for (final round in game.generate(15, seed: seed).rounds) {
+        expect(round.items.every((item) => item.object.group == round.target.group), isTrue);
+      }
+    }
     var same = 0, total = 0;
     for (var seed = 0; seed < 20; seed++) {
       for (final r in game.generate(8, seed: seed).rounds) {

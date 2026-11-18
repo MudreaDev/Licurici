@@ -39,6 +39,12 @@ class LevelScale {
 /// Jocurile cu alegere: treapta `Difficulty.tier` atinge 5 variante la 6 și 8 runde la 7.
 const choiceScale = LevelScale(7);
 
+/// Jocurile cu o nouă treaptă la 8: minute apropiate sau distractori numerici apropiați.
+const extendedChoiceGames = {
+  'numaram', 'adunam', 'scadem', 'numarul-lipsa', 'inmultim', 'impartim',
+  'bani', 'tabla', 'probleme', 'cate-sunt', 'ceasul',
+};
+
 /// Plafonul fiecărui joc cu niveluri proprii, citit din funcția lui `axesFor` / generator
 /// (testul `level_scale_test.dart` cere ca orice joc nou din catalog să apară aici sau să fie
 /// un joc cu alegere). Jocurile fără niveluri (creație, AAC, respirație) nu produc rating.
@@ -55,7 +61,7 @@ const gameScales = <String, LevelScale>{
   'sortam': LevelScale(10),
   'la-locul-lui': LevelScale(10),
   'sortam-emotiile': LevelScale(10),
-  'cauta': LevelScale(14),
+  'cauta': LevelScale(15),
   'cucu-bau': LevelScale(14),
   'ce-s-a-schimbat': LevelScale(11),
   'diferente': LevelScale(13), // 16 obiecte la 13, 6 diferențe de la 11
@@ -99,14 +105,14 @@ const gameScales = <String, LevelScale>{
   'mare-mic': LevelScale(7),
   'orarul-meu': LevelScale(7),
   'spune-propozitia': LevelScale(7),
-  // explorările: opririle sunt sortări cu nivel prestabilit (scara „Sortăm”)
-  'explorare-stiinte': LevelScale(10),
-  'explorare-istorie': LevelScale(10),
-  'explorare-viata': LevelScale(10),
+  // explorările: exemple suplimentare la nivelul 3
+  'explorare-stiinte': LevelScale(3),
+  'explorare-istorie': LevelScale(3),
+  'explorare-viata': LevelScale(3),
 };
 
 /// Jocurile fără niveluri de dificultate (nu produc încercări notate cu nivel).
 const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
-LevelScale scaleFor(String gameId) => gameScales[gameId] ?? choiceScale;
+LevelScale scaleFor(String gameId) => gameScales[gameId] ?? (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale);
