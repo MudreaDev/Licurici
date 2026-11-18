@@ -15,7 +15,10 @@ void main() {
     expect(game.axesFor(9).model, isFalse);
     expect(game.axesFor(11).cols * game.axesFor(11).rows, 16);
     expect(game.axesFor(11).model, isFalse);
-    for (var level = 1; level <= 12; level++) {
+    expect(game.axesFor(12).cols * game.axesFor(12).rows, 20);
+    expect(game.axesFor(12).model, isTrue);
+    expect(game.axesFor(13).model, isFalse);
+    for (var level = 1; level <= 14; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = game.generate(level, seed: seed);
         expect(l.rounds.map((r) => r.image).toSet(), hasLength(l.rounds.length));

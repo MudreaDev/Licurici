@@ -69,7 +69,7 @@ final Map<String, String Function(int)> axesSignature = {
   'atinge-rapid': (l) => '${const FittsGame().sizeFor(l).toStringAsFixed(3)} ${const FittsGame().reachFor(l).toStringAsFixed(3)}',
   'unde-se-uita': (l) {
     final a = const GazeGame().axesFor(l);
-    return '${a.cue} ${a.similar}';
+    return '${a.cue} ${a.similar} ${a.closePairs}';
   },
   'fa-ca-licuriciul': (l) {
     final a = const ImitationGame().axesFor(l);

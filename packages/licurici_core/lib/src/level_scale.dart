@@ -42,7 +42,7 @@ const choiceScale = LevelScale(7);
 /// Jocurile cu o nouă treaptă la 8: minute apropiate sau distractori numerici apropiați.
 const extendedChoiceGames = {
   'numaram', 'adunam', 'scadem', 'numarul-lipsa', 'inmultim', 'impartim',
-  'bani', 'tabla', 'probleme', 'cate-sunt', 'ceasul',
+  'bani', 'tabla', 'probleme', 'cate-sunt', 'ceasul', 'culori', 'forme', 'potriveste', 'umbre', 'intrusul',
 };
 
 /// Plafonul fiecărui joc cu niveluri proprii, citit din funcția lui `axesFor` / generator
@@ -51,8 +51,8 @@ const extendedChoiceGames = {
 const gameScales = <String, LevelScale>{
   // reacție
   'pescarul': LevelScale(16), // viteza și proporția no-go cresc până la 16
-  'prinde-licuriciul': LevelScale(14),
-  'paznicul-farului': LevelScale(10), // durata, ritmul și mărimea se opresc la 10
+  'prinde-licuriciul': LevelScale(18),
+  'paznicul-farului': LevelScale(15), // nivelurile 12–15 cresc ponderea distractorilor
   // secvențe
   'simon': LevelScale(25), // span 9 și fără sunet de la 25
   'licuricii': LevelScale(22), // secvențe de până la 9 pași
@@ -63,8 +63,8 @@ const gameScales = <String, LevelScale>{
   'sortam-emotiile': LevelScale(10),
   'cauta': LevelScale(15),
   'cucu-bau': LevelScale(14),
-  'ce-s-a-schimbat': LevelScale(11),
-  'diferente': LevelScale(13), // 16 obiecte la 13, 6 diferențe de la 11
+  'ce-s-a-schimbat': LevelScale(15),
+  'diferente': LevelScale(15), // 16 obiecte la 13, 8 diferențe la 15
   'la-magazin': LevelScale(10),
   // construcție, puzzle, labirint
   'construieste': LevelScale(10),
@@ -78,13 +78,13 @@ const gameScales = <String, LevelScale>{
   'memorie-sunete': LevelScale(7), // 6 perechi la 7 (la 4 se întorc și animalele, deci perechile scad)
   'coloreaza-ce-auzi': LevelScale(7), // 6 culori la 5, mare / mic la 6, două colorări la 7
   'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
-  'puzzle': LevelScale(11), // 4 × 4 fără model la 11
+  'puzzle': LevelScale(13), // 5 × 4 fără model la 13
   'labirint': LevelScale(9), // 10 × 6 la 9
   // atenție comună, imitație, ritm
-  'unde-se-uita': LevelScale(6),
+  'unde-se-uita': LevelScale(8),
   'fa-ca-licuriciul': LevelScale(11),
   'toba-magica': LevelScale(13),
-  'urmareste-pestele': LevelScale(14),
+  'urmareste-pestele': LevelScale(16),
   // funcții executive
   'regula-se-schimba': LevelScale(10),
   'semaforul': LevelScale(10),
@@ -115,4 +115,6 @@ const gameScales = <String, LevelScale>{
 const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
-LevelScale scaleFor(String gameId) => gameScales[gameId] ?? (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale);
+LevelScale scaleFor(String gameId) => gameScales[gameId] ??
+    (gameId == 'forma-ascunsa' ? const LevelScale(12) :
+    (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale));

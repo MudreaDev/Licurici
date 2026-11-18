@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 11), ('tableta', 8)]) {
+  for (final (device, level) in [('telefon-mic', 11), ('tableta', 8), ('telefon-mic', 13)]) {
     testWidgets('puzzle: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,7 +49,7 @@ void main() {
       );
       await settle(tester, 3);
       final l = const PuzzleGame().generate(level, seed: 3);
-      if (shots) {
+      if (shots && level != 13) {
         await expectLater(
           find.byType(PuzzleScreen),
           matchesGoldenFile('shots/puzzle-$device.png'),
@@ -58,15 +58,30 @@ void main() {
       for (final (ri, r) in l.rounds.indexed) {
         for (final (k, p) in r.tray.indexed) {
           final piece = find.byKey(ValueKey('puzzle-piece-${p.index}'));
+          if (level == 13) {
+            await tester.ensureVisible(piece);
+            await tester.pump(const Duration(milliseconds: 300));
+            expect(tester.getSize(piece).shortestSide, greaterThanOrEqualTo(64));
+          }
           if (ri == 0 && k == 0) {
             // Greșit: atinge piesa, apoi alt loc → piesa rămâne în tavă.
             await tester.tap(piece);
             await tester.pump();
-            await tester.tap(find.byKey(ValueKey('puzzle-slot-${(p.index + 1) % r.pieces}')));
+            final wrongSlot = find.byKey(ValueKey('puzzle-slot-${(p.index + 1) % r.pieces}'));
+            if (level == 13) await tester.ensureVisible(wrongSlot);
+            await tester.tap(wrongSlot);
             await tester.pump(const Duration(milliseconds: 300));
             expect(piece, findsOneWidget);
           }
-          if (k.isEven) {
+          if (level == 13) {
+            await tester.ensureVisible(piece);
+            await tester.tap(piece);
+            await tester.pump();
+            final slot = find.byKey(ValueKey('puzzle-slot-${p.index}'));
+            await tester.ensureVisible(slot);
+            expect(tester.getSize(slot).shortestSide, greaterThanOrEqualTo(64));
+            await tester.tap(slot);
+          } else if (k.isEven) {
             // Prin tragere.
             final from = tester.getCenter(piece);
             final to = tester.getCenter(find.byKey(ValueKey('puzzle-slot-${p.index}')));

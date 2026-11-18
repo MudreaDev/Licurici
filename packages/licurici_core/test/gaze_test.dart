@@ -28,6 +28,16 @@ void main() {
     expect(game.generate(5, seed: 1).question, 'Unde se uită Licurici?');
   });
 
+  test('nivelul avansat folosește perechi apropiate și respectă excluderile', () {
+    final avoided = avoidedEmojis({'caini', 'pisici'});
+    for (var seed = 0; seed < 30; seed++) {
+      final level = game.generate(8, seed: seed, avoid: avoided);
+      expect(level.axes.closePairs, isTrue);
+      expect(level.rounds.every((r) => r.objects.every((o) => !isAvoided(o.emoji, avoided))), isTrue);
+      expect(level.rounds.every((r) => r.objects[0].group == r.objects[1].group), isTrue);
+    }
+  });
+
   test('înregistrarea: treapta după indiciu, partea aleasă la greșeală', () {
     final l = game.generate(5, seed: 3);
     final rec = SessionRecorder(childId: 'c')

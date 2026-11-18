@@ -38,6 +38,10 @@ pe pași, în ordine.
 
 ### Continuare 18.11.2026
 
+- Validarea primelor trei secțiuni: nucleu 658 teste, aplicația copilului 426 (15 capturi opționale sărite), panou 37, backend 90, Vercel 7; analiza Flutter fără probleme. Ecranele de nivel nou au fost verificate pe simulator, nu pe tabletă fizică.
+
+- **Cerința utilizatorului: toate jocurile, secțiune cu secțiune.** Evidența individuală și ordinea sunt în `docs/progres-niveluri-jocuri.md`, verificată automat față de catalog prin `levels_inventory_test.dart`. Prima trecere prin Atenție (6), Fac și eu (4) și Potrivim (8) este implementată și testată. Puzzle are 20 de piese și tavă derulabilă, cu ținte de cel puțin 64 dp la nivelul nou. Urmează Ascult și înțeleg (11 jocuri), apoi secțiunile rămase în ordinea din evidență. Nu marca restul secțiunilor gata pe baza lucrărilor făcute în afara ordinii, fără revizuire și teste. Jocurile păstrează limite reale; verificați pe dispozitiv și cu specialistul.
+
 - **Caută:** nivelul 15 folosește distractori din aceeași grupă cu ținta, cu rezervă la celelalte imagini permise dacă filtrele specialistului golesc grupa. `gameScales` și testele generatorului reflectă noua treaptă.
 - După explorări și Caută: 655 teste nucleu, 406 teste aplicație copil, 15 capturi opționale sărite; analiza Flutter și testele panoului/backend/Vercel au trecut. Verificarea pe tabletă rămâne necesară.
 - Scările normalizate includ treapta 8 pentru Ceasul și jocurile numerice care folosesc distractori apropiați; scara explorărilor reflectă conținutul disponibil la nivelul 3. Recalcularea rapoartelor vechi folosește aceste scări noi; pentru validarea longitudinală, comparați valorile înainte și după schimbare.

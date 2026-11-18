@@ -19,15 +19,16 @@ enum GazeCue {
 }
 
 class GazeAxes {
-  const GazeAxes({required this.cue, required this.similar, required this.rounds});
+  const GazeAxes({required this.cue, required this.similar, required this.rounds, this.closePairs = false});
 
   final GazeCue cue;
 
   /// Cele două obiecte sunt din aceeași grupă.
   final bool similar;
+  final bool closePairs;
   final int rounds;
 
-  Map<String, Object> toJson() => {'cue': cue.name, 'similar': similar, 'rounds': rounds};
+  Map<String, Object> toJson() => {'cue': cue.name, 'similar': similar, 'rounds': rounds, 'closePairs': closePairs};
 }
 
 class GazeRound {
@@ -109,6 +110,7 @@ class GazeGame {
   GazeAxes axesFor(int level) => GazeAxes(
         cue: level <= 3 ? GazeCue.point : GazeCue.look,
         similar: level >= 6,
+        closePairs: level >= 8,
         rounds: 6,
       );
 
@@ -131,10 +133,21 @@ class GazeGame {
       final starts = axes.similar
           ? pool.where((o) => pool.any((p) => p != o && p.group == o.group)).toList()
           : pool;
-      final a = starts[random.nextInt(starts.length)];
-      final others = pool.where((o) => o != a && (axes.similar ? o.group == a.group : o.group != a.group)).toList();
-      final candidates = others.isEmpty ? pool.where((o) => o != a).toList() : others;
-      final b = candidates[random.nextInt(candidates.length)];
+      final close = <(String, String)>[
+        ('🐶', '🐱'), ('🐄', '🐎'), ('🐑', '🐖'), ('🍎', '🍓'),
+        ('🍌', '🍉'), ('🦊', '🐻'), ('☀️', '🌙'),
+      ].where((pair) => pool.any((o) => o.emoji == pair.$1) && pool.any((o) => o.emoji == pair.$2)).toList();
+      late ObjectWord a, b;
+      if (axes.closePairs && close.isNotEmpty) {
+        final pair = close[random.nextInt(close.length)];
+        a = pool.firstWhere((o) => o.emoji == pair.$1);
+        b = pool.firstWhere((o) => o.emoji == pair.$2);
+      } else {
+        a = starts[random.nextInt(starts.length)];
+        final others = pool.where((o) => o != a && (axes.similar ? o.group == a.group : o.group != a.group)).toList();
+        final candidates = others.isEmpty ? pool.where((o) => o != a).toList() : others;
+        b = candidates[random.nextInt(candidates.length)];
+      }
       used.addAll([a.emoji, b.emoji]);
       rounds.add(GazeRound(objects: random.nextBool() ? [a, b] : [b, a], side: side));
     }

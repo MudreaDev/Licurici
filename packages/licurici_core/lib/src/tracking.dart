@@ -165,7 +165,7 @@ class TrackGame {
 
   TrackAxes axesFor(int level) => TrackAxes(
     trials: 6,
-    fish: level <= 2 ? 1 : (level <= 4 ? 2 : (level <= 7 ? 3 : (level <= 10 ? 4 : 5))),
+    fish: level <= 2 ? 1 : (level <= 4 ? 2 : (level <= 7 ? 3 : (level <= 10 ? 4 : (level < 16 ? 5 : 6)))),
     similarity: level <= 5
         ? TrackSimilarity.species
         : (level <= 8 ? TrackSimilarity.color : TrackSimilarity.identical),

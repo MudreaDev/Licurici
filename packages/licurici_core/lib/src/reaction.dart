@@ -433,7 +433,7 @@ class PrindeLicuriciulGame extends ReactionGame {
         sizeFactor: ramp(level, 1.4, 0.85, 12),
         edgeBias: ramp(level, 0, 1, 8),
         moving: true,
-        driftRange: ramp(level, 0.06, 0.3, 10),
+        driftRange: level <= 14 ? ramp(level, 0.06, 0.3, 10) : ramp(level, 0.3, 0.38, 18),
         flies: true,
         firstGapMs: 700,
       );
@@ -481,7 +481,7 @@ class PaznicFaruluiGame extends ReactionGame {
         count: ramp(level, 24, 60, 10).round(),
         gapMs: ramp(level, 2200, 1300, 10).round(),
         visibleMs: ramp(level, 1800, 1100, 10).round(),
-        noGoRatio: ramp(level, 0.5, 0.75, 8),
+        noGoRatio: level <= 10 ? ramp(level, 0.5, 0.75, 8) : ramp(level - 10, 0.75, 0.8, 5),
         similarity: level < 4 ? 0 : (level < 8 ? 1 : 2),
         sizeFactor: ramp(level, 1.2, 0.9, 10),
         edgeBias: ramp(level, 0.3, 1, 8),

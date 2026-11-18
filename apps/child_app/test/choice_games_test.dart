@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:game_content/game_content.dart';
 import 'package:licurici/main.dart';
 import 'package:licurici/shared/voice.dart';
+import 'package:licurici/features/settings/settings.dart';
 import 'package:licurici_core/licurici_core.dart';
 
 import 'layout_test.dart' show devices, loadFonts, settle, settleUntil, shots;
@@ -20,8 +21,12 @@ void main() {
   });
 
   for (final device in ['telefon-mic', 'tableta']) {
-    for (final game in allGames) {
-      testWidgets('${game.id} pe $device', (tester) async {
+    for (final (game, level) in [
+      for (final game in allGames) (game, 1),
+      for (final game in allGames.where((game) => {'culori', 'forme', 'potriveste', 'umbre', 'intrusul'}.contains(game.id))) (game, 8),
+      for (final game in allGames.where((game) => game.id == 'forma-ascunsa')) (game, 12),
+    ]) {
+      testWidgets('${game.id} pe $device, nivel $level', (tester) async {
         tester.view.physicalSize = devices[device]!;
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
@@ -34,6 +39,7 @@ void main() {
           ],
         );
         addTearDown(container.dispose);
+        if (level > 1) container.read(settingsProvider.notifier).setGameLevel(game.id, level);
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
@@ -54,7 +60,7 @@ void main() {
         }
         if (mood.evaluate().isNotEmpty) await tester.tap(mood);
         await settleUntil(tester, firstChoice);
-        if (shots) {
+        if (shots && level == 1) {
           await expectLater(
             find.byType(LicuriciApp),
             matchesGoldenFile('shots/joc-${game.id}-$device.png'),

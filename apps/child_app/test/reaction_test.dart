@@ -29,6 +29,12 @@ class _SeededFirefly extends PrindeLicuriciulGame {
       super.generate(level, seed: 17);
 }
 
+class _SeededLighthouse extends PaznicFaruluiGame {
+  const _SeededLighthouse();
+  @override
+  ReactionLevel generate(int level, {int? seed}) => super.generate(level, seed: 17);
+}
+
 Future<ProviderContainer> _open(
   WidgetTester tester,
   ReactionGame game, {
@@ -111,6 +117,17 @@ void main() {
     rootBundle.clear();
     svg.cache.clear();
   });
+
+  for (final (game, level) in [(const _SeededFirefly(), 18), (const _SeededLighthouse(), 15)]) {
+    testWidgets('${game.id}: nivel avansat pe telefon mic', (tester) async {
+      await _open(tester, game, size: const Size(640, 360), initialLevel: level);
+      await _begin(tester);
+      await _play(tester, game.generate(level), tapGo: true);
+      expect(findFinish(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await closeApp(tester);
+    });
+  }
 
   for (final game in const [_SeededPond(), _SeededFirefly()]) {
     testWidgets(

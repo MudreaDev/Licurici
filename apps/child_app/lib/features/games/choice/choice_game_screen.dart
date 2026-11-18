@@ -958,7 +958,9 @@ class ProgressDots extends ConsumerWidget {
         borderRadius: BorderRadius.circular(999),
         boxShadow: Tokens.shadow,
       ),
-      child: Row(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           for (var i = 0; i < total; i++)
@@ -981,6 +983,7 @@ class ProgressDots extends ConsumerWidget {
               ),
             ),
         ],
+        ),
       ),
     );
   }

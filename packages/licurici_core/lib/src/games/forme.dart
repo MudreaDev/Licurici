@@ -26,12 +26,14 @@ class CuloriGame extends ChoiceGame {
 
   ChoiceRound _round(GameContext ctx, bool colorToName) {
     final target = ctx.pick(content.colors);
+    final advanced = ctx.difficulty.tier >= 8;
     final options = [
       target,
-      ...ctx.sample(content.colors.where((c) => c != target).toList(), 4),
+      ...ctx.sample(content.colors.where((c) => c != target).toList(), advanced ? 5 : 4),
     ]..shuffle(ctx.random);
     if (colorToName) {
       return ChoiceRound(
+        fixedChoices: advanced,
         prompt: 'Ce culoare este?',
         visuals: [ColorVisual(target.argb)],
         hint: 'Aceasta este culoarea ${target.name}.',
@@ -39,6 +41,7 @@ class CuloriGame extends ChoiceGame {
       );
     }
     return ChoiceRound(
+      fixedChoices: advanced,
       prompt: 'Alege culoarea:',
       speak: [target.name],
       visuals: [TextVisual(target.name)],
@@ -71,12 +74,14 @@ class FormeGame extends ChoiceGame {
 
   ChoiceRound _round(GameContext ctx, bool shapeToName) {
     final target = ctx.pick(content.shapes);
+    final advanced = ctx.difficulty.tier >= 8;
     final options = [
       target,
-      ...ctx.sample(content.shapes.where((s) => s != target).toList(), 4),
+      ...ctx.sample(content.shapes.where((s) => s != target).toList(), advanced ? 5 : 4),
     ]..shuffle(ctx.random);
     if (shapeToName) {
       return ChoiceRound(
+        fixedChoices: advanced,
         prompt: 'Ce formă este?',
         visuals: [EmojiVisual(target.emoji)],
         hint: 'Aceasta este ${target.word}.',
@@ -84,6 +89,7 @@ class FormeGame extends ChoiceGame {
       );
     }
     return ChoiceRound(
+      fixedChoices: advanced,
       prompt: 'Alege forma:',
       speak: [target.word],
       visuals: [TextVisual(target.word)],

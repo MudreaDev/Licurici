@@ -20,6 +20,8 @@ void main() {
     }
     expect(game.axesFor(1).hideModelMs, isNull);
     expect(game.axesFor(8).hideModelMs, isNotNull);
+    expect(game.axesFor(8).hideModelMs, 4000);
+    expect(game.axesFor(10).hideModelMs, 3000);
   });
 
   test('înregistrarea', () {

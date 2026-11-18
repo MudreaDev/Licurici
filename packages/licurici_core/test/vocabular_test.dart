@@ -57,7 +57,7 @@ void main() {
           final rest = r.choices.where((c) => !c.correct).map((c) => _word(c.art!)).toList();
           expect(rest.map((o) => o.group).toSet(), hasLength(1));
           expect(intruder.group, isNot(rest.first.group));
-          expect(rest.length, (1 + tier).clamp(2, 4));
+          expect(rest.length, (1 + tier).clamp(2, tier >= 8 ? 5 : 4));
         }
       }
     }

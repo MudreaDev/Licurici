@@ -43,7 +43,7 @@ void main() {
     expect(game.axesFor(8).kinds, contains(ChangeKind.disappear));
     expect(game.axesFor(1).items, 3);
     expect(game.axesFor(30).items, 8);
-    expect(game.axesFor(30).lookMs, 2500);
+    expect(game.axesFor(30).lookMs, 2100);
   });
 
   test('înregistrarea', () {

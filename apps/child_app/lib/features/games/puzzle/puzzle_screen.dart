@@ -41,7 +41,10 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
   late PuzzleLevel _level;
 
   /// Câte runde are tura: cât dă nivelul, sau mai puține dacă așa a ales specialistul.
-  int get _total => cappedRounds(_level.rounds.length, ref.read(settingsProvider).rounds[widget.game.id]);
+  int get _total => cappedRounds(
+    _level.rounds.length,
+    ref.read(settingsProvider).rounds[widget.game.id],
+  );
   final _solves = <PuzzleSolve>[];
   final _placed = <int>{};
   final _clock = Stopwatch();
@@ -220,10 +223,14 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
       // Rama (4:3) cât mai mare în dreapta; tava ia restul.
       // Pe telefon rama e puțin mai mică, ca piesele din tavă să rămână mari.
       final share = layout.compact ? 0.5 : 0.58;
-      final frameH = math.min(
+      final dense = _r.cols >= 5;
+      final naturalFrameH = math.min(
         box.maxHeight - 16,
         (box.maxWidth * share) * 3 / 4,
       );
+      final frameH = dense
+          ? math.max(64.0 * _r.rows, naturalFrameH)
+          : naturalFrameH;
       final frameW = frameH * 4 / 3;
       final pw = frameW / _r.cols, ph = frameH / _r.rows;
       final image = illustration('domains/${_r.image}');
@@ -243,62 +250,67 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
         );
       }
       scale = scale.clamp(0.0, 1.0);
+      if (dense) scale = 1;
       return Padding(
         padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
         child: Row(
           children: [
             SizedBox(
               width: trayW,
-              child: Center(
-                child: Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    for (final p in left)
-                      Juice(
-                        key: ValueKey('puzzle-piece-${p.index}'),
-                        enabled: motion.movement,
-                        shakeTick: _shake[p.index] ?? 0,
-                        child: Draggable<int>(
-                          data: p.index,
-                          feedback: Material(
-                            type: MaterialType.transparency,
-                            child: _Piece(
-                              image: image,
-                              piece: p,
-                              round: _r,
-                              w: pw,
-                              h: ph,
-                              lifted: true,
-                            ),
-                          ),
-                          childWhenDragging: SizedBox(
-                            width: pw * scale,
-                            height: ph * scale,
-                          ),
-                          child: Semantics(
-                            button: true,
-                            label: 'Piesa ${p.index + 1}',
-                            child: GestureDetector(
-                              onTap: () => setState(
-                                () => _selected = _selected == p.index
-                                    ? null
-                                    : p.index,
-                              ),
+              height: dense ? box.maxHeight - 8 : null,
+              child: SingleChildScrollView(
+                physics: dense ? null : const NeverScrollableScrollPhysics(),
+                child: Center(
+                  child: Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      for (final p in left)
+                        Juice(
+                          key: ValueKey('puzzle-piece-${p.index}'),
+                          enabled: motion.movement,
+                          shakeTick: _shake[p.index] ?? 0,
+                          child: Draggable<int>(
+                            data: p.index,
+                            feedback: Material(
+                              type: MaterialType.transparency,
                               child: _Piece(
                                 image: image,
                                 piece: p,
                                 round: _r,
-                                w: pw * scale,
-                                h: ph * scale,
-                                selected: _selected == p.index,
+                                w: pw,
+                                h: ph,
+                                lifted: true,
+                              ),
+                            ),
+                            childWhenDragging: SizedBox(
+                              width: pw * scale,
+                              height: ph * scale,
+                            ),
+                            child: Semantics(
+                              button: true,
+                              label: 'Piesa ${p.index + 1}',
+                              child: GestureDetector(
+                                onTap: () => setState(
+                                  () => _selected = _selected == p.index
+                                      ? null
+                                      : p.index,
+                                ),
+                                child: _Piece(
+                                  image: image,
+                                  piece: p,
+                                  round: _r,
+                                  w: pw * scale,
+                                  h: ph * scale,
+                                  selected: _selected == p.index,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -306,75 +318,89 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
             Juice(
               enabled: motion.movement,
               popTick: _done ? 1 : 0,
-              child: Container(
-                key: const ValueKey('puzzle-frame'),
+              child: SizedBox(
                 width: frameW + 12,
-                height: frameH + 12,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBF4),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: const Color(0xFFE3D9C6), width: 3),
-                  boxShadow: Tokens.shadow,
-                ),
-                child: Stack(
-                  children: [
-                    // Modelul estompat (la nivelurile mici).
-                    if (_level.axes.model)
-                      Positioned.fill(
-                        child: Opacity(
-                          opacity: 0.22,
-                          child: Image(image: image, fit: BoxFit.fill),
-                        ),
+                height: dense
+                    ? math.min(frameH + 12, box.maxHeight - 8)
+                    : frameH + 12,
+                child: SingleChildScrollView(
+                  physics: dense ? null : const NeverScrollableScrollPhysics(),
+                  child: Container(
+                    key: const ValueKey('puzzle-frame'),
+                    width: frameW + 12,
+                    height: frameH + 12,
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFBF4),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: const Color(0xFFE3D9C6),
+                        width: 3,
                       ),
-                    for (final p in _r.tray)
-                      Positioned(
-                        left: p.col * pw,
-                        top: p.row * ph,
-                        width: pw,
-                        height: ph,
-                        child: DragTarget<int>(
-                          onAcceptWithDetails: (d) => _put(d.data, p.index),
-                          builder: (context, hover, _) => Semantics(
-                            button: true,
-                            label: 'Locul ${p.index + 1}',
-                            child: GestureDetector(
-                              key: ValueKey('puzzle-slot-${p.index}'),
-                              behavior: HitTestBehavior.opaque,
-                              onTap: _selected == null
-                                  ? null
-                                  : () => _put(_selected!, p.index),
-                              child: _placed.contains(p.index)
-                                  ? _Piece(
-                                      image: image,
-                                      piece: p,
-                                      round: _r,
-                                      w: pw,
-                                      h: ph,
-                                      flat: _done,
-                                    )
-                                  : DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        color: hover.isNotEmpty
-                                            ? Tokens.sun.withValues(alpha: 0.3)
-                                            : null,
-                                        border: Border.all(
-                                          color: const Color(0x66A9A3D1),
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                    ),
+                      boxShadow: Tokens.shadow,
+                    ),
+                    child: Stack(
+                      children: [
+                        // Modelul estompat (la nivelurile mici).
+                        if (_level.axes.model)
+                          Positioned.fill(
+                            child: Opacity(
+                              opacity: 0.22,
+                              child: Image(image: image, fit: BoxFit.fill),
                             ),
                           ),
-                        ),
-                      ),
-                    if (motion.particles)
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          child: StarBurst(trigger: _burst, count: 14),
-                        ),
-                      ),
-                  ],
+                        for (final p in _r.tray)
+                          Positioned(
+                            left: p.col * pw,
+                            top: p.row * ph,
+                            width: pw,
+                            height: ph,
+                            child: DragTarget<int>(
+                              onAcceptWithDetails: (d) => _put(d.data, p.index),
+                              builder: (context, hover, _) => Semantics(
+                                button: true,
+                                label: 'Locul ${p.index + 1}',
+                                child: GestureDetector(
+                                  key: ValueKey('puzzle-slot-${p.index}'),
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: _selected == null
+                                      ? null
+                                      : () => _put(_selected!, p.index),
+                                  child: _placed.contains(p.index)
+                                      ? _Piece(
+                                          image: image,
+                                          piece: p,
+                                          round: _r,
+                                          w: pw,
+                                          h: ph,
+                                          flat: _done,
+                                        )
+                                      : DecoratedBox(
+                                          decoration: BoxDecoration(
+                                            color: hover.isNotEmpty
+                                                ? Tokens.sun.withValues(
+                                                    alpha: 0.3,
+                                                  )
+                                                : null,
+                                            border: Border.all(
+                                              color: const Color(0x66A9A3D1),
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (motion.particles)
+                          Positioned.fill(
+                            child: IgnorePointer(
+                              child: StarBurst(trigger: _burst, count: 14),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),

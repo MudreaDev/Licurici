@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 12), ('tableta', 7)]) {
+  for (final (device, level) in [('telefon-mic', 12), ('tableta', 7), ('telefon-mic', 15)]) {
     testWidgets('ce s-a schimbat: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -50,7 +50,7 @@ void main() {
       await settle(tester, 2);
       final l = const ChangeGame().generate(level, seed: 5);
       for (final (i, r) in l.rounds.indexed) {
-        if (shots && i == 0) {
+        if (shots && i == 0 && level != 15) {
           await tester.pump(const Duration(milliseconds: 500));
           await expectLater(
             find.byType(ChangeScreen),
@@ -72,7 +72,7 @@ void main() {
           await tester.tap(find.byKey(ValueKey(key(wrong))));
           await tester.pump(const Duration(milliseconds: 200));
         }
-        if (shots && disappear) {
+        if (shots && disappear && level != 15) {
           await expectLater(
             find.byType(ChangeScreen),
             matchesGoldenFile('shots/schimbat-$device-disparut.png'),

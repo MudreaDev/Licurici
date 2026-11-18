@@ -5,6 +5,16 @@ import 'package:licurici_core/src/games/content.dart' show ortograme, stories;
 import 'package:test/test.dart';
 
 void main() {
+  test('potrivirea avansată are șase variante distincte', () {
+    for (final game in [const CuloriGame(), const FormeGame(), const PotrivesteGame(), const UmbreGame(), const IntrusulGame()]) {
+      final ctx = GameContext(difficulty: const Difficulty(8), grade: Grade.clasa1, random: Random(42));
+      final lesson = game.build(ctx);
+      for (final round in lesson.rounds) {
+        expect(round.choices, hasLength(6), reason: game.id);
+        expect(round.choices.where((choice) => choice.correct), hasLength(1));
+      }
+    }
+  });
   for (final game in allGames) {
     group(game.id, () {
       for (final tier in [1, 3, 6, 20]) {

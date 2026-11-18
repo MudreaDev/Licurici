@@ -135,7 +135,7 @@ class ChangeGame {
 
   ChangeAxes axesFor(int level) => ChangeAxes(
         items: min(8, 2 + (level + 1) ~/ 2),
-        lookMs: ramp(level, 4000, 2500, 10).round(),
+        lookMs: (level <= 11 ? ramp(level, 4000, 2500, 10) : ramp(level - 11, 2500, 2100, 4)).round(),
         kinds: level <= 3
             ? const [ChangeKind.appear]
             : (level <= 6

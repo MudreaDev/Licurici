@@ -111,11 +111,12 @@ class PuzzleGame {
       4 || 5 => (3, 2),
       6 || 7 => (3, 3),
       8 || 9 => (4, 3),
-      _ => (4, 4),
+      10 || 11 => (4, 4),
+      _ => (5, 4),
     };
     // Modelul (poza ștearsă din ramă) ajută la fiecare mărime nouă, apoi dispare:
     // 3 × 3 de la 7, 4 × 3 de la 9, 4 × 4 de la 11.
-    return PuzzleAxes(cols: cols, rows: rows, model: level <= 6 || level == 8 || level == 10, rounds: 3);
+    return PuzzleAxes(cols: cols, rows: rows, model: level <= 6 || level == 8 || level == 10 || level == 12, rounds: 3);
   }
 
   PuzzleLevel generate(int level, {int? seed}) {

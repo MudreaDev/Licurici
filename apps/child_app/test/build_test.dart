@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 8), ('tableta', 4)]) {
+  for (final (device, level) in [('telefon-mic', 8), ('tableta', 4), ('telefon-mic', 10)]) {
     testWidgets('construiește la fel: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,7 +49,7 @@ void main() {
       );
       await settle(tester, 2);
       final l = const BuildGame().generate(level, seed: 2);
-      if (shots) {
+      if (shots && level != 10) {
         await expectLater(
           find.byType(BuildScreen),
           matchesGoldenFile('shots/construieste-$device.png'),

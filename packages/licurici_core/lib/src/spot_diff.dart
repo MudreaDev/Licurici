@@ -82,7 +82,7 @@ class SpotDiffGame {
   Set<Grade> get grades => Grade.parseCodes('G1234');
   List<String> get steps => const ['POT8'];
 
-  int differencesFor(int level) => min(6, 1 + (level - 1) ~/ 2);
+  int differencesFor(int level) => min(8, 1 + (level - 1) ~/ 2);
   int itemsFor(int level) => min(16, 3 + level);
 
   /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
