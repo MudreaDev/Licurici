@@ -4,6 +4,12 @@ import 'package:test/test.dart';
 void main() {
   const game = SoundMemoryGame();
 
+  test('nivelurile avansate au șapte, apoi opt perechi', () {
+    expect(game.axesFor(9).pairs, 7);
+    expect(game.axesFor(11).pairs, 8);
+    expect(game.generate(11, seed: 2).cards, hasLength(16));
+  });
+
   test('fiecare sursă are exact cartea ei cu sunet; la fermă doar animale de fermă', () {
     for (var level = 1; level <= 8; level++) {
       final axes = game.axesFor(level);

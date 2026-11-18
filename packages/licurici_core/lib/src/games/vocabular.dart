@@ -540,6 +540,7 @@ class CeSeAudeGame extends ChoiceGame {
       rounds: [
         for (final t in _targets(ctx, soundSources, 8))
           ChoiceRound(
+            fixedChoices: ctx.difficulty.tier >= 8,
             prompt: 'Cine face „${t.sound}”?',
             speak: ['Cine face ${t.sound}?'],
             visuals: const [EmojiVisual('👂')],
@@ -551,7 +552,7 @@ class CeSeAudeGame extends ChoiceGame {
                   soundSources
                       .where((o) => o != t && (!similar || !t.farm || o.farm))
                       .toList(),
-                  4,
+                  ctx.difficulty.tier >= 8 ? 5 : 4,
                 ),
               ]..shuffle(ctx.random))
                 Choice(art: o.emoji, id: o.who, speak: o.sound, correct: o == t),
@@ -674,10 +675,11 @@ class PrimulSunetGame extends ChoiceGame {
     final seen = {sound, ...near.map((o) => firstSound(o.word)!)};
     final rest = <ObjectWord>[];
     for (final o in others) {
-      if (rest.length + near.length >= 4) break;
+      if (rest.length + near.length >= (ctx.difficulty.tier >= 8 ? 5 : 4)) break;
       if (seen.add(firstSound(o.word)!)) rest.add(o);
     }
     return ChoiceRound(
+      fixedChoices: ctx.difficulty.tier >= 8,
       prompt: 'Ce începe cu $sound?',
       speak: ['Ce începe cu $sound?'],
       visuals: [TextVisual(sound)],

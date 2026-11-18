@@ -81,9 +81,10 @@ class DaNuGame extends ChoiceGame {
 
   ChoiceRound _round(GameContext ctx, bool yes) {
     final shown = ctx.pick(content.alphabet);
+    final similar = content.alphabet.where((a) => a.emoji != shown.emoji && a.letter == shown.letter).toList();
     final asked = yes
         ? shown
-        : ctx.pick(content.alphabet.where((a) => a.emoji != shown.emoji).toList());
+        : ctx.pick(ctx.difficulty.tier >= 8 && similar.isNotEmpty ? similar : content.alphabet.where((a) => a.emoji != shown.emoji).toList());
     return ChoiceRound(
       prompt: 'Este ${asked.word}?',
       speak: ['Este ${asked.word}?'],

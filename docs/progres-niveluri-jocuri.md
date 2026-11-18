@@ -1,9 +1,9 @@
 # Progresul nivelurilor pe secțiuni
 
 Sursa listei: `catalog` din `licurici_core`; `dart run tool/catalog_levels_inventory.dart` generează inventarul.
-O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
+O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; o excepție pentru un instrument de comunicare este indicată explicit. Nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
 
-Ordine: **Atenție**, **Fac și eu**, **Potrivim** și **Ascult și înțeleg** (prima trecere completă), apoi Vorbim, Gândim, Emoții și prieteni, Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
+Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg** și **Vorbim** (prima trecere), apoi Gândim, Emoții și prieteni, Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
 
 ## Atenție (ATN) — 6 jocuri
 
@@ -56,13 +56,15 @@ Verificări: generatoarele au fost testate pe mai multe seed-uri; jocurile de ac
 
 ## Vorbim (COM) — 7 jocuri
 
-- [ ] Ce ai auzit? (`ce-ai-auzit`, choice)
-- [ ] Primul sunet (`primul-sunet`, choice)
-- [ ] Da sau nu? (`da-nu`, choice)
-- [ ] Ce se aude? (`ce-se-aude`, choice)
-- [ ] Memorie cu sunete (`memorie-sunete`, soundMemory)
-- [ ] Vorbește (`vorbeste`, aac)
-- [ ] Spune propoziția (`spune-propozitia`, order)
+- [x] Ce ai auzit? (`ce-ai-auzit`, choice) — 5 variante la nivelul 8 și 6 la 10, inclusiv cuvinte asemănătoare.
+- [x] Primul sunet (`primul-sunet`, choice) — 6 variante cu sunete inițiale diferite de la nivelul 8.
+- [x] Da sau nu? (`da-nu`, choice) — la nivelul 8, imaginea nepotrivită poate avea aceeași inițială.
+- [x] Ce se aude? (`ce-se-aude`, choice) — 6 variante de la nivelul 8.
+- [x] Memorie cu sunete (`memorie-sunete`, soundMemory) — 7 perechi la nivelul 9 și 8 la 11; cartonașe de minimum 64 dp pe telefonul mic testat.
+- [x] Vorbește (`vorbeste`, aac) — excepție revizuită: este o tablă de comunicare, nu un joc cu răspunsuri corecte; toate pictogramele rămân disponibile, fără nivel obligatoriu.
+- [x] Spune propoziția (`spune-propozitia`, order) — 3 distractori la nivelul 9 și 4 la 11.
+
+Verificări: generare la nivelurile noi și parcurgere pe telefon simulat; variantele cu alegeri au fost testate și pe tabletă simulată. Tabla AAC nu a fost transformată într-o probă obligatorie. Validarea pe dispozitiv real și cu specialistul rămâne necesară.
 
 ## Gândim (COG) — 11 jocuri
 

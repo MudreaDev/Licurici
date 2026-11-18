@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('Ce ai auzit?: întâi cuvinte diferite, apoi perechea minimală; se rostește ținta', () {
-    for (var tier = 1; tier <= 8; tier++) {
+    for (var tier = 1; tier <= 10; tier++) {
       for (var seed = 0; seed < 20; seed++) {
         final lesson = const CeAiAuzitGame().build(GameContext(difficulty: Difficulty(tier), grade: Grade.clasa1, random: Random(seed)));
         for (final r in lesson.rounds) {
@@ -20,7 +20,7 @@ void main() {
           } else {
             expect(ids, contains(twin));
           }
-          if (tier >= 5) expect(r.choices, hasLength(4));
+          if (tier >= 5) expect(r.choices, hasLength(tier >= 10 ? 6 : (tier >= 8 ? 5 : 4)));
           expect(r.stimulusId, 'pereche-${pair.$1.word}-${pair.$2.word}');
         }
       }

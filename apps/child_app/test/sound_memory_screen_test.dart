@@ -19,7 +19,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 2), ('tableta', 5), ('telefon-mic', 7)]) {
+  for (final (device, level) in [('telefon-mic', 2), ('tableta', 5), ('telefon-mic', 7), ('telefon-mic', 11)]) {
     testWidgets('Memorie cu sunete: nivelul $level pe $device, o pereche greșită, apoi toate', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -39,9 +39,14 @@ void main() {
         UncontrolledProviderScope(container: container, child: MaterialApp.router(theme: buildTheme(calm: false), routerConfig: router)),
       );
       await settle(tester, 2);
-      if (shots) await expectLater(find.byType(SoundMemoryScreen), matchesGoldenFile('shots/memorie-sunete-$device-$level.png'));
+      if (shots && level != 11) await expectLater(find.byType(SoundMemoryScreen), matchesGoldenFile('shots/memorie-sunete-$device-$level.png'));
       final l = const SoundMemoryGame().generate(level, seed: 3);
       final cards = l.cards;
+      if (level == 11) {
+        final size = tester.getSize(find.byKey(const ValueKey('sound-card-0')));
+        expect(size.width, greaterThanOrEqualTo(64));
+        expect(size.height, greaterThanOrEqualTo(64));
+      }
       final s0 = cards.indexWhere((c) => c.isSound);
       final wrong = cards.indexWhere((c) => !c.isSound && !c.matches(cards[s0]));
       await tester.tap(find.byKey(ValueKey('sound-card-$s0')));

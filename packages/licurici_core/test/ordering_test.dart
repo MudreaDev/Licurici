@@ -53,7 +53,7 @@ void main() {
 
   test('spune propoziția: cuvintele în ordinea propoziției; capcanele nu sunt în șir', () {
     const g = OrderGame.sentences;
-    for (var level = 1; level <= 9; level++) {
+    for (var level = 1; level <= 11; level++) {
       for (var seed = 0; seed < 30; seed++) {
         for (final r in g.generate(level, seed: seed).rounds) {
           expect(r.steps, r.story.steps.take(r.steps.length).toList());

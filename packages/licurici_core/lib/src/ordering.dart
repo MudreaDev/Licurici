@@ -434,9 +434,9 @@ class OrderGame {
   int stepsFor(int level) =>
       sentence ? (level <= 2 ? 2 : 3) : min(5, 2 + (level - 1) ~/ 2);
 
-  /// Câte cartonașe-capcană (doar la propoziții): 0 → 2.
+  /// Câte cartonașe-capcană (doar la propoziții): 0 → 4.
   int distractorsFor(int level) =>
-      !sentence ? 0 : (level <= 4 ? 0 : (level <= 6 ? 1 : 2));
+      !sentence ? 0 : (level <= 4 ? 0 : (level <= 6 ? 1 : (level < 9 ? 2 : (level < 11 ? 3 : 4))));
 
   /// Câte povești pe nivel.
   int roundsFor(int level) => level <= 2 ? 3 : 4;

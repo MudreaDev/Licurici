@@ -56,7 +56,7 @@ void main() {
   });
 
   for (final game in orderGames) {
-    for (final (device, level) in [('telefon-mic', 9), ('tableta', 3)]) {
+    for (final (device, level) in [('telefon-mic', 9), ('tableta', 3), if (game.sentence) ('telefon-mic', 11)]) {
       testWidgets('${game.id}: nivelul $level pe $device, cu o greșeală', (
         tester,
       ) async {
@@ -67,7 +67,7 @@ void main() {
           level: level,
         );
         final l = game.generate(level, seed: 5);
-        if (shots) {
+        if (shots && level != 11) {
           await expectLater(
             find.byType(OrderScreen),
             matchesGoldenFile('shots/ordine-${game.id}-$device.png'),

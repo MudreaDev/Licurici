@@ -23,10 +23,11 @@ void main() {
   for (final device in ['telefon-mic', 'tableta']) {
     for (final (game, level) in [
       for (final game in allGames) (game, 1),
-      for (final game in allGames.where((game) => {'culori', 'forme', 'potriveste', 'umbre', 'intrusul', 'arata-mi', 'corpul', 'ce-face', 'mingea-rosie', 'unde-e-ursul'}.contains(game.id))) (game, 8),
+      for (final game in allGames.where((game) => {'culori', 'forme', 'potriveste', 'umbre', 'intrusul', 'arata-mi', 'corpul', 'ce-face', 'mingea-rosie', 'unde-e-ursul', 'primul-sunet', 'ce-se-aude', 'da-nu'}.contains(game.id))) (game, 8),
       for (final game in allGames.where((game) => game.id == 'forma-ascunsa')) (game, 12),
       for (final game in allGames.where((game) => game.id == 'pozitii')) (game, 9),
       for (final game in allGames.where((game) => game.id == 'povesti')) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'ce-ai-auzit')) (game, 10),
     ]) {
       testWidgets('${game.id} pe $device, nivel $level', (tester) async {
         tester.view.physicalSize = devices[device]!;

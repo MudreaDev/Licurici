@@ -60,9 +60,12 @@ class CeAiAuzitGame extends ChoiceGame {
       final flip = ctx.random.nextBool();
       final target = flip ? b : a, twin = flip ? a : b;
       final far = ctx.sample(_farWords, 2);
+      final otherPairs = ctx.sample(minimalPairs.where((pair) => pair.$1 != a).toList(), tier >= 10 ? 2 : 1);
       final options = switch (tier) {
         1 || 2 => [target, far[0]], // sună cu totul altfel
         3 || 4 => [target, twin], // perechea minimală, doar două poze
+        >= 10 => [target, twin, for (final pair in otherPairs) ...[pair.$1, pair.$2]],
+        >= 8 => [target, twin, otherPairs.first.$1, otherPairs.first.$2, ...far.take(1)],
         _ => [target, twin, ...far], // perechea printre alte poze
       }..shuffle(ctx.random);
       rounds.add(ChoiceRound(

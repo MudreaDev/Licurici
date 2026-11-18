@@ -215,7 +215,7 @@ class _SoundMemoryScreenState extends ConsumerState<SoundMemoryScreen> {
       final n = _level.cards.length;
       final cols = _level.axes.columns;
       final rows = (n / cols).ceil();
-      const gap = 12.0;
+      final gap = cols >= 7 ? 4.0 : 12.0;
       const ratio = 0.78;
       final h = math.min((box.maxHeight - gap * (rows - 1)) / rows, ((box.maxWidth - gap * (cols - 1)) / cols) / ratio);
       final w = h * ratio;

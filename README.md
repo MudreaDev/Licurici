@@ -82,7 +82,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] După construirea și instalarea unei versiuni noi, testează cu specialistul limita zilnică, poarta părintelui și progresul după două jocuri și repornire; setează limita/repetările din planul copilului. Timpul numărat este cel din prim-plan, cu ceasul local al tabletei.
 - [ ] După următorul APK, verifică pe tabletă treptele noi din Turnul, Adu-mi, Pune ursulețul și Oglinda; APK-ul 0.1.2 publicat nu le conține.
 - [ ] În următorul APK, verifică reluarea explorărilor și repetările configurate: progresul trebuie să se schimbe doar după terminarea episodului.
-- [ ] În următorul APK, verifică pe tabletă nivelurile avansate din Atenție, Fac și eu și Potrivim, inclusiv puzzle-ul cu 20 de piese și derulare.
+- [ ] În următorul APK, verifică pe tabletă nivelurile avansate din Atenție, Fac și eu, Potrivim, Ascult și înțeleg și Vorbim, inclusiv puzzle-ul cu 20 de piese și memoria cu 8 perechi.
 - [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
 
 **B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `py tools/art/convert_codex.py`
@@ -132,7 +132,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
 
-**Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Se lucrează în ordinea secțiunilor din aplicație; bifa înseamnă prima extindere implementată și testată, nu dificultate infinită. Atenție, Fac și eu, Potrivim și Ascult și înțeleg au fost parcurse; urmează Vorbim, apoi celelalte secțiuni în ordine.
+**Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Se lucrează în ordinea secțiunilor din aplicație; bifa înseamnă prima extindere implementată și testată sau o excepție explicată, nu dificultate infinită. Atenție, Fac și eu, Potrivim, Ascult și înțeleg și Vorbim au fost parcurse; urmează Gândim, apoi celelalte secțiuni în ordine. „Vorbește” este o tablă AAC și rămâne disponibilă integral, fără nivel obligatoriu.
 
 **18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
 
@@ -1057,6 +1057,8 @@ iar mascota participă. Totuși, animația **servește învățarea** și nu tre
 
 ## 16. Catalogul de jocuri (58)
 
+Catalogul efectiv și progresul actual al nivelurilor pentru toate cele 109 jocuri sunt urmărite [pe secțiuni și jocuri](docs/progres-niveluri-jocuri.md); tabelul de mai jos este inventarul inițial de 58.
+
 44 portate din prototip (🔁) + 14 noi (🆕), inspirate din categoriile dovedite (AutiSpark, Otsimo, literatura ABA/TEACCH).
 Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2.
 
@@ -1293,7 +1295,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
 **Niveluri suplimentare:** jocurile enumerate în §0.1 și cele trei explorări au fost extinse; celelalte mecanici adaptive necesită în continuare extinderi proprii. Progresul foii de parcurs nu se modifică până la finalizarea cererii.
 
-**Inventar pe secțiuni:** Atenție (6/6), Fac și eu (4/4), Potrivim (8/8), Ascult și înțeleg (11/11) au trecut prima extindere; restul secțiunilor sunt urmărite în [lista pe jocuri](docs/progres-niveluri-jocuri.md).
+**Inventar pe secțiuni:** Atenție (6/6), Fac și eu (4/4), Potrivim (8/8), Ascult și înțeleg (11/11), Vorbim (6 jocuri extinse și tabla AAC revizuită) au trecut prima verificare; restul secțiunilor sunt urmărite în [lista pe jocuri](docs/progres-niveluri-jocuri.md).
 
 **Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; corecția cufărului și a barei de comenzi (0.1.2); fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 

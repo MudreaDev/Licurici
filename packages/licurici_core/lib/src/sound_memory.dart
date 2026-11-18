@@ -108,7 +108,7 @@ class SoundMemoryGame {
   static String says(SoundSource x) => '${x.who[0].toUpperCase()}${x.who.substring(1)} face ${x.sound}.';
 
   SoundMemoryAxes axesFor(int level) => SoundMemoryAxes(
-        pairs: switch (level) { 1 => 2, 2 => 3, 3 => 4, 4 => 3, 5 => 4, 6 => 5, _ => 6 },
+        pairs: switch (level) { 1 => 2, 2 => 3, 3 => 4, 4 => 3, 5 => 4, 6 => 5, < 9 => 6, < 11 => 7, _ => 8 },
         sourcesUp: level <= 3,
         farmOnly: level >= 6,
       );
