@@ -1,6 +1,6 @@
 # Ilustrații — objects7
 
-## objects/alarm_clock.webp
+### Arhivă — objects/alarm_clock.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e3-c5b5-77a3-bb31-ed2ca7af0ff7\cells\objects__alarm_clock.png`
 
@@ -96,7 +96,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one shiny round spoon, lying diagonally; cell 2: one small desk calendar with a mint top band and blank cream pages, no numbers; cell 3: one friendly sky-blue loudspeaker with soft cream sound waves; cell 4: one child's school backpack in mint with a peach front pocket; cell 5: one rounded cream dice showing round peach dots; cell 6: one old-fashioned golden balance scale with two pans, level; cell 7: one pair of child's shorts in peach laid flat; cell 8: one pair of cozy knitted mittens-style gloves in lavender; cell 9: one closed hardcover book with a soft coral-red cover, no title. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/boot.webp
+### Arhivă — objects/boot.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e1-0f0c-7fd2-9156-957b42d80bc5\cells\objects__boot.png`
 
@@ -120,7 +120,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly smiling cartoon shark in sky blue, closed mouth; cell 2: one shiny clean white tooth with a gentle sparkle; cell 3: one small beach scene: a striped peach umbrella on soft sand with a tiny sky-blue sea edge; cell 4: one glossy brown chestnut with a cream base; cell 5: one open lavender umbrella with a few soft raindrops falling on it; cell 6: one open umbrella with a curved handle, plain lavender canopy; cell 7: one closed cardboard box tied with soft string; cell 8: one squeeze bottle of lotion in mint with a cream cap, no label text; cell 9: one ballpoint pen in sky blue, lying diagonally. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/boy.webp
+### Arhivă — objects/boy.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\boy.png`
 
@@ -144,7 +144,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one electric plug with a short cable in cream; cell 2: three glossy translucent soap bubbles of different sizes; cell 3: one kitchen water tap with a small stream of water and a glass below; cell 4: one soft evening sky with the sun setting behind small houses in silhouette, peach and lavender; cell 5: one round birthday cake with cream frosting and three lit candles; cell 6: one small friendly sky-blue bird sitting; cell 7: one yo-yo in lavender and peach with its string; cell 8: one simple child's dress in peach laid flat; cell 9: one baseball cap in mint, side view. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/bus.webp
+### Arhivă — objects/bus.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e1-0f0c-7fd2-9156-957b42d80bc5\cells\objects__bus.png`
 
@@ -184,7 +184,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one electric plug with a short cable in cream; cell 2: three glossy translucent soap bubbles of different sizes; cell 3: one kitchen water tap with a small stream of water and a glass below; cell 4: one soft evening sky with the sun setting behind small houses in silhouette, peach and lavender; cell 5: one round birthday cake with cream frosting and three lit candles; cell 6: one small friendly sky-blue bird sitting; cell 7: one yo-yo in lavender and peach with its string; cell 8: one simple child's dress in peach laid flat; cell 9: one baseball cap in mint, side view. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/cart.webp
+### Arhivă — objects/cart.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148df-f8c2-72b3-975b-7d0348d7c47d\cells\objects__cart.png`
 
@@ -192,7 +192,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one closed cream envelope with a small heart seal in peach; cell 2: one friendly traffic light with three round lights: green glowing, amber and red softly dim; cell 3: one child's sneaker in sky blue with cream laces, side view; cell 4: one rounded wooden door with a small round window and a golden knob, slightly open; cell 5: one soft sun rising over gentle mint hills with a peach sky glow; cell 6: one cozy child's bed with a lavender blanket and a cream pillow; cell 7: one magnifying glass with a honey wooden handle and a softly reflective lens; cell 8: one small shopping cart in sky blue with rounded wheels; cell 9: one friendly cartoon tiger sitting, soft orange with gentle stripes. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/chair.webp
+### Arhivă — objects/chair.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148df-f8c2-7ef3-9810-6500119742de\cells\objects__chair.png`
 
@@ -224,7 +224,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly white polar bear sitting; cell 2: one friendly grey seal lying; cell 3: one small sun peeking from behind a soft rain cloud with a few raindrops; cell 4: one soft-serve ice cream cone with pastel swirl; cell 5: one bunch of purple grapes with a green leaf; cell 6: one pair of skis with poles, crossed; cell 7: one round wall clock with a cream face and simple hands, no numbers; cell 8: one friendly eagle with open wings; cell 9: one rounded knight's shield in sky blue with a cream star. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/coat.webp
+### Arhivă — objects/coat.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\coat.png`
 
@@ -240,7 +240,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: two joined musical notes in soft lavender, gently glossy; cell 2: one rounded white bathtub on little feet full of soft bubbles; cell 3: one fluffy yellow chick hatching from a cracked cream eggshell; cell 4: one cream candle with a small warm flame on a little peach holder; cell 5: one rounded smartphone with a lavender case and a soft sky-blue screen without any text; cell 6: one small golden crown with soft rounded points and three pastel gems; cell 7: one plain sky-blue t-shirt laid flat; cell 8: one cozy mint winter coat with round wooden buttons; cell 9: one single jigsaw puzzle piece in lavender. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/dad.webp
+### Arhivă — objects/dad.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e4-31ba-7a70-9ea5-83dbf23f5dbd\cells\objects__dad.png`
 
@@ -248,7 +248,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly simple child's ear in warm peach skin tone, side view; cell 2: one curling sea wave in sky blue and mint with a soft cream foam crest; cell 3: one child's hand holding a yellow pencil writing a wavy line on a cream sheet of paper, no letters; cell 4: two small friendly children hugging each other happily, full body; cell 5: one friendly little boy, full body, short brown hair, mint t-shirt and blue shorts, gentle smile; cell 6: one friendly little girl, full body, brown hair in two short pigtails, peach dress, gentle smile; cell 7: one friendly young father, full body, short dark hair, sky-blue shirt, gentle smile; cell 8: one friendly young mother, full body, long brown hair, lavender dress, gentle smile; cell 9: one friendly grandmother, full body, grey hair in a bun, round glasses, peach cardigan, gentle smile. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/deer.webp
+### Arhivă — objects/deer.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e2-b9b6-7e83-ac45-6a1b14a9aad4\cells\objects__deer.png`
 
@@ -296,7 +296,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one fresh head of green lettuce; cell 2: one small sprig of green herb leaves; cell 3: one cooked piece of meat on a bone, cartoon style; cell 4: one roasted chicken drumstick; cell 5: one folded newspaper with grey blocks instead of text; cell 6: one simple green glass bottle with a cork, no label; cell 7: one slice of strawberry cream cake with a strawberry on top; cell 8: one peach paper cone of golden french fries; cell 9: one rounded kitchen knife with a wooden handle, lying diagonally. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/eagle.webp
+### Arhivă — objects/eagle.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e3-95f2-7660-adb0-e1d1c333a75e\cells\objects__eagle.png`
 
@@ -344,7 +344,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one child walking happily, side view, full body; cell 2: two hands pressed together politely, warm skin tone, peach sleeves; cell 3: two hands raised up in celebration, warm skin tone, with small sparkles; cell 4: one happy child wearing a party hat and blowing a party horn, upper body; cell 5: two hands clapping, warm skin tone, with small motion lines; cell 6: one child swimming happily in sky-blue water with goggles; cell 7: one friendly smiling child's mouth with lips, simple front view; cell 8: one child's leg with a short sock and a sneaker, side view; cell 9: one bare child's foot, simple side view, warm skin tone. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/fries.webp
+### Arhivă — objects/fries.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e1-1d28-7ce0-a5d1-5f799bc3064e\cells\objects__fries.png`
 
@@ -352,7 +352,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one fresh head of green lettuce; cell 2: one small sprig of green herb leaves; cell 3: one cooked piece of meat on a bone, cartoon style; cell 4: one roasted chicken drumstick; cell 5: one folded newspaper with grey blocks instead of text; cell 6: one simple green glass bottle with a cork, no label; cell 7: one slice of strawberry cream cake with a strawberry on top; cell 8: one peach paper cone of golden french fries; cell 9: one rounded kitchen knife with a wooden handle, lying diagonally. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/girl.webp
+### Arhivă — objects/girl.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\girl.png`
 
@@ -368,7 +368,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one shiny round spoon, lying diagonally; cell 2: one small desk calendar with a mint top band and blank cream pages, no numbers; cell 3: one friendly sky-blue loudspeaker with soft cream sound waves; cell 4: one child's school backpack in mint with a peach front pocket; cell 5: one rounded cream dice showing round peach dots; cell 6: one old-fashioned golden balance scale with two pans, level; cell 7: one pair of child's shorts in peach laid flat; cell 8: one pair of cozy knitted mittens-style gloves in lavender; cell 9: one closed hardcover book with a soft coral-red cover, no title. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/grandma.webp
+### Arhivă — objects/grandma.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e4-31ba-7a70-9ea5-83dbf23f5dbd\cells\objects__grandma.png`
 
@@ -376,7 +376,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly simple child's ear in warm peach skin tone, side view; cell 2: one curling sea wave in sky blue and mint with a soft cream foam crest; cell 3: one child's hand holding a yellow pencil writing a wavy line on a cream sheet of paper, no letters; cell 4: two small friendly children hugging each other happily, full body; cell 5: one friendly little boy, full body, short brown hair, mint t-shirt and blue shorts, gentle smile; cell 6: one friendly little girl, full body, brown hair in two short pigtails, peach dress, gentle smile; cell 7: one friendly young father, full body, short dark hair, sky-blue shirt, gentle smile; cell 8: one friendly young mother, full body, long brown hair, lavender dress, gentle smile; cell 9: one friendly grandmother, full body, grey hair in a bun, round glasses, peach cardigan, gentle smile. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/grandpa.webp
+### Arhivă — objects/grandpa.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e4-eea9-7de3-819e-d0f60dd0da88\cells\objects__grandpa.png`
 
@@ -408,7 +408,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one child walking happily, side view, full body; cell 2: two hands pressed together politely, warm skin tone, peach sleeves; cell 3: two hands raised up in celebration, warm skin tone, with small sparkles; cell 4: one happy child wearing a party hat and blowing a party horn, upper body; cell 5: two hands clapping, warm skin tone, with small motion lines; cell 6: one child swimming happily in sky-blue water with goggles; cell 7: one friendly smiling child's mouth with lips, simple front view; cell 8: one child's leg with a short sock and a sneaker, side view; cell 9: one bare child's foot, simple side view, warm skin tone. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/handshake.webp
+### Arhivă — objects/handshake.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\handshake.png`
 
@@ -448,7 +448,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one fresh head of green lettuce; cell 2: one small sprig of green herb leaves; cell 3: one cooked piece of meat on a bone, cartoon style; cell 4: one roasted chicken drumstick; cell 5: one folded newspaper with grey blocks instead of text; cell 6: one simple green glass bottle with a cork, no label; cell 7: one slice of strawberry cream cake with a strawberry on top; cell 8: one peach paper cone of golden french fries; cell 9: one rounded kitchen knife with a wooden handle, lying diagonally. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/hug.webp
+### Arhivă — objects/hug.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\hug.png`
 
@@ -480,7 +480,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small classical museum building with cream columns and a peach triangular roof; cell 2: one rolled cream paper scroll, partly open, no writing; cell 3: one rounded retro radio in mint with a round speaker grille and a knob; cell 4: one rounded retro television in peach with a blank sky-blue screen and small antennas; cell 5: one bowl of fresh green salad with tomato slices and cucumbers; cell 6: one roll of soft white toilet paper; cell 7: one pair of child's blue jeans laid flat; cell 8: one simple wooden chair with a mint cushion; cell 9: one soft grey-blue cloud with gentle raindrops. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/jellyfish.webp
+### Arhivă — objects/jellyfish.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e2-9fc7-75d3-802d-cdb5685b5c1f\cells\objects__jellyfish.png`
 
@@ -512,7 +512,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one child walking happily, side view, full body; cell 2: two hands pressed together politely, warm skin tone, peach sleeves; cell 3: two hands raised up in celebration, warm skin tone, with small sparkles; cell 4: one happy child wearing a party hat and blowing a party horn, upper body; cell 5: two hands clapping, warm skin tone, with small motion lines; cell 6: one child swimming happily in sky-blue water with goggles; cell 7: one friendly smiling child's mouth with lips, simple front view; cell 8: one child's leg with a short sock and a sneaker, side view; cell 9: one bare child's foot, simple side view, warm skin tone. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/lettuce.webp
+### Arhivă — objects/lettuce.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e1-1d28-7ce0-a5d1-5f799bc3064e\cells\objects__lettuce.png`
 
@@ -520,7 +520,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one fresh head of green lettuce; cell 2: one small sprig of green herb leaves; cell 3: one cooked piece of meat on a bone, cartoon style; cell 4: one roasted chicken drumstick; cell 5: one folded newspaper with grey blocks instead of text; cell 6: one simple green glass bottle with a cork, no label; cell 7: one slice of strawberry cream cake with a strawberry on top; cell 8: one peach paper cone of golden french fries; cell 9: one rounded kitchen knife with a wooden handle, lying diagonally. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/lion.webp
+### Arhivă — objects/lion.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148df-f8bf-7bb2-8d9b-f206413eb108\cells\objects__lion.png`
 
@@ -528,7 +528,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small friendly school building with a clock-free bell tower, peach walls and a mint roof; cell 2: one rounded cream speech bubble with three small lavender dots inside; cell 3: one friendly cartoon lion sitting, with a fluffy golden mane; cell 4: one small wooden sailboat with a mint sail on a tiny sky-blue wave; cell 5: one small friendly farm tractor in mint with big rounded wheels; cell 6: one small green sprout with two leaves growing from a little mound of soil; cell 7: one friendly snowman with a carrot nose, a mint scarf and a little hat; cell 8: one cozy striped knitted scarf in peach and lavender; cell 9: one blank cream sheet of paper with a softly curled corner. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/lobster.webp
+### Arhivă — objects/lobster.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e2-9fc7-75d3-802d-cdb5685b5c1f\cells\objects__lobster.png`
 
@@ -544,7 +544,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly cartoon squid in lavender; cell 2: one friendly translucent jellyfish in lavender and pink; cell 3: one friendly cartoon lobster in soft coral; cell 4: one closed golden padlock; cell 5: one open golden padlock; cell 6: one small desert scene: a sand dune with one cactus and a soft sun; cell 7: one black top hat with a lavender ribbon; cell 8: one wooden painter's palette with blobs of mint, sky blue, lavender, peach and yellow paint and a brush; cell 9: one ripe green-yellow pear with a leaf. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/lock_open.webp
+### Arhivă — objects/lock_open.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\lock_open.png`
 
@@ -576,7 +576,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one fresh head of green lettuce; cell 2: one small sprig of green herb leaves; cell 3: one cooked piece of meat on a bone, cartoon style; cell 4: one roasted chicken drumstick; cell 5: one folded newspaper with grey blocks instead of text; cell 6: one simple green glass bottle with a cork, no label; cell 7: one slice of strawberry cream cake with a strawberry on top; cell 8: one peach paper cone of golden french fries; cell 9: one rounded kitchen knife with a wooden handle, lying diagonally. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/mom.webp
+### Arhivă — objects/mom.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e4-31ba-7a70-9ea5-83dbf23f5dbd\cells\objects__mom.png`
 
@@ -640,7 +640,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly cartoon squid in lavender; cell 2: one friendly translucent jellyfish in lavender and pink; cell 3: one friendly cartoon lobster in soft coral; cell 4: one closed golden padlock; cell 5: one open golden padlock; cell 6: one small desert scene: a sand dune with one cactus and a soft sun; cell 7: one black top hat with a lavender ribbon; cell 8: one wooden painter's palette with blobs of mint, sky blue, lavender, peach and yellow paint and a brush; cell 9: one ripe green-yellow pear with a leaf. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/palm.webp
+### Arhivă — objects/palm.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\palm.png`
 
@@ -656,7 +656,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small friendly school building with a clock-free bell tower, peach walls and a mint roof; cell 2: one rounded cream speech bubble with three small lavender dots inside; cell 3: one friendly cartoon lion sitting, with a fluffy golden mane; cell 4: one small wooden sailboat with a mint sail on a tiny sky-blue wave; cell 5: one small friendly farm tractor in mint with big rounded wheels; cell 6: one small green sprout with two leaves growing from a little mound of soil; cell 7: one friendly snowman with a carrot nose, a mint scarf and a little hat; cell 8: one cozy striped knitted scarf in peach and lavender; cell 9: one blank cream sheet of paper with a softly curled corner. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/park.webp
+### Arhivă — objects/park.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e2-b9b6-7e83-ac45-6a1b14a9aad4\cells\objects__park.png`
 
@@ -664,7 +664,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small park scene: a green meadow, a tree and a little pond; cell 2: one friendly little steam train engine in sky blue, side view; cell 3: one palm tree on a small sandy mound; cell 4: one friendly cartoon monkey sitting; cell 5: one friendly colorful parrot sitting on a small branch; cell 6: one friendly smiling blue whale with a little water spout; cell 7: one friendly young deer standing; cell 8: one friendly cartoon hedgehog; cell 9: one friendly cartoon penguin standing. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/parrot.webp
+### Arhivă — objects/parrot.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e2-b9b6-7e83-ac45-6a1b14a9aad4\cells\objects__parrot.png`
 
@@ -680,7 +680,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one child walking happily, side view, full body; cell 2: two hands pressed together politely, warm skin tone, peach sleeves; cell 3: two hands raised up in celebration, warm skin tone, with small sparkles; cell 4: one happy child wearing a party hat and blowing a party horn, upper body; cell 5: two hands clapping, warm skin tone, with small motion lines; cell 6: one child swimming happily in sky-blue water with goggles; cell 7: one friendly smiling child's mouth with lips, simple front view; cell 8: one child's leg with a short sock and a sneaker, side view; cell 9: one bare child's foot, simple side view, warm skin tone. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/paws.webp
+### Arhivă — objects/paws.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\paws.png`
 
@@ -768,7 +768,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small classical museum building with cream columns and a peach triangular roof; cell 2: one rolled cream paper scroll, partly open, no writing; cell 3: one rounded retro radio in mint with a round speaker grille and a knob; cell 4: one rounded retro television in peach with a blank sky-blue screen and small antennas; cell 5: one bowl of fresh green salad with tomato slices and cucumbers; cell 6: one roll of soft white toilet paper; cell 7: one pair of child's blue jeans laid flat; cell 8: one simple wooden chair with a mint cushion; cell 9: one soft grey-blue cloud with gentle raindrops. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/raise_hand.webp
+### Arhivă — objects/raise_hand.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e4-eea9-7de3-819e-d0f60dd0da88\cells\objects__raise_hand.png`
 
@@ -808,7 +808,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small friendly school building with a clock-free bell tower, peach walls and a mint roof; cell 2: one rounded cream speech bubble with three small lavender dots inside; cell 3: one friendly cartoon lion sitting, with a fluffy golden mane; cell 4: one small wooden sailboat with a mint sail on a tiny sky-blue wave; cell 5: one small friendly farm tractor in mint with big rounded wheels; cell 6: one small green sprout with two leaves growing from a little mound of soil; cell 7: one friendly snowman with a carrot nose, a mint scarf and a little hat; cell 8: one cozy striped knitted scarf in peach and lavender; cell 9: one blank cream sheet of paper with a softly curled corner. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/school.webp
+### Arhivă — objects/school.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148df-f8bf-7bb2-8d9b-f206413eb108\cells\objects__school.png`
 
@@ -833,7 +833,7 @@ Prompt exact:
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly white polar bear sitting; cell 2: one friendly grey seal lying; cell 3: one small sun peeking from behind a soft rain cloud with a few raindrops; cell 4: one soft-serve ice cream cone with pastel swirl; cell 5: one bunch of purple grapes with a green leaf; cell 6: one pair of skis with poles, crossed; cell 7: one round wall clock with a cream face and simple hands, no numbers; cell 8: one friendly eagle with open wings; cell 9: one rounded knight's shield in sky blue with a cream star. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
 
-## objects/shield.webp
+### Arhivă — objects/shield.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\shield.png`
 
@@ -865,7 +865,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one closed cream envelope with a small heart seal in peach; cell 2: one friendly traffic light with three round lights: green glowing, amber and red softly dim; cell 3: one child's sneaker in sky blue with cream laces, side view; cell 4: one rounded wooden door with a small round window and a golden knob, slightly open; cell 5: one soft sun rising over gentle mint hills with a peach sky glow; cell 6: one cozy child's bed with a lavender blanket and a cream pillow; cell 7: one magnifying glass with a honey wooden handle and a softly reflective lens; cell 8: one small shopping cart in sky blue with rounded wheels; cell 9: one friendly cartoon tiger sitting, soft orange with gentle stripes. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/snowman.webp
+### Arhivă — objects/snowman.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148df-f8bf-7bb2-8d9b-f206413eb108\cells\objects__snowman.png`
 
@@ -913,7 +913,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small friendly school building with a clock-free bell tower, peach walls and a mint roof; cell 2: one rounded cream speech bubble with three small lavender dots inside; cell 3: one friendly cartoon lion sitting, with a fluffy golden mane; cell 4: one small wooden sailboat with a mint sail on a tiny sky-blue wave; cell 5: one small friendly farm tractor in mint with big rounded wheels; cell 6: one small green sprout with two leaves growing from a little mound of soil; cell 7: one friendly snowman with a carrot nose, a mint scarf and a little hat; cell 8: one cozy striped knitted scarf in peach and lavender; cell 9: one blank cream sheet of paper with a softly curled corner. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/squid.webp
+### Arhivă — objects/squid.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e2-9fc7-75d3-802d-cdb5685b5c1f\cells\objects__squid.png`
 
@@ -937,7 +937,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one friendly white polar bear sitting; cell 2: one friendly grey seal lying; cell 3: one small sun peeking from behind a soft rain cloud with a few raindrops; cell 4: one soft-serve ice cream cone with pastel swirl; cell 5: one bunch of purple grapes with a green leaf; cell 6: one pair of skis with poles, crossed; cell 7: one round wall clock with a cream face and simple hands, no numbers; cell 8: one friendly eagle with open wings; cell 9: one rounded knight's shield in sky blue with a cream star. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/sunglasses.webp
+### Arhivă — objects/sunglasses.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\sunglasses.png`
 
@@ -961,7 +961,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one electric plug with a short cable in cream; cell 2: three glossy translucent soap bubbles of different sizes; cell 3: one kitchen water tap with a small stream of water and a glass below; cell 4: one soft evening sky with the sun setting behind small houses in silhouette, peach and lavender; cell 5: one round birthday cake with cream frosting and three lit candles; cell 6: one small friendly sky-blue bird sitting; cell 7: one yo-yo in lavender and peach with its string; cell 8: one simple child's dress in peach laid flat; cell 9: one baseball cap in mint, side view. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/swimming.webp
+### Arhivă — objects/swimming.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e5-65f5-7210-9194-eb7e76460d2e\cells\objects__swimming.png`
 
@@ -969,7 +969,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one child walking happily, side view, full body; cell 2: two hands pressed together politely, warm skin tone, peach sleeves; cell 3: two hands raised up in celebration, warm skin tone, with small sparkles; cell 4: one happy child wearing a party hat and blowing a party horn, upper body; cell 5: two hands clapping, warm skin tone, with small motion lines; cell 6: one child swimming happily in sky-blue water with goggles; cell 7: one friendly smiling child's mouth with lips, simple front view; cell 8: one child's leg with a short sock and a sneaker, side view; cell 9: one bare child's foot, simple side view, warm skin tone. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/tap.webp
+### Arhivă — objects/tap.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a148e2-9dfb-7893-bdeb-c51eca191cfb\cells\objects__tap.png`
 
@@ -1041,7 +1041,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one closed cream envelope with a small heart seal in peach; cell 2: one friendly traffic light with three round lights: green glowing, amber and red softly dim; cell 3: one child's sneaker in sky blue with cream laces, side view; cell 4: one rounded wooden door with a small round window and a golden knob, slightly open; cell 5: one soft sun rising over gentle mint hills with a peach sky glow; cell 6: one cozy child's bed with a lavender blanket and a cream pillow; cell 7: one magnifying glass with a honey wooden handle and a softly reflective lens; cell 8: one small shopping cart in sky blue with rounded wheels; cell 9: one friendly cartoon tiger sitting, soft orange with gentle stripes. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/train.webp
+### Arhivă — objects/train.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\train.png`
 
@@ -1049,7 +1049,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one small park scene: a green meadow, a tree and a little pond; cell 2: one friendly little steam train engine in sky blue, side view; cell 3: one palm tree on a small sandy mound; cell 4: one friendly cartoon monkey sitting; cell 5: one friendly colorful parrot sitting on a small branch; cell 6: one friendly smiling blue whale with a little water spout; cell 7: one friendly young deer standing; cell 8: one friendly cartoon hedgehog; cell 9: one friendly cartoon penguin standing. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/trash.webp
+### Arhivă — objects/trash.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\trash.png`
 
@@ -1097,7 +1097,7 @@ Prompt exact:
 
 > Create ONE square transparent RGBA PNG sheet for Licurici, a therapy app for young and autistic children: a 3x3 grid of separate illustrations, read row by row from top-left (cells 1-3 top row, 4-6 middle, 7-9 bottom), each subject centered in its own cell with wide empty transparent space around it, all at a similar size, nothing crossing into another cell. Match the attached style references: soft painted children's storybook illustration, softly rounded outlines, warm gentle light, lightly shaded tactile materials, minimal detail; calm pastel palette mint #7FC0A3, sky blue #5B9BB5, lavender #A9A3D1, peach #F0B9A0, sunshine yellow #F2CF6B, cream #FFF8EC. cell 1: one child walking happily, side view, full body; cell 2: two hands pressed together politely, warm skin tone, peach sleeves; cell 3: two hands raised up in celebration, warm skin tone, with small sparkles; cell 4: one happy child wearing a party hat and blowing a party horn, upper body; cell 5: two hands clapping, warm skin tone, with small motion lines; cell 6: one child swimming happily in sky-blue water with goggles; cell 7: one friendly smiling child's mouth with lips, simple front view; cell 8: one child's leg with a short sock and a sneaker, side view; cell 9: one bare child's foot, simple side view, warm skin tone. Real alpha transparency, no background, no grid lines, frames or badges, no ground or cast shadows. Never text, letters, numerals, labels, watermark, scary faces.
 
-## objects/wave.webp
+### Arhivă — objects/wave.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\objects\wave.png`
 

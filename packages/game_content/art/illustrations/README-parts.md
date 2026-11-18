@@ -1,6 +1,6 @@
 # Ilustrații — parts
 
-## parts/block.webp
+### Arhivă — parts/block.webp (înlocuită în auditul 18.11)
 
 Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a14598-9786-70a3-a690-8993673d3037\exec-148aa167-4b64-49b4-b0c0-f9dcd42bd53d.png`
 

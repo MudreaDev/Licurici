@@ -127,11 +127,11 @@ class SessionController extends Notifier<SessionRecorder?> {
 
   /// Salvează sesiunea parțială (după fiecare joc), ca să nu se piardă nimic dacă aplicația
   /// e închisă brusc. Același id → se suprascrie.
-  Future<void> checkpoint() async {
+  Future<void> checkpoint({bool countCompletion = true}) async {
     final r = state;
     if (r == null || r.isEmpty) return;
     final trials = r.trials;
-    if (trials.length > _checkpointTrials) {
+    if (countCompletion && trials.length > _checkpointTrials) {
       final last = trials.last;
       if (last.level != null && last.gameId != 'simon' && last.gameId != 'licuricii') {
         ref.read(settingsProvider.notifier).completeGame(last.gameId, last.level!);

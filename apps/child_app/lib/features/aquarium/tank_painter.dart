@@ -9,6 +9,7 @@ import 'package:licurici_core/licurici_core.dart';
 import 'aquarium_store.dart';
 import 'fish_render.dart';
 import 'reef.dart';
+import 'reef_particle_budget.dart';
 
 /// O mică bucurie desenată (bule după ce un pește a mâncat, cercul unei atingeri).
 class TankFx {
@@ -112,7 +113,7 @@ class TankPainter extends CustomPainter {
           // Norișorul de nisip ridicat de ciugulit: câteva fire care se ridică și se așază.
           final r = math.Random(e.born.hashCode);
           final k = (age / 1.2).clamp(0.0, 1.0);
-          for (var i = 0; i < 7; i++) {
+          for (var i = 0; i < ReefParticleBudget.perEffect; i++) {
             final a = -math.pi * (0.15 + 0.7 * r.nextDouble());
             final d = h * (0.01 + 0.03 * r.nextDouble()) * Curves.easeOut.transform(k);
             final o = Offset(math.cos(a) * d * 1.6, math.sin(a) * d - h * 0.004 * math.sin(k * math.pi));
@@ -125,7 +126,7 @@ class TankPainter extends CustomPainter {
         case TankFxKind.joy:
           // Bucuria: bule mari care urcă în spirală.
           final r = math.Random(e.born.hashCode);
-          for (var i = 0; i < 7; i++) {
+          for (var i = 0; i < ReefParticleBudget.perEffect; i++) {
             final k = ((age - i * 0.08) / 1.4).clamp(0.0, 1.0);
             if (k <= 0) continue;
             final o = Offset(math.sin(k * 7 + i) * h * 0.025, -k * h * (0.12 + r.nextDouble() * 0.06));

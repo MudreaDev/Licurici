@@ -10,6 +10,9 @@ import 'package:licurici/features/aquarium/aquarium_screen.dart';
 import 'package:licurici/features/aquarium/aquarium_store.dart';
 import 'package:licurici/features/aquarium/coloring_screen.dart';
 import 'package:licurici/features/aquarium/tank_painter.dart';
+import 'package:licurici/features/aquarium/reef_life.dart';
+import 'package:licurici/features/aquarium/reef_scene.dart';
+import 'package:licurici/features/aquarium/reef_night.dart';
 import 'package:licurici/features/settings/settings.dart';
 import 'package:licurici/shared/stimulus_art.dart';
 import 'package:licurici/shared/voice.dart';
@@ -17,7 +20,10 @@ import 'package:licurici/shared/voice.dart';
 import 'layout_test.dart' show devices, loadFonts, settle, settleUntil, shots;
 
 void main() {
-  setUpAll(loadFonts);
+  setUpAll(() async {
+    await loadFonts();
+    if (shots) await IllustrationIndex.load();
+  });
 
   test('pușculița: stelele se adună, se cheltuie, se păstrează', () {
     final c = ProviderContainer();
@@ -47,6 +53,8 @@ void main() {
         overrides: [voiceProvider.overrideWithValue(const SilentSpeaker()), aquariumStoreProvider.overrideWithValue(store)],
       );
       addTearDown(container.dispose);
+      final systemMotionOff = ValueNotifier(false);
+      addTearDown(systemMotionOff.dispose);
       final router = GoRouter(
         initialLocation: '/acvariu',
         routes: [
@@ -65,7 +73,17 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp.router(theme: buildTheme(calm: false), routerConfig: router),
+          child: MaterialApp.router(
+            theme: buildTheme(calm: false),
+            routerConfig: router,
+            builder: (context, child) => ValueListenableBuilder<bool>(
+              valueListenable: systemMotionOff,
+              builder: (context, off, _) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(disableAnimations: off),
+                child: child!,
+              ),
+            ),
+          ),
         ),
       );
 
@@ -108,7 +126,42 @@ void main() {
       await tester.tapAt(water);
       await tester.pump(const Duration(milliseconds: 100));
       expect(tankPainter().fx, isEmpty);
+      final scene = tester.widget<ReefScene>(find.byType(ReefScene));
+      final frozenTime = scene.ambient.value;
+      final chestTarget = ReefChest.hitRect(tester.getSize(find.byType(ReefScene)));
+      final chestButton = find.byKey(const ValueKey('aquarium-chest'));
+      expect(tester.getSize(chestButton).width, greaterThanOrEqualTo(64));
+      expect(tester.getSize(chestButton).height, greaterThanOrEqualTo(64));
+      expect(tester.getRect(chestButton).center, tester.getTopLeft(find.byType(ReefScene)) + chestTarget.center);
+      for (final key in ['feed', 'color-fish', 'scan-paper']) {
+        expect(tester.getRect(chestButton).overlaps(tester.getRect(find.byKey(ValueKey(key)))), isFalse);
+      }
+      await tester.tap(chestButton);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(scene.chest.lid(frozenTime), 1);
+      expect(scene.ambient.value, frozenTime);
+      expect(tankPainter().fx, isEmpty);
+      if (shots) await expectLater(find.byType(AquariumScreen), matchesGoldenFile('shots/acvariu-cufar-calm-$device.png'));
+      await tester.pump(const Duration(milliseconds: 1200));
+      expect(scene.chest.lid(frozenTime), 0);
       container.read(settingsProvider.notifier).toggleCalm();
+      await tester.pump();
+
+      // Preferința sistemului păstrează feedbackul cufărului și schimbă noaptea instant.
+      systemMotionOff.value = true;
+      await tester.pump();
+      await tester.tap(chestButton);
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(scene.chest.lid(scene.ambient.value), 1);
+      expect(tankPainter().fx, isEmpty);
+      await tester.tap(find.byKey(const ValueKey('night')));
+      await tester.pump(const Duration(milliseconds: 16));
+      final night = tester.widgetList<CustomPaint>(find.byType(CustomPaint)).map((w) => w.painter).whereType<ReefNightPainter>().single;
+      expect(night.night.value, 1);
+      await tester.tap(find.byKey(const ValueKey('night')));
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(night.night.value, 0);
+      systemMotionOff.value = false;
       await tester.pump();
 
       // Noaptea: apa se întunecă, degetul ținut e lanterna; apoi iar zi.

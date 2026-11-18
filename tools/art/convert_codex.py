@@ -32,6 +32,17 @@ for m in re.finditer(r'## ([a-z0-9_]+)/([a-z0-9_\-]+)\.webp\s+Sursă PNG: `([^`]
     if os.path.exists(out) and os.path.getmtime(out) >= os.path.getmtime(src):
         continue
     im = Image.open(src).convert('RGBA')
+    # Opt-in pentru obiecte generate cu margini transparente foarte largi; nu schimbă
+    # încadrarea loturilor vechi. Marginea păstrată previne tăierea siluetei.
+    rest = readme[m.end():]
+    next_heading = re.search(r'\n#{1,3} ', rest)
+    section = rest[:next_heading.start()] if next_heading else rest
+    if folder == 'objects' and 'Decupare: contur cu margine' in section:
+        bbox = im.getchannel('A').point(lambda v: 255 if v > 12 else 0).getbbox()
+        if bbox:
+            pad = max(2, round(max(bbox[2] - bbox[0], bbox[3] - bbox[1]) * 0.06))
+            im = im.crop((max(0, bbox[0] - pad), max(0, bbox[1] - pad),
+                          min(im.width, bbox[2] + pad), min(im.height, bbox[3] + pad)))
     w, h = sizes.get(folder, (512, 512))
     if folder in ('domains', 'scenes'):
         # decupare centrală la 4:3, apoi micșorare

@@ -91,6 +91,22 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+  testWidgets('Specialist poate filtra copiii și deschide rezultatul', (
+    tester,
+  ) async {
+    await open(tester, '/specialist');
+    await tester.enterText(
+      find.byKey(const ValueKey('search-children')),
+      'tud',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Ilinca'), findsNothing);
+    expect(find.text('Tudor'), findsOneWidget);
+    await tester.tap(find.text('Tudor'));
+    await tester.pumpAndSettle();
+    expect(find.text('Prezentare'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets(
     'Session detail exposes notes, confusions and expandable AI preview',
     (tester) async {

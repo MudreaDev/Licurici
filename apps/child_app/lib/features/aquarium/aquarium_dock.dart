@@ -163,18 +163,19 @@ class SkyButton extends StatelessWidget {
 
 /// „Peștii mei”: câte o bulă cu fiecare pește al copilului. Atingerea îl cheamă la geam.
 class FishShelf extends StatelessWidget {
-  const FishShelf({super.key, required this.fish, required this.onPick, this.picked});
+  const FishShelf({super.key, required this.fish, required this.onPick, this.picked, this.movement = true});
 
   final List<OwnedFish> fish;
   final void Function(String id) onPick;
 
   /// Peștele chemat acum (bula lui se luminează).
   final String? picked;
+  final bool movement;
 
   @override
   Widget build(BuildContext context) {
     final compact = AppLayout.of(context).compact;
-    final side = compact ? 48.0 : 64.0;
+    const side = 64.0;
     return Container(
       padding: EdgeInsets.all(compact ? 5 : 8),
       decoration: BoxDecoration(
@@ -195,6 +196,7 @@ class FishShelf extends StatelessWidget {
                   fish: f,
                   side: side,
                   lit: f.entry.id == picked,
+                  movement: movement,
                   onTap: () => onPick(f.entry.id),
                 ),
               ),
@@ -206,11 +208,12 @@ class FishShelf extends StatelessWidget {
 }
 
 class _FishBubble extends StatelessWidget {
-  const _FishBubble({super.key, required this.fish, required this.side, required this.lit, required this.onTap});
+  const _FishBubble({super.key, required this.fish, required this.side, required this.lit, required this.onTap, required this.movement});
 
   final OwnedFish fish;
   final double side;
   final bool lit;
+  final bool movement;
   final VoidCallback onTap;
 
   @override
@@ -230,6 +233,6 @@ class _FishBubble extends StatelessWidget {
         child: RawImage(image: fish.art, fit: BoxFit.contain),
       ),
     );
-    return lit ? bubble.animate(key: ValueKey(lit)).scaleXY(begin: 1, end: 1.12, duration: 220.ms, curve: Curves.easeOutBack) : bubble;
+    return lit && movement ? bubble.animate(key: ValueKey(lit)).scaleXY(begin: 1, end: 1.12, duration: 220.ms, curve: Curves.easeOutBack) : bubble;
   }
 }

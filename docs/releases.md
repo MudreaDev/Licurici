@@ -3,6 +3,12 @@
 Versiunile de test sunt publicate în [GitHub Releases](https://github.com/MudreaDev/Licurici/releases).
 APK-urile și arhivele compilate sunt atașamente ale versiunii, nu fișiere adăugate în istoricul Git.
 
+## Aplicația copilului 0.1.2 (build 3) — în pregătire, nepublicată
+
+Tag propus: `v0.1.2-preview.1` (nu există încă pe GitHub). Cufărul răspunde și în modul calm / reduce motion: imagine deschisă timp de 1,2 s, fără mișcarea capacului sau bule. Ținta are minimum 64 dp și etichetă pentru cititorul de ecran. Bara de comenzi este separată de apă, ca să nu acopere cufărul pe telefon. Zi/noapte se schimbă instant când sistemul dezactivează animațiile.
+
+Înaintea publicării trebuie construite APK-urile din commitul final și calculate sumele de control. Panoul web a primit între timp setări noi; nu reutiliza arhiva precedentă ca fiind actualizată.
+
 ## 0.1.1 (build 2) — 25.10.2026
 
 Publicată: [v0.1.1-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.1-preview.1), sursa `fc8baea`. Aplicația copilului și panoul au aceeași versiune. Cele 5 atașamente și digesturile SHA-256 au fost verificate pe GitHub după încărcare.

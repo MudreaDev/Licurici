@@ -28,6 +28,7 @@ import 'paper_scan_flow.dart';
 import 'paper_sheet.dart';
 import 'reef_life.dart';
 import 'reef_night.dart';
+import 'reef_particle_budget.dart';
 import 'reef_scene.dart';
 import 'tank_painter.dart';
 
@@ -78,8 +79,8 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
 
   void _addFx(TankFx effect) {
     if (!_motion.particles) return;
-    // Cel mult 5 efecte × 7 particule, inclusiv la atingeri repetate.
-    if (_fx.length >= 5) _fx.removeAt(0);
+    // Limita este împărțită și cu bulele / planctonul straturilor de recif.
+    if (_fx.length >= ReefParticleBudget.effects) _fx.removeAt(0);
     _fx.add(effect);
   }
 
@@ -110,6 +111,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     _calledOff?.cancel();
     _sfx?.ambient(null);
     _ticker.dispose();
+    _chest.dispose();
     _time.dispose();
     _ambient.dispose();
     _gather.dispose();
@@ -125,7 +127,9 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     // Timpul „de ceas” (pentru indicii): nu se taie la 50 ms ca pasul simulării.
     _wall += math.min(raw, 1.0);
     final dusk = (_nightOn ? 1.0 : 0.0) - _night.value;
-    if (dusk.abs() > 0.001) _night.value += dusk * math.min(1.0, math.min(raw, 0.1) * 2.5);
+    if (dusk.abs() > 0.001) {
+      _night.value += _motion.feedback ? dusk * math.min(1.0, math.min(raw, 0.1) * 2.5) : dusk;
+    }
     final sim = _sim;
     if (sim == null) return;
     final g = _gather.value;
@@ -336,6 +340,13 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
     ref.read(voiceProvider).say([_nightOn ? 'Noapte bună, peștișori!' : 'Bună dimineața, peștișori!']);
   }
 
+  void _openChest() {
+    _touched();
+    _usedChest = true;
+    _chest.open(_ambient.value);
+    ref.read(sfxProvider).play(Sfx.bubble);
+  }
+
   /// Copilul a atins ecranul: indiciul pleacă, numărătoarea reîncepe.
   void _touched() {
     _idleSince = _wall;
@@ -356,6 +367,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
   @override
   Widget build(BuildContext context) {
     _motion = MotionPolicy.of(context, ref);
+    _chest.movement = _motion.movement;
     if (!_motion.particles) _fx.clear();
     final fish = ref.watch(aquariumProvider);
     final layout = AppLayout.of(context);
@@ -368,62 +380,82 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
       backgroundColor: const Color(0xFF1C6F9C),
       body: LayoutBuilder(
         builder: (context, c) {
-          _height = c.maxHeight;
-          _size = c.biggest;
-          if (list != null) _sync(list, c.maxWidth / c.maxHeight);
+          // Comenzile au propria zonă: nu acoperă cufărul și peștii de pe fund.
+          final dockHeight = (layout.compact ? 112.0 : 156.0) + MediaQuery.paddingOf(context).bottom;
+          _height = c.maxHeight - dockHeight;
+          _size = Size(c.maxWidth, _height);
+          if (list != null) _sync(list, c.maxWidth / _height);
           return Stack(
             fit: StackFit.expand,
             children: [
-              ReefScene(
-                ambient: _ambient,
-                chest: _chest,
-                child: _sim == null
-                    ? const SizedBox.expand()
-                    : GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTapUp: (d) {
-                          _touched();
-                          if (ReefChest.hitRect(_size).contains(d.localPosition)) {
-                            _usedChest = true;
-                            _chest.open(_ambient.value);
-                            ref.read(sfxProvider).play(Sfx.bubble);
-                          }
-                          final p = _toTank(d.localPosition);
-                          _sim!.tap(p);
-                          _addFx(TankFx(p, TankFxKind.tap, _time.value));
-                        },
-                        onLongPressStart: (d) {
-                          _touched();
-                          _usedGather = true;
-                          _gather.value = _toTank(d.localPosition);
-                          _finger.value = d.localPosition;
-                        },
-                        onLongPressMoveUpdate: (d) {
-                          _gather.value = _toTank(d.localPosition);
-                          _finger.value = d.localPosition;
-                        },
-                        onLongPressEnd: (_) {
-                          _gather.value = null;
-                          _finger.value = null;
-                          _sim!.release();
-                        },
-                        onLongPressCancel: () {
-                          _gather.value = null;
-                          _finger.value = null;
-                          _sim?.release();
-                        },
-                        child: RepaintBoundary(
-                          child: CustomPaint(
-                            painter: TankPainter(aquarium: _sim!, fish: _owned, time: _time, fx: _fx, gather: _gather),
-                            size: Size.infinite,
+              Positioned.fill(
+                bottom: dockHeight,
+                child: ClipRect(
+                  child: ReefScene(
+                    ambient: _ambient,
+                    chest: _chest,
+                    particles: _motion.particles,
+                    child: _sim == null
+                        ? const SizedBox.expand()
+                        : GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTapUp: (d) {
+                              _touched();
+                              final p = _toTank(d.localPosition);
+                              _sim!.tap(p);
+                              _addFx(TankFx(p, TankFxKind.tap, _time.value));
+                            },
+                            onLongPressStart: (d) {
+                              _touched();
+                              _usedGather = true;
+                              _gather.value = _toTank(d.localPosition);
+                              _finger.value = d.localPosition;
+                            },
+                            onLongPressMoveUpdate: (d) {
+                              _gather.value = _toTank(d.localPosition);
+                              _finger.value = d.localPosition;
+                            },
+                            onLongPressEnd: (_) {
+                              _gather.value = null;
+                              _finger.value = null;
+                              _sim!.release();
+                            },
+                            onLongPressCancel: () {
+                              _gather.value = null;
+                              _finger.value = null;
+                              _sim?.release();
+                            },
+                            child: RepaintBoundary(
+                              child: CustomPaint(
+                                painter: TankPainter(aquarium: _sim!, fish: _owned, time: _time, fx: _fx, gather: _gather),
+                                size: Size.infinite,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                  ),
+                ),
               ),
-              IgnorePointer(
-                child: RepaintBoundary(
-                  child: CustomPaint(
-                    painter: ReefNightPainter(time: _ambient, night: _night, finger: _finger, chest: _chest),
+              if (_sim != null)
+                Positioned.fromRect(
+                  rect: ReefChest.hitRect(_size),
+                  child: Semantics(
+                    button: true,
+                    label: 'Cufărul cu comori',
+                    child: GestureDetector(
+                      key: const ValueKey('aquarium-chest'),
+                      behavior: HitTestBehavior.opaque,
+                      onTap: _openChest,
+                      child: const SizedBox.expand(),
+                    ),
+                  ),
+                ),
+              Positioned.fill(
+                bottom: dockHeight,
+                child: IgnorePointer(
+                  child: RepaintBoundary(
+                    child: CustomPaint(
+                      painter: ReefNightPainter(time: _ambient, night: _night, finger: _finger, chest: _chest, particles: _motion.particles),
+                    ),
                   ),
                 ),
               ),
@@ -452,7 +484,7 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                             onTap: _printSheets,
                           ),
                           const SizedBox(width: 10),
-                          _StarPurse(stars: stars, shake: _broke, spent: _spent),
+                          _StarPurse(stars: stars, shake: _broke, spent: _spent, movement: _motion.movement),
                         ],
                       ),
                     ),
@@ -467,13 +499,13 @@ class _AquariumScreenState extends ConsumerState<AquariumScreen> with SingleTick
                                 ? FittedBox(
                                     fit: BoxFit.scaleDown,
                                     alignment: Alignment.bottomLeft,
-                                    child: _GiftHint(compact: layout.compact),
+                                    child: _GiftHint(compact: layout.compact, movement: _motion.movement),
                                   )
                                 : Align(
                                     alignment: Alignment.bottomLeft,
                                     child: list == null || list.isEmpty
                                         ? const SizedBox.shrink()
-                                        : FishShelf(fish: list, picked: _called, onPick: _callFish),
+                                        : FishShelf(fish: list, picked: _called, onPick: _callFish, movement: _motion.movement),
                                   ),
                           ),
                           const SizedBox(width: 12),
@@ -602,12 +634,14 @@ class _HandHintState extends State<_HandHint> with SingleTickerProviderStateMixi
 
 /// Licurici, la prima vizită: „Ți-am adus un pește!”.
 class _GiftHint extends StatelessWidget {
-  const _GiftHint({required this.compact});
+  const _GiftHint({required this.compact, required this.movement});
 
   final bool compact;
+  final bool movement;
 
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) {
+    final hint = Row(
     crossAxisAlignment: CrossAxisAlignment.end,
     mainAxisSize: MainAxisSize.min,
     children: [
@@ -623,7 +657,9 @@ class _GiftHint extends StatelessWidget {
         ),
       ),
     ],
-  ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.2, end: 0);
+    );
+    return movement ? hint.animate().fadeIn(duration: 400.ms).slideY(begin: 0.2, end: 0) : hint;
+  }
 }
 
 /// Câte stele de mâncare costă o mână de fulgi.
@@ -631,10 +667,11 @@ const foodPrice = 1;
 
 /// Pușculița: stelele copilului. Clatină ușor când nu ajung pentru mâncare.
 class _StarPurse extends StatelessWidget {
-  const _StarPurse({required this.stars, required this.shake, required this.spent});
+  const _StarPurse({required this.stars, required this.shake, required this.spent, required this.movement});
 
   final int stars;
   final int shake;
+  final bool movement;
 
   /// Câte mâini de mâncare s-au plătit (fiecare face pușculița să sară o dată).
   final int spent;
@@ -642,7 +679,7 @@ class _StarPurse extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final compact = AppLayout.of(context).compact;
-    return CandyPanel(
+    final purse = CandyPanel(
           key: const ValueKey('stars'),
           radius: 999,
           lip: 4,
@@ -658,8 +695,9 @@ class _StarPurse extends StatelessWidget {
               ),
             ],
           ),
-        )
-        .animate(key: ValueKey('spent-$spent'), target: spent == 0 ? 0 : 1)
+        );
+    if (!movement) return purse;
+    return purse.animate(key: ValueKey('spent-$spent'), target: spent == 0 ? 0 : 1)
         .scaleXY(begin: 1, end: 1.15, duration: 140.ms, curve: Curves.easeOut)
         .then()
         .scaleXY(begin: 1.15, end: 1, duration: 260.ms, curve: Curves.easeOutBack)

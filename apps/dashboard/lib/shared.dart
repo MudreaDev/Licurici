@@ -12,11 +12,18 @@ class Section extends StatelessWidget {
     padding: const EdgeInsets.only(bottom: 24),
     child: Card(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(
+          MediaQuery.sizeOf(context).width < 600 ? 16 : 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 16),
             child,
           ],

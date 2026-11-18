@@ -65,7 +65,7 @@ class _AacScreenState extends ConsumerState<AacScreen> {
     // Fiecare cerere se salvează imediat (copilul poate ieși oricând).
     ref.read(sessionProvider.notifier)
       ..record((r) => r.event(SessionEventKind.request, gameId: widget.game.id))
-      ..checkpoint();
+      ..checkpoint(countCompletion: false);
   }
 
   void _repeat() {

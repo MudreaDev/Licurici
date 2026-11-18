@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'reef.dart';
 import 'reef_parts.dart';
 import 'reef_sprites.dart';
+import 'reef_particle_budget.dart';
 
 /// Ce se mișcă în recif (ADR-028: animație procedurală, fără shadere). Totul e lent
 /// (≤ 0,5 Hz pentru lumină), fără clipiri.
@@ -120,7 +121,21 @@ abstract final class Matrix4Storage {
 // Cufărul cu comori: se deschide singur din când în când sau când e atins.
 // ---------------------------------------------------------------------------------------
 
-class ReefChest {
+class ReefChest extends ChangeNotifier {
+  bool _movement = true;
+  bool _quietOpen = false;
+  Timer? _quietClose;
+
+  /// Feedback static în modul calm, independent de timpul ambiental înghețat.
+  set movement(bool enabled) {
+    if (_movement == enabled) return;
+    _movement = enabled;
+    _quietClose?.cancel();
+    _quietOpen = false;
+    openedAt = -100;
+    notifyListeners();
+  }
+
   /// Când s-a deschis ultima dată (timpul fundalului).
   double openedAt = -100;
 
@@ -132,15 +147,26 @@ class ReefChest {
   /// Unde se poate atinge cufărul (pixeli).
   static Rect hitRect(Size s) {
     final b = baseAt(s), w = widthFor(s);
-    return Rect.fromLTRB(b.dx - w * 0.65, b.dy - w * 0.95, b.dx + w * 0.65, b.dy + w * 0.1);
+    return Rect.fromCenter(center: b - Offset(0, w * 0.425), width: math.max(64, w * 1.3), height: math.max(64, w * 1.05));
   }
 
   void open(double t) {
+    if (!_movement) {
+      _quietClose?.cancel();
+      _quietOpen = true;
+      notifyListeners();
+      _quietClose = Timer(const Duration(milliseconds: 1200), () {
+        _quietOpen = false;
+        notifyListeners();
+      });
+      return;
+    }
     if (t - openedAt > 2.2) openedAt = t;
   }
 
   /// Cât e de deschis capacul acum (0…1). Se deschide și singur, la ~15 s.
   double lid(double t) {
+    if (!_movement) return _quietOpen ? 1 : 0;
     final auto = t % 15.0;
     double curve(double age) {
       if (age < 0 || age > 2.6) return 0;
@@ -154,9 +180,16 @@ class ReefChest {
 
   /// Secunde de la ultima deschidere (pentru bule).
   double sinceOpen(double t) {
+    if (!_movement) return 99;
     final auto = t % 15.0 - 11;
     final a = t - openedAt;
     return [a, auto].where((x) => x >= 0).fold(99.0, math.min);
+  }
+
+  @override
+  void dispose() {
+    _quietClose?.cancel();
+    super.dispose();
   }
 }
 
@@ -165,11 +198,12 @@ class ReefChest {
 // ---------------------------------------------------------------------------------------
 
 class ReefAmbiencePainter extends CustomPainter {
-  ReefAmbiencePainter(this.time, {required this.chest, this.seed = 7}) : super(repaint: time);
+  ReefAmbiencePainter(this.time, {required this.chest, this.seed = 7, this.particles = true}) : super(repaint: Listenable.merge([time, chest]));
 
   final ValueListenable<double> time;
   final ReefChest chest;
   final int seed;
+  final bool particles;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -220,9 +254,9 @@ class ReefAmbiencePainter extends CustomPainter {
 
     // Un izvor de bule din nisip, în dreapta.
     final src = Offset(w * 0.79, h * floorY(w * 0.79, w, 0.55));
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; particles && i < ReefParticleBudget.springBubbles; i++) {
       final speed = 0.07 + (i * 37 % 10) / 200;
-      final life = (t * speed + i / 8) % 1;
+      final life = (t * speed + i / ReefParticleBudget.springBubbles) % 1;
       final y = src.dy - life * h * 0.82;
       final x = src.dx + math.sin(t * 2 + i * 1.7) * h * 0.012 * (0.4 + life);
       final rad = h * (0.004 + 0.004 * ((i * 7) % 3) / 2) * (0.7 + life * 0.7);
@@ -231,7 +265,7 @@ class ReefAmbiencePainter extends CustomPainter {
 
     // Plancton care plutește (în spatele peștilor).
     final dust = Paint();
-    for (var i = 0; i < 45; i++) {
+    for (var i = 0; particles && i < ReefParticleBudget.plankton; i++) {
       final sx = r.nextDouble(), sy = r.nextDouble(), sp = 0.003 + r.nextDouble() * 0.006, z = r.nextDouble();
       final x = (sx * w + math.sin(t * 0.2 + i) * h * 0.02 + t * h * 0.004) % w;
       final y = ((sy + t * sp) % 1) * h * 0.82;
@@ -348,9 +382,9 @@ class ReefAmbiencePainter extends CustomPainter {
     paintChest(canvas, base, cw, open, fog: 0.12);
     // Bulele care ies din cufăr când se deschide.
     final since = chest.sinceOpen(t);
-    if (since < 3.2) {
+    if (particles && since < 3.2) {
       final r = math.Random(3);
-      for (var i = 0; i < 14; i++) {
+      for (var i = 0; i < ReefParticleBudget.chestBubbles; i++) {
         final delay = r.nextDouble() * 0.8;
         final age = since - delay;
         if (age < 0) continue;
@@ -362,7 +396,7 @@ class ReefAmbiencePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(ReefAmbiencePainter old) => false;
+  bool shouldRepaint(ReefAmbiencePainter old) => old.particles != particles;
 }
 
 /// Alga lungă care se leagănă în curent.
@@ -680,10 +714,11 @@ void paintChest(Canvas canvas, Offset base, double width, double open, {double f
 // ---------------------------------------------------------------------------------------
 
 class ReefFrontPainter extends CustomPainter {
-  ReefFrontPainter(this.time, {this.seed = 11}) : super(repaint: time);
+  ReefFrontPainter(this.time, {this.seed = 11, this.particles = true}) : super(repaint: time);
 
   final ValueListenable<double> time;
   final int seed;
+  final bool particles;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -704,7 +739,7 @@ class ReefFrontPainter extends CustomPainter {
     _rays(canvas, size, t);
 
     // Particule mari, nefocalizate, foarte aproape de geam.
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; particles && i < ReefParticleBudget.foreground; i++) {
       final sx = r.nextDouble(), sy = r.nextDouble(), rad = h * (0.008 + r.nextDouble() * 0.014);
       final x = (sx * w + t * h * 0.01 * (1 + i % 3)) % (w + rad * 2) - rad;
       final y = (sy * h * 0.85 + math.sin(t * 0.25 + i) * h * 0.03);
@@ -747,7 +782,7 @@ class ReefFrontPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(ReefFrontPainter old) => false;
+  bool shouldRepaint(ReefFrontPainter old) => old.particles != particles;
 }
 
 /// Anemona: un smoc de tentacule care se leagănă, cu vârfuri luminoase.

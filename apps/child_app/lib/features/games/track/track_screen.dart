@@ -46,6 +46,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
   late final Ticker _ticker = createTicker(_tick);
   final _time = ValueNotifier<double>(0);
   final _ambient = ValueNotifier<double>(0);
+  MotionPolicy _motion = const MotionPolicy(MotionLevel.full);
   final _chest = ReefChest();
   final _responses = <TrackResponse>[];
   final _timers = <Timer>[];
@@ -92,6 +93,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
     WidgetsBinding.instance.removeObserver(this);
     _cancel();
     _ticker.dispose();
+    _chest.dispose();
     _time.dispose();
     _ambient.dispose();
     for (final i in _images.values) {
@@ -277,7 +279,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
     final dt = math.min(0.05, (elapsed - _last).inMicroseconds / 1e6);
     _last = elapsed;
     _time.value += dt;
-    if (MotionPolicy.of(context, ref).ambient) _ambient.value += dt;
+    if (_motion.ambient) _ambient.value += dt;
     final sim = _sim;
     if (sim == null) return;
     if (_phase == _Phase.swim) {
@@ -388,6 +390,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
+    _motion = MotionPolicy.of(context, ref);
     final result = _result;
     return Scaffold(
       backgroundColor: const Color(0xFF1C6F9C),
@@ -397,6 +400,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen> with SingleTickerProv
           return ReefScene(
             ambient: _ambient,
             chest: _chest,
+            particles: _motion.particles,
             child: Stack(
               fit: StackFit.expand,
               children: [

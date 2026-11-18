@@ -38,8 +38,13 @@ pe pași, în ordine.
 
 ### Continuare 18.11.2026
 
-- Inel pictat cu volum și filtru de colorare corectat. Auditul rămâne deschis: vezi docs/audit-imagini-2026-11-18.md.
+- Inel pictat cu volum și filtru de colorare corectat. Audit: 37 obiecte decupate incorect refăcute, plus blocul din „Rândul meu”; au fost inspectate planșele obiectelor, cardurilor și portretelor, precum și capturile turnului de blocuri. Surse, prompturi și limite: `docs/audit-imagini-2026-11-18.md`.
 - Panoul permite limită zilnică și 1–5 jocuri încheiate la același nivel; planul se sincronizează, contoarele rămân în setările locale. Verifică pe tabletă fluxul și reluarea; vezi detaliile în README §0.1, §11 și §13. Ceasul și Zilele și lunile există în „Numere și litere”.
+- Salvarea parțială (AAC și atingerea limitei zilnice) nu mai contează ca joc terminat; la atingerea limitei se salvează încercările deja înregistrate.
+- Acvariu: cadoul, pușculița și raftul citesc politica de mișcare; toate straturile împart un buget de maximum 40 de particule, oprite în modul calm. Țintele raftului au minimum 64 dp. Jocul cu pești citește politica din `build`, nu din ticker. Teste: `reef_motion_policy_test.dart`, acvariu, cufăr, urmărire și scenă.
+- Verificări 18.11: aplicația copilului 396 teste trecute și 15 capturi opționale sărite; analiza Flutter fără probleme. Nucleu 652, panou 37, backend 90 și Vercel 7 teste trecute. Scenele acvariului și ale jocului „Rândul meu” au fost verificate suplimentar cu ilustrațiile încărcate.
+- Panourile web: căutare după nume în lista specialistului; selecție etichetată a copilului și indicator DEMO corect în panoul părintelui; spațiere îmbunătățită pe ecrane înguste. Buildurile Android 0.1.2 au fost regenerate; starea publicării este în `docs/releases.md`.
+- Build web JavaScript reușit; verificarea opțională Wasm semnalează incompatibilitatea cunoscută din `socket_io_common`. Build Android arm64, armeabi-v7a și x86_64 reușit. Verificarea pe dispozitiv rămâne de făcut.
 
 
 ### Documentație universitară 12.11.2026
@@ -52,6 +57,10 @@ pe pași, în ordine.
 
 ### Continuare 25.10.2026
 
+- [x] **Cufărul în modul calm / reduce motion:** răspuns static imediat de 1,2 s, fără dependență de timpul ambiental oprit și fără bulele deschiderii. Atingerile repetate prelungesc feedbackul; schimbarea modului / ieșirea anulează timerul. Pictorii de recif și noapte ascultă modificările cufărului.
+- [x] **Cufăr accesibil pe telefon:** testul a descoperit că bara de jos îi acoperea ținta. Acvariul are acum spațiu rezervat pentru comenzi; ținta cufărului are minimum 64 dp și semantică de buton. Atingerea sa nu mai sperie și peștii simultan. Tranziția zi/noapte respectă dezactivarea animațiilor din sistem.
+- **Versiune copil 0.1.2+3:** verificare și livrare în curs; panoul rămâne 0.1.1. Nu confunda APK-urile noi cu cele din release-ul 0.1.1. Testele noi acoperă timpul ambiental oprit, reatingerea, schimbarea modului, închiderea ecranului, dimensiunea țintei, suprapunerea cu butoanele și preferința sistemului.
+
 - [x] Continuarea graficii: `parts/tower_base.webp` generată și integrată în „Rândul meu”, cu rezerva din cod păstrată; promptul și sursa sunt în `README-parts4.md`. Testul de joc poate încărca ilustrațiile reale la `SHOTS=true`.
 - [x] Revizuită lista veche din §3: bărcile din „Paznicul farului” sunt deja pictate prin `StimulusArt` → `objects/sailboat`; nu există un far desenat în ecranul actual. Indiciile geometrice din „Regula se schimbă” rămân din cod, fiind stimuli educativi, nu decorații. Nu relua aceste puncte ca imagini lipsă.
 - **Livrare 0.1.1+2:** aplicația copilului și panoul au versiunile incrementate. APK-uri și panou web compilat în GitHub Releases, tag `v0.1.1-preview.1`; procedura și conținutul pachetelor în `docs/releases.md`. **Publicată și verificată:** [v0.1.1-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.1-preview.1), sursa `fc8baea`. Toate cele 5 atașamente sunt prezente; digesturile SHA-256 GitHub coincid cu cele locale. Build Android și Web reușite; analiza Flutter curată; cele 2 teste „Rândul meu” cu ilustrațiile încărcate trec, capturi verificate pe telefon/tabletă. Build-ul web JavaScript reușește; verificarea opțională Wasm semnalează incompatibilitatea existentă `socket_io_common` (nu s-a livrat Wasm).
@@ -61,7 +70,7 @@ pe pași, în ordine.
 - [x] Acvariu: mânuța de ghidaj nu mai animă în modul calm / reduce motion; particulele de interacțiune sunt oprite în aceste moduri, inclusiv cele deja active. În modul normal, cel mult 5 efecte simultane (maximum 7 particule per efect). Politica de mișcare este citită la construirea ecranului, nu din callback-ul fiecărui cadru.
 - [x] Testele existente de acvariu extinse: modul calm activat în timpul indiciului, atingeri repetate, oprirea particulelor. Captură verificată vizual: `apps/child_app/test/shots/acvariu-pictat.png` (locală, ignorată de git).
 - **Validare:** nucleu 652, panou 36, backend 90, Vercel 7 și cele 3 teste de scenă cu `SHOTS=true` trec; analiza Flutter fără probleme. Aplicația copilului: **381 teste trecute, 15 capturi opționale sărite** fără `SHOTS`. **APK-urile release construite cu succes** după teste: arm64 84,2 MB (pentru tabletă), armeabi-v7a 82,6 MB, x86_64 85,7 MB, în `apps/child_app/build/app/outputs/flutter-apk/`. Build-ul emite avertismente de mediu (SDK XML / acces nativ Java) și despre fontul CupertinoIcons; nu au blocat construirea. Nu s-au actualizat SDK-uri sau dependențe.
-- **Pentru următoarea sesiune:** lista grafică din §3 este revizuită mai jos. Verifică feedbackul cufărului în modul calm (folosește timpul ambiental oprit), apoi celelalte interacțiuni ale acvariului cu `reduce motion`; nu înlocui contururile de colorat sau formele educative cu decorații. §5 rămâne dependent de verificarea pe tabletă, înregistrările vocale și infrastructura utilizatorului.
+- **Pentru următoarea sesiune:** verifică pe tableta reală cufărul, raftul și modul calm; auditul accesoriilor și particulelor a fost continuat în 18.11. Lista grafică din §3 este revizuită; nu înlocui contururile de colorat sau formele educative cu decorații. §5 rămâne dependent de verificarea pe tabletă, înregistrările vocale și infrastructura utilizatorului.
 - **Mediu:** comenzile `py` / Flutter au necesitat acces în afara restricțiilor implicite pentru instalările și cache-urile existente. Nu s-au adăugat dependențe. Folderul neversionat `output/` exista înaintea sesiunii și a fost lăsat intact.
 
 ### Istoricul predării (16–17.10)

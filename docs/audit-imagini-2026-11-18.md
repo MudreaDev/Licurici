@@ -11,8 +11,12 @@ Sarcina solicitată: verificarea imaginilor pictate din jocuri, corectarea celor
 - Filtrul comun `tintBase` decupa luminile la alb și aplatiza piesele. A fost modificat; capturile arată umbre și pe cubul din „Rândul meu” și pe borcanele din „Colorează ce auzi”.
 - Testul funcțional `stacking_test.dart` trece pe telefon și tabletă; 14 capturi `art_shots_test.dart` au fost regenerate. Capturile sunt locale, ignorate de git.
 
-## Restul jocurilor
+## Continuare — verificarea obiectelor și a pieselor
 
-Nu a fost efectuată încă o verificare vizuală completă; prezența fișierelor nu demonstrează calitatea în joc. Lista utilizărilor `Part` se găsește prin `rg "hasPart\(|Part\(" apps/child_app/lib/features/games`; obiectele prin `StimulusArt` necesită și ele examinare. Nu înlocui formele educative sau contururile de colorat intenționate.
+- Au fost inspectate planșe de contact pentru cele 214 obiecte, piesele, cardurile de joc și cele 96 de portrete `faces2`; verificarea marginilor transparente a găsit imagini cu siluete tăiate sau fragmente din celule vecine.
+- S-au refăcut 37 de obiecte: `alarm_clock`, `boot`, `boy`, `bus`, `cart`, `chair`, `coat`, `dad`, `deer`, `eagle`, `fries`, `girl`, `grandma`, `grandpa`, `handshake`, `hug`, `jellyfish`, `lettuce`, `lion`, `lobster`, `lock_open`, `mom`, `palm`, `park`, `parrot`, `paws`, `raise_hand`, `school`, `shield`, `snowman`, `squid`, `sunglasses`, `swimming`, `tap`, `train`, `trash`, `wave`. Sursele și prompturile sunt în `README-objects-audit-20261118.md`; vechile intrări au fost păstrate ca arhivă.
+- Piesa `parts/block` din „Rândul meu” a fost refăcută cu față, muchie superioară și latură; capturile cu mai multe blocuri așezate au fost inspectate pe telefon și tabletă simulate. Blocurile rămân colorate procedural.
+- Convertorul `tools/art/convert_codex.py` acceptă opțional `Decupare: contur cu margine` în lista imaginii, pentru a încadra personajele generate cu margini transparente largi. Imaginile vechi nu sunt decupate automat. Testul `painted_assets_audit_test.dart` încarcă cele 37 de obiecte și verifică transparența marginilor; verificarea tuturor obiectelor nu mai găsește pixeli semnificativi pe margine.
+- Formele educative și contururile pentru colorare rămân intenționat din cod. Planșele și capturile sunt verificări pe simulator, nu înlocuiesc testarea pe dispozitiv și nu acoperă fiecare stare sau combinație din cele 109 jocuri.
 
-Nu s-a verificat vizual fiecare joc sau fiecare stare a jocurilor. Nu considera auditul complet.
+Sursele PNG sunt locale și ignorate de git; WebP-urile și prompturile sunt versionate.

@@ -9,12 +9,13 @@ import 'reef_life.dart';
 /// restul straturilor (apa, depărtarea, fundul, colțurile, razele) le pune scena.
 /// Folosit de acvariu și de jocurile din apă.
 class ReefScene extends StatelessWidget {
-  const ReefScene({super.key, required this.ambient, required this.chest, required this.child});
+  const ReefScene({super.key, required this.ambient, required this.chest, required this.child, this.particles = true});
 
   /// Timpul fundalului (stă pe loc în modul calm).
   final ValueListenable<double> ambient;
   final ReefChest chest;
   final Widget child;
+  final bool particles;
 
   @override
   Widget build(BuildContext context) => Stack(
@@ -30,7 +31,7 @@ class ReefScene extends StatelessWidget {
           errorBuilder: (_, _, _) => const CustomPaint(painter: ReefBackdropPainter()),
         ),
       ),
-      RepaintBoundary(child: CustomPaint(painter: ReefAmbiencePainter(ambient, chest: chest))),
+      RepaintBoundary(child: CustomPaint(painter: ReefAmbiencePainter(ambient, chest: chest, particles: particles))),
       child,
       IgnorePointer(
         child: RepaintBoundary(
@@ -43,7 +44,7 @@ class ReefScene extends StatelessWidget {
           ),
         ),
       ),
-      IgnorePointer(child: RepaintBoundary(child: CustomPaint(painter: ReefFrontPainter(ambient)))),
+      IgnorePointer(child: RepaintBoundary(child: CustomPaint(painter: ReefFrontPainter(ambient, particles: particles)))),
       // Sticla acvariului: margini puțin mai întunecate.
       const IgnorePointer(
         child: DecoratedBox(

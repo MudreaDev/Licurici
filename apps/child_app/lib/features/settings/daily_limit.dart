@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'settings.dart';
 import '../parent/parent_gate.dart';
 import '../../shared/voice.dart';
+import '../../data/session.dart';
 
 /// Numără timpul cât aplicația copilului este în prim-plan, fără colțul părintelui.
 class DailyLimit extends ConsumerStatefulWidget {
@@ -80,7 +81,12 @@ class _DailyLimitState extends ConsumerState<DailyLimit> with WidgetsBindingObse
     if (destination != null && !_redirecting) {
       _redirecting = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.router.go(destination);
+        if (mounted) {
+          if (destination == '/timp-expirat') {
+            unawaited(ref.read(sessionProvider.notifier).checkpoint(countCompletion: false));
+          }
+          widget.router.go(destination);
+        }
         _redirecting = false;
       });
     }

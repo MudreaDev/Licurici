@@ -45,7 +45,11 @@ class SpecialistPage extends ConsumerWidget {
                       onPressed: () => context.go('/'),
                       child: const Text('Schimbă rolul'),
                     ),
-                    if (!ref.watch(signedInProvider)) const Padding(padding: EdgeInsets.all(16), child: Text('DEMO')),
+                    if (!ref.watch(signedInProvider))
+                      const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text('DEMO'),
+                      ),
                   ],
           ),
           drawer: compact ? Drawer(child: SafeArea(child: childList())) : null,
@@ -90,7 +94,9 @@ class SpecialistPage extends ConsumerWidget {
                     : _ChildDetail(
                         key: ValueKey(selected.child.id),
                         history: selected,
-                        withCard: therapistAddsChildren && ref.watch(signedInProvider),
+                        withCard:
+                            therapistAddsChildren &&
+                            ref.watch(signedInProvider),
                       ),
               ),
             ],
@@ -101,8 +107,13 @@ class SpecialistPage extends ConsumerWidget {
   }
 }
 
-class _ChildrenList extends StatelessWidget {
-  const _ChildrenList(this.children, this.selectedId, {required this.compact, this.canAdd = false});
+class _ChildrenList extends StatefulWidget {
+  const _ChildrenList(
+    this.children,
+    this.selectedId, {
+    required this.compact,
+    this.canAdd = false,
+  });
   final List<ChildHistory> children;
   final String? selectedId;
   final bool compact;
@@ -110,82 +121,122 @@ class _ChildrenList extends StatelessWidget {
   /// Terapeutul poate adăuga copii (versiunea de test pe Vercel).
   final bool canAdd;
   @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(16),
-    children: [
-      Padding(
-        padding: const EdgeInsets.all(12),
-        child: Text(
-          'Copii urmăriți · ${children.length}',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-      ),
-      if (canAdd) const Padding(padding: EdgeInsets.fromLTRB(12, 0, 12, 12), child: AddChildButton()),
-      if (children.isEmpty) Text(canAdd ? 'Niciun copil încă.' : 'Nu există copii partajați încă.'),
-      for (final h in children)
+  State<_ChildrenList> createState() => _ChildrenListState();
+}
+
+class _ChildrenListState extends State<_ChildrenList> {
+  String query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final children = widget.children
+        .where(
+          (h) => h.child.nickname.toLowerCase().contains(
+            query.trim().toLowerCase(),
+          ),
+        )
+        .toList();
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Card(
-            color: selectedId == h.child.id
-                ? Theme.of(context).colorScheme.primaryContainer
-                : null,
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              title: Wrap(
-                spacing: 8,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(
-                    h.child.nickname,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 19,
-                    ),
-                  ),
-                  PlayingBadge(childId: h.child.id),
-                ],
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${h.child.ageYears} ani · ${h.sessions.length} sesiuni',
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    h.latest == null
-                        ? 'Fără sesiuni'
-                        : 'Ultima: ${dateLabel(h.latest!.record.start)}',
-                  ),
-                  if (h.latest?.struggling.isNotEmpty ?? false)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            size: 16,
-                            color: Color(0xFF80622F),
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'Atenție',
-                            style: TextStyle(color: Color(0xFF80622F)),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-              onTap: () {
-                if (compact) Navigator.pop(context);
-                context.go('/specialist/copil/${h.child.id}');
-              },
-            ),
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            'Copii urmăriți · ${widget.children.length}',
+            style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
-    ],
-  );
+        if (widget.canAdd)
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
+            child: AddChildButton(),
+          ),
+        if (widget.children.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
+            child: TextField(
+              key: const ValueKey('search-children'),
+              onChanged: (value) => setState(() => query = value),
+              decoration: const InputDecoration(
+                labelText: 'Caută un copil',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+        if (children.isEmpty)
+          Text(
+            widget.children.isNotEmpty
+                ? 'Nu am găsit niciun copil.'
+                : (widget.canAdd
+                      ? 'Niciun copil încă.'
+                      : 'Nu există copii partajați încă.'),
+          ),
+        for (final h in children)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Card(
+              color: widget.selectedId == h.child.id
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : null,
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                title: Wrap(
+                  spacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      h.child.nickname,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19,
+                      ),
+                    ),
+                    PlayingBadge(childId: h.child.id),
+                  ],
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${h.child.ageYears} ani · ${h.sessions.length} sesiuni',
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      h.latest == null
+                          ? 'Fără sesiuni'
+                          : 'Ultima: ${dateLabel(h.latest!.record.start)}',
+                    ),
+                    if (h.latest?.struggling.isNotEmpty ?? false)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 16,
+                              color: Color(0xFF80622F),
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'Atenție',
+                              style: TextStyle(color: Color(0xFF80622F)),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+                onTap: () {
+                  if (widget.compact) Navigator.pop(context);
+                  context.go('/specialist/copil/${h.child.id}');
+                },
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 }
 
 class _ChildDetail extends StatelessWidget {
@@ -239,21 +290,34 @@ class _ChildDetail extends StatelessWidget {
         Expanded(
           child: TabBarView(
             children: [
-              if (withCard) _TabBody(child: ChildCardPanel(key: ValueKey('card-${history.child.id}'), history: history)),
+              if (withCard)
+                _TabBody(
+                  child: ChildCardPanel(
+                    key: ValueKey('card-${history.child.id}'),
+                    history: history,
+                  ),
+                ),
               _TabBody(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _Overview(history.latest),
                     StepBackNotice(history),
-                    AskPanel(key: ValueKey('ask-${history.child.id}'), history: history),
+                    AskPanel(
+                      key: ValueKey('ask-${history.child.id}'),
+                      history: history,
+                    ),
                   ],
                 ),
               ),
               _TabBody(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [ProgressPanel(history), MasteryPanel(history), StandardMetricsPanel(history)],
+                  children: [
+                    ProgressPanel(history),
+                    MasteryPanel(history),
+                    StandardMetricsPanel(history),
+                  ],
                 ),
               ),
               _TabBody(child: _Sessions(history)),
@@ -263,7 +327,12 @@ class _ChildDetail extends StatelessWidget {
                   child: ConfusionBars(aggregateConfusions(history)),
                 ),
               ),
-              _TabBody(child: GamePlanPanel(key: ValueKey('plan-${history.child.id}'), history: history)),
+              _TabBody(
+                child: GamePlanPanel(
+                  key: ValueKey('plan-${history.child.id}'),
+                  history: history,
+                ),
+              ),
             ],
           ),
         ),

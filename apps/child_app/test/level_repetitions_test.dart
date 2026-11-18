@@ -40,4 +40,20 @@ void main() {
     s.applyPlan({}, {'turnul': 3}, DateTime.utc(2026, 1, 3));
     expect(c.read(settingsProvider).levels['turnul'], 3);
   });
+
+  test('o salvare parțială nu numără jocul ca terminat', () async {
+    final store = MemorySessionStore();
+    final c = ProviderContainer(overrides: [
+      settingsProvider.overrideWith(() => SettingsNotifier(const AppSettings(levelRepeats: 1))),
+      sessionStoreProvider.overrideWithValue(store),
+    ]);
+    addTearDown(c.dispose);
+    final session = c.read(sessionProvider.notifier);
+    session.record((r) => r.add(Trial(stepId: 'COG4', gameId: 'turnul', correct: true, promptLevel: PromptLevel.p0, at: DateTime.now(), level: 1)));
+    await session.checkpoint(countCompletion: false);
+    expect(c.read(settingsProvider).levels['turnul'], isNull);
+    expect((await store.all()).single.trials, hasLength(1));
+    await session.checkpoint();
+    expect(c.read(settingsProvider).levelOf('turnul'), 2);
+  });
 }

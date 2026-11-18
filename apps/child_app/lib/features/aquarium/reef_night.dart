@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 
 import 'reef_life.dart';
+import 'reef_particle_budget.dart';
 
 /// Unde e meduza [i] (0 sau 1) la timpul [t]: centrul, raza și cât se vede (aceleași formule
 /// ca stratul din spate, ca lumina ei de noapte să cadă exact pe ea).
@@ -21,18 +22,15 @@ import 'reef_life.dart';
 /// planctonul care strălucesc, cufărul deschis și **degetul copilului, ca o lanternă** (peștii
 /// vin la lumină). [night] 0…1 face trecerea lină între zi și noapte.
 class ReefNightPainter extends CustomPainter {
-  ReefNightPainter({
-    required this.time,
-    required this.night,
-    required this.finger,
-    required this.chest,
-  }) : super(repaint: Listenable.merge([time, night, finger]));
+  ReefNightPainter({required this.time, required this.night, required this.finger, required this.chest, this.particles = true})
+    : super(repaint: Listenable.merge([time, night, finger, chest]));
 
   /// Timpul fundalului (același cu al straturilor din spate).
   final ValueListenable<double> time;
   final ValueListenable<double> night;
   final ValueListenable<Offset?> finger;
   final ReefChest chest;
+  final bool particles;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -91,7 +89,7 @@ class ReefNightPainter extends CustomPainter {
     }
     final rnd = math.Random(21);
     final glow = Paint()..blendMode = BlendMode.plus;
-    for (var i = 0; i < 45; i++) {
+    for (var i = 0; particles && i < ReefParticleBudget.night; i++) {
       final x0 = rnd.nextDouble() * w, y0 = rnd.nextDouble() * h * 0.85, ph = rnd.nextDouble() * 6;
       final c = Offset(x0 + math.sin(t * 0.2 + ph) * h * 0.02, y0 + math.cos(t * 0.15 + ph) * h * 0.015);
       final a = (0.5 + 0.5 * math.sin(t * (0.8 + rnd.nextDouble()) + ph)) * k;
@@ -109,5 +107,5 @@ class ReefNightPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(ReefNightPainter old) => old.chest != chest;
+  bool shouldRepaint(ReefNightPainter old) => old.chest != chest || old.particles != particles;
 }

@@ -85,7 +85,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 **B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `py tools/art/convert_codex.py`
 Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de utilizare a contului ChatGPT poate opri un lot la jumătate.
 - [x] Fundalul și colțurile pictate ale acvariului (17.10); cele 6 piese ale recifului integrate pe 25.10: alge, anemonă, peștișor de banc, țestoasă, cufăr închis/deschis.
-- [ ] Pe tabletă, verifică reciful nou și modul calm: mânuța de ghidaj trebuie să stea pe loc, iar atingerile să nu producă particule.
+- [ ] Pe tabletă, verifică reciful nou și modul calm: mânuța de ghidaj trebuie să stea pe loc, iar atingerile să nu producă particule. În 0.1.2 verifică și cufărul (deschidere statică) și bara de comenzi separată.
 - [x] 11 carduri școlare · 8 carduri ale jocurilor din sesiunea 9 · 6 carduri „frate” · fereastra acvariului + butoanele pictate ale acvariului (sesiunea 12, Codex)
 - [x] 9 carduri ale jocurilor noi din sesiunea 12 ([docs/brief-codex-carduri-sesiunea12.md](docs/brief-codex-carduri-sesiunea12.md), `README-cards14.md`)
 
@@ -131,9 +131,16 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
 
+**Continuare 18.11:** 37 de obiecte tăiate au fost refăcute; blocul din „Rândul meu” are volum. Auditul pe planșe și limitele lui sunt în raport. În acvariu, indiciul cadoului, pușculița și raftul respectă modul calm, țintele raftului au minimum 64 dp, iar particulele împart un plafon comun de 40. Salvarea parțială nu mai numără un joc ca terminat. Rămâne verificarea pe tabletă a scenelor și a limitei zilnice.
+
+Panourile au primit căutare în lista de copii a specialistului, o selecție mai clară a copilului pentru părinte și spațiere adaptată ecranelor mici. Indicatorul DEMO apare în panoul părintelui doar când nu există autentificare.
+
+
 **12.11.2026 — laborator PSI:** redactat documentul Word „Gestionarea sesiunilor educative și a progresului copilului”, cu coperta confirmată (Mudrea Mihail, TI-233, Cojocaru Svetlana). Structură după exemplul furnizat, tipografie după regulile UTM ulterioare: Times New Roman 12 pt / 1,5, capitole 13 pt, tabele 11 pt, margini 20/10/20/20 mm. 25 de pagini, 9 diagrame, 11 tabele, cuprins actualizat în Word; cele 3 pagini preliminare nu afișează numere. Modelele separă stocarea locală de sincronizarea opțională; interfețele ICOM și DFD sunt verificate. Nu s-a schimbat codul aplicației; modificările locale anterioare rămân ale sesiunii 25.10. Următoarele sarcini ale aplicației rămân cele din predarea de mai jos.
 
-**25.10.2026 — continuarea predării:** cele 6 imagini din `jobs_acvariu.json` existau deja ca PNG local; sunt acum integrate în `parts/` (surse și prompturi: `README-aquarium4.md`). Fundalul și stratul din față erau deja integrate în commit-urile din 17.10. În acvariu, mânuța de ghidaj rămâne statică în modul calm / reduce motion; efectele de atingere, mâncat și bucurie respectă politica de particule, iar lista este limitată la 5 efecte simultane. Testele de acvariu verifică schimbarea modului calm în timpul indiciului și atingerile repetate. **Continuare:** baza din „Rândul meu” este acum pictată; bărcile erau deja pictate, iar semnul regulii rămâne din forme clare. Versiunile copilului și panoului sunt `0.1.1+2`; pachetele sunt publicate în [GitHub Release 0.1.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.1-preview.1) (3 APK-uri + panou web + SHA-256), detalii în [docs/releases.md](docs/releases.md). **Urmează:** testarea pe tabletă și verificarea feedbackului cufărului în modul calm. **Validare:** analiza Flutter curată; teste: aplicație 381, nucleu 652, panou 36, backend 90, Vercel 7; 3 teste vizuale de acvariu. APK-urile release reconstruite pe 25.10 (arm64: 84,2 MB). Detalii în `CODEX-CONTINUARE.md` §1.
+**25.10 — continuare, copil 0.1.2+3:** cufărul răspunde acum și în modul calm / reduce motion (deschis static 1,2 s, fără bule). Ținta este de minimum 64 dp, cu etichetă accesibilă; bara de jos are spațiu separat și nu îl mai acoperă pe telefon. Atingerea cufărului nu mai sperie peștii. Zi/noapte se schimbă instant dacă sistemul dezactivează animațiile. Panoul rămâne 0.1.1. Urmează auditul animațiilor accesoriilor acvariului și al particulelor nocturne; detaliile verificării/livrării sunt în predarea comună.
+
+**25.10.2026 — continuarea predării:** cele 6 imagini din `jobs_acvariu.json` existau deja ca PNG local; sunt acum integrate în `parts/` (surse și prompturi: `README-aquarium4.md`). Fundalul și stratul din față erau deja integrate în commit-urile din 17.10. În acvariu, mânuța de ghidaj rămâne statică în modul calm / reduce motion; efectele de atingere, mâncat și bucurie respectă politica de particule, iar lista este limitată la 5 efecte simultane. Testele de acvariu verifică schimbarea modului calm în timpul indiciului și atingerile repetate. **Continuare:** baza din „Rândul meu” este acum pictată; bărcile erau deja pictate, iar semnul regulii rămâne din forme clare. Versiunile copilului și panoului sunt `0.1.1+2`; pachetele sunt publicate în [GitHub Release 0.1.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.1-preview.1) (3 APK-uri + panou web + SHA-256), detalii în [docs/releases.md](docs/releases.md). **Urmează:** testarea pe tabletă; feedbackul cufărului este rezolvat în continuarea 0.1.2 de mai sus. **Validare:** analiza Flutter curată; teste: aplicație 381, nucleu 652, panou 36, backend 90, Vercel 7; 3 teste vizuale de acvariu. APK-urile release reconstruite pe 25.10 (arm64: 84,2 MB). Detalii în `CODEX-CONTINUARE.md` §1.
 
 **17.10, 11:20:** **toate imaginile Codex sunt gata**: 143 de obiecte pictate în locul pictogramelor OpenMoji (rămân doar simbolurile, cifrele și formele geometrice, intenționat). **17.10 (noaptea–dimineața):** **fețele pictate Codex sunt active** în locul celor desenate din cod: 8 copii (`a0`…`b3`) × 7 emoții + treptele 20/40/60/80% pentru „Cât de tare?” (96 de portrete, `art/illustrations/faces2/`); „Oglinda” are geometria măsurată pe fiecare copil (test pe toate punctele). Lotul de obiecte este încheiat; nu trebuie repornit.
 
@@ -1136,7 +1143,9 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 **18.11.2026:** „Turnul” folosește inele pictate cu volum; filtrul pentru piesele colorate păstrează umbrele. Auditul celorlalte ilustrații rămâne de completat. „Ceasul” și „Zilele și lunile” sunt în categoria copilului „Numere și litere”; verificare și surse: [timp și calendar](docs/research/09-timp-calendar.md).
 
-**25.10.2026:** acvariul folosește cele 6 piese pictate ale recifului; ghidajul și efectele de interacțiune respectă modul calm. Baza din „Rândul meu” este și ea pictată. Numărul jocurilor nu se schimbă (109).
+**Continuare:** 37 de obiecte refăcute și blocul pictat din „Rândul meu”; detalii în [auditul vizual](docs/audit-imagini-2026-11-18.md). Nu s-a schimbat numărul jocurilor.
+
+**25.10.2026:** acvariul folosește cele 6 piese pictate ale recifului; ghidajul și efectele de interacțiune respectă modul calm. Baza din „Rândul meu” este și ea pictată. Cufărul este accesibil și în modul calm, fără suprapunere cu bara de comenzi (0.1.2). Numărul jocurilor nu se schimbă (109).
 
 **Gata în Flutter (103):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
 🆕 ce-simte, ce-ma-ajuta, cine-stie, situatii (`choice`, traseul EMO), 🆕 pescarul, prinde-licuriciul (`reaction`),
@@ -1263,7 +1272,9 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
 **Progres 18.11.2026:** planul poate limita timpul zilnic și seta 1–5 jocuri pe nivel, cu contoare locale; verificarea pe dispozitiv și auditul vizual complet rămân deschise. Nu se schimbă totalurile roadmap-ului.
 
-**Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; fără puncte noi în roadmap (S1: 32/38, total: 35/46).
+**Continuare 18.11:** auditul pe planșe, 37 obiecte refăcute și blocul cu volum; acvariul respectă plafonul comun de particule și modul calm pentru accesorii. Capturile și testele nu înlocuiesc verificarea pe dispozitiv.
+
+**Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; corecția cufărului și a barei de comenzi (0.1.2); fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 
 ### Sprint 0–1 · 28 sep – 11 oct 2026 — Fundația
 - [x] Monorepo: mută prototipul în `legacy/electron/`, creează `apps/`, `packages/`, `backend/`, `infra/`, `docs/`

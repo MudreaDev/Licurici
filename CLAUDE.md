@@ -1,6 +1,6 @@
 # Licurici — instrucțiuni de lucru
 
-**Predare 25.10.2026:** acvariul pictat și corecțiile modului calm sunt gata; baza pictată din „Rândul meu” este integrată. Bărcile din „Paznicul farului” erau deja pictate; semnele geometrice ale regulilor rămân intenționat din cod. Versiuni descărcabile și publicare: [docs/releases.md](docs/releases.md). Citește starea detaliată și verificările din [CODEX-CONTINUARE.md §1](CODEX-CONTINUARE.md) înainte de a relua sarcinile vechi.
+**Predare 25.10.2026:** acvariul pictat, cufărul în modul calm și separarea barei de comenzi sunt gata (copil 0.1.2); baza pictată din „Rândul meu” este integrată. Bărcile din „Paznicul farului” erau deja pictate; semnele geometrice ale regulilor rămân intenționat din cod. Versiuni descărcabile și publicare: [docs/releases.md](docs/releases.md). Citește starea detaliată și verificările din [CODEX-CONTINUARE.md §1](CODEX-CONTINUARE.md) înainte de a relua sarcinile vechi.
 
 **Sursa unică de adevăr este [README.md](README.md).** Citește întâi **§0.1 (unde am rămas și ce urmează)**, apoi §0 (starea proiectului) și §22 (ghid de lucru). La finalul fiecărei sesiuni actualizează §0.1.
 

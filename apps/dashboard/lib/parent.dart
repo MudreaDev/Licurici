@@ -7,6 +7,7 @@ import 'data.dart';
 import 'live.dart';
 import 'game_plan.dart';
 import 'shared.dart';
+import 'api.dart';
 
 class ParentPage extends ConsumerStatefulWidget {
   const ParentPage({super.key});
@@ -31,14 +32,17 @@ class _ParentPageState extends ConsumerState<ParentPage> {
           icon: const Icon(Icons.home_outlined),
         ),
         title: const Text('Licurici · Pentru părinte'),
-        actions: const [
-          Padding(padding: EdgeInsets.all(20), child: Text('DEMO')),
+        actions: [
+          if (!ref.watch(signedInProvider))
+            const Padding(padding: EdgeInsets.all(20), child: Text('DEMO')),
         ],
       ),
       body: history == null
           ? const Center(child: Text('Copiii tăi vor apărea aici.'))
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(
+                MediaQuery.sizeOf(context).width < 600 ? 16 : 24,
+              ),
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 1000),
@@ -64,8 +68,13 @@ class _ParentPageState extends ConsumerState<ParentPage> {
                       if (children.length > 1)
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: DropdownButton<String>(
-                            value: history.child.id,
+                          child: DropdownButtonFormField<String>(
+                            key: ValueKey(history.child.id),
+                            decoration: const InputDecoration(
+                              labelText: 'Copilul selectat',
+                              border: OutlineInputBorder(),
+                            ),
+                            initialValue: history.child.id,
                             onChanged: (id) => setState(() => selectedId = id),
                             items: [
                               for (final c in children)
@@ -186,8 +195,14 @@ class _ParentPageState extends ConsumerState<ParentPage> {
                         'Ilustrații: OpenMoji · CC BY-SA 4.0',
                         style: TextStyle(fontSize: 12),
                       ),
-                      AskPanel(key: ValueKey('ask-${history.child.id}'), history: history),
-                      GamePlanPanel(key: ValueKey('plan-${history.child.id}'), history: history),
+                      AskPanel(
+                        key: ValueKey('ask-${history.child.id}'),
+                        history: history,
+                      ),
+                      GamePlanPanel(
+                        key: ValueKey('plan-${history.child.id}'),
+                        history: history,
+                      ),
                     ],
                   ),
                 ),
