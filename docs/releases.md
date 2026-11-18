@@ -3,11 +3,11 @@
 Versiunile de test sunt publicate în [GitHub Releases](https://github.com/MudreaDev/Licurici/releases).
 APK-urile și arhivele compilate sunt atașamente ale versiunii, nu fișiere adăugate în istoricul Git.
 
-## Aplicația copilului 0.1.2 (build 3) — în pregătire, nepublicată
+## Aplicația copilului 0.1.2 (build 3) — 18.11.2026
 
-Tag propus: `v0.1.2-preview.1` (nu există încă pe GitHub). Cufărul răspunde și în modul calm / reduce motion: imagine deschisă timp de 1,2 s, fără mișcarea capacului sau bule. Ținta are minimum 64 dp și etichetă pentru cititorul de ecran. Bara de comenzi este separată de apă, ca să nu acopere cufărul pe telefon. Zi/noapte se schimbă instant când sistemul dezactivează animațiile.
+Publicată ca versiune de test: [v0.1.2-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.2-preview.1), din commitul `38648e7`. Cufărul răspunde și în modul calm / reduce motion: imagine deschisă timp de 1,2 s, fără mișcarea capacului sau bule. Ținta are minimum 64 dp și etichetă pentru cititorul de ecran. Bara de comenzi este separată de apă, ca să nu acopere cufărul pe telefon. Zi/noapte se schimbă instant când sistemul dezactivează animațiile.
 
-Înaintea publicării trebuie construite APK-urile din commitul final și calculate sumele de control. Panoul web a primit între timp setări noi; nu reutiliza arhiva precedentă ca fiind actualizată.
+Cele trei APK-uri Android sunt atașate; SHA-256 afișat de GitHub coincide cu cel local. Pentru majoritatea tabletelor se folosește `app-arm64-v8a-release.apk`. Panoul web a primit între timp setări noi; nu reutiliza arhiva precedentă ca fiind actualizată. Verificarea aplicației pe tableta reală rămâne necesară.
 
 ## 0.1.1 (build 2) — 25.10.2026
 

@@ -135,6 +135,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 Panourile au primit căutare în lista de copii a specialistului, o selecție mai clară a copilului pentru părinte și spațiere adaptată ecranelor mici. Indicatorul DEMO apare în panoul părintelui doar când nu există autentificare.
 
+Aplicația copilului 0.1.2 este disponibilă ca [versiune de test pe GitHub](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.2-preview.1); pentru majoritatea tabletelor se alege APK-ul `arm64-v8a`. Sunt necesare verificări pe dispozitivul real.
+
 
 **12.11.2026 — laborator PSI:** redactat documentul Word „Gestionarea sesiunilor educative și a progresului copilului”, cu coperta confirmată (Mudrea Mihail, TI-233, Cojocaru Svetlana). Structură după exemplul furnizat, tipografie după regulile UTM ulterioare: Times New Roman 12 pt / 1,5, capitole 13 pt, tabele 11 pt, margini 20/10/20/20 mm. 25 de pagini, 9 diagrame, 11 tabele, cuprins actualizat în Word; cele 3 pagini preliminare nu afișează numere. Modelele separă stocarea locală de sincronizarea opțională; interfețele ICOM și DFD sunt verificate. Nu s-a schimbat codul aplicației; modificările locale anterioare rămân ale sesiunii 25.10. Următoarele sarcini ale aplicației rămân cele din predarea de mai jos.
 

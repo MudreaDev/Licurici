@@ -43,7 +43,7 @@ pe pași, în ordine.
 - Salvarea parțială (AAC și atingerea limitei zilnice) nu mai contează ca joc terminat; la atingerea limitei se salvează încercările deja înregistrate.
 - Acvariu: cadoul, pușculița și raftul citesc politica de mișcare; toate straturile împart un buget de maximum 40 de particule, oprite în modul calm. Țintele raftului au minimum 64 dp. Jocul cu pești citește politica din `build`, nu din ticker. Teste: `reef_motion_policy_test.dart`, acvariu, cufăr, urmărire și scenă.
 - Verificări 18.11: aplicația copilului 396 teste trecute și 15 capturi opționale sărite; analiza Flutter fără probleme. Nucleu 652, panou 37, backend 90 și Vercel 7 teste trecute. Scenele acvariului și ale jocului „Rândul meu” au fost verificate suplimentar cu ilustrațiile încărcate.
-- Panourile web: căutare după nume în lista specialistului; selecție etichetată a copilului și indicator DEMO corect în panoul părintelui; spațiere îmbunătățită pe ecrane înguste. Buildurile Android 0.1.2 au fost regenerate; starea publicării este în `docs/releases.md`.
+- Panourile web: căutare după nume în lista specialistului; selecție etichetată a copilului și indicator DEMO corect în panoul părintelui; spațiere îmbunătățită pe ecrane înguste. APK-urile Android 0.1.2 sunt publicate în `v0.1.2-preview.1`; detalii și verificarea sumelor în `docs/releases.md`.
 - Build web JavaScript reușit; verificarea opțională Wasm semnalează incompatibilitatea cunoscută din `socket_io_common`. Build Android arm64, armeabi-v7a și x86_64 reușit. Verificarea pe dispozitiv rămâne de făcut.
 
 
@@ -59,7 +59,7 @@ pe pași, în ordine.
 
 - [x] **Cufărul în modul calm / reduce motion:** răspuns static imediat de 1,2 s, fără dependență de timpul ambiental oprit și fără bulele deschiderii. Atingerile repetate prelungesc feedbackul; schimbarea modului / ieșirea anulează timerul. Pictorii de recif și noapte ascultă modificările cufărului.
 - [x] **Cufăr accesibil pe telefon:** testul a descoperit că bara de jos îi acoperea ținta. Acvariul are acum spațiu rezervat pentru comenzi; ținta cufărului are minimum 64 dp și semantică de buton. Atingerea sa nu mai sperie și peștii simultan. Tranziția zi/noapte respectă dezactivarea animațiilor din sistem.
-- **Versiune copil 0.1.2+3:** verificare și livrare în curs; panoul rămâne 0.1.1. Nu confunda APK-urile noi cu cele din release-ul 0.1.1. Testele noi acoperă timpul ambiental oprit, reatingerea, schimbarea modului, închiderea ecranului, dimensiunea țintei, suprapunerea cu butoanele și preferința sistemului.
+- **Versiune copil 0.1.2+3:** la această predare verificarea și livrarea erau în curs; pentru publicarea ulterioară vezi continuarea din 18.11 și `docs/releases.md`. Testele noi acoperă timpul ambiental oprit, reatingerea, schimbarea modului, închiderea ecranului, dimensiunea țintei, suprapunerea cu butoanele și preferința sistemului.
 
 - [x] Continuarea graficii: `parts/tower_base.webp` generată și integrată în „Rândul meu”, cu rezerva din cod păstrată; promptul și sursa sunt în `README-parts4.md`. Testul de joc poate încărca ilustrațiile reale la `SHOTS=true`.
 - [x] Revizuită lista veche din §3: bărcile din „Paznicul farului” sunt deja pictate prin `StimulusArt` → `objects/sailboat`; nu există un far desenat în ecranul actual. Indiciile geometrice din „Regula se schimbă” rămân din cod, fiind stimuli educativi, nu decorații. Nu relua aceste puncte ca imagini lipsă.
