@@ -31,6 +31,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
   /// Muzica de fundal pe tabletă (null = neschimbată din panou: rămâne alegerea de pe tabletă).
   MusicChoice? _music;
   MusicChoice? _savedMusic;
+  int? _levelRepeats, _savedLevelRepeats, _dailyMinutes, _savedDailyMinutes;
   String? _info;
   String? _error;
   bool _busy = false;
@@ -60,6 +61,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
         _avoid = {...plan.avoid};
         _savedAvoid = {...plan.avoid};
         _music = _savedMusic = plan.music;
+        _levelRepeats = _savedLevelRepeats = plan.levelRepeats;
+        _dailyMinutes = _savedDailyMinutes = plan.dailyMinutes;
         _info = plan.updatedAt == null
             ? 'Copilul vede toate jocurile.'
             : 'Ultima schimbare: ${plan.updatedAt!.toLocal().toString().substring(0, 16)}'
@@ -83,6 +86,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
             rounds: _params['rounds']!,
             avoid: _avoid,
             music: _music,
+            levelRepeats: _levelRepeats,
+            dailyMinutes: _dailyMinutes,
           );
       if (!mounted) return;
       setState(() {
@@ -91,6 +96,8 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
         _avoid = {...plan.avoid};
         _savedAvoid = {...plan.avoid};
         _music = _savedMusic = plan.music;
+        _levelRepeats = _savedLevelRepeats = plan.levelRepeats;
+        _dailyMinutes = _savedDailyMinutes = plan.dailyMinutes;
         _info = 'Salvat. Tableta preia lista la următoarea sincronizare.';
         _error = null;
       });
@@ -173,6 +180,31 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                   ),
+                const SizedBox(height: 12),
+                Text('Timp și dificultate', style: text.titleSmall),
+                Wrap(spacing: 20, children: [
+                  DropdownButton<int?>(
+                    key: const ValueKey('plan-level-repeats'),
+                    value: _levelRepeats,
+                    items: [
+                      const DropdownMenuItem<int?>(value: null, child: Text('Dificultate adaptivă')),
+                      for (var i = 1; i <= 5; i++) DropdownMenuItem<int?>(value: i, child: Text('$i ${i == 1 ? 'joc' : 'jocuri'} pe nivel')),
+                    ],
+                    onChanged: (v) => setState(() => _levelRepeats = v),
+                  ),
+                  DropdownButton<int?>(
+                    key: const ValueKey('plan-daily-minutes'),
+                    value: _dailyMinutes,
+                    items: [
+                      const DropdownMenuItem<int?>(value: null, child: Text('Fără limită zilnică')),
+                      if (_dailyMinutes != null && ![1, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240].contains(_dailyMinutes))
+                        DropdownMenuItem<int?>(value: _dailyMinutes, child: Text('$_dailyMinutes minute pe zi')),
+                      for (final i in [1, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240])
+                        DropdownMenuItem<int?>(value: i, child: Text('$i ${i == 1 ? 'minut' : 'minute'} pe zi')),
+                    ],
+                    onChanged: (v) => setState(() => _dailyMinutes = v),
+                  ),
+                ]),
                 const SizedBox(height: 12),
                 Text('Imagini de evitat', style: text.titleSmall),
                 Text('Ce îl sperie sau îl tulbură pe copil: jocurile sar peste rundele care le-ar arăta.', style: text.bodySmall),
@@ -263,7 +295,7 @@ class _GamePlanPanelState extends ConsumerState<GamePlanPanel> {
                 const SizedBox(height: 12),
                 FilledButton.icon(
                   key: const ValueKey('plan-save'),
-                  onPressed: _busy || (_sameSet(hidden, _saved) && _paramsSaved && _sameSet(_avoid, _savedAvoid) && _music == _savedMusic) ? null : _save,
+                  onPressed: _busy || (_sameSet(hidden, _saved) && _paramsSaved && _sameSet(_avoid, _savedAvoid) && _music == _savedMusic && _levelRepeats == _savedLevelRepeats && _dailyMinutes == _savedDailyMinutes) ? null : _save,
                   icon: const Icon(Icons.save_rounded),
                   label: const Text('Salvează lista'),
                 ),

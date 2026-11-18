@@ -29,6 +29,12 @@ class AppSettings {
     this.welcomeSeen = true,
     this.serverUrl,
     this.linkedNickname,
+    this.levelRepeats,
+    this.dailyMinutes,
+    this.repetitions = const {},
+    this.planStarts = const {},
+    this.usageDay,
+    this.usageMs = 0,
   });
 
   final Grade grade;
@@ -75,6 +81,12 @@ class AppSettings {
 
   /// Câte runde are o tură, ales de specialist pe joc (jocurile cu alegere).
   final Map<String, int> rounds;
+  final int? levelRepeats;
+  final int? dailyMinutes;
+  final Map<String, int> repetitions;
+  final Map<String, int> planStarts;
+  final String? usageDay;
+  final int usageMs;
 
   /// Categoriile de imagini pe care copilul nu trebuie să le vadă (`avoidItems`): jocurile
   /// sar peste rundele care le-ar arăta.
@@ -128,6 +140,12 @@ class AppSettings {
     if (levels.isNotEmpty) 'levels': levels,
     if (maxLevels.isNotEmpty) 'maxLevels': maxLevels,
     if (rounds.isNotEmpty) 'rounds': rounds,
+    'levelRepeats': ?levelRepeats,
+    'dailyMinutes': ?dailyMinutes,
+    if (repetitions.isNotEmpty) 'repetitions': repetitions,
+    if (planStarts.isNotEmpty) 'planStarts': planStarts,
+    'usageDay': ?usageDay,
+    if (usageMs > 0) 'usageMs': usageMs,
     if (avoid.isNotEmpty) 'avoid': avoid.toList()..sort(),
     'music': music,
     'musicTrack': musicTrack.name,
@@ -167,6 +185,12 @@ class AppSettings {
       for (final MapEntry(:key, :value) in ((j['rounds'] as Map?) ?? const {}).entries)
         if (key is String && value is num && value >= 1) key: value.toInt(),
     },
+    levelRepeats: (j['levelRepeats'] as num?)?.toInt(),
+    dailyMinutes: (j['dailyMinutes'] as num?)?.toInt(),
+    repetitions: {for (final MapEntry(:key, :value) in ((j['repetitions'] as Map?) ?? const {}).entries) if (key is String && value is num && value >= 0) key: value.toInt()},
+    planStarts: {for (final MapEntry(:key, :value) in ((j['planStarts'] as Map?) ?? const {}).entries) if (key is String && value is num && value >= 1) key: value.toInt()},
+    usageDay: j['usageDay'] as String?,
+    usageMs: ((j['usageMs'] as num?)?.toInt() ?? 0).clamp(0, 86400000),
     avoid: {
       for (final a in (j['avoid'] as List? ?? const []))
         if (a is String) a,
@@ -200,6 +224,13 @@ class AppSettings {
     String? serverUrl,
     String? linkedNickname,
     bool unlink = false,
+    int? levelRepeats,
+    int? dailyMinutes,
+    bool clearLimits = false,
+    Map<String, int>? repetitions,
+    Map<String, int>? planStarts,
+    String? usageDay,
+    int? usageMs,
   }) => AppSettings(
     grade: grade ?? this.grade,
     level: level ?? this.level,
@@ -221,6 +252,12 @@ class AppSettings {
     welcomeSeen: welcomeSeen ?? this.welcomeSeen,
     serverUrl: unlink ? null : (serverUrl ?? this.serverUrl),
     linkedNickname: unlink ? null : (linkedNickname ?? this.linkedNickname),
+    levelRepeats: clearLimits ? levelRepeats : (levelRepeats ?? this.levelRepeats),
+    dailyMinutes: clearLimits ? dailyMinutes : (dailyMinutes ?? this.dailyMinutes),
+    repetitions: repetitions ?? this.repetitions,
+    planStarts: planStarts ?? this.planStarts,
+    usageDay: usageDay ?? this.usageDay,
+    usageMs: usageMs ?? this.usageMs,
   );
 }
 
@@ -331,7 +368,8 @@ class SettingsNotifier extends Notifier<AppSettings> {
     final next = hidden.where(known.contains).toSet();
     if (next.length >= catalog.length) return;
     final caps = maxLevels ?? state.maxLevels;
-    final merged = {...state.levels, ...levels};
+    final changedStarts = {for (final e in levels.entries) if (state.planStarts[e.key] != e.value) e.key: e.value};
+    final merged = {...state.levels, ...changedStarts};
     _set(
       state.copyWith(
         hiddenGames: next,
@@ -340,6 +378,8 @@ class SettingsNotifier extends Notifier<AppSettings> {
         rounds: rounds ?? state.rounds,
         avoid: avoid ?? state.avoid,
         levels: {for (final MapEntry(:key, :value) in merged.entries) key: capLevel(value, caps[key])},
+        planStarts: levels,
+        repetitions: {for (final e in state.repetitions.entries) if (!changedStarts.containsKey(e.key)) e.key: e.value},
       ),
     );
   }
@@ -352,6 +392,29 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
   void clearLinked() => _set(state.copyWith(unlink: true));
 
+  void applyLimits(int? repeats, int? dailyMinutes) => _set(state.copyWith(
+    clearLimits: true, levelRepeats: repeats, dailyMinutes: dailyMinutes,
+    repetitions: repeats == state.levelRepeats ? state.repetitions : {},
+  ));
+
+  void addUsage(String day, int milliseconds) {
+    if (milliseconds <= 0) return;
+    final previous = state.usageDay == day ? state.usageMs : 0;
+    _set(state.copyWith(usageDay: day, usageMs: (previous + milliseconds).clamp(0, 86400000)));
+  }
+
+  /// O tură încheiată la nivelul jucat; ieșirea înainte de final nu se numără.
+  void completeGame(String gameId, int level) {
+    final limit = state.levelRepeats;
+    if (limit == null) return;
+    final count = (state.levels[gameId] == level ? state.repetitions[gameId] ?? 0 : 0) + 1;
+    final next = count >= limit ? level + 1 : level;
+    _set(state.copyWith(
+      levels: {...state.levels, gameId: capLevel(next, state.maxLevels[gameId])},
+      repetitions: {...state.repetitions, gameId: count >= limit ? 0 : count},
+    ));
+  }
+
   /// Muzica aleasă în panou (vine cu planul, deci data planului e deja la zi).
   void applyMusic(bool on, String track) => _set(
     state.copyWith(music: on, musicTrack: MusicTrack.values.asNameMap()[track] ?? state.musicTrack),
@@ -359,6 +422,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
 
   /// Nivelul la care a ajuns copilul în jocul [gameId].
   void setGameLevel(String gameId, int level) {
+    if (state.levelRepeats != null) return;
     final capped = capLevel(level, state.maxLevels[gameId]);
     if (state.levels[gameId] == capped) return;
     _set(state.copyWith(levels: {...state.levels, gameId: capped}));
@@ -393,9 +457,13 @@ class GameLevel extends Notifier<int> {
   final String gameId;
 
   @override
-  int build() => ref.read(settingsProvider).levelOf(gameId, 1, ref.read(stepRatingsProvider));
+  int build() {
+    final ratings = ref.read(stepRatingsProvider);
+    return ref.watch(settingsProvider.select((s) => s.levelOf(gameId, 1, ratings)));
+  }
 
   void setLevel(int level) {
+    if (ref.read(settingsProvider).levelRepeats != null) return;
     state = capLevel(level, ref.read(settingsProvider).maxLevels[gameId]);
     ref.read(settingsProvider.notifier).setGameLevel(gameId, state);
   }

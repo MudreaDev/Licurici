@@ -228,6 +228,8 @@ void main() {
       'hiddenGames': ['pescarul', 'simon'],
       'levels': {'emotii': 3},
       'maxLevels': {'emotii': 5},
+      'levelRepeats': 2,
+      'dailyMinutes': 30,
       'music': {'on': false, 'track': 'valuri'},
       'updatedAt': '2026-10-09T08:00:00.000Z',
       'updatedBy': 'THERAPIST',
@@ -236,6 +238,7 @@ void main() {
     (bool, String)? music;
     Map<String, int>? levels;
     Map<String, int>? caps;
+    (int?, int?)? limits;
     await client().run(
       store: store,
       email: 'ana@example.md',
@@ -248,9 +251,11 @@ void main() {
         levels = l;
       },
       onMusic: (on, track) => music = (on, track),
+      onLimits: (repeats, minutes) => limits = (repeats, minutes),
     );
     // Specialistul a oprit muzica din panou: tableta o oprește.
     expect(music, (false, 'valuri'));
+    expect(limits, (2, 30));
     expect(applied, {'pescarul', 'simon'});
     expect(caps, {'emotii': 5});
     expect(levels, {'emotii': 3});

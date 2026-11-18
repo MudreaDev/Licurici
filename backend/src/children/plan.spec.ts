@@ -75,6 +75,10 @@ describe('GamePlanService', () => {
     const capped = await plan.put(therapist, CHILD, { hiddenGames: [], levels: { simon: 3 }, maxLevels: { simon: 6, emotii: 4 } });
     expect(capped.maxLevels).toEqual({ simon: 6, emotii: 4 });
     expect((await plan.put(therapist, CHILD, { hiddenGames: [], rounds: { emotii: 4 } })).rounds).toEqual({ emotii: 4 });
+    const limits = await plan.put(therapist, CHILD, { hiddenGames: [], levelRepeats: 2, dailyMinutes: 30 });
+    expect([limits.levelRepeats, limits.dailyMinutes]).toEqual([2, 30]);
+    expect((await plan.put(parent, CHILD, { hiddenGames: [] })).dailyMinutes).toBe(30);
+    await expect(plan.put(parent, CHILD, { hiddenGames: [], levelRepeats: 6 })).rejects.toBeInstanceOf(ValidationError);
     await expect(plan.put(therapist, CHILD, { hiddenGames: [], rounds: { emotii: 50 } })).rejects.toBeInstanceOf(ValidationError);
     expect((await plan.put(parent, CHILD, { hiddenGames: [], avoid: ['insecte', 'caini', 'caini'] })).avoid).toEqual(['caini', 'insecte']);
     await expect(plan.put(parent, CHILD, { hiddenGames: [], avoid: ['Text Liber!'] })).rejects.toBeInstanceOf(ValidationError);

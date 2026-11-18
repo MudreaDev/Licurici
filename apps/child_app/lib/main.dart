@@ -62,6 +62,7 @@ import 'features/games/write/write_screen.dart';
 import 'features/parent/parent_screen.dart';
 import 'features/games/sequence/simon_screen.dart';
 import 'features/settings/settings.dart';
+import 'features/settings/daily_limit.dart';
 import 'shared/music.dart';
 import 'shared/voice.dart';
 import 'shared/audio_context.dart';
@@ -157,6 +158,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) =>
         state.uri.path == '/' && !ref.read(settingsProvider).welcomeSeen ? '/bun-venit' : null,
     routes: [
+      GoRoute(path: '/timp-expirat', pageBuilder: (context, state) => _fade(context, state, const DailyLimitScreen())),
       GoRoute(
         path: '/bun-venit',
         pageBuilder: (context, state) => _fade(context, state, const WelcomeScreen()),
@@ -510,7 +512,7 @@ class LicuriciApp extends ConsumerWidget {
       routerConfig: ref.watch(routerProvider),
       builder: (context, child) => MusicDirector(
         router: ref.watch(routerProvider),
-        child: BootGate(child: child ?? const SizedBox.shrink()),
+        child: BootGate(child: DailyLimit(router: ref.watch(routerProvider), child: child ?? const SizedBox.shrink())),
       ),
     );
   }

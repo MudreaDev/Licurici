@@ -47,6 +47,8 @@ export const planSchema = z
       .record(gameId, z.number().int().min(3).max(12))
       .refine((r) => Object.keys(r).length <= 200)
       .default({}),
+    levelRepeats: z.number().int().min(1).max(5).nullable().optional(),
+    dailyMinutes: z.number().int().min(1).max(720).nullable().optional(),
     /** Muzica liniștită de fundal pe tabletă: pornită/oprită și piesa (lipsă = neschimbată). */
     music: z
       .object({ on: z.boolean(), track: z.enum(musicTracks) })
@@ -74,6 +76,8 @@ export interface GamePlan {
   maxLevels: Record<string, number>;
   /** Câte runde pe tură, pe joc. */
   rounds: Record<string, number>;
+  levelRepeats?: number | null;
+  dailyMinutes?: number | null;
   /** Categoriile de imagini de evitat. */
   avoid: string[];
   /** Muzica de fundal aleasă din panou (lipsă = cum e pe tabletă). */
@@ -113,7 +117,7 @@ export class GamePlanService {
   async put(user: AuthUser, childId: string, body: unknown): Promise<GamePlan> {
     // Citirea e suficientă ca drept: specialistul are voie aici (doar pentru plan).
     await this.access.assert(user, childId, 'read');
-    const { hiddenGames, levels, maxLevels, rounds, avoid, music } = parseWith(planSchema, body);
+    const { hiddenGames, levels, maxLevels, rounds, avoid, music, levelRepeats, dailyMinutes } = parseWith(planSchema, body);
     const previous = await this.repo.read(childId);
     const by: PlanChange['by'] = user.role === 'THERAPIST' ? 'THERAPIST' : 'PARENT';
     const at = this.now();
@@ -122,6 +126,8 @@ export class GamePlanService {
       levels,
       maxLevels,
       rounds,
+      levelRepeats: levelRepeats === undefined ? previous?.levelRepeats ?? null : levelRepeats,
+      dailyMinutes: dailyMinutes === undefined ? previous?.dailyMinutes ?? null : dailyMinutes,
       avoid,
       ...((music ?? previous?.music) ? { music: music ?? previous?.music } : {}),
       updatedAt: at,

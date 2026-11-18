@@ -106,7 +106,9 @@ Prompt exact:
 
 ## parts/ring.webp
 
-Sursă PNG: `C:\Users\Mihai\.codex\generated_images\01a14593-3f13-7e81-b2d9-fca74b362597\exec-1a72f48a-beb8-4ad8-affd-9fa98b96b0eb.png`
+Sursă PNG: `C:\Users\Mihai\Desktop\LicuRich\tools\art\batch\out\parts\ring.png`
+
+Înlocuită pe 18.11.2026 cu un inel cu volum și gaură vizibilă; promptul noii imagini este în `docs/audit-imagini-2026-11-18.md`. Promptul istoric de mai jos descrie versiunea anterioară.
 
 Prompt exact:
 

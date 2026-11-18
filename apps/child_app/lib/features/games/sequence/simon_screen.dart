@@ -164,13 +164,14 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
         _round++;
         if (_round == 5) {
           _nextSessionLevel = next;
+          ref.read(settingsProvider.notifier).completeGame(widget.game.id, _sessionLevel);
           ref
               .read(settingsProvider.notifier)
               .setGameLevel(widget.game.id, next);
           _phase = _Phase.finished;
           _sticker = ref.read(settingsProvider.notifier).awardSticker();
         } else {
-          _level = widget.game.generate(next);
+          _level = widget.game.generate(ref.read(settingsProvider).levelRepeats == null ? next : _sessionLevel);
           _attempt = 0;
         }
       });
@@ -185,7 +186,11 @@ class _SimonScreenState extends ConsumerState<SimonScreen>
   void _restart({required bool again}) {
     _timer?.cancel();
     setState(() {
-      if (!again) _sessionLevel = _nextSessionLevel;
+      if (ref.read(settingsProvider).levelRepeats != null) {
+        _sessionLevel = ref.read(settingsProvider).levelOf(widget.game.id);
+      } else if (!again) {
+        _sessionLevel = _nextSessionLevel;
+      }
       _level = widget.game.generate(_sessionLevel);
       _round = _wins = _attempt = 0;
       _lit = null;

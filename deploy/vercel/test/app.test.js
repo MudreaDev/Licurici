@@ -45,9 +45,13 @@ test('terapeutul: cont, copil nou cu cod de legare, fișa copilului, planul cu m
   const id = created.body.id;
   const edited = await call('PATCH', `/children/${id}`, { goals: 'Așteptarea rândului' }, token);
   assert.equal(edited.body.goals, 'Așteptarea rândului');
-  const plan = await call('PUT', `/children/${id}/plan`, { hiddenGames: ['simon'], levels: { emotii: 3 }, maxLevels: { emotii: 5 }, music: { on: false, track: 'valuri' } }, token);
+  const plan = await call('PUT', `/children/${id}/plan`, { hiddenGames: ['simon'], levels: { emotii: 3 }, maxLevels: { emotii: 5 }, levelRepeats: 2, dailyMinutes: 30, music: { on: false, track: 'valuri' } }, token);
   assert.equal(plan.status, 200);
   assert.equal(plan.body.updatedBy, 'THERAPIST');
+  assert.equal(plan.body.levelRepeats, 2);
+  assert.equal(plan.body.dailyMinutes, 30);
+  assert.equal((await call('PUT', `/children/${id}/plan`, { hiddenGames: [], levelRepeats: 6 }, token)).status, 400);
+  assert.equal((await call('GET', `/children/${id}/plan`, null, token)).body.dailyMinutes, 30);
   assert.deepEqual(plan.body.music, { on: false, track: 'valuri' });
   assert.equal((await call('PUT', `/children/${id}/plan`, { hiddenGames: [], levels: { emotii: 8 }, maxLevels: { emotii: 5 } }, token)).status, 400);
   // Alt terapeut nu vede copilul (404, nu 403).
@@ -82,10 +86,12 @@ test('tableta: codul de unică folosință → tokenuri doar pentru copilul ei; 
   assert.equal(seen.length, 1);
   assert.equal(seen[0].record.id, record.id);
   // Planul ales de terapeut ajunge la tabletă; tableta nu poate schimba nivelurile.
-  await call('PUT', `/children/${child.id}/plan`, { hiddenGames: ['cauta'], levels: { emotii: 3 } }, token);
+  await call('PUT', `/children/${child.id}/plan`, { hiddenGames: ['cauta'], levels: { emotii: 3 }, levelRepeats: 2, dailyMinutes: 30 }, token);
   assert.deepEqual((await call('GET', `/children/${child.id}/plan`, null, dev)).body.hiddenGames, ['cauta']);
-  const fromTablet = (await call('PUT', `/children/${child.id}/plan`, { hiddenGames: [], levels: { emotii: 9 } }, dev)).body;
+  const fromTablet = (await call('PUT', `/children/${child.id}/plan`, { hiddenGames: [], levels: { emotii: 9 }, levelRepeats: 1, dailyMinutes: null }, dev)).body;
   assert.deepEqual(fromTablet.levels, { emotii: 3 });
+  assert.equal(fromTablet.levelRepeats, 2);
+  assert.equal(fromTablet.dailyMinutes, 30);
   assert.equal(fromTablet.updatedBy, 'PARENT');
   const view = (await call('GET', '/children', null, token)).body[0];
   assert.equal(view.linked, true);

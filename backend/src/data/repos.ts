@@ -225,6 +225,8 @@ export class PrismaRepos {
         levels?: Record<string, number>;
         maxLevels?: Record<string, number>;
         rounds?: Record<string, number>;
+        levelRepeats?: number | null;
+        dailyMinutes?: number | null;
         avoid?: string[];
         music?: { on?: unknown; track?: unknown };
         updatedAt?: string;
@@ -238,6 +240,8 @@ export class PrismaRepos {
         levels: plan.levels && typeof plan.levels === 'object' ? plan.levels : {},
         maxLevels: plan.maxLevels && typeof plan.maxLevels === 'object' ? plan.maxLevels : {},
         rounds: plan.rounds && typeof plan.rounds === 'object' ? plan.rounds : {},
+        levelRepeats: plan.levelRepeats ?? null,
+        dailyMinutes: plan.dailyMinutes ?? null,
         avoid: Array.isArray(plan.avoid) ? plan.avoid : [],
         ...(typeof plan.music?.on === 'boolean' && musicTracks.includes(plan.music.track as MusicChoice['track'])
           ? { music: { on: plan.music.on, track: plan.music.track as MusicChoice['track'] } }

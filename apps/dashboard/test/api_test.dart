@@ -167,6 +167,8 @@ class FakeBackend {
           'levels': b['levels'],
           'maxLevels': b['maxLevels'],
           'rounds': b['rounds'],
+          'levelRepeats': b['levelRepeats'],
+          'dailyMinutes': b['dailyMinutes'],
           'avoid': b['avoid'],
           if (b['music'] != null) 'music': b['music'],
           'updatedAt': '2026-10-09T09:00:00.000Z',
@@ -556,6 +558,15 @@ void main() {
     await tester.tap(find.text('Jocuri'));
     await tester.pumpAndSettle();
     expect(find.text('Copilul vede toate jocurile.'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const ValueKey('plan-level-repeats')));
+    await tester.tap(find.byKey(const ValueKey('plan-level-repeats')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('2 jocuri pe nivel').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('plan-daily-minutes')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('30 minute pe zi').last);
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const ValueKey('plan-domain-FEX')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('plan-domain-FEX')));
@@ -601,6 +612,8 @@ void main() {
     expect(backend.plan['levels'], {'emotii': 3});
     expect(backend.plan['maxLevels'], {'emotii': 6});
     expect(backend.plan['rounds'], {'emotii': 4});
+    expect(backend.plan['levelRepeats'], 2);
+    expect(backend.plan['dailyMinutes'], 30);
     expect(backend.plan['avoid'], ['insecte']);
     expect(backend.plan['music'], {'on': true, 'track': 'valuri'});
     expect(find.textContaining('Tableta preia lista'), findsOneWidget);

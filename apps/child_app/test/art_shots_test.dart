@@ -66,6 +66,11 @@ void main() {
       );
       await settle(tester, 25);
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/pictat-$name.png'));
+      if (name == 'turnul') {
+        await tester.tap(find.byKey(const ValueKey('ring-0')));
+        await settle(tester, 5);
+        await expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/pictat-turnul-inel-pus.png'));
+      }
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 10));
     }, skip: !shots);

@@ -5,6 +5,7 @@ import 'package:licurici_core/licurici_core.dart';
 
 import 'auto_sync.dart';
 import 'local_db.dart';
+import '../features/settings/settings.dart';
 
 /// Unde se păstrează sesiunile. În aplicație: Drift (ADR-004), setat în `main()`;
 /// implicit (teste, previzualizări): în memorie.
@@ -96,6 +97,7 @@ final stepRatingsProvider = Provider<Map<String, double>>(
 /// Sesiunea în curs (null = nicio sesiune deschisă). O sesiune începe la primul joc și se
 /// încheie când copilul apasă „Gata pe azi” (sau, implicit, la următoarea pornire).
 class SessionController extends Notifier<SessionRecorder?> {
+  int _checkpointTrials = 0;
   @override
   SessionRecorder? build() => null;
 
@@ -128,6 +130,14 @@ class SessionController extends Notifier<SessionRecorder?> {
   Future<void> checkpoint() async {
     final r = state;
     if (r == null || r.isEmpty) return;
+    final trials = r.trials;
+    if (trials.length > _checkpointTrials) {
+      final last = trials.last;
+      if (last.level != null && last.gameId != 'simon' && last.gameId != 'licuricii') {
+        ref.read(settingsProvider.notifier).completeGame(last.gameId, last.level!);
+      }
+      _checkpointTrials = trials.length;
+    }
     await ref.read(sessionStoreProvider).save(_snapshot(r));
   }
 
@@ -138,6 +148,7 @@ class SessionController extends Notifier<SessionRecorder?> {
     r.moodAfter = moodAfter;
     final record = r.close();
     state = null;
+    _checkpointTrials = 0;
     if (record != null) {
       await ref.read(sessionStoreProvider).save(record);
       ref.invalidate(stepProgressProvider);
@@ -146,7 +157,7 @@ class SessionController extends Notifier<SessionRecorder?> {
   }
 
   /// Părintele a șters datele: sesiunea în curs se abandonează, fără salvare.
-  void discard() => state = null;
+  void discard() { state = null; _checkpointTrials = 0; }
 
   SessionRecord _snapshot(SessionRecorder r) => SessionRecord(
     id: r.id,

@@ -9,11 +9,11 @@ import 'stimulus_art.dart';
 /// dreptunghi. Până există piesa, ecranul își păstrează desenul din cod.
 bool hasPart(String name) => IllustrationIndex.has('parts/$name');
 
-/// Tonurile de gri ale desenului, ridicate (umbrele rămân), gata de înmulțit cu o culoare.
+/// Tonuri de gri pentru colorare, cu spațiu pentru lumini și umbre fără decupare la alb.
 const tintBase = ColorFilter.matrix([
-  0.1913, 0.6437, 0.0650, 0, 76.5, //
-  0.1913, 0.6437, 0.0650, 0, 76.5,
-  0.1913, 0.6437, 0.0650, 0, 76.5,
+  0.14882, 0.50064, 0.05054, 0, 35, //
+  0.14882, 0.50064, 0.05054, 0, 35,
+  0.14882, 0.50064, 0.05054, 0, 35,
   0, 0, 0, 1, 0,
 ]);
 

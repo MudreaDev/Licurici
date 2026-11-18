@@ -94,6 +94,7 @@ class SyncClient {
     onPlan,
     ({bool on, String track})? music,
     void Function(bool on, String track)? onMusic,
+    void Function(int? repeats, int? dailyMinutes)? onLimits,
   }) async {
     if (!consent) {
       throw const SyncException(
@@ -143,7 +144,7 @@ class SyncClient {
     }
     if (plan != null) {
       try {
-        await _syncPlan(childId, plan, onPlan, music, onMusic);
+        await _syncPlan(childId, plan, onPlan, music, onMusic, onLimits);
       } on SyncException {
         // Planul e un bonus: sesiunile au plecat deja; încercăm iar la următoarea sincronizare.
       }
@@ -194,6 +195,7 @@ class SyncClient {
     onPlan, [
     ({bool on, String track})? music,
     void Function(bool on, String track)? onMusic,
+    void Function(int? repeats, int? dailyMinutes)? onLimits,
   ]) async {
     final server = await _call('GET', '/children/$childId/plan') as Map;
     final at = DateTime.tryParse(server['updatedAt'] as String? ?? '');
@@ -208,6 +210,7 @@ class SyncClient {
     final avoid = {for (final a in (server['avoid'] as List? ?? const [])) if (a is String) a};
     if (at != null && (local.at == null || at.isAfter(local.at!))) {
       onPlan?.call(hidden, levels, at, maxLevels, rounds, avoid);
+      onLimits?.call((server['levelRepeats'] as num?)?.toInt(), (server['dailyMinutes'] as num?)?.toInt());
       // Muzica aleasă în panou (de specialist sau de părinte), dacă planul o are.
       if (server['music'] case {'on': final bool on, 'track': final String track}) onMusic?.call(on, track);
     } else if (local.at != null && (at == null || local.at!.isAfter(at))) {

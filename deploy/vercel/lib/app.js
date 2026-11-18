@@ -95,7 +95,12 @@ function cleanPlan(body) {
   for (const [g, l] of Object.entries(levels)) {
     if (maxLevels[g] != null && l > maxLevels[g]) throw new HttpError(400, 'Nivelul de pornire nu poate fi peste plafon.', ['levels']);
   }
-  return { hiddenGames, levels, maxLevels, rounds: cleanNumbers(body.rounds, 3, 12), avoid, music };
+  for (const [key, max] of [['levelRepeats', 5], ['dailyMinutes', 720]]) {
+    if (body[key] != null && (!Number.isInteger(body[key]) || body[key] < 1 || body[key] > max)) throw new HttpError(400, 'Valori nevalide în plan.');
+  }
+  return { hiddenGames, levels, maxLevels, rounds: cleanNumbers(body.rounds, 3, 12), avoid, music,
+    ...(body.levelRepeats !== undefined ? { levelRepeats: body.levelRepeats } : {}),
+    ...(body.dailyMinutes !== undefined ? { dailyMinutes: body.dailyMinutes } : {}) };
 }
 
 function emptyPlan() {
@@ -444,8 +449,10 @@ export function createApp({ store, secret, publicUrl = '', now = () => new Date(
     const at = now().toISOString();
     c.plan = {
       ...clean,
+      levelRepeats: clean.levelRepeats === undefined ? previous.levelRepeats ?? null : clean.levelRepeats,
+      dailyMinutes: clean.dailyMinutes === undefined ? previous.dailyMinutes ?? null : clean.dailyMinutes,
       // De pe tabletă nu se schimbă nivelurile alese de terapeut; muzica rămâne dacă nu vine.
-      ...(p.role === 'DEVICE' ? { levels: previous.levels, maxLevels: previous.maxLevels, rounds: previous.rounds } : {}),
+      ...(p.role === 'DEVICE' ? { levels: previous.levels, maxLevels: previous.maxLevels, rounds: previous.rounds, levelRepeats: previous.levelRepeats ?? null, dailyMinutes: previous.dailyMinutes ?? null } : {}),
       music: clean.music ?? previous.music,
       updatedAt: at,
       updatedBy: by,

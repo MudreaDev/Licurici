@@ -36,6 +36,12 @@ pe pași, în ordine.
 
 ## 1. Starea de acum (actualizată 25.10.2026)
 
+### Continuare 18.11.2026
+
+- Inel pictat cu volum și filtru de colorare corectat. Auditul rămâne deschis: vezi docs/audit-imagini-2026-11-18.md.
+- Panoul permite limită zilnică și 1–5 jocuri încheiate la același nivel; planul se sincronizează, contoarele rămân în setările locale. Verifică pe tabletă fluxul și reluarea; vezi detaliile în README §0.1, §11 și §13. Ceasul și Zilele și lunile există în „Numere și litere”.
+
+
 ### Documentație universitară 12.11.2026
 
 - [x] Laborator 3 PSI adaptat aplicației Licurici: `output/docx/Laborator_3_PSI_Mudrea_Mihail_Licurici.docx`, 25 de pagini, 9 diagrame, 11 tabele. Copertă: Mudrea Mihail, TI-233, coordonator Cojocaru Svetlana, UTM.

@@ -16,10 +16,11 @@
 | 9 | Jurnale tehnice ✅ | Securitate, depanare | — | Metodă, cale fără parametri, cod de răspuns, IP trunchiat (`common/log-privacy.ts`); câmpurile sensibile mascate | Interes legitim | Găzduire | Nu | 30 zile 🕓 (rotația, la configurarea serverului) | Fără antete, fără corp, fără IP complet |
 | 10 | Raport săptămânal pe e-mail 🕓 | Informarea părintelui | Părinți | E-mail, rezumat agregat | Consimțământ | Furnizor e-mail (de ales, UE) | De stabilit | — | — |
 | 11 | Notificări 🕓 | Memento-uri | Părinți | Token dispozitiv | Consimțământ | Google FCM / Apple APNs | Posibil | Până la dezactivare | — |
+| 12 | Planul de ritm și timp de joc | Configurarea limitei zilnice și a repetărilor de nivel | Copii | Limită zilnică în minute și număr de jocuri pe nivel | Consimțământ parental pentru sincronizare | Găzduire; specialistul autorizat | Nu | Cât există profilul | Acces prin planul copilului; contoarele de utilizare și repetări rămân local |
 
 **Prelucrări doar pe dispozitiv (nu ajung la operator):** setările locale, abțibildurile, stelele,
 peștii din acvariu (desene), fotografia fișei de colorat (analizată pe loc și aruncată), sesiunile
-nesincronizate. Operatorul nu are acces la ele.
+nesincronizate, durata zilnică locală și contoarele de repetare. Operatorul nu are acces la ele.
 
 **Vocea aplicației:** generată o singură dată, la construirea aplicației, din texte fixe ale jocurilor
 (Microsoft edge-tts / Azure Speech). Nu se trimit date ale utilizatorilor.

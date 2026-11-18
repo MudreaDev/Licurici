@@ -79,6 +79,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] **Peștii 3D noi și acvariul** pe tabletă: arată bine? se mișcă fluid? (solzi, înotătoare, „Peștii mei”, fereastra acvariului de pe ecranul principal).
 - [ ] **Jocurile noi** (sesiunea 12) încercate pe tabletă: Cât de tare?, Cine e prietenul?, Câte sunt?, Ce ai auzit?, Linia numerelor, Atinge rapid, Paznicul farului, Stop!, Acum sau mai mult?
 - [ ] **Jocurile „frate” noi** pe tabletă: Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi, Memorie cu sunete, Oglinda.
+- [ ] După construirea și instalarea unei versiuni noi, testează cu specialistul limita zilnică, poarta părintelui și progresul după două jocuri și repornire; setează limita/repetările din planul copilului. Timpul numărat este cel din prim-plan, cu ceasul local al tabletei.
 - [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
 
 **B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `py tools/art/convert_codex.py`
@@ -127,6 +128,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
+
+**18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
 
 **12.11.2026 — laborator PSI:** redactat documentul Word „Gestionarea sesiunilor educative și a progresului copilului”, cu coperta confirmată (Mudrea Mihail, TI-233, Cojocaru Svetlana). Structură după exemplul furnizat, tipografie după regulile UTM ulterioare: Times New Roman 12 pt / 1,5, capitole 13 pt, tabele 11 pt, margini 20/10/20/20 mm. 25 de pagini, 9 diagrame, 11 tabele, cuprins actualizat în Word; cele 3 pagini preliminare nu afișează numere. Modelele separă stocarea locală de sincronizarea opțională; interfețele ICOM și DFD sunt verificate. Nu s-a schimbat codul aplicației; modificările locale anterioare rămân ale sesiunii 25.10. Următoarele sarcini ale aplicației rămân cele din predarea de mai jos.
 
@@ -736,6 +739,7 @@ erDiagram
 
 - `CHILD` **nu** are nume real, dată de naștere completă, fotografie, școală sau diagnostic (vezi §13).
 - Pe tabletă, setările locale (`AppSettings` în Drift, cheia `settings` din `Meta`) țin și **abțibildurile câștigate** (`stickers`: lista id-urilor, ex. `bunny`; `stickersSeen`: câte au fost văzute în album, pentru semnul „nou”). Sunt doar recompensa copilului — nu intră în sesiuni, rapoarte sau sincronizare.
+- Planul include opțional limita zilnică în minute și numărul de repetări pe nivel; acestea se sincronizează cu serverul. Contoarele pe joc și durata utilizării din ziua locală sunt în `AppSettings`, doar pe dispozitiv, și se șterg odată cu datele locale. Durata se numără cât aplicația copilului este în prim-plan și limita este activă, fără zona adultului.
 - **Acvariul** (`features/aquarium/aquarium_store.dart`): `<suport aplicație>/aquarium/index.json` (id, model, data, cadou) + desenul fiecărui pește ca PNG (`<id>.png`, 1000×600). Desenele sunt creația copilului: **rămân doar pe dispozitiv**, nu intră în sesiuni, rapoarte sau sincronizare. Maximum 14 pești (cel mai vechi, în afară de cadou, iese). Pe web — în memorie.
 - **Prezența** („se joacă acum”, sesiunea 9): pe server doar cheia Redis `presence:<childId>` (valoarea `1`, 20 min), pusă de tabletă la începutul sesiunii și ștearsă la sincronizare; nu intră în baza de date.
 - **Stelele** (`AppSettings.stars` în aceeași cheie `settings`): soldul pușculiței, doar recompensă locală — nu intră în sesiuni, rapoarte sau sincronizare.
@@ -839,6 +843,7 @@ Puncte-cheie din Legea 195/2024 relevante pentru noi:
 | Refresh token pe tabletă (trimitere automată) | Părinte | Trimiterea automată a sesiunilor | Consimțământ parental (sincronizare) | Stocarea securizată a dispozitivului, până la oprire / schimbarea parolei |
 | Imagini de evitat (categorii fixe: câini, insecte, fețe furioase…) | Copil | Să nu-l sperie jocurile | Consimțământ parental | Pe tabletă; pe server doar în planul de jocuri (cu sincronizarea), cât există profilul |
 | Muzica de fundal (pornită/oprită, piesa) | Copil | Confortul senzorial în timpul jocului | Consimțământ parental | Pe tabletă; pe server doar în planul de jocuri (cu sincronizarea), cât există profilul |
+| Limita zilnică și repetările nivelului; contoarele locale de utilizare și repetare | Copil | Adaptarea ritmului și a timpului de joc | Consimțământ parental | Setările: pe tabletă și în planul sincronizat; contoarele: doar pe tabletă, până la ștergerea datelor locale |
 | Token dispozitiv FCM | Părinte | Notificări | Consimțământ (opțional) | Până la dezactivare |
 | Loguri tehnice (fără PII, IP trunchiat) | — | Securitate | Interes legitim | 30 zile |
 | Rapoarte de eroare (Sentry, fără PII) | — | Stabilitate | Interes legitim | 90 zile |
@@ -1129,6 +1134,8 @@ Clase: G = grădiniță, 1–4 = clasa. Faza: S1 = semestrul 1, S2 = semestrul 2
 
 ### 16.1 Stare și structură
 
+**18.11.2026:** „Turnul” folosește inele pictate cu volum; filtrul pentru piesele colorate păstrează umbrele. Auditul celorlalte ilustrații rămâne de completat. „Ceasul” și „Zilele și lunile” sunt în categoria copilului „Numere și litere”; verificare și surse: [timp și calendar](docs/research/09-timp-calendar.md).
+
 **25.10.2026:** acvariul folosește cele 6 piese pictate ale recifului; ghidajul și efectele de interacțiune respectă modul calm. Baza din „Rândul meu” este și ea pictată. Numărul jocurilor nu se schimbă (109).
 
 **Gata în Flutter (103):** alfabetul, opuse, ortografie, povesti, numaram, comparam, adunam, scadem, culori, forme, emotii, da-nu,
@@ -1253,6 +1260,8 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 **Progres documentație 12.11.2026:** laboratorul 3 PSI în Word este redactat și verificat pentru Licurici (25 de pagini, 9 diagrame). Este un livrabil universitar separat; nu bifează redactarea integrală a tezei și nu schimbă totalurile roadmap-ului.
 
 Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
+
+**Progres 18.11.2026:** planul poate limita timpul zilnic și seta 1–5 jocuri pe nivel, cu contoare locale; verificarea pe dispozitiv și auditul vizual complet rămân deschise. Nu se schimbă totalurile roadmap-ului.
 
 **Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 
