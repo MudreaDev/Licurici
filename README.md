@@ -134,6 +134,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **Continuare niveluri:** patru jocuri au trepte mai dificile: Turnul până la 9, Adu-mi până la 8, Pune ursulețul până la 7 și Oglinda până la 10; după aceste puncte mecanicile lor încă au plafon. Extinderea tuturor celorlalte jocuri rămâne de făcut, pe mecanici și conținut real. Activitățile libere (colorare, respirație, comunicare) nu primesc niveluri competitive. Aceste modificări nu sunt incluse în APK-ul 0.1.2 publicat anterior.
 
+**Continuare:** secvențele „Felinarele” și „Licuricii” ajung la 9 pași, imitația la 4 acțiuni, toba la 8 bătăi, iar „Regula se schimbă” are schimbări mai dese; „Construiește” are trepte suplimentare de memorie. Ceasul are variante mai apropiate, iar mai multe jocuri numerice folosesc distractori mai apropiați la nivelul 8. Panoul permite alegerea nivelurilor până la 40. Cererea pentru toate jocurile rămâne deschisă; un număr mai mare nu înseamnă neapărat o sarcină nouă.
+
 **Continuare 18.11:** 37 de obiecte tăiate au fost refăcute; blocul din „Rândul meu” are volum. Auditul pe planșe și limitele lui sunt în raport. În acvariu, indiciul cadoului, pușculița și raftul respectă modul calm, țintele raftului au minimum 64 dp, iar particulele împart un plafon comun de 40. Salvarea parțială nu mai numără un joc ca terminat. Rămâne verificarea pe tabletă a scenelor și a limitei zilnice.
 
 Panourile au primit căutare în lista de copii a specialistului, o selecție mai clară a copilului pentru părinte și spațiere adaptată ecranelor mici. Indicatorul DEMO apare în panoul părintelui doar când nu există autentificare.

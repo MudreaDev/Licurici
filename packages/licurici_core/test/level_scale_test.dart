@@ -85,7 +85,7 @@ final Map<String, String Function(int)> axesSignature = {
   },
   'regula-se-schimba': (l) {
     final a = const SwitchGame().axesFor(l);
-    return '${a.blocks} ${a.perBlock} ${a.mixed}';
+    return '${a.blocks} ${a.perBlock} ${a.mixed} ${a.minSwitches}';
   },
   for (final g in waitGames)
     g.id: (l) {
@@ -144,9 +144,9 @@ void main() {
     });
 
     test('același punct relativ pe scară = aceeași dificultate, indiferent de joc', () {
-      // Jumătatea drumului spre plafon la „Construiește” (7) și la „Felinarele” (25).
-      expect(scaleFor('construieste').difficultyOf(4), scaleFor('simon').difficultyOf(13));
-      expect(scaleFor('construieste').difficultyOf(7), scaleFor('simon').difficultyOf(25));
+      // Aceleași puncte relative pe două scări cu număr diferit de niveluri.
+      expect(const LevelScale(7).difficultyOf(4), scaleFor('simon').difficultyOf(13));
+      expect(scaleFor('construieste').difficultyOf(10), scaleFor('simon').difficultyOf(25));
     });
   });
 
@@ -188,7 +188,7 @@ void main() {
           level: level,
           at: DateTime.utc(2026),
         );
-    expect(t('construieste', 7).ratingDifficulty, t('simon', 25).ratingDifficulty);
-    expect(t('simon', 7).ratingDifficulty, lessThan(t('construieste', 7).ratingDifficulty));
+    expect(t('construieste', 10).ratingDifficulty, t('simon', 25).ratingDifficulty);
+    expect(t('simon', 7).ratingDifficulty, lessThan(t('construieste', 10).ratingDifficulty));
   });
 }

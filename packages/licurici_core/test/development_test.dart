@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:licurici_core/licurici_core.dart';
 import 'package:test/test.dart';
 
@@ -14,6 +15,14 @@ Trial _t(bool correct, {PromptLevel p = PromptLevel.p0, int attempts = 1, String
     );
 
 void main() {
+  test('variantele numerice avansate sunt unice și apropiate de răspuns', () {
+    for (var seed = 0; seed < 50; seed++) {
+      final ctx = GameContext(difficulty: const Difficulty(8), grade: Grade.clasa1, random: Random(seed));
+      final options = numberChoices(ctx, 10, 1, 20);
+      expect(options.toSet(), {8, 9, 10, 11, 12});
+      expect(numberChoices(ctx, 1, 1, 3).toSet(), {1, 2, 3});
+    }
+  });
   group('trasee', () {
     test('id-urile treptelor sunt unice și aparțin ariei lor', () {
       final ids = <String>{};

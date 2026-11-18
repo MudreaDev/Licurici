@@ -44,6 +44,18 @@ void main() {
     }
   });
 
+  test('ceasul avansat cere deosebirea minutelor pentru aceeași oră', () {
+    for (var seed = 0; seed < 30; seed++) {
+      for (final r in _build(const CeasulGame(), 8, seed).rounds) {
+        final c = r.visuals.single as ClockVisual;
+        final options = r.choices.map((choice) => choice.key).toSet();
+        for (final minute in [0, 15, 30, 45]) {
+          expect(options, contains(clockLabel(c.hour, minute)));
+        }
+      }
+    }
+  });
+
   test('împărțim: câtul exact', () {
     for (var seed = 0; seed < 30; seed++) {
       for (final r in _build(const ImpartimGame(), 5, seed).rounds) {

@@ -1,6 +1,6 @@
 /// Toba magică (IMI2–4, catalog #7): Licurici bate un ritm la tobă, copilul îl repetă.
 /// Imitație ritmică și sincronizare. Nivelurile sunt generate din seed (ADR-027): numărul de
-/// bătăi (2 → 6), ritm egal → cu pauze (lung–scurt), o tobă → două tobe.
+/// bătăi (2 → 8), ritm egal → cu pauze (lung–scurt), o tobă → două tobe.
 /// KPI: **abaterea de timp** (ms) față de ritmul model și lungimea maximă reprodusă.
 library;
 
@@ -140,7 +140,7 @@ class RhythmGame {
   List<String> get steps => const ['IMI4'];
 
   RhythmAxes axesFor(int level) => RhythmAxes(
-        beats: min(6, 2 + (level - 1) ~/ 2),
+        beats: min(8, 2 + (level - 1) ~/ 2),
         uneven: level >= 4,
         drums: level >= 7 ? 2 : 1,
         rounds: 4,

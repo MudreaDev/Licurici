@@ -145,8 +145,8 @@ class SimonGame extends SequenceGame {
 
   SequenceAxes axesFor(int level) => SequenceAxes(
         pads: ramp(level, 3, 6, 12).round(),
-        // Span 2 → 7: crește la fiecare ~3 niveluri, ca între două lungimi să fie timp de consolidare.
-        length: min(7, 2 + (level - 1) ~/ 3),
+        // Span 2 → 9: crește la fiecare ~3 niveluri, ca între două lungimi să fie timp de consolidare.
+        length: min(9, 2 + (level - 1) ~/ 3),
         onMs: ramp(level, 900, 550, 18).round(),
         gapMs: ramp(level, 450, 280, 18).round(),
         reverse: level >= 19,
@@ -183,7 +183,7 @@ class SimonGame extends SequenceGame {
 /// Licuricii din grădină (FEX5b, catalog pe arii #40, sarcina Corsi): licurici **identici**,
 /// așezați pe flori împrăștiate prin grădină, se aprind pe rând; copilul atinge florile în
 /// aceeași ordine. Doar locul îi deosebește (memorie vizuo-spațială), fără culori și fără note.
-/// Axe: câte flori (5 → 9), lungimea secvenței (span 2 → 7), viteza, ordinea inversă.
+/// Axe: câte flori (5 → 9), lungimea secvenței (span 2 → 9), viteza, ordinea inversă.
 class SpatialSpanGame extends SequenceGame {
   const SpatialSpanGame();
 
@@ -202,7 +202,7 @@ class SpatialSpanGame extends SequenceGame {
 
   SequenceAxes axesFor(int level) => SequenceAxes(
         pads: ramp(level, 5, 9, 12).round(),
-        length: min(7, 2 + (level - 1) ~/ 3),
+        length: min(9, 2 + (level - 1) ~/ 3),
         onMs: ramp(level, 900, 600, 18).round(),
         gapMs: ramp(level, 450, 300, 18).round(),
         reverse: level >= 19,

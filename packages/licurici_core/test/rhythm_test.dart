@@ -6,7 +6,7 @@ void main() {
 
   test('ritmurile: bătăile cresc, apar pauze lungi, apoi a doua tobă', () {
     expect(game.axesFor(1).beats, 2);
-    expect(game.axesFor(40).beats, 6);
+    expect(game.axesFor(40).beats, 8);
     for (var level = 1; level <= 14; level++) {
       for (var seed = 0; seed < 40; seed++) {
         final l = game.generate(level, seed: seed);

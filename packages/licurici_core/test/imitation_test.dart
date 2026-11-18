@@ -7,7 +7,7 @@ void main() {
   test('nivelurile: 1 acțiune pe 2 obiecte → 3 acțiuni cu tragere pe 5 obiecte', () {
     expect(game.axesFor(1).toJson(), {'objects': 2, 'actions': 1, 'drag': false});
     expect(game.axesFor(3).drag, isTrue);
-    expect(game.axesFor(20).toJson(), {'objects': 5, 'actions': 3, 'drag': true});
+    expect(game.axesFor(20).toJson(), {'objects': 5, 'actions': 4, 'drag': true});
     ImitationAxes? prev;
     for (var l = 1; l <= 30; l++) {
       final ax = game.axesFor(l);

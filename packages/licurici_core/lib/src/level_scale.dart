@@ -48,8 +48,8 @@ const gameScales = <String, LevelScale>{
   'prinde-licuriciul': LevelScale(14),
   'paznicul-farului': LevelScale(10), // durata, ritmul și mărimea se opresc la 10
   // secvențe
-  'simon': LevelScale(25), // span 7 la 19, ordinea inversă de la 19, fără sunet de la 25
-  'licuricii': LevelScale(19),
+  'simon': LevelScale(25), // span 9 și fără sunet de la 25
+  'licuricii': LevelScale(22), // secvențe de până la 9 pași
   // memorie, sortare, căutare
   'perechi': LevelScale(13),
   'sortam': LevelScale(10),
@@ -61,7 +61,7 @@ const gameScales = <String, LevelScale>{
   'diferente': LevelScale(13), // 16 obiecte la 13, 6 diferențe de la 11
   'la-magazin': LevelScale(10),
   // construcție, puzzle, labirint
-  'construieste': LevelScale(7),
+  'construieste': LevelScale(10),
   'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
   'atinge-rapid': LevelScale(9), // bula de 0,07 la 9 (distanța se oprește la 9)
   'stop': LevelScale(9), // 32 de încercări, 30% opriri, fereastra de 0,9 s la 9
@@ -76,11 +76,11 @@ const gameScales = <String, LevelScale>{
   'labirint': LevelScale(9), // 10 × 6 la 9
   // atenție comună, imitație, ritm
   'unde-se-uita': LevelScale(6),
-  'fa-ca-licuriciul': LevelScale(8),
-  'toba-magica': LevelScale(9),
+  'fa-ca-licuriciul': LevelScale(11),
+  'toba-magica': LevelScale(13),
   'urmareste-pestele': LevelScale(14),
   // funcții executive
-  'regula-se-schimba': LevelScale(7),
+  'regula-se-schimba': LevelScale(10),
   'semaforul': LevelScale(10),
   'floarea-creste': LevelScale(10),
   'pe-rand': LevelScale(12),

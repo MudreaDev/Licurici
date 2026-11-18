@@ -71,7 +71,7 @@ class SwitchItem {
 }
 
 class SwitchAxes {
-  const SwitchAxes({required this.blocks, required this.perBlock, required this.mixed});
+  const SwitchAxes({required this.blocks, required this.perBlock, required this.mixed, this.minSwitches = 0});
 
   /// Câte blocuri cu aceeași regulă (1 = fără schimbare).
   final int blocks;
@@ -79,8 +79,9 @@ class SwitchAxes {
 
   /// Regula se schimbă de la un cartonaș la altul (arătată pe cartonaș).
   final bool mixed;
+  final int minSwitches;
 
-  Map<String, Object> toJson() => {'blocks': blocks, 'perBlock': perBlock, 'mixed': mixed};
+  Map<String, Object> toJson() => {'blocks': blocks, 'perBlock': perBlock, 'mixed': mixed, 'minSwitches': minSwitches};
 }
 
 class SwitchLevel {
@@ -177,7 +178,9 @@ class SwitchGame {
         1 || 2 => const SwitchAxes(blocks: 1, perBlock: 6, mixed: false),
         3 || 4 => const SwitchAxes(blocks: 2, perBlock: 5, mixed: false),
         5 || 6 => const SwitchAxes(blocks: 3, perBlock: 4, mixed: false),
-        _ => const SwitchAxes(blocks: 1, perBlock: 12, mixed: true),
+        7 || 8 => const SwitchAxes(blocks: 1, perBlock: 12, mixed: true, minSwitches: 4),
+        9 => const SwitchAxes(blocks: 1, perBlock: 12, mixed: true, minSwitches: 6),
+        _ => const SwitchAxes(blocks: 1, perBlock: 12, mixed: true, minSwitches: 8),
       };
 
   /// Rostit când începe un bloc (sau, la regula amestecată, la începutul jocului).
@@ -203,7 +206,7 @@ class SwitchGame {
         rules
           ..clear()
           ..addAll([for (var i = 0; i < axes.perBlock; i++) random.nextBool() ? SortRule.color : SortRule.shape]);
-      } while (_switchCount(rules) < 4 || _maxRun(rules) > 3);
+      } while (_switchCount(rules) < axes.minSwitches || _maxRun(rules) > 3);
     } else {
       for (var b = 0; b < axes.blocks; b++) {
         rules.addAll(List.filled(axes.perBlock, b.isEven ? SortRule.color : SortRule.shape));

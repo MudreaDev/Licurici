@@ -380,6 +380,19 @@ ChoiceRound _trimRound(ChoiceRound r, int optN, Random random) {
 
 /// Variante numerice: corectul + vecini apropiați, unici, în [lo, hi] (port din `_math.js`).
 List<int> numberChoices(GameContext ctx, int correct, int lo, int hi, {int count = 5}) {
+  // La trepte avansate, răspunsurile greșite sunt vecini mai apropiați: copilul
+  // trebuie să distingă mai atent valorile, fără a mări numărul de ținte pe ecran.
+  if (ctx.difficulty.tier >= 8) {
+    final closest = <int>[correct];
+    for (var delta = 1; closest.length < count && (correct - delta >= lo || correct + delta <= hi); delta++) {
+      final neighbors = <int>[
+        if (correct - delta >= lo) correct - delta,
+        if (correct + delta <= hi) correct + delta,
+      ]..shuffle(ctx.random);
+      closest.addAll(neighbors.take(count - closest.length));
+    }
+    return closest..shuffle(ctx.random);
+  }
   final set = <int>{correct};
   var guard = 0;
   while (set.length < count && guard++ < 80) {

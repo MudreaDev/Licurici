@@ -26,6 +26,7 @@ const startLevelParam = GameParam(
   'start',
   'Pornește de la',
   'Nivelul cu care începe jocul data viitoare. Apoi jocul se adaptează singur.',
+  max: 40,
 );
 
 const maxLevelParam = GameParam(
@@ -33,6 +34,7 @@ const maxLevelParam = GameParam(
   'Nu urcă peste',
   'Plafonul de dificultate: jocul rămâne adaptiv, dar nu trece de acest nivel '
       '(de exemplu, până se consolidează treapta).',
+  max: 40,
 );
 
 const roundsParam = GameParam(

@@ -424,6 +424,10 @@ class CeasulGame extends ChoiceGame {
     final m = ctx.pick(minutes);
     final correct = clockLabel(h, m);
     final options = <String>{correct};
+    // La niveluri avansate, aceleași ore cu alte minute cer citirea ambelor ace.
+    if (ctx.difficulty.tier >= 8) {
+      options.addAll(minutes.map((minute) => clockLabel(h, minute)));
+    }
     while (options.length < 5) {
       options.add(clockLabel(ctx.intBetween(1, 12), ctx.pick(minutes)));
     }

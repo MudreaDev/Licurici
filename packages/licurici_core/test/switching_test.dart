@@ -36,6 +36,8 @@ void main() {
       final l = game.generate(8, seed: seed);
       expect(l.axes.mixed, isTrue);
       expect(l.switches.length, greaterThanOrEqualTo(4));
+      expect(game.generate(9, seed: seed).switches.length, greaterThanOrEqualTo(6));
+      expect(game.generate(10, seed: seed).switches.length, greaterThanOrEqualTo(8));
     }
     expect(game.generate(1, seed: 1).items.first.rule, SortRule.color);
   });

@@ -311,7 +311,7 @@ class _ChoiceGameScreenState extends ConsumerState<ChoiceGameScreen> {
         // Adaptiv: din prima la aproape tot → mai greu data viitoare; sub jumătate → mai ușor.
         final ratio = _firstTry / _lesson.rounds.length;
         final next = ratio >= 0.85 ? _tier + 1 : (ratio < 0.5 ? _tier - 1 : _tier);
-        ref.read(settingsProvider.notifier).setGameLevel(widget.game.id, next.clamp(1, 20));
+        ref.read(settingsProvider.notifier).setGameLevel(widget.game.id, next < 1 ? 1 : next);
         _sticker = ref.read(settingsProvider.notifier).awardSticker();
         ref.read(sessionProvider.notifier).checkpoint();
         _mood = MascotMood.happy;

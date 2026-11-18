@@ -97,7 +97,7 @@ class BuildGame {
       cols: cols,
       rows: rows,
       distractors: level <= 2 ? 0 : (level <= 5 ? 1 : 2),
-      hideModelMs: level >= 6 ? 5000 : null,
+      hideModelMs: level >= 10 ? 3000 : (level >= 8 ? 4000 : (level >= 6 ? 5000 : null)),
     );
   }
 

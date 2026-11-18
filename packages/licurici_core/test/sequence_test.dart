@@ -13,7 +13,7 @@ void main() {
     for (var level = 1; level <= 60; level++) {
       final a = simon.axesFor(level);
       expect(a.pads, inInclusiveRange(3, 6));
-      expect(a.length, inInclusiveRange(2, 7));
+      expect(a.length, inInclusiveRange(2, 9));
       expect(a.onMs + a.gapMs, greaterThanOrEqualTo(750));
       if (prev != null) {
         expect(a.length, greaterThanOrEqualTo(prev.length));

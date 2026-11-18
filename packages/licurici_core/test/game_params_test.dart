@@ -8,6 +8,8 @@ void main() {
     expect(capLevel(9, null), 9);
     expect(capLevel(0, 4), 1);
     expect(gameParams.map((p) => p.id), ['start', 'max', 'rounds']);
+    expect(startLevelParam.max, 40);
+    expect(maxLevelParam.max, 40);
     expect(roundsParam.appliesTo(GameKind.choice), isTrue);
     expect(roundsParam.appliesTo(GameKind.maze), isFalse);
     expect(maxLevelParam.appliesTo(GameKind.maze), isTrue);
