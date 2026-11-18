@@ -5,7 +5,7 @@ void main() {
   const game = BuildGame();
 
   test('modelul se poate face din paletă; distractorii nu apar în model', () {
-    for (var level = 1; level <= 12; level++) {
+    for (var level = 1; level <= 14; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = game.generate(level, seed: seed);
         for (final r in l.rounds) {
@@ -15,6 +15,7 @@ void main() {
           expect(r.palette.toSet().containsAll(r.model.toSet()), isTrue);
           final extra = r.palette.toSet().difference(r.model.toSet());
           expect(extra.length, lessThanOrEqualTo(l.axes.distractors));
+          if (level >= 12) expect(extra.length, l.axes.distractors);
         }
       }
     }

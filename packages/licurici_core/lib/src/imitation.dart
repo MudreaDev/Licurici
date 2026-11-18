@@ -168,7 +168,7 @@ class ImitationGame {
 
   ImitationAxes axesFor(int level) => ImitationAxes(
         objects: min(5, 2 + (level - 1) ~/ 2),
-        actions: level <= 3 ? 1 : (level <= 7 ? 2 : (level <= 10 ? 3 : 4)),
+        actions: level <= 3 ? 1 : (level <= 7 ? 2 : (level <= 10 ? 3 : (level < 13 ? 4 : 5))),
         drag: level >= 3,
       );
 

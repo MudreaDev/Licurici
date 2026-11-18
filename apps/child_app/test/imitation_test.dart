@@ -69,13 +69,13 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 9), ('tableta', 4), ('telefon-mic', 11)]) {
+  for (final (device, level) in [('telefon-mic', 9), ('tableta', 4), ('telefon-mic', 13)]) {
     testWidgets('fă ca Licurici: nivelul $level pe $device', (tester) async {
       final container = await _open(tester, devices[device]!, level);
       final l = const ImitationGame().generate(level, seed: 4);
       for (final (ri, round) in l.rounds.indexed) {
         await _waitTurn(tester);
-        if (shots && ri == 0 && level != 11) {
+        if (shots && ri == 0 && level != 13) {
           await expectLater(
             find.byType(ImitationScreen),
             matchesGoldenFile('shots/imitatie-$device.png'),

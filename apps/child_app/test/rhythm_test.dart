@@ -42,7 +42,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 8), ('tableta', 5), ('telefon-mic', 13)]) {
+  for (final (device, level) in [('telefon-mic', 8), ('tableta', 5), ('telefon-mic', 17)]) {
     testWidgets('toba magică: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -76,7 +76,7 @@ void main() {
       final l = const RhythmGame().generate(level, seed: 9);
       for (final (i, p) in l.patterns.indexed) {
         await _waitTurn(tester);
-        if (shots && i == 0 && level != 13) {
+        if (shots && i == 0 && level != 17) {
           await expectLater(
             find.byType(RhythmScreen),
             matchesGoldenFile('shots/toba-$device.png'),

@@ -68,14 +68,14 @@ const gameScales = <String, LevelScale>{
   'diferente': LevelScale(15), // 16 obiecte la 13, 8 diferențe la 15
   'la-magazin': LevelScale(10),
   // construcție, puzzle, labirint
-  'construieste': LevelScale(10),
+  'construieste': LevelScale(14),
   'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
   'atinge-rapid': LevelScale(9), // bula de 0,07 la 9 (distanța se oprește la 9)
   'stop': LevelScale(9), // 32 de încercări, 30% opriri, fereastra de 0,9 s la 9
   'turnul': LevelScale(9), // 7 inele la 5, diferența minimă la 9, o singură culoare de la 6
   'adu-mi': LevelScale(8), // 6 obiecte la 5, două cerute de la 6, trei de la 8
   'pune-ursul': LevelScale(7), // toate cele 5 locuri la 4, două obiecte de la 5, trei de la 7
-  'oglinda': LevelScale(10), // alt copil de la 6, patru atingeri de la 8, cinci de la 10
+  'oglinda': LevelScale(14), // până la șapte atingeri în secvență
   'memorie-sunete': LevelScale(11), // 7 perechi la 9, 8 la 11
   'coloreaza-ce-auzi': LevelScale(9), // 6 culori la 5, două colorări la 7, trei la 9
   'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
@@ -83,8 +83,8 @@ const gameScales = <String, LevelScale>{
   'labirint': LevelScale(9), // 10 × 6 la 9
   // atenție comună, imitație, ritm
   'unde-se-uita': LevelScale(10),
-  'fa-ca-licuriciul': LevelScale(11),
-  'toba-magica': LevelScale(13),
+  'fa-ca-licuriciul': LevelScale(13),
+  'toba-magica': LevelScale(17),
   'urmareste-pestele': LevelScale(20),
   // funcții executive
   'regula-se-schimba': LevelScale(10),

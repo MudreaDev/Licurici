@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 8), ('tableta', 4), ('telefon-mic', 10)]) {
+  for (final (device, level) in [('telefon-mic', 8), ('tableta', 4), ('telefon-mic', 14)]) {
     testWidgets('construiește la fel: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,7 +49,7 @@ void main() {
       );
       await settle(tester, 2);
       final l = const BuildGame().generate(level, seed: 2);
-      if (shots && level != 10) {
+      if (shots && level != 14) {
         await expectLater(
           find.byType(BuildScreen),
           matchesGoldenFile('shots/construieste-$device.png'),
@@ -67,11 +67,13 @@ void main() {
           final good = r.palette.indexOf(r.model[c]);
           if (ri == 0 && c == 0) {
             final bad = r.palette.indexWhere((p) => p != r.model[c]);
+            await tester.ensureVisible(find.byKey(ValueKey('build-palette-$bad')));
             await tester.tap(find.byKey(ValueKey('build-palette-$bad')));
             await tester.pump();
             await tester.tap(find.byKey(ValueKey('build-cell-$c')));
             await tester.pump();
           }
+          await tester.ensureVisible(find.byKey(ValueKey('build-palette-$good')));
           await tester.tap(find.byKey(ValueKey('build-palette-$good')));
           await tester.pump();
           await tester.tap(find.byKey(ValueKey('build-cell-$c')));

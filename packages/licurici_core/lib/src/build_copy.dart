@@ -96,7 +96,7 @@ class BuildGame {
     return BuildAxes(
       cols: cols,
       rows: rows,
-      distractors: level <= 2 ? 0 : (level <= 5 ? 1 : 2),
+      distractors: level <= 2 ? 0 : (level <= 5 ? 1 : (level < 12 ? 2 : (level < 14 ? 3 : 4))),
       hideModelMs: level >= 10 ? 3000 : (level >= 8 ? 4000 : (level >= 6 ? 5000 : null)),
     );
   }
@@ -119,7 +119,7 @@ class BuildGame {
       List<SwitchCard> model;
       do {
         model = [for (var i = 0; i < n; i++) types[random.nextInt(types.length)]];
-      } while (model.toSet().length < min(2, n));
+      } while (model.toSet().length < (level >= 12 ? kinds : min(2, n)));
       // Distractori: aceeași formă, altă culoare (seamănă, dar nu e la fel).
       final used = model.toSet();
       final distractors = <SwitchCard>[];

@@ -7,7 +7,9 @@ void main() {
   test('atingerile: din părțile nivelului, fără aceeași atingere de două ori la rând', () {
     expect(game.axesFor(8).touches, 4);
     expect(game.axesFor(10).touches, 5);
-    for (var level = 1; level <= 11; level++) {
+    expect(game.axesFor(12).touches, 6);
+    expect(game.axesFor(14).touches, 7);
+    for (var level = 1; level <= 14; level++) {
       final axes = game.axesFor(level);
       for (var seed = 0; seed < 40; seed++) {
         final l = game.generate(level, seed: seed);

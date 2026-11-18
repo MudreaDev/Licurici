@@ -124,7 +124,7 @@ class MirrorGame {
 
   MirrorAxes axesFor(int level) => MirrorAxes(
         parts: level == 1 ? const [FacePart.par, FacePart.nas, FacePart.gura] : FacePart.values,
-        touches: level <= 2 ? 1 : (level <= 4 ? 2 : (level < 8 ? 3 : (level < 10 ? 4 : 5))),
+        touches: level <= 2 ? 1 : (level <= 4 ? 2 : (level < 8 ? 3 : (level < 10 ? 4 : (level < 12 ? 5 : (level < 14 ? 6 : 7))))),
         sided: level >= 4,
         otherChild: level >= 6,
       );

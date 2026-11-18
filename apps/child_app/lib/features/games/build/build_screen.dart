@@ -343,7 +343,9 @@ class _BuildScreenState extends ConsumerState<BuildScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Row(
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 for (final (i, p) in _r.palette.indexed)
@@ -376,6 +378,7 @@ class _BuildScreenState extends ConsumerState<BuildScreen> {
                     ),
                   ),
               ],
+              ),
             ),
           ],
         ),

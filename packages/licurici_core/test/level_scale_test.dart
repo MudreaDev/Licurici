@@ -77,7 +77,7 @@ final Map<String, String Function(int)> axesSignature = {
   },
   'toba-magica': (l) {
     final a = const RhythmGame().axesFor(l);
-    return '${a.beats} ${a.uneven} ${a.drums}';
+    return '${a.beats} ${a.uneven} ${a.drums} ${a.rounds}';
   },
   'urmareste-pestele': (l) {
     final a = const TrackGame().axesFor(l);
@@ -146,7 +146,7 @@ void main() {
     test('același punct relativ pe scară = aceeași dificultate, indiferent de joc', () {
       // Aceleași puncte relative pe două scări cu număr diferit de niveluri.
       expect(const LevelScale(7).difficultyOf(4), scaleFor('simon').difficultyOf(13));
-      expect(scaleFor('construieste').difficultyOf(10), scaleFor('simon').difficultyOf(25));
+      expect(scaleFor('construieste').difficultyOf(14), scaleFor('simon').difficultyOf(25));
     });
   });
 
@@ -188,8 +188,8 @@ void main() {
           level: level,
           at: DateTime.utc(2026),
         );
-    expect(t('construieste', 10).ratingDifficulty, t('simon', 25).ratingDifficulty);
-    expect(t('simon', 7).ratingDifficulty, lessThan(t('construieste', 10).ratingDifficulty));
+    expect(t('construieste', 14).ratingDifficulty, t('simon', 25).ratingDifficulty);
+    expect(t('simon', 7).ratingDifficulty, lessThan(t('construieste', 14).ratingDifficulty));
     expect(t('ceasul', 7).ratingDifficulty, lessThan(t('ceasul', 8).ratingDifficulty));
   });
 }

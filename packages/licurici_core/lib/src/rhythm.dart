@@ -143,7 +143,7 @@ class RhythmGame {
         beats: min(8, 2 + (level - 1) ~/ 2),
         uneven: level >= 4,
         drums: level >= 7 ? 2 : 1,
-        rounds: 4,
+        rounds: level < 15 ? 4 : (level < 17 ? 5 : 6),
       );
 
   /// Pasul de bază al ritmului (ms) — tempo calm.

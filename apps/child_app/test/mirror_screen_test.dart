@@ -19,7 +19,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 1), ('tableta', 4), ('telefon-mic', 6), ('telefon-mic', 10)]) {
+  for (final (device, level) in [('telefon-mic', 1), ('tableta', 4), ('telefon-mic', 6), ('telefon-mic', 14)]) {
     testWidgets('Oglinda: nivelul $level pe $device, o atingere greșită, apoi la fel ca Licurici', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -39,7 +39,7 @@ void main() {
         UncontrolledProviderScope(container: container, child: MaterialApp.router(theme: buildTheme(calm: false), routerConfig: router)),
       );
       await tester.pump(const Duration(seconds: 5));
-      if (shots && level != 10) await expectLater(find.byType(MirrorScreen), matchesGoldenFile('shots/oglinda-$device-$level.png'));
+      if (shots && level != 14) await expectLater(find.byType(MirrorScreen), matchesGoldenFile('shots/oglinda-$device-$level.png'));
       final l = const MirrorGame().generate(level, seed: 3);
       Future<void> touch(MirrorTouch t, FaceLook look) async {
         final rect = tester.getRect(find.byKey(const ValueKey('mirror-face')));
@@ -50,11 +50,11 @@ void main() {
 
       for (final (i, r) in l.rounds.indexed) {
         // Demonstrația lui Licurici.
-        await tester.pump(const Duration(seconds: 10));
+        await tester.pump(const Duration(seconds: 16));
         if (i == 0) {
           final wrong = FacePart.values.firstWhere((p) => p != r.touches.first.part);
           await touch(MirrorTouch(wrong, wrong.paired ? -1 : null), r.mirror);
-          if (shots && level != 10) await expectLater(find.byType(MirrorScreen), matchesGoldenFile('shots/oglinda-atinsa-$device-$level.png'));
+          if (shots && level != 14) await expectLater(find.byType(MirrorScreen), matchesGoldenFile('shots/oglinda-atinsa-$device-$level.png'));
         }
         for (final t in r.touches) {
           await touch(t, r.mirror);

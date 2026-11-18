@@ -38,6 +38,9 @@ pe pași, în ordine.
 
 ### Continuare 19.11.2026
 
+- A doua trecere prin Fac și eu este implementată: Oglinda 7 atingeri, Construiește 4 distractori și paletă derulabilă, Toba 6 runde, Fă ca Licurici 5 acțiuni. Atingerea din Oglinda se normalizează la dimensiunea reală a feței, cercul apare la atingere, iar panoul și rama au fost rearanjate; este necesar testul tactil și vizual pe tabletă fizică. Urmează Potrivim, în ordinea din evidență.
+- Verificări Fac și eu: 665 teste nucleu, 454 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiza Flutter fără probleme. Corecția cercului din Oglinda a fost reverificată suplimentar prin cele 8 teste dedicate cu portrete pictate și desenate.
+
 - Verificări pentru a doua trecere Atenție: nucleu 665 teste, aplicația copilului 454 (15 capturi opționale sărite), panou 37, backend 90, Vercel 7; analiza Flutter fără probleme. Țintele noului nivel „Ce s-a schimbat?” au fost măsurate la minimum 64 dp pe telefon mic simulat.
 
 - „Continuă șirul” din Gândim are modele ABAC, ABBC și AABC de la nivelul 8, testate pe telefon și tabletă simulate. Celelalte zece jocuri din secțiune rămân de abordat în ordine; lista exactă este în `docs/progres-niveluri-jocuri.md`.

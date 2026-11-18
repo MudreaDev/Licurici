@@ -18,7 +18,6 @@ import '../../../shared/reward_finish.dart';
 import '../../../shared/sfx.dart';
 import '../../../shared/stimulus_art.dart';
 import '../../../shared/top_bar.dart';
-import '../../../shared/ui/candy.dart';
 import '../../../shared/voice.dart';
 import '../../settings/settings.dart';
 
@@ -188,7 +187,7 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
     final ok = _r.touches[_step].accepts(t);
     setState(() {
       _mirrorRing++;
-      _mirrorRingAt = partCenter(t.part, t.side, _r.mirror);
+      _mirrorRingAt = p;
     });
     if (!ok) {
       _wrong++;
@@ -296,7 +295,8 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
 
   Widget _board(MotionPolicy motion) => LayoutBuilder(
     builder: (context, box) {
-      final f = math.min(box.maxHeight - 40, box.maxWidth * 0.36);
+      // Rama este mai înaltă decât portretul; calculăm mărimea după spațiul real.
+      final f = math.min((box.maxHeight - 12) / 1.55, (box.maxWidth - 40) / 2.15);
       final bee = f * 0.3;
       final pointer = _pointer;
       // Licurici: pe față (vârful luminii pe locul atins) sau odihnindu-se sus, în stânga.
@@ -305,8 +305,14 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           // Prietenul pe care îl atinge Licurici.
-          CandyPanel(
+          Container(
             padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xBFE9F5EC),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: const Color(0xFFE0EEDB), width: 2),
+              boxShadow: Tokens.shadow,
+            ),
             child: SizedBox.square(
               key: const ValueKey('mirror-model'),
               dimension: f,
@@ -338,7 +344,8 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
             shakeTick: _shake,
             popTick: _burst,
             child: Container(
-              padding: EdgeInsets.all(f * (hasPart('mirror') ? 0.14 : 0.06)),
+              width: f * 1.15,
+              height: f * 1.55,
               // Oglinda pictată (`parts/mirror`: rama ovală cu sticla) sau rama desenată.
               decoration: hasPart('mirror')
                   ? BoxDecoration(
@@ -353,15 +360,20 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
                       ),
                       shadows: Tokens.shadow,
                     ),
-              child: Semantics(
+              child: Center(child: SizedBox.square(
+                dimension: f * 0.9,
+                child: LayoutBuilder(builder: (context, faceBox) => Semantics(
                 button: true,
                 label: 'Fața din oglindă',
                 child: GestureDetector(
                   key: const ValueKey('mirror-face'),
                   behavior: HitTestBehavior.opaque,
-                  onTapUp: (d) => _touch(d.localPosition / f),
+                  onTapUp: (d) => _touch(Offset(
+                    d.localPosition.dx / faceBox.maxWidth,
+                    d.localPosition.dy / faceBox.maxHeight,
+                  )),
                   child: SizedBox.square(
-                    dimension: f,
+                    dimension: f * 0.9,
                     child: Stack(
                       children: [
                         Positioned.fill(child: _Face(look: _r.mirror)),
@@ -396,7 +408,8 @@ class _MirrorScreenState extends ConsumerState<MirrorScreen> {
                     ),
                   ),
                 ),
-              ),
+              )),
+              )),
             ),
           ),
         ],

@@ -29,6 +29,15 @@ Verificări: teste de generare și calibrare pentru toate cele șase jocuri; joc
 
 ## Fac și eu (IMI) — 4 jocuri
 
+**A doua trecere, 19.11:**
+
+- [x] Oglinda — 6 atingeri la nivelul 12, 7 la 14; coordonatele atingerii folosesc dimensiunea reală a feței, iar panoul și rama au fost rearanjate. Testat cu portrete pictate pe telefon și tabletă simulate; verificarea pe tabletă fizică rămâne necesară.
+- [x] Construiește la fel — 3 distractori la nivelul 12, 4 la 14, model cu 4 tipuri de piese și paletă derulabilă pe telefon; testat pe telefon simulat.
+- [x] Toba magică — 5 runde la nivelul 15 și 6 la 17; testat pe telefon simulat.
+- [x] Fă ca Licurici — 5 acțiuni la nivelul 13; testat pe telefon simulat.
+
+Prima trecere:
+
 - [x] Oglinda (`oglinda`, mirror) — până la cinci atingeri la nivelul 10.
 - [x] Construiește la fel (`construieste`, build) — modelul se vede 4 secunde de la 8 și 3 secunde de la 10, cu posibilitatea de a-l revedea.
 - [x] Toba magică (`toba-magica`, rhythm) — până la opt bătăi la nivelul 13.
