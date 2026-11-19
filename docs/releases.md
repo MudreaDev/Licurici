@@ -5,9 +5,9 @@ APK-urile și arhivele compilate sunt atașamente ale versiunii, nu fișiere ad�
 
 ## Aplicația copilului și panoul 0.1.3 (build 4) — 19.11.2026
 
-În curs de publicare ca versiune de test: [v0.1.3-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.3-preview.1). Conține corecția coordonatelor și a indicatorului la Oglinda, rama rearanjată, cele două clipuri „Super” regenerate și nivelurile suplimentare documentate în [progresul pe jocuri](progres-niveluri-jocuri.md). Pronunția și atingerea pe tabletă fizică necesită verificare.
+Publicată ca versiune de test: [v0.1.3-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.3-preview.1), din commitul `89fb73d`. Conține corecția coordonatelor și a indicatorului la Oglinda, rama rearanjată, cele două clipuri „Super” regenerate și nivelurile suplimentare documentate în [progresul pe jocuri](progres-niveluri-jocuri.md). Pronunția și atingerea pe tabletă fizică necesită verificare.
 
-Pachete construite: trei APK-uri Android, arhiva panoului web și `SHA256SUMS.txt`; publicarea și verificarea atașamentelor trebuie confirmate după încărcare. Pachetul web necesită găzduire și API pe aceeași origine. Nu folosi această versiune ca versiune pentru magazine.
+Cele trei APK-uri Android, arhiva panoului web și `SHA256SUMS.txt` sunt publicate; dimensiunile și digesturile SHA-256 de pe GitHub coincid cu cele locale. Semnătura APK-ului arm64 coincide cu cea din 0.1.2. Pachetul web necesită găzduire și API pe aceeași origine. Nu folosi această versiune ca versiune pentru magazine.
 
 ## Aplicația copilului 0.1.2 (build 3) — 18.11.2026
 

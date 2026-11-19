@@ -39,7 +39,7 @@ pe pași, în ordine.
 ### Continuare 19.11.2026
 
 - A doua trecere Potrivim: toate cele 8 jocuri au trepte noi, detaliate individual în `docs/progres-niveluri-jocuri.md`. Puzzle-ul ajunge la 24 de piese, fără model la 15, cu tavă și ramă derulabile și ținte ≥64 dp pe telefon mic simulat. Urmează Ascult și înțeleg, în ordinea secțiunilor.
-- Verificări Potrivim: 666 teste nucleu, 464 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiza Flutter fără probleme. În pregătire versiunea de test 0.1.3 pentru APK și panou.
+- Verificări Potrivim: 666 teste nucleu, 464 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiza Flutter fără probleme. Versiunea de test 0.1.3 este publicată din `89fb73d`: trei APK-uri, panou web și SHA256SUMS, verificate pe GitHub. APK-ul arm64 are aceeași semnătură ca 0.1.2. Verificarea pe tabletă fizică rămâne necesară.
 
 - A doua trecere prin Fac și eu este implementată: Oglinda 7 atingeri, Construiește 4 distractori și paletă derulabilă, Toba 6 runde, Fă ca Licurici 5 acțiuni. Atingerea din Oglinda se normalizează la dimensiunea reală a feței, cercul apare la atingere, iar panoul și rama au fost rearanjate; este necesar testul tactil și vizual pe tabletă fizică. Urmează Potrivim, în ordinea din evidență.
 - Verificări Fac și eu: 665 teste nucleu, 454 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiza Flutter fără probleme. Corecția cercului din Oglinda a fost reverificată suplimentar prin cele 8 teste dedicate cu portrete pictate și desenate.

@@ -80,11 +80,11 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] **Jocurile noi** (sesiunea 12) încercate pe tabletă: Cât de tare?, Cine e prietenul?, Câte sunt?, Ce ai auzit?, Linia numerelor, Atinge rapid, Paznicul farului, Stop!, Acum sau mai mult?
 - [ ] **Jocurile „frate” noi** pe tabletă: Turnul, Adu-mi, Pune ursulețul, Colorează ce auzi, Memorie cu sunete, Oglinda.
 - [ ] După construirea și instalarea unei versiuni noi, testează cu specialistul limita zilnică, poarta părintelui și progresul după două jocuri și repornire; setează limita/repetările din planul copilului. Timpul numărat este cel din prim-plan, cu ceasul local al tabletei.
-- [ ] După următorul APK, verifică pe tabletă treptele noi din Turnul, Adu-mi, Pune ursulețul și Oglinda; APK-ul 0.1.2 publicat nu le conține.
-- [ ] În următorul APK, verifică reluarea explorărilor și repetările configurate: progresul trebuie să se schimbe doar după terminarea episodului.
-- [ ] În următorul APK, verifică pe tabletă nivelurile avansate din Atenție, Fac și eu, Potrivim, Ascult și înțeleg și Vorbim, inclusiv puzzle-ul cu 20 de piese și memoria cu 8 perechi.
-- [ ] În următorul APK, ascultă „Super!” și „Super! Ai terminat!”; clipurile au fost regenerate cu pronunție silabisită, dar nu au fost ascultate pe dispozitiv.
-- [ ] În următorul APK, verifică atingerile pe fețele din „Oglinda” și aspectul ramei pe tableta reală.
+- [ ] În APK-ul 0.1.3, verifică pe tabletă treptele noi din Turnul, Adu-mi, Pune ursulețul și Oglinda.
+- [ ] În APK-ul 0.1.3, verifică reluarea explorărilor și repetările configurate: progresul trebuie să se schimbe doar după terminarea episodului.
+- [ ] În APK-ul 0.1.3, verifică pe tabletă nivelurile avansate din Atenție, Fac și eu, Potrivim, Ascult și înțeleg și Vorbim, inclusiv puzzle-ul cu 24 de piese și memoria cu 8 perechi.
+- [ ] În APK-ul 0.1.3, ascultă „Super!” și „Super! Ai terminat!”; clipurile au fost regenerate cu pronunție silabisită, dar nu au fost ascultate pe dispozitiv.
+- [ ] În APK-ul 0.1.3, verifică atingerile pe fețele din „Oglinda” și aspectul ramei pe tableta reală.
 - [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
 
 **B. Ilustrații (Codex / ChatGPT)** — după [docs/art/ghid-ilustratii.md](docs/art/ghid-ilustratii.md), apoi `py tools/art/convert_codex.py`
@@ -138,9 +138,11 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **19.11:** a doua trecere a parcurs Atenție, Fac și eu și Potrivim, joc cu joc, cu trepte suplimentare urmărite în [evidență](docs/progres-niveluri-jocuri.md); urmează Ascult și înțeleg. „Oglinda” normalizează atingerea la dimensiunea afișată și are rama și panoul rearanjate; verifică pe tabletă. În Gândim fusese început „Continuă șirul”, cu modele mai complexe la nivelul 8; restul secțiunii așteaptă rândul. Cele două clipuri „Super” au fost regenerate cu indicație de pronunție; ascultarea pe dispozitiv rămâne de făcut.
 
+**APK 0.1.3:** [versiunea de test publicată](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.3-preview.1) include corecția Oglinda și nivelurile de până la commitul `89fb73d`; verificări și pachete în [istoricul versiunilor](docs/releases.md).
+
 **18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
 
-**Continuare niveluri:** patru jocuri au trepte mai dificile: Turnul până la 9, Adu-mi până la 8, Pune ursulețul până la 7 și Oglinda până la 10; după aceste puncte mecanicile lor încă au plafon. Extinderea tuturor celorlalte jocuri rămâne de făcut, pe mecanici și conținut real. Activitățile libere (colorare, respirație, comunicare) nu primesc niveluri competitive. Aceste modificări nu sunt incluse în APK-ul 0.1.2 publicat anterior.
+**Continuare niveluri:** Turnul ajunge până la 9, Adu-mi până la 8, Pune ursulețul până la 7 și Oglinda până la 14; după aceste puncte mecanicile lor încă au plafon. Extinderea tuturor jocurilor continuă pe mecanici și conținut real, conform evidenței pe secțiuni. Activitățile libere (colorare, respirație, comunicare) nu primesc niveluri competitive. Aceste modificări sunt incluse în APK-ul 0.1.3.
 
 **Continuare:** secvențele „Felinarele” și „Licuricii” ajung la 9 pași, imitația la 4 acțiuni, toba la 8 bătăi, iar „Regula se schimbă” are schimbări mai dese; „Construiește” are trepte suplimentare de memorie. Ceasul are variante mai apropiate, iar mai multe jocuri numerice folosesc distractori mai apropiați la nivelul 8. Panoul permite alegerea nivelurilor până la 40. Cererea pentru toate jocurile rămâne deschisă; un număr mai mare nu înseamnă neapărat o sarcină nouă.
 
