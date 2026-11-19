@@ -47,6 +47,19 @@ Verificări: generatoarele și cele patru jocuri au fost parcurse la nivelurile 
 
 ## Potrivim (POT) — 8 jocuri
 
+**A doua trecere, 19.11:**
+
+- [x] Potrivește — de la nivelul 10 apare un distractor apropiat vizual, între șase variante; testat pe telefon și tabletă simulate.
+- [x] Forma ascunsă — 13 linii de distragere la nivelul 14; testat pe telefon și tabletă simulate.
+- [x] Intrusul — 10 runde de la nivelul 10; testat pe telefon și tabletă simulate.
+- [x] Umbre — de la nivelul 10 apare un distractor apropiat vizual; testat pe telefon și tabletă simulate.
+- [x] Culori — 10 runde de la nivelul 10; testat pe telefon și tabletă simulate.
+- [x] Forme — 10 runde de la nivelul 10; testat pe telefon și tabletă simulate.
+- [x] Găsește diferențele — până la 10 diferențe la nivelul 19; nivel parcurs pe telefon mic simulat.
+- [x] Puzzle — 24 de piese la nivelul 14 cu model și 15 fără model; nivelul 15 parcurs pe telefon mic, cu piese și locuri de minimum 64 dp.
+
+Prima trecere:
+
 - [x] Potrivește (`potriveste`, choice) — șase obiecte din aceeași grupă de la nivelul 8.
 - [x] Forma ascunsă (`forma-ascunsa`, choice) — 11 linii de distragere de la nivelul 12.
 - [x] Intrusul (`intrusul`, choice) — cinci obiecte din grupă și unul diferit de la nivelul 8.

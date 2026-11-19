@@ -3,6 +3,12 @@
 Versiunile de test sunt publicate în [GitHub Releases](https://github.com/MudreaDev/Licurici/releases).
 APK-urile și arhivele compilate sunt atașamente ale versiunii, nu fișiere adăugate în istoricul Git.
 
+## Aplicația copilului și panoul 0.1.3 (build 4) — 19.11.2026
+
+În curs de publicare ca versiune de test: [v0.1.3-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.3-preview.1). Conține corecția coordonatelor și a indicatorului la Oglinda, rama rearanjată, cele două clipuri „Super” regenerate și nivelurile suplimentare documentate în [progresul pe jocuri](progres-niveluri-jocuri.md). Pronunția și atingerea pe tabletă fizică necesită verificare.
+
+Pachete construite: trei APK-uri Android, arhiva panoului web și `SHA256SUMS.txt`; publicarea și verificarea atașamentelor trebuie confirmate după încărcare. Pachetul web necesită găzduire și API pe aceeași origine. Nu folosi această versiune ca versiune pentru magazine.
+
 ## Aplicația copilului 0.1.2 (build 3) — 18.11.2026
 
 Publicată ca versiune de test: [v0.1.2-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.2-preview.1), din commitul `38648e7`. Cufărul răspunde și în modul calm / reduce motion: imagine deschisă timp de 1,2 s, fără mișcarea capacului sau bule. Ținta are minimum 64 dp și etichetă pentru cititorul de ecran. Bara de comenzi este separată de apă, ca să nu acopere cufărul pe telefon. Zi/noapte se schimbă instant când sistemul dezactivează animațiile.

@@ -15,12 +15,12 @@ void main() {
   });
 
   test('desenul: forma țintă e cea corectă, liniile rămân în casetă, mai multe linii la tier mare', () {
-    for (final tier in [1, 3, 6, 12]) {
+    for (final tier in [1, 3, 6, 12, 14]) {
       for (var seed = 0; seed < 20; seed++) {
         final ctx = GameContext(difficulty: Difficulty(tier), grade: Grade.parseCodes('1').first, random: Random(seed));
         for (final r in const FormaAscunsaGame().generate(ctx).rounds) {
           final v = r.visuals.single as HiddenShapeVisual;
-          expect(v.lines.length, tier <= 1 ? 2 : (tier <= 3 ? 4 : (tier <= 6 ? 6 : (tier < 12 ? 9 : 12))));
+          expect(v.lines.length, tier <= 1 ? 2 : (tier <= 3 ? 4 : (tier <= 6 ? 6 : (tier < 12 ? 9 : (tier < 14 ? 12 : 14)))));
           for (final l in v.lines) {
             for (final p in l) {
               expect(p.x, inInclusiveRange(0, 1));

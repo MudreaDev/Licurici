@@ -18,10 +18,13 @@ class CuloriGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Alege culoarea potrivită.',
-        rounds: [for (var i = 0; i < 8; i++) _round(ctx, i.isEven)],
+        rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, i.isEven)],
       );
 
   ChoiceRound _round(GameContext ctx, bool colorToName) {
@@ -66,10 +69,13 @@ class FormeGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Alege forma potrivită.',
-        rounds: [for (var i = 0; i < 8; i++) _round(ctx, i.isEven)],
+        rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, i.isEven)],
       );
 
   ChoiceRound _round(GameContext ctx, bool shapeToName) {

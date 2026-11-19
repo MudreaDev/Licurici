@@ -71,7 +71,7 @@ class FormaAscunsaGame extends ChoiceGame {
 
   ChoiceRound _round(GameContext ctx, int tier) {
     final (word, art) = ctx.pick(hiddenShapes);
-    final fillers = tier <= 1 ? 1 : (tier <= 3 ? 3 : (tier <= 6 ? 5 : (tier < 12 ? 8 : 11)));
+    final fillers = tier <= 1 ? 1 : (tier <= 3 ? 3 : (tier <= 6 ? 5 : (tier < 12 ? 8 : (tier < 14 ? 11 : 13))));
     final small = tier >= 10;
     final s = small ? 0.3 + ctx.random.nextDouble() * 0.08 : 0.4 + ctx.random.nextDouble() * 0.12;
     final c = Point(0.35 + ctx.random.nextDouble() * 0.3, 0.35 + ctx.random.nextDouble() * 0.3);

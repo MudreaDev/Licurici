@@ -65,7 +65,7 @@ const gameScales = <String, LevelScale>{
   'cauta': LevelScale(19),
   'cucu-bau': LevelScale(14),
   'ce-s-a-schimbat': LevelScale(19),
-  'diferente': LevelScale(15), // 16 obiecte la 13, 8 diferențe la 15
+  'diferente': LevelScale(19), // 16 obiecte la 13, 10 diferențe la 19
   'la-magazin': LevelScale(10),
   // construcție, puzzle, labirint
   'construieste': LevelScale(14),
@@ -79,7 +79,7 @@ const gameScales = <String, LevelScale>{
   'memorie-sunete': LevelScale(11), // 7 perechi la 9, 8 la 11
   'coloreaza-ce-auzi': LevelScale(9), // 6 culori la 5, două colorări la 7, trei la 9
   'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
-  'puzzle': LevelScale(13), // 5 × 4 fără model la 13
+  'puzzle': LevelScale(15), // 6 × 4 fără model la 15
   'labirint': LevelScale(9), // 10 × 6 la 9
   // atenție comună, imitație, ritm
   'unde-se-uita': LevelScale(10),
@@ -117,5 +117,5 @@ const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
 LevelScale scaleFor(String gameId) => gameScales[gameId] ??
-    (gameId == 'forma-ascunsa' ? const LevelScale(12) : (gameId == 'povesti' || gameId == 'ce-ai-auzit') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(9) :
+    (gameId == 'forma-ascunsa' ? const LevelScale(14) : (gameId == 'povesti' || gameId == 'ce-ai-auzit' || gameId == 'potriveste' || gameId == 'intrusul' || gameId == 'umbre' || gameId == 'culori' || gameId == 'forme') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(9) :
     (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale));

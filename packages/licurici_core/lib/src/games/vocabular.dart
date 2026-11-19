@@ -105,6 +105,13 @@ List<ObjectWord> _matchingTargets(bool advanced) => advanced
     ? objectWords.where((o) => objectWords.where((other) => other.group == o.group).length >= 6).toList()
     : objectWords;
 
+/// Perechi vizual apropiate din aceeași grupă, pentru potriviri mai fine.
+const _nearMatching = <String, String>{
+  '🐶': '🐱', '🐱': '🐶', '🐄': '🐎', '🐎': '🐄',
+  '🐑': '🐖', '🐖': '🐑', '🍎': '🍓', '🍓': '🍎',
+  '🐻': '🦊', '🦊': '🐻',
+};
+
 /// Runde fără aceeași țintă de două ori la rând (copilul nu „învață poziția”).
 List<T> _targets<T>(GameContext ctx, List<T> pool, int n) {
   final out = <T>[];
@@ -131,11 +138,13 @@ class PotrivesteGame extends ChoiceGame {
   Lesson generate(GameContext ctx) {
     final similar = ctx.difficulty.tier >= 4;
     final advanced = ctx.difficulty.tier >= 8;
+    final close = ctx.difficulty.tier >= 10;
+    final targets = _matchingTargets(advanced).where((o) => !close || _nearMatching.containsKey(o.emoji)).toList();
     return Lesson(
       title: name,
       instruction: 'Găsește obiectul care e la fel.',
       rounds: [
-        for (final t in _targets(ctx, _matchingTargets(advanced), 8))
+        for (final t in _targets(ctx, targets, 8))
           ChoiceRound(
             fixedChoices: advanced,
             prompt: 'Găsește la fel',
@@ -143,7 +152,8 @@ class PotrivesteGame extends ChoiceGame {
             visuals: [EmojiVisual(t.emoji)],
             hint: 'Caută-l pe cel care arată exact la fel.',
             choices: [
-              for (final o in [t, ..._distractors(ctx, t, objectWords, similar: similar, count: advanced ? 5 : 4)]..shuffle(ctx.random))
+              for (final o in [t, if (close) objectWords.firstWhere((o) => o.emoji == _nearMatching[t.emoji]),
+                ..._distractors(ctx, t, objectWords.where((o) => !close || o.emoji != _nearMatching[t.emoji]).toList(), similar: similar, count: close ? 4 : (advanced ? 5 : 4))]..shuffle(ctx.random))
                 Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
             ],
           ),
@@ -258,6 +268,9 @@ class IntrusulGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final same = (1 + ctx.difficulty.tier).clamp(2, ctx.difficulty.tier >= 8 ? 5 : 4);
     final groups = [
@@ -268,7 +281,7 @@ class IntrusulGame extends ChoiceGame {
       title: name,
       instruction: 'Alege obiectul care nu se potrivește.',
       rounds: [
-        for (final g in _targets(ctx, groups, 8)) _round(ctx, g, same),
+        for (final g in _targets(ctx, groups, ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount)) _round(ctx, g, same),
       ],
     );
   }
@@ -317,11 +330,16 @@ class UmbreGame extends ChoiceGame {
   Lesson generate(GameContext ctx) {
     final similar = ctx.difficulty.tier >= 4;
     final advanced = ctx.difficulty.tier >= 8;
+    final close = ctx.difficulty.tier >= 10;
+    final targets = _matchingTargets(advanced).where((o) => !close || _nearMatching.containsKey(o.emoji)).toList();
+    List<ObjectWord> options(ObjectWord t) => [t,
+      if (close) objectWords.firstWhere((o) => o.emoji == _nearMatching[t.emoji]),
+      ..._distractors(ctx, t, objectWords.where((o) => !close || o.emoji != _nearMatching[t.emoji]).toList(), similar: similar, count: close ? 4 : (advanced ? 5 : 4))]..shuffle(ctx.random);
     return Lesson(
       title: name,
       instruction: 'Potrivește obiectul cu umbra lui.',
       rounds: [
-        for (final (i, t) in _targets(ctx, _matchingTargets(advanced), 8).indexed)
+        for (final (i, t) in _targets(ctx, targets, 8).indexed)
           if (i.isEven)
             ChoiceRound(
               fixedChoices: advanced,
@@ -330,8 +348,7 @@ class UmbreGame extends ChoiceGame {
               visuals: [EmojiVisual(t.emoji)],
               hint: 'Umbra are aceeași formă ca ${t.word}.',
               choices: [
-                for (final o in [t, ..._distractors(ctx, t, objectWords, similar: similar, count: advanced ? 5 : 4)]
-                  ..shuffle(ctx.random))
+                for (final o in options(t))
                   Choice(art: o.emoji, id: o.word, silhouette: true, speak: o.word, correct: o == t),
               ],
             )
@@ -343,8 +360,7 @@ class UmbreGame extends ChoiceGame {
               visuals: [SilhouetteVisual(t.emoji)],
               hint: 'Este umbra: ${t.word}.',
               choices: [
-                for (final o in [t, ..._distractors(ctx, t, objectWords, similar: similar, count: advanced ? 5 : 4)]
-                  ..shuffle(ctx.random))
+                for (final o in options(t))
                   Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
               ],
             ),

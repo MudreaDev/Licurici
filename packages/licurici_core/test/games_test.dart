@@ -5,6 +5,20 @@ import 'package:licurici_core/src/games/content.dart' show ortograme, stories;
 import 'package:test/test.dart';
 
 void main() {
+  test('potrivirea avansată include un obiect apropiat vizual', () {
+    const near = {'🐶': '🐱', '🐱': '🐶', '🐄': '🐎', '🐎': '🐄', '🐑': '🐖', '🐖': '🐑', '🍎': '🍓', '🍓': '🍎', '🐻': '🦊', '🦊': '🐻'};
+    for (var seed = 0; seed < 30; seed++) {
+      final ctx = GameContext(difficulty: const Difficulty(10), grade: Grade.clasa1, random: Random(seed));
+      for (final game in [const PotrivesteGame(), const UmbreGame()]) {
+        for (final round in game.build(ctx).rounds) {
+          final target = round.choices.singleWhere((c) => c.correct).art;
+          expect(round.choices, hasLength(6));
+          expect(round.choices.map((c) => c.art), contains(near[target]));
+          expect(round.choices.where((c) => c.correct), hasLength(1));
+        }
+      }
+    }
+  });
   test('șirurile avansate folosesc modele de patru poziții', () {
     for (var seed = 0; seed < 30; seed++) {
       final ctx = GameContext(difficulty: const Difficulty(8), grade: Grade.clasa1, random: Random(seed));
@@ -39,7 +53,7 @@ void main() {
               random: Random(seed),
             );
             final lesson = game.build(ctx);
-            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 10 ? 4 : 5) : ctx.difficulty.roundCount));
+            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 10 ? 4 : 5) : {'intrusul', 'culori', 'forme'}.contains(game.id) && tier >= 10 ? 10 : ctx.difficulty.roundCount));
             for (final r in lesson.rounds) {
               expect(r.choices.where((c) => c.correct), hasLength(1));
               // Variantele fixe (ex. grupele din „Comparăm”, Da/Nu) nu se taie după tier.

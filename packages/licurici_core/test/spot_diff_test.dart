@@ -5,7 +5,8 @@ void main() {
   const game = SpotDiffGame();
 
   test('exact k diferențe, iar în rest scenele sunt identice', () {
-    for (var level = 1; level <= 14; level++) {
+    expect(game.differencesFor(19), 10);
+    for (var level = 1; level <= 19; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = game.generate(level, seed: seed);
         for (final s in l.scenes) {

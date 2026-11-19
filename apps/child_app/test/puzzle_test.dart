@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 11), ('tableta', 8), ('telefon-mic', 13)]) {
+  for (final (device, level) in [('telefon-mic', 11), ('tableta', 8), ('telefon-mic', 15)]) {
     testWidgets('puzzle: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,7 +49,7 @@ void main() {
       );
       await settle(tester, 3);
       final l = const PuzzleGame().generate(level, seed: 3);
-      if (shots && level != 13) {
+      if (shots && level != 15) {
         await expectLater(
           find.byType(PuzzleScreen),
           matchesGoldenFile('shots/puzzle-$device.png'),
@@ -58,7 +58,7 @@ void main() {
       for (final (ri, r) in l.rounds.indexed) {
         for (final (k, p) in r.tray.indexed) {
           final piece = find.byKey(ValueKey('puzzle-piece-${p.index}'));
-          if (level == 13) {
+          if (level == 15) {
             await tester.ensureVisible(piece);
             await tester.pump(const Duration(milliseconds: 300));
             expect(tester.getSize(piece).shortestSide, greaterThanOrEqualTo(64));
@@ -68,12 +68,12 @@ void main() {
             await tester.tap(piece);
             await tester.pump();
             final wrongSlot = find.byKey(ValueKey('puzzle-slot-${(p.index + 1) % r.pieces}'));
-            if (level == 13) await tester.ensureVisible(wrongSlot);
+            if (level == 15) await tester.ensureVisible(wrongSlot);
             await tester.tap(wrongSlot);
             await tester.pump(const Duration(milliseconds: 300));
             expect(piece, findsOneWidget);
           }
-          if (level == 13) {
+          if (level == 15) {
             await tester.ensureVisible(piece);
             await tester.tap(piece);
             await tester.pump();

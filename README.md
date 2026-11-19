@@ -136,7 +136,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Se lucrează în ordinea secțiunilor din aplicație; bifa înseamnă prima extindere implementată și testată sau o excepție explicată, nu dificultate infinită. Atenție, Fac și eu, Potrivim, Ascult și înțeleg și Vorbim au fost parcurse; urmează Gândim, apoi celelalte secțiuni în ordine. „Vorbește” este o tablă AAC și rămâne disponibilă integral, fără nivel obligatoriu.
 
-**19.11:** a doua trecere a pornit de la Atenție, apoi Fac și eu: toate cele zece jocuri au trepte suplimentare, urmărite în [evidență](docs/progres-niveluri-jocuri.md); urmează Potrivim. „Oglinda” normalizează atingerea la dimensiunea afișată și are rama și panoul rearanjate; verifică pe tabletă. În Gândim fusese început „Continuă șirul”, cu modele mai complexe la nivelul 8; restul secțiunii așteaptă rândul. Cele două clipuri „Super” au fost regenerate cu indicație de pronunție; ascultarea pe dispozitiv rămâne de făcut.
+**19.11:** a doua trecere a parcurs Atenție, Fac și eu și Potrivim, joc cu joc, cu trepte suplimentare urmărite în [evidență](docs/progres-niveluri-jocuri.md); urmează Ascult și înțeleg. „Oglinda” normalizează atingerea la dimensiunea afișată și are rama și panoul rearanjate; verifică pe tabletă. În Gândim fusese început „Continuă șirul”, cu modele mai complexe la nivelul 8; restul secțiunii așteaptă rândul. Cele două clipuri „Super” au fost regenerate cu indicație de pronunție; ascultarea pe dispozitiv rămâne de făcut.
 
 **18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
 
@@ -1299,7 +1299,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
 **Niveluri suplimentare:** jocurile enumerate în §0.1 și cele trei explorări au fost extinse; celelalte mecanici adaptive necesită în continuare extinderi proprii. Progresul foii de parcurs nu se modifică până la finalizarea cererii.
 
-**Inventar pe secțiuni:** Atenție (6/6, două treceri), Fac și eu (4/4, două treceri), Potrivim (8/8 prima trecere, urmează a doua), Ascult și înțeleg (11/11 prima trecere), Vorbim (6 jocuri extinse și tabla AAC revizuită), Gândim (1/11 prima trecere); restul secțiunilor sunt urmărite în [lista pe jocuri](docs/progres-niveluri-jocuri.md).
+**Inventar pe secțiuni:** Atenție (6/6, două treceri), Fac și eu (4/4, două treceri), Potrivim (8/8, două treceri), Ascult și înțeleg (11/11 prima trecere, urmează a doua), Vorbim (6 jocuri extinse și tabla AAC revizuită), Gândim (1/11 prima trecere); restul secțiunilor sunt urmărite în [lista pe jocuri](docs/progres-niveluri-jocuri.md).
 
 **Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; corecția cufărului și a barei de comenzi (0.1.2); fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 

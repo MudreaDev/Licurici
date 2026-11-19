@@ -229,7 +229,7 @@ class _PuzzleScreenState extends ConsumerState<PuzzleScreen> {
         (box.maxWidth * share) * 3 / 4,
       );
       final frameH = dense
-          ? math.max(64.0 * _r.rows, naturalFrameH)
+          ? math.max(math.max(64.0 * _r.rows, 64.0 * _r.cols * 3 / 4), naturalFrameH)
           : naturalFrameH;
       final frameW = frameH * 4 / 3;
       final pw = frameW / _r.cols, ph = frameH / _r.rows;
