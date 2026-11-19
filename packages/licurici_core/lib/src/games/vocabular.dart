@@ -181,11 +181,13 @@ class ArataMiGame extends ChoiceGame {
     final tier = ctx.difficulty.tier;
     final pool = tier <= 2 ? objectWords.where((o) => o.familiar).toList() : objectWords;
     final advanced = tier >= 8;
+    final close = tier >= 10;
+    final targets = (advanced ? _matchingTargets(true) : pool).where((o) => !close || _nearMatching.containsKey(o.emoji)).toList();
     return Lesson(
       title: name,
       instruction: 'Ascultă și arată.',
       rounds: [
-        for (final t in _targets(ctx, advanced ? _matchingTargets(true) : pool, 8))
+        for (final t in _targets(ctx, targets, 8))
           ChoiceRound(
             fixedChoices: advanced,
             prompt: 'Arată ${t.word}',
@@ -193,7 +195,8 @@ class ArataMiGame extends ChoiceGame {
             visuals: [TextVisual(t.word)],
             hint: 'Acesta este ${t.word}.',
             choices: [
-              for (final o in [t, ..._distractors(ctx, t, pool, similar: tier >= 4, count: advanced ? 5 : 4)]..shuffle(ctx.random))
+              for (final o in [t, if (close) objectWords.firstWhere((o) => o.emoji == _nearMatching[t.emoji]),
+                ..._distractors(ctx, t, pool.where((o) => !close || o.emoji != _nearMatching[t.emoji]).toList(), similar: tier >= 4, count: close ? 4 : (advanced ? 5 : 4))]..shuffle(ctx.random))
                 Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
             ],
           ),
@@ -221,6 +224,11 @@ const _body = [
   _BodyPart('💪', 'brațul'),
 ];
 
+const _bodyNear = <String, String>{
+  '🖐️': '💪', '💪': '🖐️', '🦵': '🦶', '🦶': '🦵',
+  '👄': '👅', '👅': '👄', '👁️': '👂', '👂': '👁️',
+};
+
 /// Corpul meu (LRC3, catalog #40 → treapta LRC3): „Arată nasul”.
 class CorpulGame extends ChoiceGame {
   const CorpulGame()
@@ -238,7 +246,7 @@ class CorpulGame extends ChoiceGame {
         title: name,
         instruction: 'Ascultă și arată.',
         rounds: [
-          for (final t in _targets(ctx, _body, 8))
+          for (final t in _targets(ctx, _body.where((b) => ctx.difficulty.tier < 10 || _bodyNear.containsKey(b.emoji)).toList(), 8))
             ChoiceRound(
               fixedChoices: ctx.difficulty.tier >= 8,
               prompt: 'Arată ${t.word}',
@@ -246,7 +254,9 @@ class CorpulGame extends ChoiceGame {
               visuals: [TextVisual(t.word)],
               hint: 'Acesta este ${t.word}.',
               choices: [
-                for (final o in [t, ...ctx.sample(_body.where((b) => b != t).toList(), ctx.difficulty.tier >= 8 ? 5 : 4)]..shuffle(ctx.random))
+                for (final o in [t,
+                  if (ctx.difficulty.tier >= 10) _body.firstWhere((b) => b.emoji == _bodyNear[t.emoji]),
+                  ...ctx.sample(_body.where((b) => b != t && (ctx.difficulty.tier < 10 || b.emoji != _bodyNear[t.emoji])).toList(), ctx.difficulty.tier >= 10 ? 4 : (ctx.difficulty.tier >= 8 ? 5 : 4))]..shuffle(ctx.random))
                   Choice(art: o.emoji, id: o.word, speak: o.word, correct: o == t),
               ],
             ),
@@ -441,13 +451,16 @@ class AtributeGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     return Lesson(
       title: name,
       instruction: 'Ascultă bine cum este și arată.',
       rounds: [
-        for (var i = 0; i < 8; i++)
+        for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++)
           if (tier < 4 || i.isEven) _sizeRound(ctx, tier) else _colorRound(ctx, tier),
       ],
     );
@@ -726,6 +739,9 @@ class UndeEUrsulGame extends ChoiceGame {
   static const _things = [('🧸', 'ursulețul'), ('⚽', 'mingea'), ('🐱', 'pisica'), ('🐶', 'cățelul'), ('🍎', 'mărul')];
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final relations = tier <= 2
@@ -736,7 +752,7 @@ class UndeEUrsulGame extends ChoiceGame {
     return Lesson(
       title: name,
       instruction: 'Ascultă unde e și arată.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, relations, tier)],
+      rounds: [for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, relations, tier)],
     );
   }
 
@@ -812,12 +828,15 @@ class PozitiiGame extends ChoiceGame {
   }
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     return Lesson(
       title: name,
       instruction: 'Ascultă și arată.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, tier, i)],
+      rounds: [for (var i = 0; i < (tier >= 11 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, tier, i)],
     );
   }
 
@@ -869,6 +888,10 @@ const actions = [
   ('👐', 'se spală pe mâini'),
 ];
 
+const _nearActions = <String, String>{
+  '🥣': '🥤', '🥤': '🥣', '📚': '🖍️', '🖍️': '📚',
+};
+
 /// Ce face? (LRC3b, catalog #15 `ce-face`): „Cine doarme?” — copilul arată imaginea cu
 /// acțiunea. Verbe receptive. Tier 1–2: două variante, apoi până la cinci.
 class CeFaceGame extends ChoiceGame {
@@ -887,7 +910,7 @@ class CeFaceGame extends ChoiceGame {
         title: name,
         instruction: 'Ascultă și arată.',
         rounds: [
-          for (final (emoji, verb) in _targets(ctx, actions, 8))
+          for (final (emoji, verb) in _targets(ctx, actions.where((a) => ctx.difficulty.tier < 10 || _nearActions.containsKey(a.$1)).toList(), 8))
             ChoiceRound(
               fixedChoices: ctx.difficulty.tier >= 8,
               prompt: 'Cine $verb?',
@@ -896,7 +919,8 @@ class CeFaceGame extends ChoiceGame {
               choices: [
                 for (final (e, v) in [
                   (emoji, verb),
-                  ...ctx.sample(actions.where((a) => a.$1 != emoji).toList(), ctx.difficulty.tier >= 8 ? 5 : 4),
+                  if (ctx.difficulty.tier >= 10) actions.firstWhere((a) => a.$1 == _nearActions[emoji]),
+                  ...ctx.sample(actions.where((a) => a.$1 != emoji && (ctx.difficulty.tier < 10 || a.$1 != _nearActions[emoji])).toList(), ctx.difficulty.tier >= 10 ? 4 : (ctx.difficulty.tier >= 8 ? 5 : 4)),
                 ]..shuffle(ctx.random))
                   Choice(art: e, id: v, speak: v, correct: e == emoji),
               ],

@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, gameLevel) in [('telefon-mic', 7), ('tableta', 7), ('telefon-mic', 13)]) {
+  for (final (device, gameLevel) in [('telefon-mic', 7), ('tableta', 7), ('telefon-mic', 15)]) {
     testWidgets('ascultă și fă: nivel $gameLevel ($device)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;

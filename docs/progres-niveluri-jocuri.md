@@ -73,6 +73,22 @@ Verificări: generatoarele și ecranele celor opt jocuri au trecut teste pe tele
 
 ## Ascult și înțeleg (LRC) — 11 jocuri
 
+**A doua trecere, 19.11:**
+
+- [x] Arată-mi — distractor apropiat vizual de la nivelul 10; testat pe telefon/tabletă simulate.
+- [x] Corpul meu — părți ale corpului apropiate ca distractori de la nivelul 10; testat pe telefon/tabletă simulate.
+- [x] Ce face? — acțiuni apropiate ca distractori de la nivelul 10; testat pe telefon/tabletă simulate.
+- [x] Mare, mic, roșu — 10 runde de la nivelul 10; ecranul testat pe telefon/tabletă simulate.
+- [x] Unde e ursulețul? — 10 runde de la nivelul 10; ecranul testat pe telefon/tabletă simulate.
+- [x] Sus, jos, stânga, dreapta — 10 runde de la nivelul 11; ecranul testat pe telefon/tabletă simulate.
+- [x] Povești — 3 întrebări de la nivelul 12, cu toate fragmentele rostite în ordine; generator testat, ecran deschis pe telefon/tabletă simulate.
+- [x] Adu-mi — 4 obiecte cerute la nivelul 10; nivel parcurs pe telefon mic simulat.
+- [x] Pune ursulețul — 4 obiecte în poziții distincte la nivelul 9; nivel parcurs pe telefon mic simulat.
+- [x] Colorează ce auzi — 4 obiecte și colorări la nivelul 11; nivel parcurs pe telefon mic, ținte ≥64 dp.
+- [x] Ascultă și fă — până la 5 pași la nivelul 15; nivel parcurs pe telefon mic simulat.
+
+Prima trecere:
+
 - [x] Arată-mi (`arata-mi`, choice) — șase obiecte asemănătoare de la nivelul 8.
 - [x] Corpul meu (`corpul`, choice) — șase variante de la nivelul 8.
 - [x] Ce face? (`ce-face`, choice) — șase acțiuni de la nivelul 8.

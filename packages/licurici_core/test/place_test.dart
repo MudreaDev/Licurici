@@ -16,7 +16,7 @@ void main() {
           expect(r.tasks.every((t) => r.spots.contains(t.relation)), isTrue);
           expect(r.tasks.map((t) => t.relation).toSet(), hasLength(r.tasks.length));
           expect(r.tasks.map((t) => t.word).toSet(), hasLength(r.tasks.length));
-          expect(r.tasks, hasLength(level >= 7 ? 3 : (level >= 5 ? 2 : 1)));
+          expect(r.tasks, hasLength(level >= 9 ? 4 : (level >= 7 ? 3 : (level >= 5 ? 2 : 1))));
         }
       }
     }

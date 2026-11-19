@@ -17,7 +17,7 @@ class PlaceAxes {
   /// Prepozițiile folosite la nivelul ăsta (locurile de pe scenă, cât permite reperul).
   final List<Relation> relations;
 
-  /// Câte obiecte de așezat după aceeași propoziție (1–3).
+  /// Câte obiecte de așezat după aceeași propoziție (1–4).
   final int objects;
 
   Map<String, Object> toJson() => {'relations': [for (final r in relations) r.name], 'objects': objects};
@@ -117,7 +117,7 @@ class PlaceGame {
           3 => const [Relation.pe, Relation.sub, Relation.inauntru, Relation.langa],
           _ => Relation.values,
         },
-        objects: level >= 7 ? 3 : (level >= 5 ? 2 : 1),
+        objects: level >= 9 ? 4 : (level >= 7 ? 3 : (level >= 5 ? 2 : 1)),
       );
 
   PlaceLevel generate(int level, {int? seed}) {

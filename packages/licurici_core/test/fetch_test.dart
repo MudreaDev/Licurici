@@ -11,6 +11,7 @@ void main() {
     expect(g.axesFor(3).familiarOnly, isFalse);
     expect(g.axesFor(6).wanted, 2);
     expect(g.axesFor(8).wanted, 3);
+    expect(g.axesFor(10).wanted, 4);
     for (var level = 1; level <= 10; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = g.generate(level, seed: seed);

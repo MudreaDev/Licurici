@@ -19,7 +19,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 5), ('tableta', 3), ('telefon-mic', 7)]) {
+  for (final (device, level) in [('telefon-mic', 5), ('tableta', 3), ('telefon-mic', 9)]) {
     testWidgets('Pune ursulețul: nivelul $level pe $device, o greșeală la prima cerere, apoi corect', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -47,7 +47,7 @@ void main() {
         if (i == 0) {
           // Un loc greșit: obiectul rămâne în tavă.
           final t = r.tasks.first;
-          final wrong = r.spots.firstWhere((s) => r.tasks.every((x) => x.relation != s));
+          final wrong = r.spots.firstWhere((s) => s != t.relation);
           await tester.tap(find.byKey(ValueKey('spot-${wrong.name}')));
           await tester.pump(const Duration(milliseconds: 300));
           expect(find.byKey(ValueKey('place-${t.word}')), findsOneWidget);

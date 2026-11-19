@@ -19,7 +19,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 7), ('tableta', 1), ('telefon-mic', 4), ('telefon-mic', 9)]) {
+  for (final (device, level) in [('telefon-mic', 7), ('tableta', 1), ('telefon-mic', 4), ('telefon-mic', 11)]) {
     testWidgets('Colorează ce auzi: nivelul $level pe $device, o greșeală la prima cerere, apoi corect', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -39,8 +39,13 @@ void main() {
         UncontrolledProviderScope(container: container, child: MaterialApp.router(theme: buildTheme(calm: false), routerConfig: router)),
       );
       await settle(tester, 2);
-      if (shots && level != 9) await expectLater(find.byType(PaintByEarScreen), matchesGoldenFile('shots/coloreaza-$device.png'));
+      if (shots && level != 11) await expectLater(find.byType(PaintByEarScreen), matchesGoldenFile('shots/coloreaza-$device.png'));
       final l = const PaintGame().generate(level, seed: 3);
+      if (level == 11) {
+        for (var i = 0; i < 4; i++) {
+          expect(tester.getSize(find.byKey(ValueKey('paint-slot-$i'))).shortestSide, greaterThanOrEqualTo(64));
+        }
+      }
       await tester.tap(find.byKey(const ValueKey('paint-repeat')));
       for (final (i, r) in l.rounds.indexed) {
         if (i == 0) {
@@ -58,7 +63,7 @@ void main() {
           await tester.tap(find.byKey(ValueKey('paint-slot-${t.slot}')));
           await tester.pump(const Duration(milliseconds: 150));
         }
-        if (shots && i == 0 && level != 9) {
+        if (shots && i == 0 && level != 11) {
           await tester.pump(const Duration(milliseconds: 500));
           await expectLater(find.byType(PaintByEarScreen), matchesGoldenFile('shots/coloreaza-colorat-$device-$level.png'));
         }

@@ -73,11 +73,11 @@ const gameScales = <String, LevelScale>{
   'atinge-rapid': LevelScale(9), // bula de 0,07 la 9 (distanța se oprește la 9)
   'stop': LevelScale(9), // 32 de încercări, 30% opriri, fereastra de 0,9 s la 9
   'turnul': LevelScale(9), // 7 inele la 5, diferența minimă la 9, o singură culoare de la 6
-  'adu-mi': LevelScale(8), // 6 obiecte la 5, două cerute de la 6, trei de la 8
-  'pune-ursul': LevelScale(7), // toate cele 5 locuri la 4, două obiecte de la 5, trei de la 7
+  'adu-mi': LevelScale(10), // șase obiecte pe masă, până la patru cerute
+  'pune-ursul': LevelScale(9), // până la patru obiecte și poziții într-o cerere
   'oglinda': LevelScale(14), // până la șapte atingeri în secvență
   'memorie-sunete': LevelScale(11), // 7 perechi la 9, 8 la 11
-  'coloreaza-ce-auzi': LevelScale(9), // 6 culori la 5, două colorări la 7, trei la 9
+  'coloreaza-ce-auzi': LevelScale(11), // până la patru obiecte și culori
   'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
   'puzzle': LevelScale(15), // 6 × 4 fără model la 15
   'labirint': LevelScale(9), // 10 × 6 la 9
@@ -92,7 +92,7 @@ const gameScales = <String, LevelScale>{
   'floarea-creste': LevelScale(10),
   'pe-rand': LevelScale(12),
   // limbaj
-  'asculta-si-fa': LevelScale(13),
+  'asculta-si-fa': LevelScale(15),
   // motricitate și scris
   'traseaza': LevelScale(10),
   'uneste-punctele': LevelScale(10),
@@ -117,5 +117,5 @@ const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
 LevelScale scaleFor(String gameId) => gameScales[gameId] ??
-    (gameId == 'forma-ascunsa' ? const LevelScale(14) : (gameId == 'povesti' || gameId == 'ce-ai-auzit' || gameId == 'potriveste' || gameId == 'intrusul' || gameId == 'umbre' || gameId == 'culori' || gameId == 'forme') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(9) :
+    (gameId == 'forma-ascunsa' ? const LevelScale(14) : gameId == 'povesti' ? const LevelScale(12) : (gameId == 'ce-ai-auzit' || gameId == 'potriveste' || gameId == 'intrusul' || gameId == 'umbre' || gameId == 'culori' || gameId == 'forme' || gameId == 'arata-mi' || gameId == 'corpul' || gameId == 'ce-face' || gameId == 'mingea-rosie' || gameId == 'unde-e-ursul') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(11) :
     (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale));

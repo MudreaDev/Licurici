@@ -20,7 +20,7 @@ class FetchAxes {
   final bool familiarOnly;
   final bool sameGroup;
 
-  /// Câte obiecte se cer deodată (1–3).
+  /// Câte obiecte se cer deodată (1–4).
   final int wanted;
 
   Map<String, Object> toJson() => {'objects': objects, 'familiarOnly': familiarOnly, 'sameGroup': sameGroup, 'wanted': wanted};
@@ -101,7 +101,7 @@ class FetchGame {
         objects: min(6, 1 + level),
         familiarOnly: level <= 2,
         sameGroup: level >= 4,
-        wanted: level >= 8 ? 3 : (level >= 6 ? 2 : 1),
+        wanted: level >= 10 ? 4 : (level >= 8 ? 3 : (level >= 6 ? 2 : 1)),
       );
 
   /// [avoid]: imaginile de evitat (`avoidedEmojis`) — nu apar deloc pe masă.

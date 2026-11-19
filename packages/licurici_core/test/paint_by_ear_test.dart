@@ -5,7 +5,7 @@ void main() {
   const game = PaintGame();
 
   test('cererile se potrivesc planșei și paletei', () {
-    for (var level = 1; level <= 10; level++) {
+    for (var level = 1; level <= 11; level++) {
       final axes = game.axesFor(level);
       for (var seed = 0; seed < 40; seed++) {
         final l = game.generate(level, seed: seed);
@@ -16,7 +16,7 @@ void main() {
           expect(r.tasks, hasLength(axes.pair ? axes.objects : 1));
           expect(r.tasks.every((t) => r.palette.contains(t.color) && t.slot < r.slots.length), isTrue);
           expect(r.tasks.map((t) => t.slot).toSet(), hasLength(r.tasks.length));
-          if (axes.sized) expect(r.slots.map((s) => s.thing).toSet(), hasLength(axes.objects == 3 ? 2 : 1));
+          if (axes.sized) expect(r.slots.map((s) => s.thing).toSet(), hasLength(axes.objects >= 3 ? 2 : 1));
         }
         // Aceeași culoare nu se cere de două ori la rând.
         for (var i = 1; i < l.rounds.length; i++) {

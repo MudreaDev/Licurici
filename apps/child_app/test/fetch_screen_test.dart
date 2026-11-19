@@ -19,7 +19,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 6), ('tableta', 2), ('telefon-mic', 8)]) {
+  for (final (device, level) in [('telefon-mic', 6), ('tableta', 2), ('telefon-mic', 10)]) {
     testWidgets('Adu-mi: nivelul $level pe $device, o greșeală la prima cerere, apoi corect', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;

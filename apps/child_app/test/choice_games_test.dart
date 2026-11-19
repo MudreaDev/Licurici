@@ -25,14 +25,18 @@ void main() {
       for (final game in allGames) (game, 1),
       for (final game in allGames.where((game) => {'culori', 'forme', 'potriveste', 'umbre', 'intrusul', 'arata-mi', 'corpul', 'ce-face', 'mingea-rosie', 'unde-e-ursul', 'primul-sunet', 'ce-se-aude', 'da-nu'}.contains(game.id))) (game, 8),
       for (final game in allGames.where((game) => game.id == 'forma-ascunsa')) (game, 14),
-      for (final game in allGames.where((game) => game.id == 'pozitii')) (game, 9),
-      for (final game in allGames.where((game) => game.id == 'povesti')) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'pozitii')) (game, 11),
+      for (final game in allGames.where((game) => game.id == 'povesti')) (game, 12),
       for (final game in allGames.where((game) => game.id == 'ce-ai-auzit')) (game, 10),
       for (final game in allGames.where((game) => game.id == 'continua-sirul')) (game, 8),
       for (final game in allGames.where((game) => game.id == 'potriveste')) (game, 10),
       for (final game in allGames.where((game) => game.id == 'intrusul')) (game, 10),
       for (final game in allGames.where((game) => game.id == 'umbre')) (game, 10),
       for (final game in allGames.where((game) => {'culori', 'forme'}.contains(game.id))) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'arata-mi')) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'corpul')) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'ce-face')) (game, 10),
+      for (final game in allGames.where((game) => {'mingea-rosie', 'unde-e-ursul'}.contains(game.id))) (game, 10),
     ]) {
       testWidgets('${game.id} pe $device, nivel $level', (tester) async {
         tester.view.physicalSize = devices[device]!;
