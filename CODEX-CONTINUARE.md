@@ -38,6 +38,9 @@ pe pași, în ordine.
 
 ### Continuare 19.11.2026
 
+- A doua trecere Vorbim: 6 jocuri au trepte noi, detaliate individual în `docs/progres-niveluri-jocuri.md`; AAC rămâne disponibil integral fără dificultate obligatorie. Memoria cu sunete are 9 perechi, cartonașe ≥64 dp și derulare; propozițiile au 5 distractori și tavă derulabilă. Urmează Gândim. Aceste modificări sunt ulterioare versiunii 0.1.3.
+- Verificări Vorbim: 670 teste nucleu, 480 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme, acoperire vocală 2883/2883.
+
 - A doua trecere Ascult și înțeleg: toate cele 11 jocuri au trepte suplimentare, descrise individual în `docs/progres-niveluri-jocuri.md`. Instrucțiuni cu până la 4 obiecte, 4 poziții, 4 colorări sau 5 pași au fost parcurse pe telefon mic simulat; poveștile păstrează integral și în ordine narațiunea. Urmează Vorbim, în ordinea secțiunilor. Aceste modificări sunt ulterioare versiunii 0.1.3.
 - Verificări Ascult și înțeleg: 668 teste nucleu, 474 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiza Flutter fără probleme, acoperire vocală 2883/2883.
 

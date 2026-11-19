@@ -326,7 +326,11 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
             // Pozele încă nepuse, în ordinea amestecată.
             SizedBox(
               height: side + 12,
-              child: Row(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: box.maxWidth - 32),
+                  child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   for (final i in _r.tray)
@@ -393,6 +397,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                       ),
                     ),
                 ],
+                  ),
+                ),
               ),
             ),
           ],

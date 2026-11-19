@@ -8,6 +8,11 @@ void main() {
     expect(game.axesFor(9).pairs, 7);
     expect(game.axesFor(11).pairs, 8);
     expect(game.generate(11, seed: 2).cards, hasLength(16));
+    expect(game.axesFor(13).pairs, 9);
+    expect(game.generate(13, seed: 2).cards, hasLength(18));
+    final filtered = game.generate(13, seed: 2, avoid: {'🐶', '🐱'});
+    expect(filtered.cards, hasLength(18));
+    expect(filtered.cards.any((c) => {'🐶', '🐱'}.contains(c.source.emoji)), isFalse);
   });
 
   test('fiecare sursă are exact cartea ei cu sunet; la fermă doar animale de fermă', () {

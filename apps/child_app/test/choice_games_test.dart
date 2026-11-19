@@ -27,7 +27,7 @@ void main() {
       for (final game in allGames.where((game) => game.id == 'forma-ascunsa')) (game, 14),
       for (final game in allGames.where((game) => game.id == 'pozitii')) (game, 11),
       for (final game in allGames.where((game) => game.id == 'povesti')) (game, 12),
-      for (final game in allGames.where((game) => game.id == 'ce-ai-auzit')) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'ce-ai-auzit')) (game, 12),
       for (final game in allGames.where((game) => game.id == 'continua-sirul')) (game, 8),
       for (final game in allGames.where((game) => game.id == 'potriveste')) (game, 10),
       for (final game in allGames.where((game) => game.id == 'intrusul')) (game, 10),
@@ -37,6 +37,9 @@ void main() {
       for (final game in allGames.where((game) => game.id == 'corpul')) (game, 10),
       for (final game in allGames.where((game) => game.id == 'ce-face')) (game, 10),
       for (final game in allGames.where((game) => {'mingea-rosie', 'unde-e-ursul'}.contains(game.id))) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'primul-sunet')) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'da-nu')) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'ce-se-aude')) (game, 10),
     ]) {
       testWidgets('${game.id} pe $device, nivel $level', (tester) async {
         tester.view.physicalSize = devices[device]!;

@@ -5,6 +5,24 @@ import 'package:licurici_core/src/games/content.dart' show ortograme, stories;
 import 'package:test/test.dart';
 
 void main() {
+  test('sunetele avansate includ un sunet inițial apropiat', () {
+    const near = {'M': 'N', 'N': 'M', 'B': 'P', 'P': 'B', 'D': 'T', 'T': 'D', 'F': 'V', 'V': 'F', 'S': 'Ș', 'Ș': 'S', 'C': 'G', 'G': 'C'};
+    for (var seed = 0; seed < 30; seed++) {
+      final ctx = GameContext(difficulty: const Difficulty(10), grade: Grade.clasa1, random: Random(seed));
+      for (final round in const PrimulSunetGame().build(ctx).rounds) {
+        final target = round.choices.singleWhere((c) => c.correct);
+        final sound = firstSound(target.id!)!;
+        expect(round.choices.where((c) => !c.correct).map((c) => firstSound(c.id!)), contains(near[sound]));
+      }
+    }
+  });
+
+  test('da sau nu: zece runde avansate rămân echilibrate', () {
+    final ctx = GameContext(difficulty: const Difficulty(10), grade: Grade.clasa1, random: Random(3));
+    final rounds = const DaNuGame().build(ctx).rounds;
+    expect(rounds, hasLength(10));
+    expect(rounds.where((r) => r.choices.first.correct), hasLength(5));
+  });
   test('ce face: nivelul avansat include acțiuni apropiate', () {
     const near = {'🥣': '🥤', '🥤': '🥣', '📚': '🖍️', '🖍️': '📚'};
     for (var seed = 0; seed < 30; seed++) {
@@ -75,7 +93,7 @@ void main() {
               random: Random(seed),
             );
             final lesson = game.build(ctx);
-            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 12 ? 3 : (tier >= 10 ? 4 : 5)) : ({'intrusul', 'culori', 'forme', 'mingea-rosie', 'unde-e-ursul'}.contains(game.id) && tier >= 10 || game.id == 'pozitii' && tier >= 11) ? 10 : ctx.difficulty.roundCount));
+            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 12 ? 3 : (tier >= 10 ? 4 : 5)) : ({'intrusul', 'culori', 'forme', 'mingea-rosie', 'unde-e-ursul', 'da-nu'}.contains(game.id) && tier >= 10 || game.id == 'pozitii' && tier >= 11 || game.id == 'ce-ai-auzit' && tier >= 12) ? 10 : ctx.difficulty.roundCount));
             for (final r in lesson.rounds) {
               expect(r.choices.where((c) => c.correct), hasLength(1));
               // Variantele fixe (ex. grupele din „Comparăm”, Da/Nu) nu se taie după tier.

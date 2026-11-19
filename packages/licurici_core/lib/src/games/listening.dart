@@ -52,10 +52,13 @@ class CeAiAuzitGame extends ChoiceGame {
   static const listen = 'Ascultă bine:';
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final rounds = <ChoiceRound>[];
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < (tier >= 12 ? 10 : ctx.difficulty.roundCount); i++) {
       final (a, b) = ctx.pick(minimalPairs);
       final flip = ctx.random.nextBool();
       final target = flip ? b : a, twin = flip ? a : b;

@@ -56,7 +56,7 @@ void main() {
   });
 
   for (final game in orderGames) {
-    for (final (device, level) in [('telefon-mic', 9), ('tableta', 3), if (game.sentence) ('telefon-mic', 11)]) {
+    for (final (device, level) in [('telefon-mic', 9), ('tableta', 3), if (game.sentence) ('telefon-mic', 13)]) {
       testWidgets('${game.id}: nivelul $level pe $device, cu o greșeală', (
         tester,
       ) async {
@@ -67,7 +67,7 @@ void main() {
           level: level,
         );
         final l = game.generate(level, seed: 5);
-        if (shots && level != 11) {
+        if (shots && level != 13) {
           await expectLater(
             find.byType(OrderScreen),
             matchesGoldenFile('shots/ordine-${game.id}-$device.png'),
@@ -76,12 +76,14 @@ void main() {
         for (final (ri, round) in l.rounds.indexed) {
           // În prima rundă: întâi o greșeală (ultimul pas), apoi în ordine.
           if (ri == 0) {
+            if (level == 13) await tester.ensureVisible(find.byKey(ValueKey('order-card-${round.steps.length - 1}')));
             await tester.tap(
               find.byKey(ValueKey('order-card-${round.steps.length - 1}')),
             );
             await tester.pump();
           }
           for (var i = 0; i < round.steps.length; i++) {
+            if (level == 13) await tester.ensureVisible(find.byKey(ValueKey('order-card-$i')));
             await tester.tap(find.byKey(ValueKey('order-card-$i')));
             await tester.pump(const Duration(milliseconds: 300));
           }

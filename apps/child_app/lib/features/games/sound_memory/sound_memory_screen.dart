@@ -218,9 +218,9 @@ class _SoundMemoryScreenState extends ConsumerState<SoundMemoryScreen> {
       final gap = cols >= 7 ? 4.0 : 12.0;
       const ratio = 0.78;
       final h = math.min((box.maxHeight - gap * (rows - 1)) / rows, ((box.maxWidth - gap * (cols - 1)) / cols) / ratio);
-      final w = h * ratio;
-      return Center(
-        child: SizedBox(
+      final w = cols >= 9 ? math.max(64.0, h * ratio) : h * ratio;
+      final cardH = cols >= 9 ? w / ratio : h;
+      final grid = SizedBox(
           width: w * cols + gap * (cols - 1),
           child: Wrap(
             spacing: gap,
@@ -238,14 +238,14 @@ class _SoundMemoryScreenState extends ConsumerState<SoundMemoryScreen> {
                   tappableUp: _level.axes.sourcesUp && !c.isSound,
                   label: c.isSound ? c.source.sound : c.source.who,
                   width: w,
-                  height: h,
+                  height: cardH,
                   motion: motion,
                   onTap: () => _tap(i),
                 ),
             ],
           ),
-        ),
       );
+      return Center(child: cols >= 9 ? SingleChildScrollView(scrollDirection: Axis.horizontal, child: grid) : grid);
     },
   );
 }

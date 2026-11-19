@@ -67,10 +67,13 @@ class DaNuGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     // Exact jumătate „da” (rotunjit în jos), în ordine amestecată — nici previzibil, nici
     // dezechilibrat. Generăm direct câte runde cere tier-ul, ca tăierea să nu strice echilibrul.
-    final n = ctx.difficulty.roundCount;
+    final n = ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount;
     final answers = [for (var i = 0; i < n; i++) i < n ~/ 2]..shuffle(ctx.random);
     return Lesson(
       title: name,

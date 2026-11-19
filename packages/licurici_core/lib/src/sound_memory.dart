@@ -19,6 +19,7 @@ class SoundMemoryAxes {
 
   /// Cărțile cu animale stau la vedere (se întorc doar cele cu sunete).
   final bool sourcesUp;
+  /// Preferă animalele de fermă; completează cu alte surse permise dacă filtrul le exclude.
   final bool farmOnly;
 
   /// Coloanele grilei (landscape).
@@ -108,7 +109,7 @@ class SoundMemoryGame {
   static String says(SoundSource x) => '${x.who[0].toUpperCase()}${x.who.substring(1)} face ${x.sound}.';
 
   SoundMemoryAxes axesFor(int level) => SoundMemoryAxes(
-        pairs: switch (level) { 1 => 2, 2 => 3, 3 => 4, 4 => 3, 5 => 4, 6 => 5, < 9 => 6, < 11 => 7, _ => 8 },
+        pairs: switch (level) { 1 => 2, 2 => 3, 3 => 4, 4 => 3, 5 => 4, 6 => 5, < 9 => 6, < 11 => 7, < 13 => 8, _ => 9 },
         sourcesUp: level <= 3,
         farmOnly: level >= 6,
       );
@@ -119,6 +120,11 @@ class SoundMemoryGame {
     final random = Random(s);
     final axes = axesFor(level);
     final pool = [for (final x in soundSources) if ((!axes.farmOnly || x.farm) && !avoid.contains(x.emoji)) x]..shuffle(random);
+    // Cu excluderi, completăm doar cu surse permise, dacă animalele de fermă nu ajung.
+    if (axes.farmOnly && pool.length < axes.pairs) {
+      final extra = [for (final x in soundSources) if (!x.farm && !avoid.contains(x.emoji)) x]..shuffle(random);
+      pool.addAll(extra.take(axes.pairs - pool.length));
+    }
     final sources = pool.take(axes.pairs).toList();
     final cards = [
       for (final x in sources) ...[SoundCard(x, isSound: false), SoundCard(x, isSound: true)],

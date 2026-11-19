@@ -76,7 +76,7 @@ const gameScales = <String, LevelScale>{
   'adu-mi': LevelScale(10), // șase obiecte pe masă, până la patru cerute
   'pune-ursul': LevelScale(9), // până la patru obiecte și poziții într-o cerere
   'oglinda': LevelScale(14), // până la șapte atingeri în secvență
-  'memorie-sunete': LevelScale(11), // 7 perechi la 9, 8 la 11
+  'memorie-sunete': LevelScale(13), // până la 9 perechi
   'coloreaza-ce-auzi': LevelScale(11), // până la patru obiecte și culori
   'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
   'puzzle': LevelScale(15), // 6 × 4 fără model la 15
@@ -105,7 +105,7 @@ const gameScales = <String, LevelScale>{
   'ce-urmeaza': LevelScale(7),
   'mare-mic': LevelScale(7),
   'orarul-meu': LevelScale(7),
-  'spune-propozitia': LevelScale(11),
+  'spune-propozitia': LevelScale(13),
   // explorările: exemple suplimentare la nivelul 3
   'explorare-stiinte': LevelScale(3),
   'explorare-istorie': LevelScale(3),
@@ -117,5 +117,5 @@ const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
 LevelScale scaleFor(String gameId) => gameScales[gameId] ??
-    (gameId == 'forma-ascunsa' ? const LevelScale(14) : gameId == 'povesti' ? const LevelScale(12) : (gameId == 'ce-ai-auzit' || gameId == 'potriveste' || gameId == 'intrusul' || gameId == 'umbre' || gameId == 'culori' || gameId == 'forme' || gameId == 'arata-mi' || gameId == 'corpul' || gameId == 'ce-face' || gameId == 'mingea-rosie' || gameId == 'unde-e-ursul') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(11) :
+    (gameId == 'forma-ascunsa' ? const LevelScale(14) : (gameId == 'povesti' || gameId == 'ce-ai-auzit') ? const LevelScale(12) : (gameId == 'potriveste' || gameId == 'intrusul' || gameId == 'umbre' || gameId == 'culori' || gameId == 'forme' || gameId == 'arata-mi' || gameId == 'corpul' || gameId == 'ce-face' || gameId == 'mingea-rosie' || gameId == 'unde-e-ursul' || gameId == 'primul-sunet' || gameId == 'da-nu' || gameId == 'ce-se-aude') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(11) :
     (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale));

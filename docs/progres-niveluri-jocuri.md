@@ -105,6 +105,18 @@ Verificări: generatoarele au fost testate pe mai multe seed-uri; jocurile de ac
 
 ## Vorbim (COM) — 7 jocuri
 
+**A doua trecere, 19.11:**
+
+- [x] Ce ai auzit? — 10 runde de la nivelul 12; ecran testat pe telefon/tabletă simulate.
+- [x] Primul sunet — distractor cu sunet inițial apropiat la fiecare rundă de la nivelul 10; testat pe telefon/tabletă simulate.
+- [x] Da sau nu? — 10 runde echilibrate de la nivelul 10; testat pe telefon/tabletă simulate.
+- [x] Ce se aude? — surse cu sunete apropiate în variante de la nivelul 10; testat pe telefon/tabletă simulate.
+- [x] Memorie cu sunete — 9 perechi de la nivelul 13, tavă derulabilă și ținte ≥64 dp pe telefon mic simulat; la excluderi se completează doar cu alte surse permise.
+- [x] Vorbește — excepție revizuită: comunicarea AAC rămâne liberă, fără limitarea pictogramelor sau nivel obligatoriu.
+- [x] Spune propoziția — 5 distractori de la nivelul 13; tavă derulabilă și nivel parcurs pe telefon mic simulat.
+
+Prima trecere:
+
 - [x] Ce ai auzit? (`ce-ai-auzit`, choice) — 5 variante la nivelul 8 și 6 la 10, inclusiv cuvinte asemănătoare.
 - [x] Primul sunet (`primul-sunet`, choice) — 6 variante cu sunete inițiale diferite de la nivelul 8.
 - [x] Da sau nu? (`da-nu`, choice) — la nivelul 8, imaginea nepotrivită poate avea aceeași inițială.

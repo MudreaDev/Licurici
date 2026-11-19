@@ -546,6 +546,10 @@ const soundSources = [
   SoundSource('🥁', 'toba', 'bum, bum'),
 ];
 
+const _nearSound = <String, String>{
+  '🐱': '🐄', '🐄': '🐱', '🐑': '🐖', '🐖': '🐑', '🐥': '🐓', '🐓': '🐥',
+};
+
 /// Ce se aude? (COM1, catalog #22): vocea spune un sunet („Cine face miau?”), copilul alege
 /// cine îl face. Asocierea sunet → sursă, înaintea discriminării sunetelor reale. Tier 1–3:
 /// distractori din alte categorii; de la tier 4, tot animale de la fermă (mai apropiate).
@@ -563,11 +567,12 @@ class CeSeAudeGame extends ChoiceGame {
   @override
   Lesson generate(GameContext ctx) {
     final similar = ctx.difficulty.tier >= 4;
+    final close = ctx.difficulty.tier >= 10;
     return Lesson(
       title: name,
       instruction: 'Ascultă sunetul și arată cine îl face.',
       rounds: [
-        for (final t in _targets(ctx, soundSources, 8))
+        for (final t in _targets(ctx, soundSources.where((s) => !close || _nearSound.containsKey(s.emoji)).toList(), 8))
           ChoiceRound(
             fixedChoices: ctx.difficulty.tier >= 8,
             prompt: 'Cine face „${t.sound}”?',
@@ -577,11 +582,12 @@ class CeSeAudeGame extends ChoiceGame {
             choices: [
               for (final o in [
                 t,
+                if (close) soundSources.firstWhere((s) => s.emoji == _nearSound[t.emoji]),
                 ...ctx.sample(
                   soundSources
-                      .where((o) => o != t && (!similar || !t.farm || o.farm))
+                      .where((o) => o != t && (!close || o.emoji != _nearSound[t.emoji]) && (!similar || !t.farm || o.farm))
                       .toList(),
-                  ctx.difficulty.tier >= 8 ? 5 : 4,
+                  close ? 4 : (ctx.difficulty.tier >= 8 ? 5 : 4),
                 ),
               ]..shuffle(ctx.random))
                 Choice(art: o.emoji, id: o.who, speak: o.sound, correct: o == t),
@@ -687,10 +693,13 @@ class PrimulSunetGame extends ChoiceGame {
   Lesson generate(GameContext ctx) {
     final pool = objectWords.where((o) => firstSound(o.word) != null).toList();
     final close = ctx.difficulty.tier >= 4;
+    final targets = ctx.difficulty.tier >= 10
+        ? pool.where((o) => pool.any((other) => firstSound(other.word) == _closeSounds[firstSound(o.word)])).toList()
+        : pool;
     return Lesson(
       title: name,
       instruction: 'Alege ce începe cu sunetul.',
-      rounds: [for (final t in _targets(ctx, pool, 8)) _round(ctx, t, pool, close: close)],
+      rounds: [for (final t in _targets(ctx, targets, 8)) _round(ctx, t, pool, close: close)],
     );
   }
 
