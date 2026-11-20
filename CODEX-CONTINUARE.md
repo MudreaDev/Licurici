@@ -36,6 +36,16 @@ pe pași, în ordine.
 
 ## 1. Starea de acum (actualizată 25.10.2026)
 
+### Documentație universitară 20.11.2026
+
+- [x] Laboratorul 1 PECPIT: raport WBS pentru tema exactă a tezei, cu Mudrea Mihail / TI-233 / Cojocaru Svetlana confirmate de utilizator. Asistentul AI pentru adulți este inclus explicit; clasele 5–12, studiul clinic și publicarea comercială sunt excluse din perimetrul raportului.
+- [x] 87 de elemente: rădăcină, 9 componente, 8 activități intermediare și 69 de pachete (31 pentru realizare). Lista, tabelul și cele 4 diagrame provin din aceeași sursă; verificarea de 100% urmărește perimetrul și evitarea suprapunerilor.
+- Livrabile: `output/pdf/PECPIT_lab1_Mudrea_Mihail_Licurici.pdf` și `output/docx/PECPIT_lab1_Mudrea_Mihail_Licurici.docx`. Surse: `tools/docs/pecpit_wbs_data.py`, `build_pecpit.py`, `render_pecpit_word.ps1`, `check_pecpit.py`.
+- [x] Verificare finală: 18 pagini inspectate vizual, cuprins actualizat, antet de tabel repetat, coduri identice în listă și tabel, fără pagini goale sau text preluat din proiectul-model. Diagramele provin din aceeași structură validată.
+- Verificări înainte de commit: 672 teste nucleu, 487 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend și 7 Vercel; analiza Flutter fără probleme. Testele au rulat pe arborele de lucru care conținea și modificările anterioare ale aplicației, neincluse în commitul laboratorului.
+- Formatare după PDF-ul furnizat: copertă, cuprins, Times New Roman, tabel albastru și pagini A4 landscape pentru tabel/diagrame. LibreOffice lipsește; Word actualizează cuprinsul și exportă prin SaveAs2 PDF, apoi paginile sunt randate și inspectate. ExportAsFixedFormat s-a blocat în această sesiune.
+- Cerințele cursului din textul atașat au fost citite integral; site-ul ghidului nu a fost accesibil. Nu s-a efectuat predarea în Moodle. Nu s-au modificat jocuri, date sau tehnologii; modificările aplicației existente înaintea sesiunii rămân separate. §2–§5 păstrează starea anterioară.
+
 ### Continuare 19.11.2026
 
 - A doua trecere Vorbim: 6 jocuri au trepte noi, detaliate individual în `docs/progres-niveluri-jocuri.md`; AAC rămâne disponibil integral fără dificultate obligatorie. Memoria cu sunete are 9 perechi, cartonașe ≥64 dp și derulare; propozițiile au 5 distractori și tavă derulabilă. Urmează Gândim. Aceste modificări sunt ulterioare versiunii 0.1.3.

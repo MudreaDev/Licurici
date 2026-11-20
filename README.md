@@ -124,6 +124,9 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 - [ ] Decizii: 2FA obligatorie pentru specialiști? · preț în stele pentru peștii noi? · Sentry și în aplicația copilului?
 
 **E. Universitate**
+
+- [x] **20.11.2026 — Laboratorul 1 PECPIT:** raport WBS pentru Licurici, cu asistent AI pentru adulți inclus la cererea utilizatorului; 87 de elemente, 69 de pachete de lucru și 4 diagrame. Livrabile: `output/pdf/PECPIT_lab1_Mudrea_Mihail_Licurici.pdf` și versiunea editabilă din `output/docx/`.
+- [ ] Citește raportul PECPIT și încarcă PDF-ul în Moodle; verifică finalizarea trimiterii. Predarea nu a fost efectuată din această sesiune.
 - [x] **12.11.2026 — Laboratorul 3 PSI:** document Word pentru Licurici, Mudrea Mihail / TI-233, cu 9 diagrame IDEF0, IDEF3 și DFD; redactare conform regulilor UTM furnizate. Fișier: `output/docx/Laborator_3_PSI_Mudrea_Mihail_Licurici.docx`; surse și verificare: `tools/docs/*lab3*`.
 - [ ] Demo pentru coordonator (§21, Sprint 6).
 - [ ] Testare cu copii / educatori — doar cu acord parental și regulile din §13.6.
@@ -133,6 +136,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
+
+**20.11.2026 — laborator PECPIT:** elaborat WBS-ul tezei „Dezvoltarea unui sistem informatic pentru terapia asistată a copiilor cu tulburări din spectrul autist”, după cerințele și raportul PDF furnizate. Copertă confirmată: Mudrea Mihail, TI-233, Cojocaru Svetlana. Include AI pentru adulți; clasele 5–12 și studiul clinic sunt în afara perimetrului acestui raport. 87 de elemente, 69 de pachete, 4 diagrame; PDF și Word în `output/`, generare/verificare în `tools/docs/*pecpit*`. WBS descrie lucrările întregii teze, nu afirmă că toate sunt deja validate. Urmează verificarea utilizatorului și predarea PDF-ului; sarcinile aplicației rămân cele de mai jos.
 
 **Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Se lucrează în ordinea secțiunilor din aplicație; bifa înseamnă prima extindere implementată și testată sau o excepție explicată, nu dificultate infinită. Atenție, Fac și eu, Potrivim, Ascult și înțeleg și Vorbim au fost parcurse; urmează Gândim, apoi celelalte secțiuni în ordine. „Vorbește” este o tablă AAC și rămâne disponibilă integral, fără nivel obligatoriu.
 
@@ -1290,6 +1295,8 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 ---
 
 ## 21. Roadmap (Sem. 1 = 70%)
+
+**Progres documentație 20.11.2026:** raportul WBS pentru laboratorul 1 PECPIT este elaborat în PDF și Word, cu 69 de pachete de lucru. Livrabil universitar separat; nu schimbă totalurile roadmap-ului și nu marchează teza integrală drept finalizată.
 
 **Progres documentație 12.11.2026:** laboratorul 3 PSI în Word este redactat și verificat pentru Licurici (25 de pagini, 9 diagrame). Este un livrabil universitar separat; nu bifează redactarea integrală a tezei și nu schimbă totalurile roadmap-ului.
 
