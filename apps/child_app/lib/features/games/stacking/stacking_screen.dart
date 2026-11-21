@@ -195,7 +195,7 @@ class _StackingScreenState extends ConsumerState<StackingScreen> {
                 border: Border.all(color: const Color(0xFFE8D9BC), width: 3),
               ),
               alignment: Alignment.center,
-              child: Wrap(
+              child: SingleChildScrollView(child: Wrap(
                 alignment: WrapAlignment.center,
                 spacing: 14,
                 runSpacing: 10,
@@ -211,15 +211,15 @@ class _StackingScreenState extends ConsumerState<StackingScreen> {
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           onTap: () => _pick(r),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: _Ring(width: maxW * r.width, height: ringH, color: color(r)),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(minWidth: 64, minHeight: 64),
+                            child: Center(child: _Ring(width: maxW * r.width, height: ringH, color: color(r))),
                           ),
                         ),
                       ),
                     ),
                 ],
-              ),
+              )),
             ),
           ),
           // Țărușul cu inelele puse.

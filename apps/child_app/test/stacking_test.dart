@@ -57,7 +57,7 @@ void main() {
     expect(saved.levelOf('turnul'), 2);
   });
 
-  for (final (device, level) in [('telefon-mic', 5), ('tableta', 2), ('telefon-mic', 9)]) {
+  for (final (device, level) in [('telefon-mic', 5), ('tableta', 2), ('telefon-mic', 11)]) {
     testWidgets('Turnul: nivelul $level pe $device, o greșeală la primul turn, apoi corect', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -77,17 +77,21 @@ void main() {
         UncontrolledProviderScope(container: container, child: MaterialApp.router(theme: buildTheme(calm: false), routerConfig: router)),
       );
       await settle(tester, 2);
-      if (shots && level != 9) await expectLater(find.byType(StackingScreen), matchesGoldenFile('shots/turnul-$device.png'));
+      if (shots && level != 11) await expectLater(find.byType(StackingScreen), matchesGoldenFile('shots/turnul-$device.png'));
       final l = const StackingGame().generate(level, seed: 2);
       for (final (ti, t) in l.towers.indexed) {
         if (ti == 0) {
           // Inelul cel mai mic, prea devreme: rămâne în tavă.
+          await tester.ensureVisible(find.byKey(ValueKey('ring-${t.size - 1}')));
           await tester.tap(find.byKey(ValueKey('ring-${t.size - 1}')));
           await tester.pump(const Duration(milliseconds: 300));
           expect(find.byKey(ValueKey('ring-${t.size - 1}')), findsOneWidget);
         }
         for (var rank = 0; rank < t.size; rank++) {
-          await tester.tap(find.byKey(ValueKey('ring-$rank')));
+          final ring = find.byKey(ValueKey('ring-$rank'));
+          await tester.ensureVisible(ring);
+          expect(tester.getSize(ring).shortestSide, greaterThanOrEqualTo(64));
+          await tester.tap(ring);
           await tester.pump(const Duration(milliseconds: 150));
         }
         await settle(tester, 10);

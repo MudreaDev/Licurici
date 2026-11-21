@@ -133,7 +133,7 @@ class CauseGame {
   Set<Grade> get grades => Grade.parseCodes('G');
   List<String> get steps => const ['COG1'];
 
-  int countFor(int level) => min(6, level);
+  int countFor(int level) => level >= 10 ? 8 : (level >= 8 ? 7 : min(6, level));
 
   CauseLevel generate(int level, {int? seed}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
@@ -142,7 +142,7 @@ class CauseGame {
     final n = countFor(level);
     final picked = ([...causeObjects]..shuffle(random)).take(n).toList();
     // Așezare pe o grilă de 3 × 2 (sau în mijloc, pentru unul singur), cu mică abatere.
-    final cols = n <= 1 ? 1 : (n <= 2 ? 2 : 3);
+    final cols = n <= 1 ? 1 : (n <= 2 ? 2 : (n <= 6 ? 3 : 4));
     final rows = n <= 3 ? 1 : 2;
     final cells = [for (var i = 0; i < cols * rows; i++) i]..shuffle(random);
     final objects = <CausePlacement>[];

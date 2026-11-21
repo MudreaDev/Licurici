@@ -127,7 +127,7 @@ class ShellGame {
 
   ShellAxes axesFor(int level) => ShellAxes(
         cups: level < 4 ? 2 : (level < 9 ? 3 : 4),
-        swaps: ramp(level, 0, 8, 14).round(),
+        swaps: (level <= 14 ? ramp(level, 0, 8, 14) : ramp(level - 14, 8, 10, 5)).round(),
         swapMs: ramp(level, 900, 450, 14).round(),
       );
 

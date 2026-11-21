@@ -25,6 +25,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
+      container.read(sessionProvider.notifier).start();
       container.read(sortLevelProvider(game.id).notifier).setLevel(12);
       final router = GoRouter(routes: [GoRoute(path: '/', builder: (_, _) => SortScreen(game: game, seed: 3))]);
       await tester.pumpWidget(
@@ -44,6 +45,21 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(game.categories.where((b) => find.text(b.name).evaluate().isNotEmpty), isNotEmpty);
       if (game.id == 'sortam-emotiile') expect(find.byType(DrawnFace), findsWidgets);
+      if (game.id != 'sortam-emotiile') {
+        final level = game.generate(12, seed: 3);
+        expect(level.items, hasLength(20));
+        for (final item in level.items) {
+          final target = find.byKey(ValueKey('sort-item-${item.index}'));
+          await tester.ensureVisible(target);
+          expect(tester.getSize(target).shortestSide, greaterThanOrEqualTo(64));
+          await tester.tap(target);
+          await tester.pump();
+          await tester.tap(find.byKey(ValueKey('sort-bin-${item.binId}')));
+          await tester.pump(const Duration(milliseconds: 150));
+        }
+        await tester.pump(const Duration(seconds: 3));
+        expect(tester.takeException(), isNull);
+      }
       await tester.pumpWidget(const SizedBox());
     });
   }

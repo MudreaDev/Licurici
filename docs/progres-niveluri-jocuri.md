@@ -3,7 +3,7 @@
 Sursa listei: `catalog` din `licurici_core`; `dart run tool/catalog_levels_inventory.dart` generează inventarul.
 O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; o excepție pentru un instrument de comunicare este indicată explicit. Nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
 
-Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg** și **Vorbim** (prima trecere), apoi Gândim, Emoții și prieteni, Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
+Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim** și **Gândim** au fost parcurse; urmează Emoții și prieteni, Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
 
 ## Atenție (ATN) — 6 jocuri
 
@@ -129,17 +129,19 @@ Verificări: generare la nivelurile noi și parcurgere pe telefon simulat; varia
 
 ## Gândim (COG) — 11 jocuri
 
-- [x] Continuă șirul (`continua-sirul`, choice) — de la nivelul 8, modele noi ABAC, ABBC și AABC; verificate prin generare și pe telefon/tabletă simulate.
-- [ ] Anotimpuri (`anotimpuri`, choice)
-- [ ] Unde trăiește? (`habitate`, choice)
-- [ ] Sortăm (`sortam`, sort)
-- [ ] La locul lui (`la-locul-lui`, sort)
-- [ ] Cucu-bau (`cucu-bau`, shell)
-- [ ] Autobuzul lui Licurici (`explorare-stiinte`, explore)
-- [ ] Turnul (`turnul`, stacking)
-- [ ] Atinge și vezi (`atinge-si-vezi`, cause)
-- [ ] Ce urmează? (`ce-urmeaza`, order)
-- [ ] Mare și mic (`mare-mic`, order)
+- [x] Continuă șirul (`continua-sirul`, choice) — modele noi de cinci poziții de la nivelul 10; testat pe telefon/tabletă simulate.
+- [x] Anotimpuri (`anotimpuri`, choice) — 10 runde de la nivelul 9; ecran testat pe telefon/tabletă simulate.
+- [x] Unde trăiește? (`habitate`, choice) — 10 runde de la nivelul 9; ecran testat pe telefon/tabletă simulate.
+- [x] Sortăm (`sortam`, sort) — 20 de obiecte de la nivelul 12, tavă derulabilă și ținte ≥64 dp; parcurs pe telefon mic simulat.
+- [x] La locul lui (`la-locul-lui`, sort) — 20 de obiecte de la nivelul 12, tavă derulabilă și ținte ≥64 dp; parcurs pe telefon mic simulat.
+- [x] Cucu-bau (`cucu-bau`, shell) — până la 10 mutări de la nivelul 18; parcurs pe telefon mic simulat.
+- [x] Autobuzul lui Licurici (`explorare-stiinte`, explore) — exemple noi la fiecare oprire de la nivelul 4; episodul complet parcurs pe telefon mic simulat.
+- [x] Turnul (`turnul`, stacking) — opt inele de la nivelul 11; tavă derulabilă și ținte ≥64 dp pe telefon mic simulat.
+- [x] Atinge și vezi (`atinge-si-vezi`, cause) — până la opt obiecte de la nivelul 10; nivel parcurs pe telefon mic simulat.
+- [x] Ce urmează? (`ce-urmeaza`, order) — 5 runde la nivelul 9 și 6 la 11; nivelul nou parcurs pe telefon mic simulat.
+- [x] Mare și mic (`mare-mic`, order) — 5 runde la nivelul 9 și 6 la 11; nivelul nou parcurs pe telefon mic simulat.
+
+Verificări: generatoarele au teste, iar treptele noi au fost deschise sau parcurse pe dispozitive simulate, după cum este indicat la fiecare joc. Nivelurile au în continuare limite reale; validarea pe dispozitiv și cu specialistul rămâne necesară.
 
 ## Emoții și prieteni (EMO) — 10 jocuri
 

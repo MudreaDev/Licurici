@@ -12,7 +12,8 @@ void main() {
     expect(g.axesFor(6).sameColor, isTrue);
     expect(g.axesFor(8).step, lessThan(g.axesFor(7).step));
     expect(g.axesFor(9).step, lessThan(g.axesFor(8).step));
-    for (var level = 1; level <= 9; level++) {
+    expect(g.axesFor(11).rings, 8);
+    for (var level = 1; level <= 11; level++) {
       for (var seed = 0; seed < 30; seed++) {
         final l = g.generate(level, seed: seed);
         expect(l.towers, hasLength(StackingGame.towers));

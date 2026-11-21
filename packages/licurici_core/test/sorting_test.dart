@@ -23,7 +23,7 @@ void main() {
   test('axele: 2 → 4 grupe, 2 → 4 lucruri pe grupă', () {
     expect(game.axesFor(1).items, 4);
     expect(game.axesFor(5).bins, 3);
-    expect(game.axesFor(12).items, 16);
+    expect(game.axesFor(12).items, 20);
   });
 
   test('o categorie apare într-o singură grupă (nicio ambiguitate)', () {

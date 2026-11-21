@@ -67,7 +67,8 @@ class ExploreEpisode {
   SortLevel levelFor(ExploreStop stop, {int? seed, int level = 1}) {
     final s = seed ?? Random().nextInt(1 << 31);
     final extra = _advancedExploreItems['$id/${stop.id}'] ?? const <(String, String)>[];
-    final items = [...stop.items, if (level >= 3) ...extra]..shuffle(Random(s));
+    final expert = _expertExploreItems['$id/${stop.id}'] ?? const <(String, String)>[];
+    final items = [...stop.items, if (level >= 3) ...extra, if (level >= 4) ...expert]..shuffle(Random(s));
     return SortLevel(
       gameId: id,
       level: level,
@@ -98,6 +99,14 @@ const _advancedExploreItems = <String, List<(String, String)>>{
   'explorare-viata/emotii': [('😀', 'bucuros'), ('😔', 'trist')],
   'explorare-viata/mancare': [('🍐', 'sanatos'), ('🍦', 'rar')],
   'explorare-viata/siguranta': [('📚', 'sigur')],
+};
+
+/// Exemple în plus pentru a doua trecere prin călătoria în natură.
+const _expertExploreItems = <String, List<(String, String)>>{
+  'explorare-stiinte/habitate': [('🐖', 'ferma'), ('🦌', 'padure'), ('🦈', 'ocean')],
+  'explorare-stiinte/anotimpuri': [('🌷', 'primavara'), ('🍦', 'vara'), ('🍇', 'toamna'), ('🎿', 'iarna')],
+  'explorare-stiinte/hrana': [('🍐', 'iepure')],
+  'explorare-stiinte/reciclare': [('🧻', 'hartie'), ('🍊', 'resturi')],
 };
 
 const exploreEpisodes = [

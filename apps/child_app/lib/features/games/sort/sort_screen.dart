@@ -261,7 +261,8 @@ class _SortScreenState extends ConsumerState<SortScreen> {
           .where((i) => !_placed.containsKey(i.index))
           .toList();
       final binH = box.maxHeight * 0.46;
-      final itemSide = math.min(
+      final dense = _level.items.length >= 12;
+      final itemSide = dense ? 64.0 : math.min(
         layout.compact ? 64.0 : 104.0,
         (box.maxHeight - binH) * 0.62,
       );
@@ -275,8 +276,9 @@ class _SortScreenState extends ConsumerState<SortScreen> {
                 if (layout.twoPane)
                   Mascot(size: layout.mascot, mood: _mood, reaction: _reaction),
                 Expanded(
-                  child: Center(
-                    child: Wrap(
+                  child: SingleChildScrollView(
+                    physics: dense ? null : const NeverScrollableScrollPhysics(),
+                    child: Center(child: Wrap(
                       spacing: 14,
                       runSpacing: 10,
                       alignment: WrapAlignment.center,
@@ -296,7 +298,7 @@ class _SortScreenState extends ConsumerState<SortScreen> {
                             ),
                           ),
                       ],
-                    ),
+                    )),
                   ),
                 ),
               ],

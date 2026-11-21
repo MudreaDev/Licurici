@@ -72,6 +72,17 @@ void main() {
       }
     }
   });
+
+  test('șirurile de nivelul 10 repetă modele cu cinci poziții', () {
+    for (var seed = 0; seed < 30; seed++) {
+      final ctx = GameContext(difficulty: const Difficulty(10), grade: Grade.clasa1, random: Random(seed));
+      for (final round in const SirulGame().build(ctx).rounds.skip(2)) {
+        final items = round.visuals.whereType<PatternVisual>().single.items;
+        expect(items.take(5).toSet(), hasLength(4));
+        expect(items.take(5).toList(), items.skip(5).take(5).toList());
+      }
+    }
+  });
   test('potrivirea avansată are șase variante distincte', () {
     for (final game in [const CuloriGame(), const FormeGame(), const PotrivesteGame(), const UmbreGame(), const IntrusulGame(), const ArataMiGame(), const CorpulGame(), const CeFaceGame()]) {
       final ctx = GameContext(difficulty: const Difficulty(8), grade: Grade.clasa1, random: Random(42));
@@ -93,7 +104,7 @@ void main() {
               random: Random(seed),
             );
             final lesson = game.build(ctx);
-            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 12 ? 3 : (tier >= 10 ? 4 : 5)) : ({'intrusul', 'culori', 'forme', 'mingea-rosie', 'unde-e-ursul', 'da-nu'}.contains(game.id) && tier >= 10 || game.id == 'pozitii' && tier >= 11 || game.id == 'ce-ai-auzit' && tier >= 12) ? 10 : ctx.difficulty.roundCount));
+            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 12 ? 3 : (tier >= 10 ? 4 : 5)) : ({'intrusul', 'culori', 'forme', 'mingea-rosie', 'unde-e-ursul', 'da-nu'}.contains(game.id) && tier >= 10 || {'anotimpuri', 'habitate'}.contains(game.id) && tier >= 9 || game.id == 'pozitii' && tier >= 11 || game.id == 'ce-ai-auzit' && tier >= 12) ? 10 : ctx.difficulty.roundCount));
             for (final r in lesson.rounds) {
               expect(r.choices.where((c) => c.correct), hasLength(1));
               // Variantele fixe (ex. grupele din „Comparăm”, Da/Nu) nu se taie după tier.

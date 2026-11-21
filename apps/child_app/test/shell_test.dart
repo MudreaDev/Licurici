@@ -12,7 +12,7 @@ import 'praise_finders.dart';
 void main() {
   for (final (size, levelNo) in const [
     (Size(1280, 800), 6),
-    (Size(640, 360), 12),
+    (Size(640, 360), 19),
   ]) {
     testWidgets(
       'Cucu-bau ${size.width.toInt()}×${size.height.toInt()} nivel $levelNo: '

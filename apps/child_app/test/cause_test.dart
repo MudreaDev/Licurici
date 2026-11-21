@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 6), ('tableta', 1)]) {
+  for (final (device, level) in [('telefon-mic', 10), ('tableta', 1)]) {
     testWidgets('atinge și vezi: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,6 +49,12 @@ void main() {
       );
       await settle(tester, 2);
       final l = const CauseGame().generate(level, seed: 4);
+      if (level == 10) {
+        expect(l.objects, hasLength(8));
+        for (var i = 0; i < l.objects.length; i++) {
+          expect(tester.getSize(find.byKey(ValueKey('cause-object-$i'))).shortestSide, greaterThanOrEqualTo(64));
+        }
+      }
       // O atingere pe lângă (colțul de sus), apoi 10 pe obiecte, pe rând.
       final field = tester.getRect(find.byKey(const ValueKey('cause-field')));
       await tester.tapAt(field.topLeft + const Offset(4, 4));

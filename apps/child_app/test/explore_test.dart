@@ -22,12 +22,12 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, startLevel, repeats) in [('telefon-mic', 1, 1), ('tableta', 1, null), ('telefon-mic', 3, 1)]) {
+  for (final (device, startLevel, repeats, episodeId) in [('telefon-mic', 1, 1, 'explorare-istorie'), ('tableta', 1, null, 'explorare-istorie'), ('telefon-mic', 3, 1, 'explorare-istorie'), ('telefon-mic', 4, 1, 'explorare-stiinte')]) {
     testWidgets('explorare: harta, opririle și finalul ($device, nivel $startLevel)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
-      final episode = exploreEpisodeById('explorare-istorie')!;
+      final episode = exploreEpisodeById(episodeId)!;
       var settings = AppSettings(levelRepeats: repeats, levels: {episode.id: startLevel});
       final container = ProviderContainer(overrides: [
         voiceProvider.overrideWithValue(const SilentSpeaker()),
@@ -59,6 +59,7 @@ void main() {
         final level = tester.widget<SortScreen>(find.byType(SortScreen)).preset!;
         expect(level.level, startLevel);
         for (final it in level.items) {
+          if (level.items.length >= 12) await tester.ensureVisible(find.byKey(ValueKey('sort-item-${it.index}')));
           await tester.tap(find.byKey(ValueKey('sort-item-${it.index}')));
           await tester.pump();
           await tester.tap(find.byKey(ValueKey('sort-bin-${it.binId}')));
@@ -80,7 +81,7 @@ void main() {
       final expected = episode.stops.fold<int>(0, (n, s) => n + episode.levelFor(s, level: startLevel).items.length);
       expect(trials, hasLength(expected));
       expect(container.read(settingsProvider).levels[episode.id], startLevel + 1);
-      expect(trials.every((t) => t.stepId == 'PAC-I4' && t.correct), isTrue);
+      expect(trials.every((t) => t.stepId == (episodeId == 'explorare-stiinte' ? 'COG9' : 'PAC-I4') && t.correct), isTrue);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 3));

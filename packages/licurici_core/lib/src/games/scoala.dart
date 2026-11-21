@@ -110,11 +110,14 @@ class AnotimpuriGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Alege anotimpul potrivit.',
         rounds: [
-          for (var i = 0; i < 8; i++) _round(ctx),
+          for (var i = 0; i < (ctx.difficulty.tier >= 9 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx),
         ],
       );
 
@@ -149,11 +152,14 @@ class HabitateGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Unde trăiește animalul?',
         rounds: [
-          for (var i = 0; i < 8; i++) _round(ctx),
+          for (var i = 0; i < (ctx.difficulty.tier >= 9 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx),
         ],
       );
 

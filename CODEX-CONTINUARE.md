@@ -59,6 +59,9 @@ pe pași, în ordine.
 
 ### Continuare 19.11.2026
 
+- Prima trecere prin Gândim este implementată pentru toate cele 11 jocuri; evidența detaliată este în `docs/progres-niveluri-jocuri.md`. Include opt inele în Turnul (tavă derulabilă, ținte ≥64 dp), două sortări cu 20 de obiecte și exemple noi în Autobuzul lui Licurici. Urmează Emoții și prieteni, în ordinea secțiunilor. Modificările sunt ulterioare APK-ului 0.1.3.
+- Verificări Gândim, reluate la 21.11: 672 teste nucleu, 487 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme. Testarea fizică și validarea cu specialistul rămân deschise.
+
 - A doua trecere Vorbim: 6 jocuri au trepte noi, detaliate individual în `docs/progres-niveluri-jocuri.md`; AAC rămâne disponibil integral fără dificultate obligatorie. Memoria cu sunete are 9 perechi, cartonașe ≥64 dp și derulare; propozițiile au 5 distractori și tavă derulabilă. Urmează Gândim. Aceste modificări sunt ulterioare versiunii 0.1.3.
 - Verificări Vorbim: 670 teste nucleu, 480 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme, acoperire vocală 2883/2883.
 

@@ -52,4 +52,15 @@ void main() {
       }
     }
   });
+
+  test('călătoria în natură are exemple noi la fiecare oprire la nivelul 4', () {
+    final episode = exploreEpisodeById('explorare-stiinte')!;
+    for (final stop in episode.stops) {
+      final basic = episode.levelFor(stop, seed: 1, level: 3);
+      final expert = episode.levelFor(stop, seed: 1, level: 4);
+      expect(expert.items.length, greaterThan(basic.items.length));
+      expect(expert.items.map((item) => item.emoji).toSet(), hasLength(expert.items.length));
+      expect(expert.items.every((item) => stop.bins.any((bin) => bin.id == item.binId)), isTrue);
+    }
+  });
 }

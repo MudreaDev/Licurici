@@ -101,7 +101,7 @@ class StackingGame {
   static const towers = 3;
 
   StackingAxes axesFor(int level) => StackingAxes(
-        rings: min(7, 2 + level),
+        rings: level >= 11 ? 8 : min(7, 2 + level),
         step: level <= 7 ? max(0.09, 0.2 - 0.02 * (level - 1)) : max(0.07, 0.09 - 0.01 * (level - 7)),
         sameColor: level >= 6,
       );

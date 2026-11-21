@@ -18,6 +18,7 @@ void main() {
     expect(game.axesFor(1).cups, 2);
     expect(game.axesFor(1).swaps, 0);
     expect(game.axesFor(14).swaps, 8);
+    expect(game.axesFor(19).swaps, 10);
     expect(game.axesFor(14).cups, 4);
     for (var l = 1; l <= 20; l++) {
       final level = game.generate(l, seed: l);
