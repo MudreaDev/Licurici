@@ -134,7 +134,7 @@ class StopSignalGame {
   List<String> get steps => const ['FEX2c'];
 
   StopAxes axesFor(int level) => StopAxes(
-        count: min(32, 14 + 2 * level),
+        count: level >= 13 ? 36 : (level >= 11 ? 34 : min(32, 14 + 2 * level)),
         stopRatio: min(0.3, 0.2 + 0.0125 * (level - 1)),
         windowMs: max(900, 1600 - 90 * (level - 1)),
         startSsdMs: 250,

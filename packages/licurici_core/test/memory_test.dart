@@ -17,11 +17,12 @@ void main() {
   test('axele: 2 → 10 perechi, apoi doar animale (mai asemănătoare)', () {
     expect(game.axesFor(1).pairs, 2);
     expect(game.axesFor(13).pairs, 10);
-    expect(game.axesFor(40).pairs, 10);
+    expect(game.axesFor(15).pairs, 11);
+    expect(game.axesFor(40).pairs, 12);
     expect(game.axesFor(1).similar, isFalse);
     expect(game.axesFor(8).similar, isTrue);
     // Grila e mereu landscape: cel puțin la fel de lată cât de înaltă.
-    for (var l = 1; l <= 13; l++) {
+    for (var l = 1; l <= 17; l++) {
       final ax = game.axesFor(l);
       final rows = (ax.pairs * 2 / ax.columns).ceil();
       expect(ax.columns, greaterThanOrEqualTo(rows), reason: 'nivelul $l');

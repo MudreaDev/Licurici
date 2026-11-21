@@ -87,6 +87,8 @@ class DelayGame {
   /// Câte oferte pe nivel.
   static const count = 4;
 
+  int countFor(int level) => level >= 13 ? 6 : (level >= 11 ? 5 : count);
+
   /// Cât se așteaptă la [level] (5 s → 30 s la nivelul 9).
   int waitMsFor(int level) => min(30000, 5000 + 3125 * (level - 1));
 
@@ -104,7 +106,7 @@ class DelayGame {
       seed: s,
       offers: [
         // Puțină variație (±15%), ca durata să nu fie învățată pe de rost.
-        for (var i = 0; i < count; i++)
+        for (var i = 0; i < countFor(level); i++)
           DelayOffer(waitMs: (base * (0.85 + random.nextDouble() * 0.3)).round(), later: laterFor(level)),
       ],
     );

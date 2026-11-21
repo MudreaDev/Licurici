@@ -380,7 +380,7 @@ class PescarulGame extends ReactionGame {
 
   @override
   ReactionAxes axesFor(int level) => ReactionAxes(
-        count: ramp(level, 10, 20, 11).round(),
+        count: (level <= 16 ? ramp(level, 10, 20, 11) : ramp(level - 16, 20, 24, 5)).round(),
         gapMs: ramp(level, 1600, 700, 16).round(),
         visibleMs: ramp(level, 2200, 900, 16).round(),
         noGoRatio: ramp(level, 0.1, 0.4, 16),

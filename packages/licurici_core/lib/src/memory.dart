@@ -142,7 +142,7 @@ class MemoryGame {
   List<String> get steps => const ['FEX5'];
 
   MemoryAxes axesFor(int level) => MemoryAxes(
-        pairs: ramp(level, 2, 10, 13).round(),
+        pairs: level >= 17 ? 12 : (level >= 15 ? 11 : ramp(level, 2, 10, 13).round()),
         similar: level >= 8,
       );
 

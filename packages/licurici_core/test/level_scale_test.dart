@@ -56,9 +56,9 @@ final Map<String, String Function(int)> axesSignature = {
     final a = const PuzzleGame().axesFor(l);
     return '${a.cols} ${a.rows} ${a.model}';
   },
-  'labirint': (l) => '${const MazeGame().sizeFor(l)}',
+  'labirint': (l) => '${const MazeGame().sizeFor(l)} ${const MazeGame().roundsFor(l)}',
   'linia-numerelor': (l) => '${const NumberLineGame().axesFor(l).toJson()}',
-  'acum-sau-mai-mult': (l) => '${const DelayGame().waitMsFor(l)} ${const DelayGame().laterFor(l)}',
+  'acum-sau-mai-mult': (l) => '${const DelayGame().waitMsFor(l)} ${const DelayGame().laterFor(l)} ${const DelayGame().countFor(l)}',
   'adu-mi': (l) => '${const FetchGame().axesFor(l).toJson()}',
   'pune-ursul': (l) => '${const PlaceGame().axesFor(l).toJson()}',
   'oglinda': (l) => '${const MirrorGame().axesFor(l).toJson()}',
@@ -145,8 +145,8 @@ void main() {
 
     test('același punct relativ pe scară = aceeași dificultate, indiferent de joc', () {
       // Aceleași puncte relative pe două scări cu număr diferit de niveluri.
-      expect(const LevelScale(7).difficultyOf(4), scaleFor('simon').difficultyOf(13));
-      expect(scaleFor('construieste').difficultyOf(14), scaleFor('simon').difficultyOf(25));
+      expect(const LevelScale(10).difficultyOf(4), scaleFor('simon').difficultyOf(10));
+      expect(scaleFor('construieste').difficultyOf(14), scaleFor('simon').difficultyOf(28));
     });
   });
 
@@ -188,7 +188,7 @@ void main() {
           level: level,
           at: DateTime.utc(2026),
         );
-    expect(t('construieste', 14).ratingDifficulty, t('simon', 25).ratingDifficulty);
+    expect(t('construieste', 14).ratingDifficulty, t('simon', 28).ratingDifficulty);
     expect(t('simon', 7).ratingDifficulty, lessThan(t('construieste', 14).ratingDifficulty));
     expect(t('ceasul', 7).ratingDifficulty, lessThan(t('ceasul', 8).ratingDifficulty));
   });

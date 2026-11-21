@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 9), ('tableta', 9)]) {
+  for (final (device, level) in [('telefon-mic', 9), ('tableta', 9), ('telefon-mic', 13)]) {
     testWidgets('labirint: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,7 +49,7 @@ void main() {
       );
       await settle(tester, 2);
       final l = const MazeGame().generate(level, seed: 2);
-      if (shots) {
+      if (shots && level == 9) {
         await expectLater(
           find.byType(MazeScreen),
           matchesGoldenFile('shots/labirint-$device.png'),
@@ -75,7 +75,7 @@ void main() {
       await settle(tester, 3);
       expect(find.byType(RewardFinish), findsOneWidget);
       final trials = container.read(sessionProvider)!.trials;
-      expect(trials, hasLength(3));
+      expect(trials, hasLength(l.mazes.length));
       expect(trials.every((t) => t.correct && t.offTargetTaps == 0), isTrue);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());

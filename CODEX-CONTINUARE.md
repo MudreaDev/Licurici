@@ -38,6 +38,9 @@ pe pași, în ordine.
 
 ### Continuare 21.11.2026
 
+- Memorie și răbdare: 11 jocuri extinse și activitatea liberă „Respiră” revizuită. Detalii individuale în `docs/progres-niveluri-jocuri.md`: până la 11 pași în secvențe și 12 perechi pe grilă derulabilă, printre altele. Generatoarele și nivelurile noi au fost testate pe ecrane simulate; pe dispozitiv fizic și cu specialistul rămâne de verificat. Urmează Singur.
+- Verificări Memorie și răbdare: 675 teste nucleu, 518 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
+
 - Emoții și prieteni: toate cele 10 jocuri au fost abordate, cu trepte individuale în `docs/progres-niveluri-jocuri.md`. Opt jocuri cu alegere ajung la 10 runde, iar două au și variante suplimentare; Sortăm emoțiile are 20 de fețe, iar Rândul meu are trei turnuri. Exercițiul mai lung nu înseamnă un concept emoțional nou. Generatoarele și ecranele au teste; pe dispozitiv fizic și cu specialistul rămâne de verificat. Acoperirea vocală este 2883/2883. Urmează Memorie și răbdare.
 - Verificări Emoții și prieteni: 675 teste nucleu, 505 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
 

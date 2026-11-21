@@ -11,15 +11,16 @@ import 'praise_finders.dart';
 
 void main() {
   for (final size in const [Size(1280, 800), Size(640, 360)]) {
+    for (final difficulty in [1, 17]) {
     testWidgets(
-      'Perechi ${size.width.toInt()}×${size.height.toInt()}: o pereche greșită se întoarce, '
+      'Perechi ${size.width.toInt()}×${size.height.toInt()}, nivel $difficulty: o pereche greșită se întoarce, '
       'jocul se termină cu stele',
       (tester) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
         const seed = 11;
-        final level = const MemoryGame().generate(1, seed: seed);
+        final level = const MemoryGame().generate(difficulty, seed: seed);
         final container = ProviderContainer(
           overrides: [
             voiceProvider.overrideWithValue(const SilentSpeaker()),
@@ -28,6 +29,7 @@ void main() {
         );
         addTearDown(container.dispose);
         container.read(sessionProvider.notifier).start();
+        container.read(memoryLevelProvider.notifier).setLevel(difficulty);
         final router = GoRouter(
           routes: [
             GoRoute(
@@ -61,7 +63,10 @@ void main() {
           await tester.pump(const Duration(milliseconds: 100));
         }
         Future<void> tap(int i) async {
-          await tester.tap(find.byKey(ValueKey('memory-card-$i')));
+          final card = find.byKey(ValueKey('memory-card-$i'));
+          await tester.ensureVisible(card);
+          expect(tester.getSize(card).shortestSide, greaterThanOrEqualTo(64));
+          await tester.tap(card);
           await tester.pump();
         }
 
@@ -97,5 +102,6 @@ void main() {
         await tester.pump(const Duration(seconds: 3));
       },
     );
+    }
   }
 }

@@ -118,7 +118,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (game, level) in [(const _SeededFirefly(), 23), (const _SeededLighthouse(), 20)]) {
+  for (final (game, level) in [(const _SeededPond(), 21), (const _SeededFirefly(), 23), (const _SeededLighthouse(), 20)]) {
     testWidgets('${game.id}: nivel avansat pe telefon mic', (tester) async {
       await _open(tester, game, size: const Size(640, 360), initialLevel: level);
       await _begin(tester);

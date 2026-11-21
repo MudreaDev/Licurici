@@ -180,7 +180,9 @@ class SwitchGame {
         5 || 6 => const SwitchAxes(blocks: 3, perBlock: 4, mixed: false),
         7 || 8 => const SwitchAxes(blocks: 1, perBlock: 12, mixed: true, minSwitches: 4),
         9 => const SwitchAxes(blocks: 1, perBlock: 12, mixed: true, minSwitches: 6),
-        _ => const SwitchAxes(blocks: 1, perBlock: 12, mixed: true, minSwitches: 8),
+        10 || 11 => const SwitchAxes(blocks: 1, perBlock: 12, mixed: true, minSwitches: 8),
+        12 || 13 => const SwitchAxes(blocks: 1, perBlock: 14, mixed: true, minSwitches: 9),
+        _ => const SwitchAxes(blocks: 1, perBlock: 16, mixed: true, minSwitches: 10),
       };
 
   /// Rostit când începe un bloc (sau, la regula amestecată, la începutul jocului).

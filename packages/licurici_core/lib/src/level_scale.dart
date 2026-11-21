@@ -51,14 +51,14 @@ const extendedChoiceGames = {
 /// un joc cu alegere). Jocurile fără niveluri (creație, AAC, respirație) nu produc rating.
 const gameScales = <String, LevelScale>{
   // reacție
-  'pescarul': LevelScale(16), // viteza și proporția no-go cresc până la 16
+  'pescarul': LevelScale(21), // până la 24 de apariții
   'prinde-licuriciul': LevelScale(23), // până la 22 de apariții pentru atenția susținută
   'paznicul-farului': LevelScale(20), // distractori mai frecvenți, apoi apariții mai scurte
   // secvențe
-  'simon': LevelScale(25), // span 9 și fără sunet de la 25
-  'licuricii': LevelScale(22), // secvențe de până la 9 pași
+  'simon': LevelScale(28), // secvențe de până la 11 pași
+  'licuricii': LevelScale(28), // secvențe de până la 11 pași
   // memorie, sortare, căutare
-  'perechi': LevelScale(13),
+  'perechi': LevelScale(17),
   'sortam': LevelScale(12),
   'la-locul-lui': LevelScale(12),
   'sortam-emotiile': LevelScale(12),
@@ -71,25 +71,25 @@ const gameScales = <String, LevelScale>{
   'construieste': LevelScale(14),
   'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
   'atinge-rapid': LevelScale(9), // bula de 0,07 la 9 (distanța se oprește la 9)
-  'stop': LevelScale(9), // 32 de încercări, 30% opriri, fereastra de 0,9 s la 9
+  'stop': LevelScale(13), // 36 de încercări, 30% opriri
   'turnul': LevelScale(11), // 8 inele la 11, diferența minimă la 9
   'adu-mi': LevelScale(10), // șase obiecte pe masă, până la patru cerute
   'pune-ursul': LevelScale(9), // până la patru obiecte și poziții într-o cerere
   'oglinda': LevelScale(14), // până la șapte atingeri în secvență
   'memorie-sunete': LevelScale(13), // până la 9 perechi
   'coloreaza-ce-auzi': LevelScale(11), // până la patru obiecte și culori
-  'acum-sau-mai-mult': LevelScale(9), // 30 s de așteptare pentru 2 stele la 9
+  'acum-sau-mai-mult': LevelScale(13), // până la 6 oferte
   'puzzle': LevelScale(15), // 6 × 4 fără model la 15
-  'labirint': LevelScale(9), // 10 × 6 la 9
+  'labirint': LevelScale(13), // până la cinci labirinturi 10 × 6
   // atenție comună, imitație, ritm
   'unde-se-uita': LevelScale(10),
   'fa-ca-licuriciul': LevelScale(13),
   'toba-magica': LevelScale(17),
   'urmareste-pestele': LevelScale(20),
   // funcții executive
-  'regula-se-schimba': LevelScale(10),
-  'semaforul': LevelScale(10),
-  'floarea-creste': LevelScale(10),
+  'regula-se-schimba': LevelScale(14),
+  'semaforul': LevelScale(14),
+  'floarea-creste': LevelScale(14),
   'pe-rand': LevelScale(14),
   // limbaj
   'asculta-si-fa': LevelScale(15),
@@ -118,4 +118,4 @@ const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
 LevelScale scaleFor(String gameId) => gameScales[gameId] ??
     (gameId == 'forma-ascunsa' ? const LevelScale(14) : (gameId == 'povesti' || gameId == 'ce-ai-auzit') ? const LevelScale(12) : (gameId == 'potriveste' || gameId == 'intrusul' || gameId == 'umbre' || gameId == 'culori' || gameId == 'forme' || gameId == 'arata-mi' || gameId == 'corpul' || gameId == 'ce-face' || gameId == 'mingea-rosie' || gameId == 'unde-e-ursul' || gameId == 'primul-sunet' || gameId == 'da-nu' || gameId == 'ce-se-aude' || gameId == 'continua-sirul') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(11) :
-    ({'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii'}.contains(gameId) ? const LevelScale(10) : {'anotimpuri', 'habitate'}.contains(gameId) ? const LevelScale(9) : (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale)));
+    ({'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii'}.contains(gameId) ? const LevelScale(10) : {'anotimpuri', 'habitate', 'peste-in-mijloc'}.contains(gameId) ? const LevelScale(9) : (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale)));

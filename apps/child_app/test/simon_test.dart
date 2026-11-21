@@ -86,11 +86,11 @@ Future<void> _close(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('secvența avansată are nouă pași și poate fi parcursă', (tester) async {
+  testWidgets('secvența avansată are unsprezece pași și poate fi parcursă', (tester) async {
     final game = _Game();
-    await _open(tester, game, level: 22, size: const Size(640, 360));
+    await _open(tester, game, level: 28, size: const Size(640, 360));
     final level = game.levels.last;
-    expect(level.sequence, hasLength(9));
+    expect(level.sequence, hasLength(11));
     await _watch(tester, level);
     for (final index in level.expected) {
       await _tap(tester, index);

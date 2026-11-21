@@ -5,7 +5,7 @@ void main() {
   const g = StopSignalGame();
 
   test('opririle: exact proporția, nu la început, niciodată două la rând', () {
-    for (var level = 1; level <= 12; level++) {
+    for (var level = 1; level <= 13; level++) {
       for (var seed = 0; seed < 50; seed++) {
         final l = g.generate(level, seed: seed);
         expect(l.stops, hasLength(l.axes.count));
@@ -18,6 +18,7 @@ void main() {
       }
     }
     expect(g.axesFor(1).windowMs, greaterThan(g.axesFor(9).windowMs));
+    expect(g.axesFor(13).count, 36);
   });
 
   test('scara: oprire reușită → semnalul mai târziu; ratată → mai devreme; în limite', () {

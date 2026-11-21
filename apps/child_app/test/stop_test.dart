@@ -19,13 +19,14 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final device in ['telefon-mic', 'tableta']) {
-    testWidgets('Stop!: atinge la verde, se oprește la roșu ($device)', (tester) async {
+  for (final (device, difficulty) in [('telefon-mic', 1), ('tableta', 1), ('telefon-mic', 13)]) {
+    testWidgets('Stop!: atinge la verde, se oprește la roșu ($device, nivel $difficulty)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       final container = ProviderContainer(overrides: [voiceProvider.overrideWithValue(const SilentSpeaker())]);
       addTearDown(container.dispose);
+      container.read(stopLevelProvider.notifier).setLevel(difficulty);
       final router = GoRouter(
         initialLocation: '/s',
         routes: [
@@ -43,7 +44,7 @@ void main() {
       await settle(tester, 2);
       await tester.tap(find.byKey(const ValueKey('stop-ready')));
       await tester.pump();
-      final level = const StopSignalGame().generate(1, seed: 3);
+      final level = const StopSignalGame().generate(difficulty, seed: 3);
       final lantern = find.byKey(const ValueKey('stop-lantern'));
       String label() => tester.getSemantics(lantern).label;
       final handle = tester.ensureSemantics();
@@ -52,7 +53,7 @@ void main() {
         for (var k = 0; k < 40 && label().contains('stins'); k++) {
           await tester.pump(const Duration(milliseconds: 50));
         }
-        if (shots && i == 0) await expectLater(find.byType(StopScreen), matchesGoldenFile('shots/stop-$device.png'));
+        if (shots && i == 0 && difficulty == 1) await expectLater(find.byType(StopScreen), matchesGoldenFile('shots/stop-$device.png'));
         if (level.stops[i]) {
           // Încercare cu oprire: așteaptă roșul și nu atinge.
           await tester.pump(Duration(milliseconds: level.axes.windowMs + 50));

@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 8), ('tableta', 3), ('telefon-mic', 10)]) {
+  for (final (device, level) in [('telefon-mic', 8), ('tableta', 3), ('telefon-mic', 10), ('telefon-mic', 14)]) {
     testWidgets('regula se schimbă: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,7 +49,7 @@ void main() {
       );
       final l = const SwitchGame().generate(level, seed: 6);
       await tester.pump(const Duration(milliseconds: 1800));
-      if (shots && level != 10) {
+      if (shots && level != 10 && level != 14) {
         await expectLater(
           find.byType(SwitchScreen),
           matchesGoldenFile('shots/regula-$device.png'),

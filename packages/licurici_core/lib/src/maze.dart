@@ -203,6 +203,8 @@ class MazeGame {
   /// Coloane × rânduri: 3 × 2 la început, până la 10 × 6 (nivelul 9).
   (int, int) sizeFor(int level) => (min(10, 2 + level), min(6, 1 + (level + 1) ~/ 2));
 
+  int roundsFor(int level) => level >= 13 ? 5 : (level >= 11 ? 4 : 3);
+
   MazeLevel generate(int level, {int? seed}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
     final s = seed ?? Random().nextInt(1 << 31);
@@ -212,7 +214,7 @@ class MazeGame {
       gameId: id,
       level: level,
       seed: s,
-      mazes: [for (var i = 0; i < 3; i++) Maze.generate(cols, rows, random)],
+      mazes: [for (var i = 0; i < roundsFor(level); i++) Maze.generate(cols, rows, random)],
     );
   }
 }

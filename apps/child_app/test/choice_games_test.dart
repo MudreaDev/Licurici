@@ -42,6 +42,7 @@ void main() {
       for (final game in allGames.where((game) => game.id == 'ce-se-aude')) (game, 10),
       for (final game in allGames.where((game) => {'anotimpuri', 'habitate'}.contains(game.id))) (game, 9),
       for (final game in allGames.where((game) => {'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii'}.contains(game.id))) (game, 10),
+      for (final game in allGames.where((game) => game.id == 'peste-in-mijloc')) (game, 9),
     ]) {
       testWidgets('${game.id} pe $device, nivel $level', (tester) async {
         tester.view.physicalSize = devices[device]!;

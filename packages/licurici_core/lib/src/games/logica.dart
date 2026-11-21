@@ -112,12 +112,15 @@ class PesteInMijlocGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final n = tier <= 1 ? 1 : (tier <= 3 ? 3 : 5);
     final incongruentShare = tier <= 1 ? 0.0 : (tier <= 3 ? 0.25 : 0.5);
     // Exact câte runde cere tier-ul, ca tăierea să nu strice proporția congruent / incongruent.
-    final rounds = ctx.difficulty.roundCount;
+    final rounds = tier >= 9 ? 10 : ctx.difficulty.roundCount;
     final incongruent = (rounds * incongruentShare).round();
     final kinds = [for (var i = 0; i < rounds; i++) i < incongruent]..shuffle(ctx.random);
     return Lesson(

@@ -152,7 +152,7 @@ class WaitGame {
   List<String> get steps => const ['FEX1'];
 
   WaitAxes axesFor(int level) => WaitAxes(
-        trials: ramp(level, 5, 8, 8).round(),
+        trials: level >= 14 ? 12 : (level >= 12 ? 10 : ramp(level, 5, 8, 8).round()),
         minWaitMs: ramp(level, 1000, 2500, 10).round(),
         maxWaitMs: ramp(level, 2000, 6000, 10).round(),
         flickers: level < 4 ? 0 : (level < 7 ? 1 : (level < 10 ? 2 : 3)),

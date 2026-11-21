@@ -20,13 +20,14 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final device in ['telefon-mic', 'tableta']) {
-    testWidgets('Acum sau mai mult?: așteaptă, renunță, alege acum; stelele intră în pușculiță ($device)', (tester) async {
+  for (final (device, difficulty) in [('telefon-mic', 1), ('tableta', 1), ('telefon-mic', 13)]) {
+    testWidgets('Acum sau mai mult?: așteaptă, renunță, alege acum ($device, nivel $difficulty)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       final container = ProviderContainer(overrides: [voiceProvider.overrideWithValue(const SilentSpeaker())]);
       addTearDown(container.dispose);
+      container.read(delayLevelProvider.notifier).setLevel(difficulty);
       final router = GoRouter(
         initialLocation: '/d',
         routes: [
@@ -43,8 +44,8 @@ void main() {
       );
       await settle(tester, 2);
       final before = container.read(settingsProvider).stars;
-      if (shots) await expectLater(find.byType(DelayScreen), matchesGoldenFile('shots/acum-sau-mai-mult-$device.png'));
-      final level = const DelayGame().generate(1, seed: 1);
+      if (shots && difficulty == 1) await expectLater(find.byType(DelayScreen), matchesGoldenFile('shots/acum-sau-mai-mult-$device.png'));
+      final level = const DelayGame().generate(difficulty, seed: 1);
       final now = find.byKey(const ValueKey('delay-now')), later = find.byKey(const ValueKey('delay-later'));
       // 1. Așteaptă până la capăt.
       await tester.tap(later);
@@ -58,15 +59,15 @@ void main() {
       await tester.tap(now);
       await settle(tester, 10);
       // 3. și 4. Acum.
-      for (var i = 0; i < 2; i++) {
+      for (var i = 0; i < level.offers.length - 2; i++) {
         await tester.tap(now);
         await settle(tester, 10);
       }
       expect(find.text('Încă o dată'), findsOneWidget);
       final trials = container.read(sessionProvider)!.trials;
-      expect([for (final t in trials) t.stimulusId], ['asteapta', 'a-renuntat', 'acum', 'acum']);
+      expect([for (final t in trials) t.stimulusId], ['asteapta', 'a-renuntat', for (var i = 0; i < level.offers.length - 2; i++) 'acum']);
       // 3 stele pentru așteptare + 3 × 1, plus stelele de la final.
-      expect(container.read(settingsProvider).stars, greaterThanOrEqualTo(before + 6));
+      expect(container.read(settingsProvider).stars, greaterThanOrEqualTo(before + level.offers.first.later + level.offers.length - 1));
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 10));
     });

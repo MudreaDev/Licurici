@@ -64,6 +64,7 @@ void main() {
     expect(g.sizeFor(7), (9, 5));
     expect(g.sizeFor(9), (10, 6));
     expect(g.sizeFor(30), (10, 6));
+    expect(g.generate(13, seed: 1).mazes, hasLength(5));
     final l = g.generate(3, seed: 1);
     expect(l.mazes, hasLength(3));
     final rec = SessionRecorder(childId: 'c')

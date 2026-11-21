@@ -22,13 +22,14 @@ class _Game extends SpatialSpanGame {
 
 void main() {
   for (final device in ['telefon-mic', 'tableta']) {
-    testWidgets('licuricii din grădină: florile împrăștiate, aceeași ordine, nivelul crește ($device)', (tester) async {
+    for (final difficulty in [4, 28]) {
+    testWidgets('licuricii din grădină: florile împrăștiate, nivelul crește ($device, $difficulty)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       final game = _Game();
       final router = GoRouter(
-        routes: [GoRoute(path: '/', builder: (_, _) => SimonScreen(game: game, initialLevel: 4))],
+        routes: [GoRoute(path: '/', builder: (_, _) => SimonScreen(game: game, initialLevel: difficulty))],
       );
       addTearDown(router.dispose);
       await tester.pumpWidget(
@@ -60,7 +61,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 450));
       for (var k = 0; k < level.sequence.length; k++) {
         await tester.pump(Duration(milliseconds: level.axes.onMs ~/ 2));
-        if (k == 0 && shots) await expectLater(find.byType(SimonScreen), matchesGoldenFile('shots/licuricii-$device.png'));
+        if (k == 0 && shots && difficulty == 4) await expectLater(find.byType(SimonScreen), matchesGoldenFile('shots/licuricii-$device.png'));
         await tester.pump(Duration(milliseconds: level.axes.onMs - level.axes.onMs ~/ 2));
         await tester.pump(Duration(milliseconds: level.axes.gapMs));
       }
@@ -71,10 +72,11 @@ void main() {
       }
       expect(findPraise(), findsOneWidget);
       await tester.pump(const Duration(seconds: 1));
-      expect(game.levels.last.level, 5);
+      expect(game.levels.last.level, difficulty + 1);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump();
     });
+    }
   }
 }

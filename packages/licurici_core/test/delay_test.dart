@@ -11,6 +11,8 @@ void main() {
     expect(g.laterFor(6), 2);
     final l = g.generate(3, seed: 1);
     expect(l.offers, hasLength(DelayGame.count));
+    expect(g.generate(11, seed: 1).offers, hasLength(5));
+    expect(g.generate(13, seed: 1).offers, hasLength(6));
     for (final o in l.offers) {
       expect(o.waitMs, inInclusiveRange(g.waitMsFor(3) * 0.85, g.waitMsFor(3) * 1.15));
     }

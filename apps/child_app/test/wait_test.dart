@@ -21,9 +21,9 @@ void main() {
   });
 
   for (final game in waitGames) {
-    for (final device in ['telefon-mic', 'tableta']) {
+    for (final (device, difficulty) in [('telefon-mic', 5), ('tableta', 5), ('telefon-mic', 14)]) {
       testWidgets(
-        '${game.id}: prea devreme se numără, la semnal e corect ($device)',
+        '${game.id}: prea devreme se numără, la semnal e corect ($device, nivel $difficulty)',
         (tester) async {
           tester.view.physicalSize = devices[device]!;
           tester.view.devicePixelRatio = 1;
@@ -32,7 +32,7 @@ void main() {
             overrides: [voiceProvider.overrideWithValue(const SilentSpeaker())],
           );
           addTearDown(container.dispose);
-          container.read(waitLevelProvider(game.id).notifier).setLevel(5);
+          container.read(waitLevelProvider(game.id).notifier).setLevel(difficulty);
           final router = GoRouter(
             initialLocation: '/s',
             routes: [
@@ -57,7 +57,7 @@ void main() {
             ),
           );
           await settle(tester, 2);
-          final level = game.generate(5, seed: 2);
+          final level = game.generate(difficulty, seed: 2);
           final field = find.byKey(const ValueKey('wait-field'));
           // Instrucțiunea, apoi prima încercare.
           await tester.pump(const Duration(milliseconds: 2600));
@@ -70,7 +70,7 @@ void main() {
               await tester.pump(Duration(milliseconds: t.waitMs + 50));
             }
             expect(find.text('Acum!'), findsOneWidget);
-            if (shots && i == 0) {
+            if (shots && i == 0 && difficulty == 5) {
               await expectLater(
                 find.byType(WaitScreen),
                 matchesGoldenFile('shots/${game.id}-$device.png'),

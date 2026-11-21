@@ -3,7 +3,7 @@
 Sursa listei: `catalog` din `licurici_core`; `dart run tool/catalog_levels_inventory.dart` generează inventarul.
 O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; o excepție pentru un instrument de comunicare este indicată explicit. Nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
 
-Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim** și **Emoții și prieteni** au fost parcurse; urmează Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
+Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim**, **Emoții și prieteni** și **Memorie și răbdare** au fost parcurse; urmează Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
 
 ## Atenție (ATN) — 6 jocuri
 
@@ -160,18 +160,20 @@ Mai multe runde sau turnuri exersează atenția și așteptarea mai mult timp; n
 
 ## Memorie și răbdare (FEX) — 12 jocuri
 
-- [ ] Peștele din mijloc (`peste-in-mijloc`, choice)
-- [ ] Pescarul (`pescarul`, reaction)
-- [ ] Felinarele (`simon`, sequence)
-- [ ] Licuricii din grădină (`licuricii`, sequence)
-- [ ] Respiră (`respira`, calm)
-- [ ] Acum sau mai mult? (`acum-sau-mai-mult`, delay)
-- [ ] Stop! (`stop`, stop)
-- [ ] Labirint (`labirint`, maze)
-- [ ] Regula se schimbă (`regula-se-schimba`, rules)
-- [ ] Semaforul (`semaforul`, wait)
-- [ ] Floarea crește (`floarea-creste`, wait)
-- [ ] Perechi (`perechi`, memory)
+- [x] Peștele din mijloc (`peste-in-mijloc`, choice) — 10 runde echilibrate de la nivelul 9; telefon/tabletă simulate.
+- [x] Pescarul (`pescarul`, reaction) — 24 de apariții la nivelul 21; nivel parcurs pe telefon mic simulat, ținte ≥64 dp.
+- [x] Felinarele (`simon`, sequence) — secvențe până la 11 pași la nivelul 28; nivel parcurs pe telefon mic simulat.
+- [x] Licuricii din grădină (`licuricii`, sequence) — secvențe până la 11 pași la nivelul 28; nivel parcurs pe telefon/tabletă simulate.
+- [x] Respiră (`respira`, calm) — activitate liberă revizuită, fără niveluri competitive sau presiune de performanță.
+- [x] Acum sau mai mult? (`acum-sau-mai-mult`, delay) — 5 oferte la nivelul 11 și 6 la 13, păstrând durata maximă existentă; nivel parcurs pe telefon mic simulat.
+- [x] Stop! (`stop`, stop) — 34 de încercări la nivelul 11, 36 la 13; nivel parcurs pe telefon mic simulat.
+- [x] Labirint (`labirint`, maze) — patru labirinturi la nivelul 11, cinci la 13, fără micșorarea suplimentară a celulelor; nivel parcurs pe telefon mic simulat.
+- [x] Regula se schimbă (`regula-se-schimba`, rules) — 14 cartonașe la nivelul 12 și 16 la 14, cu schimbări de reguli; nivel parcurs pe telefon mic simulat.
+- [x] Semaforul (`semaforul`, wait) — 10 încercări la nivelul 12 și 12 la 14, fără accelerarea licăririlor; nivel parcurs pe telefon mic simulat.
+- [x] Floarea crește (`floarea-creste`, wait) — aceleași trepte de 10 și 12 încercări; nivel parcurs pe telefon mic simulat.
+- [x] Perechi (`perechi`, memory) — 11 perechi la nivelul 15 și 12 la 17; grilă derulabilă, cartonașe ≥64 dp, nivel parcurs pe telefon/tabletă simulate.
+
+Unele trepte extind durata exercițiului și nu introduc o regulă nouă. Generatoarele și ecranele au teste; testarea pe dispozitiv fizic și validarea cu specialistul rămân necesare. Scările normalizate au fost actualizate, ceea ce afectează și comparațiile longitudinale.
 
 ## Singur (AUT) — 6 jocuri
 
