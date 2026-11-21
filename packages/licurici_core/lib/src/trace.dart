@@ -281,7 +281,7 @@ class TraceGame {
       shapes: shapes,
       width: 0.24 - 0.14 * t,
       guide: level <= 3 ? TraceGuide.dots : (level <= 6 ? TraceGuide.arrow : TraceGuide.none),
-      paths: level <= 2 ? 4 : (level <= 6 ? 5 : 6),
+      paths: level <= 2 ? 4 : (level <= 6 ? 5 : (level >= 14 ? 8 : (level >= 12 ? 7 : 6))),
     );
   }
 

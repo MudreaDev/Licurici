@@ -8,6 +8,7 @@ void main() {
     expect(game.axesFor(1).speed, 0);
     expect(game.axesFor(1).fish, 1);
     expect(game.axesFor(9).fish, 3);
+    expect(game.axesFor(16).rounds, 7);
     FeedAxes? prev;
     for (var l = 1; l <= 30; l++) {
       final ax = game.axesFor(l);

@@ -13,7 +13,7 @@ import 'package:licurici_core/licurici_core.dart';
 
 import 'layout_test.dart' show devices, loadFonts, settle, shots;
 
-Future<ProviderContainer> _open(WidgetTester tester, Size size, {TraceGame game = const TraceGame()}) async {
+Future<ProviderContainer> _open(WidgetTester tester, Size size, {TraceGame game = const TraceGame(), int level = 1}) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
@@ -21,6 +21,7 @@ Future<ProviderContainer> _open(WidgetTester tester, Size size, {TraceGame game 
     overrides: [voiceProvider.overrideWithValue(const SilentSpeaker())],
   );
   addTearDown(container.dispose);
+  container.read(traceLevelProvider(game.id).notifier).setLevel(level);
   final router = GoRouter(
     initialLocation: '/traseaza',
     routes: [
@@ -65,14 +66,14 @@ void main() {
   });
 
   for (final game in const <TraceGame>[TraceGame(), DotsGame()]) {
-  for (final device in ['telefon-mic', 'tableta']) {
-    testWidgets('${game.id}: toate drumurile duc la final ($device)', (
+  for (final (device, difficulty) in [('telefon-mic', 1), ('tableta', 1), ('telefon-mic', 14)]) {
+    testWidgets('${game.id}: toate drumurile duc la final ($device, nivel $difficulty)', (
       tester,
     ) async {
-      final container = await _open(tester, devices[device]!, game: game);
-      final level = game.generate(1, seed: 3);
+      final container = await _open(tester, devices[device]!, game: game, level: difficulty);
+      final level = game.generate(difficulty, seed: 3);
       expect(find.byKey(const ValueKey('trace-traveler')), findsOneWidget);
-      if (shots) {
+      if (shots && difficulty == 1) {
         await expectLater(
           find.byType(TraceScreen),
           matchesGoldenFile(game.id == 'traseaza' ? 'shots/trasare-$device.png' : 'shots/${game.id}-$device.png'),

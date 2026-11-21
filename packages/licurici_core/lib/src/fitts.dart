@@ -37,12 +37,15 @@ class FittsLevel {
 
 /// O atingere: cât a durat de la bula de dinainte și câte atingeri au fost pe lângă.
 class FittsHit {
-  const FittsHit(this.index, this.movementMs, {this.misses = 0});
+  const FittsHit(this.index, this.movementMs, {this.misses = 0, this.hitWidth});
 
   /// Indexul țintei (≥ 1).
   final int index;
   final int movementMs;
   final int misses;
+
+  /// Diametrul efectiv al zonei tactile, în înălțimi de teren; null pentru date vechi.
+  final double? hitWidth;
 }
 
 class FittsResult {
@@ -52,14 +55,14 @@ class FittsResult {
   final List<FittsHit> hits;
 
   /// Indicele de dificultate al țintei [index] (biți).
-  double idOf(int index) {
+  double idOf(int index, {double? hitWidth}) {
     final t = level.targets[index], prev = level.targets[index - 1];
-    return log(t.distanceTo(prev) / t.size + 1) / ln2;
+    return log(t.distanceTo(prev) / (hitWidth ?? t.size) + 1) / ln2;
   }
 
   /// Throughput mediu (biți/s): media ID/MT pe atingeri.
   double get throughput {
-    final xs = [for (final h in hits) if (h.movementMs > 0) idOf(h.index) / (h.movementMs / 1000)];
+    final xs = [for (final h in hits) if (h.movementMs > 0) idOf(h.index, hitWidth: h.hitWidth) / (h.movementMs / 1000)];
     return xs.isEmpty ? 0 : xs.reduce((a, b) => a + b) / xs.length;
   }
 
@@ -96,6 +99,8 @@ class FittsGame {
   /// Câte ținte pe nivel (fără start).
   static const count = 10;
 
+  int countFor(int level) => level >= 13 ? 14 : (level >= 11 ? 12 : count);
+
   /// Diametrul bulei la [level] (0,22 → 0,07 la nivelul 9).
   double sizeFor(int level) => max(0.07, 0.22 - 0.019 * (level - 1));
 
@@ -110,7 +115,7 @@ class FittsGame {
     final targets = <FittsTarget>[];
     var prev = const FittsTarget(aspect / 2, 0.5, 0.2);
     targets.add(FittsTarget(prev.x, prev.y, max(w, 0.16)));
-    for (var i = 0; i < count; i++) {
+    for (var i = 0; i < countFor(level); i++) {
       FittsTarget next;
       var guard = 0;
       do {

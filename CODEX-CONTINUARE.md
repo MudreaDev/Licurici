@@ -38,6 +38,9 @@ pe pași, în ordine.
 
 ### Continuare 21.11.2026
 
+- Mâini dibace: patru jocuri extinse și Colorăm revizuită ca activitate liberă; detalii în `docs/progres-niveluri-jocuri.md`. Atinge rapid are zonă tactilă ≥64 dp inclusiv lângă margini; indicele Fitts folosește lățimea efectivă a zonei tactile, deci valorile noi nu se compară direct cu cele istorice. Testele dedicate au trecut; este necesară verificarea fizică. Urmează Numere și litere.
+- Verificări Mâini dibace: 676 teste nucleu, 530 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
+
 - Singur: toate cele șase jocuri au trepte suplimentare, descrise individual în `docs/progres-niveluri-jocuri.md`. O zi bună are exemple noi în fiecare oprire; indexul de imagini al explorărilor include acum și exemplele de nivel 4. Testele dedicate au trecut, inclusiv verificarea vocii 2883/2883. Necesită verificare pe dispozitiv și cu specialistul. Urmează Mâini dibace.
 - Verificări Singur: 676 teste nucleu, 526 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
 

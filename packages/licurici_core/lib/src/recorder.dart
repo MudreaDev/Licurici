@@ -561,8 +561,8 @@ class SessionRecorder {
         latencyMs: h.movementMs,
         at: _clock(),
         seed: level.seed,
-        stimulusId: 'id-${(result.idOf(h.index) * 10).round()}',
-        difficulty: result.idOf(h.index),
+        stimulusId: 'id-${(result.idOf(h.index, hitWidth: h.hitWidth) * 10).round()}',
+        difficulty: result.idOf(h.index, hitWidth: h.hitWidth),
         offTargetTaps: h.misses,
       ));
     }

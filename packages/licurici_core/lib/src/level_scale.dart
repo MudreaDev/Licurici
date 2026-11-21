@@ -70,7 +70,7 @@ const gameScales = <String, LevelScale>{
   // construcție, puzzle, labirint
   'construieste': LevelScale(14),
   'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
-  'atinge-rapid': LevelScale(9), // bula de 0,07 la 9 (distanța se oprește la 9)
+  'atinge-rapid': LevelScale(13), // până la 14 ținte, fără micșorare suplimentară
   'stop': LevelScale(13), // 36 de încercări, 30% opriri
   'turnul': LevelScale(11), // 8 inele la 11, diferența minimă la 9
   'adu-mi': LevelScale(10), // șase obiecte pe masă, până la patru cerute
@@ -94,9 +94,9 @@ const gameScales = <String, LevelScale>{
   // limbaj
   'asculta-si-fa': LevelScale(15),
   // motricitate și scris
-  'traseaza': LevelScale(10),
-  'uneste-punctele': LevelScale(10),
-  'hraneste-pestii': LevelScale(12), // viteza crește până la 12
+  'traseaza': LevelScale(14),
+  'uneste-punctele': LevelScale(14),
+  'hraneste-pestii': LevelScale(16), // până la 7 runde
   'atinge-si-vezi': LevelScale(10),
   'scriem-cifrele': LevelScale(10),
   'scriem-literele': LevelScale(10),

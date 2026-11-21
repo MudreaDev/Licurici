@@ -52,9 +52,9 @@ void main() {
     test('bulele se micșorează și sar tot mai departe; încap pe teren', () {
       expect(g.sizeFor(1), greaterThan(g.sizeFor(9)));
       expect(g.sizeFor(20), closeTo(0.07, 1e-9));
-      for (var level = 1; level <= 10; level++) {
+      for (var level = 1; level <= 13; level++) {
         final l = g.generate(level, seed: level);
-        expect(l.targets, hasLength(FittsGame.count + 1));
+        expect(l.targets, hasLength(g.countFor(level) + 1));
         for (final t in l.targets) {
           expect(t.x - t.size / 2, greaterThanOrEqualTo(-1e-9));
           expect(t.x + t.size / 2, lessThanOrEqualTo(FittsGame.aspect + 1e-9));
@@ -68,6 +68,10 @@ void main() {
       final r = FittsResult(l, [const FittsHit(1, 500), const FittsHit(2, 700, misses: 1)]);
       final d = l.targets[1].distanceTo(l.targets[0]);
       expect(r.idOf(1), closeTo(log2(d / l.targets[1].size + 1), 1e-9));
+      final accessible = FittsResult(l, [const FittsHit(1, 500, hitWidth: 0.4)]);
+      expect(accessible.idOf(1, hitWidth: accessible.hits.single.hitWidth), closeTo(log2(d / 0.4 + 1), 1e-9));
+      final accessibleRec = SessionRecorder(childId: 'c')..fittsLevel(accessible);
+      expect(accessibleRec.trials.single.difficulty, closeTo(log2(d / 0.4 + 1), 1e-9));
       expect(r.throughput, greaterThan(0));
       expect(r.misses, 1);
       final rec = SessionRecorder(childId: 'c')..fittsLevel(r);

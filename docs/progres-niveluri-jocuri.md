@@ -3,7 +3,7 @@
 Sursa listei: `catalog` din `licurici_core`; `dart run tool/catalog_levels_inventory.dart` generează inventarul.
 O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; o excepție pentru un instrument de comunicare este indicată explicit. Nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
 
-Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim**, **Emoții și prieteni**, **Memorie și răbdare** și **Singur** au fost parcurse; urmează Mâini dibace și Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
+Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim**, **Emoții și prieteni**, **Memorie și răbdare**, **Singur** și **Mâini dibace** au fost parcurse; urmează Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
 
 ## Atenție (ATN) — 6 jocuri
 
@@ -188,11 +188,13 @@ Rundele suplimentare cresc durata exercițiului; exemplele noi și instrucțiuni
 
 ## Mâini dibace (MOT) — 5 jocuri
 
-- [ ] Atinge rapid (`atinge-rapid`, fitts)
-- [ ] Hrănește peștii (`hraneste-pestii`, feed)
-- [ ] Colorăm (`colorare`, color)
-- [ ] Trasează (`traseaza`, trace)
-- [ ] Unește punctele (`uneste-punctele`, trace)
+- [x] Atinge rapid (`atinge-rapid`, fitts) — 12 ținte la nivelul 11, 14 la 13; zonă tactilă cu diametrul ≥64 dp și la margini, parcurs pe telefon mic simulat.
+- [x] Hrănește peștii (`hraneste-pestii`, feed) — 6 runde la nivelul 14, 7 la 16; nivel parcurs pe telefon mic simulat.
+- [x] Colorăm (`colorare`, color) — activitate creativă liberă revizuită, fără niveluri sau punctaj obligatoriu.
+- [x] Trasează (`traseaza`, trace) — 7 drumuri la nivelul 12, 8 la 14; nivel parcurs pe telefon mic simulat.
+- [x] Unește punctele (`uneste-punctele`, trace) — 5 desene la nivelul 12, 6 la 14, fără repetări; nivel parcurs pe telefon mic simulat.
+
+Indicele Fitts este calculat acum cu lățimea efectivă a zonei tactile; valorile noi nu sunt direct comparabile cu cele vechi calculate din dimensiunea vizuală. Mai multe runde extind durata exercițiului. Testarea fizică și validarea cu specialistul rămân necesare.
 
 ## Numere și litere (PAC) — 29 jocuri
 

@@ -128,7 +128,7 @@ class DotsGame extends TraceGame {
         width: ramp(level, 0.2, 0.1, 10),
         // Punctul următor pulsează (nivelurile 1–3), apoi doar numerele; de la 8, puncte mai mici.
         guide: level <= 3 ? TraceGuide.dots : (level <= 7 ? TraceGuide.arrow : TraceGuide.none),
-        paths: level <= 3 ? 3 : 4,
+        paths: level <= 3 ? 3 : (level >= 14 ? 6 : (level >= 12 ? 5 : 4)),
       );
 
   @override

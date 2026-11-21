@@ -12,7 +12,7 @@ void main() {
   });
 
   test('nivelul limitează câte puncte are un desen; nivelurile mari aduc desene noi', () {
-    for (var level = 1; level <= 12; level++) {
+    for (var level = 1; level <= 14; level++) {
       final l = const DotsGame().generate(level, seed: level);
       expect(l.paths, hasLength(const DotsGame().axesFor(level).paths));
       expect(l.paths.every((p) => p.figure!.dots <= maxDotsFor(level)), isTrue, reason: 'nivelul $level');

@@ -70,13 +70,13 @@ class _FittsScreenState extends ConsumerState<FittsScreen> {
     final t = _level.targets[_index];
     final c = Offset(t.x * unit, t.y * unit);
     // Ținta e cercul bulei, puțin mai largă (degetul copilului nu e un vârf de creion).
-    if ((p - c).distance > t.size * unit * 0.6) {
+    if ((p - c).distance > math.max(32, t.size * unit * 0.6)) {
       if (_index > 0) _misses++;
       return;
     }
     ref.read(sfxProvider).play(Sfx.bubble);
     if (_index > 0) {
-      _hits.add(FittsHit(_index, _clock.elapsedMilliseconds, misses: _misses));
+      _hits.add(FittsHit(_index, _clock.elapsedMilliseconds, misses: _misses, hitWidth: 2 * math.max(32, t.size * unit * 0.6) / unit));
     }
     _misses = 0;
     _clock
@@ -141,7 +141,10 @@ class _FittsScreenState extends ConsumerState<FittsScreen> {
 
   Widget _field(MotionPolicy motion) => LayoutBuilder(
     builder: (context, box) {
-      final unit = math.min((box.maxWidth - 24) / FittsGame.aspect, box.maxHeight - 12);
+      // Spațiul din jur permite întregului cerc tactil de 64 dp să rămână accesibil,
+      // inclusiv când bula generată este aproape de marginea terenului.
+      const touchPadding = 32.0;
+      final unit = math.min((box.maxWidth - 24 - 2 * touchPadding) / FittsGame.aspect, box.maxHeight - 12 - 2 * touchPadding);
       final t = _level.targets[_index];
       final size = t.size * unit;
       return Center(
@@ -152,26 +155,26 @@ class _FittsScreenState extends ConsumerState<FittsScreen> {
             border: Border.all(color: const Color(0x99FFFFFF), width: 3),
           ),
           child: SizedBox(
-            width: unit * FittsGame.aspect,
-            height: unit,
+            width: unit * FittsGame.aspect + 2 * touchPadding,
+            height: unit + 2 * touchPadding,
             child: GestureDetector(
               key: const ValueKey('fitts-field'),
               behavior: HitTestBehavior.opaque,
-              onTapDown: (d) => _tapAt(d.localPosition, unit),
+              onTapDown: (d) => _tapAt(d.localPosition - const Offset(touchPadding, touchPadding), unit),
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
                   for (final (at, born) in _pops)
                     Positioned(
                       key: ValueKey('pop-$born-${at.dx}'),
-                      left: at.dx - 40,
-                      top: at.dy - 40,
+                      left: touchPadding + at.dx - 40,
+                      top: touchPadding + at.dy - 40,
                       child: IgnorePointer(child: _Pop(enabled: motion.feedback)),
                     ),
                   Positioned(
                     key: ValueKey('fitts-target-$_index'),
-                    left: t.x * unit - size / 2,
-                    top: t.y * unit - size / 2,
+                    left: touchPadding + t.x * unit - size / 2,
+                    top: touchPadding + t.y * unit - size / 2,
                     child: IgnorePointer(
                       child: Semantics(
                         label: _index == 0 ? 'Bula de start' : 'Bula $_index',

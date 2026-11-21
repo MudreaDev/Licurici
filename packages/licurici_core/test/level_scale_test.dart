@@ -66,7 +66,7 @@ final Map<String, String Function(int)> axesSignature = {
   'coloreaza-ce-auzi': (l) => '${const PaintGame().axesFor(l).toJson()}',
   'turnul': (l) => '${const StackingGame().axesFor(l).toJson()}',
   'stop': (l) => '${const StopSignalGame().axesFor(l).toJson()}',
-  'atinge-rapid': (l) => '${const FittsGame().sizeFor(l).toStringAsFixed(3)} ${const FittsGame().reachFor(l).toStringAsFixed(3)}',
+  'atinge-rapid': (l) => '${const FittsGame().sizeFor(l).toStringAsFixed(3)} ${const FittsGame().reachFor(l).toStringAsFixed(3)} ${const FittsGame().countFor(l)}',
   'unde-se-uita': (l) {
     final a = const GazeGame().axesFor(l);
     return '${a.cue} ${a.similar} ${a.closePairs} ${a.rounds}';
@@ -110,7 +110,7 @@ final Map<String, String Function(int)> axesSignature = {
   },
   'hraneste-pestii': (l) {
     final a = const FeedGame().axesFor(l);
-    return '${a.size} ${a.speed} ${a.fish}';
+    return '${a.size} ${a.speed} ${a.fish} ${a.rounds}';
   },
   'atinge-si-vezi': (l) => '${const CauseGame().countFor(l)}',
   for (final g in writingGames)

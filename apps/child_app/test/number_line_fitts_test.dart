@@ -76,23 +76,25 @@ void main() {
     });
   }
 
-  for (final device in ['telefon-mic', 'tableta']) {
-    testWidgets('atinge rapid: toate bulele, pe $device', (tester) async {
-      final container = await _pump(tester, device, const FittsScreen(seed: 2));
-      if (shots) await expectLater(find.byType(FittsScreen), matchesGoldenFile('shots/atinge-rapid-$device.png'));
+  for (final (device, difficulty) in [('telefon-mic', 1), ('tableta', 1), ('telefon-mic', 13)]) {
+    testWidgets('atinge rapid: toate bulele, pe $device, nivel $difficulty', (tester) async {
+      final container = await _pump(tester, device, const FittsScreen(seed: 2), (c) => c.read(fittsLevelProvider.notifier).setLevel(difficulty));
+      if (shots && difficulty == 1) await expectLater(find.byType(FittsScreen), matchesGoldenFile('shots/atinge-rapid-$device.png'));
       final field = find.byKey(const ValueKey('fitts-field'));
       // O atingere pe lângă, pe colțul terenului: nu strică nimic.
       await tester.tapAt(tester.getTopLeft(field) + const Offset(2, 2));
-      for (var i = 0; i <= FittsGame.count; i++) {
+      for (var i = 0; i <= const FittsGame().countFor(difficulty); i++) {
         final bubble = find.byWidgetPredicate((w) => w is Positioned && w.key is ValueKey<String> && (w.key! as ValueKey<String>).value == 'fitts-target-$i');
         expect(bubble, findsOneWidget, reason: 'bula $i');
-        await tester.tapAt(tester.getCenter(bubble));
+        // La nivelul avansat cercul tactil are raza de cel puțin 32 dp, chiar
+        // dacă ilustrația este mai mică și se află aproape de margine.
+        await tester.tapAt(tester.getCenter(bubble) + (difficulty == 13 && i > 0 ? const Offset(30, 0) : Offset.zero));
         await tester.pump(const Duration(milliseconds: 120));
       }
       await settle(tester, 3);
       expect(find.text('Încă o dată'), findsOneWidget);
       final trials = container.read(sessionProvider)!.trials.where((t) => t.gameId == 'atinge-rapid').toList();
-      expect(trials, hasLength(FittsGame.count));
+      expect(trials, hasLength(const FittsGame().countFor(difficulty)));
       expect(trials.every((t) => (t.difficulty ?? 0) > 0), isTrue);
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 10));

@@ -21,7 +21,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 9), ('tableta', 4)]) {
+  for (final (device, level) in [('telefon-mic', 9), ('tableta', 4), ('telefon-mic', 16)]) {
     testWidgets('hrănește peștii: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -52,7 +52,7 @@ void main() {
       final l = const FeedGame().generate(level, seed: 2);
       for (final (i, r) in l.rounds.indexed) {
         await tester.pump(const Duration(milliseconds: 300));
-        if (shots && i == 0) {
+        if (shots && i == 0 && level != 16) {
           await expectLater(
             find.byType(FeedScreen),
             matchesGoldenFile('shots/pesti-$device.png'),

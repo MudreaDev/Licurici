@@ -143,7 +143,7 @@ class FeedGame {
         size: ramp(level, 0.3, 0.14, 10),
         speed: level <= 2 ? 0 : ramp(level - 2, 0.05, 0.22, 10),
         fish: level <= 5 ? 1 : (level <= 8 ? 2 : 3),
-        rounds: 5,
+        rounds: level >= 16 ? 7 : (level >= 14 ? 6 : 5),
       );
 
   FeedLevel generate(int level, {int? seed}) {
