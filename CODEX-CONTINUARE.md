@@ -36,6 +36,15 @@ pe pași, în ordine.
 
 ## 1. Starea de acum (actualizată 25.10.2026)
 
+### Documentație universitară 21.11.2026
+
+- [x] Laboratorul 2 PECPIT după cerința atașată și toate cele 13 slide-uri Canva; exemplele Iuliei au fost utilizate numai pentru formatare. Copertă: Mudrea Mihail, TI-233, Cojocaru Svetlana.
+- [x] 48 activități, 69 pachete terminale WBS acoperite, 78 trasee complete, un drum critic cu 36 activități și 1 133,33 ore; efort total 1 536,67 ore-om. Estimările O/M/P sunt ipoteze de planificare pentru întregul proiect. Calendarul și nivelarea resurselor nu sunt confundate cu durata rețelei.
+- Livrabile: `output/pdf/PECPIT_lab2_Mudrea_Mihail_Licurici.pdf` (28 pagini), omonimele din `output/docx/` și `output/xlsx/`. Surse: `tools/docs/pecpit2_model.py`, `build_pecpit2.py`, `build_pecpit2.mjs`, `check_pecpit2.py`.
+- [x] Validări: aritmetică exactă, aciclicitate, acoperire WBS, enumerare integrală, calcul înainte/înapoi și maxim recursiv independent; 48 rânduri CPM și 78 trasee confruntate cu formulele Excel. Perturbarea unei estimări critice și detectarea intrării invalide trec; datele inițiale au fost restaurate. Exportul XLSX a fost recalculat în Microsoft Excel cu același rezultat.
+- [x] Inspectate toate cele 28 pagini PDF și randări din fiecare dintre cele 5 foi. Font Times New Roman, tabele roz în raport; Arial și antete albastre în Excel. Word SaveAs2 a exportat PDF-ul.
+- Nu s-au schimbat codul aplicației, datele copilului sau tehnologiile. Verificările aplicației din sesiunea anterioară rămân cele consemnate mai jos; pentru această schimbare documentară au fost rulate verificările PERT/export. Modificările preexistente ale jocurilor rămân separate. §2–§5 nu își schimbă starea. Urmează lectura și predarea de către utilizator; nu s-a încărcat nimic în Moodle.
+
 ### Documentație universitară 20.11.2026
 
 - [x] Laboratorul 1 PECPIT: raport WBS pentru tema exactă a tezei, cu Mudrea Mihail / TI-233 / Cojocaru Svetlana confirmate de utilizator. Asistentul AI pentru adulți este inclus explicit; clasele 5–12, studiul clinic și publicarea comercială sunt excluse din perimetrul raportului.
