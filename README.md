@@ -83,12 +83,12 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] În APK-ul 0.1.3, verifică pe tabletă treptele noi din Turnul, Adu-mi, Pune ursulețul și Oglinda.
 - [ ] În APK-ul 0.1.3, verifică reluarea explorărilor și repetările configurate: progresul trebuie să se schimbe doar după terminarea episodului.
 - [ ] În APK-ul 0.1.3, verifică pe tabletă nivelurile avansate din Atenție, Fac și eu, Potrivim, Ascult și înțeleg și Vorbim, inclusiv puzzle-ul cu 24 de piese și memoria cu 8 perechi.
-- [ ] După publicarea următorului APK, verifică pe tabletă jocurile extinse din Gândim, inclusiv Turnul cu opt inele și sortările cu 20 de obiecte; aceste niveluri nu sunt în 0.1.3.
-- [ ] După publicarea următorului APK, verifică împreună cu specialistul jocurile extinse din Emoții și prieteni, inclusiv sortarea celor 20 de fețe și cele trei turnuri jucate pe rând.
-- [ ] După publicarea următorului APK, verifică nivelurile noi din Memorie și răbdare, în special cele 12 perechi pe telefon și secvențele de 11 pași.
-- [ ] După publicarea următorului APK, verifică jocurile din Singur și revizuiește cu specialistul exemplele și instrucțiunile despre siguranță.
-- [ ] După publicarea următorului APK, verifică jocurile din Mâini dibace, inclusiv atingerea bulelor aproape de marginile ecranului.
-- [ ] După publicarea următorului APK, verifică împreună cu specialistul și jocurile din Numere și litere, în special ceasul, calendarul și scrierea pe tabletă.
+- [ ] În APK-ul 0.1.4, verifică pe tabletă jocurile extinse din Gândim, inclusiv Turnul cu opt inele și sortările cu 20 de obiecte.
+- [ ] În APK-ul 0.1.4, verifică împreună cu specialistul jocurile extinse din Emoții și prieteni, inclusiv sortarea celor 20 de fețe și cele trei turnuri jucate pe rând.
+- [ ] În APK-ul 0.1.4, verifică nivelurile noi din Memorie și răbdare, în special cele 12 perechi pe telefon și secvențele de 11 pași.
+- [ ] În APK-ul 0.1.4, verifică jocurile din Singur și revizuiește cu specialistul exemplele și instrucțiunile despre siguranță.
+- [ ] În APK-ul 0.1.4, verifică jocurile din Mâini dibace, inclusiv atingerea bulelor aproape de marginile ecranului.
+- [ ] În APK-ul 0.1.4, verifică împreună cu specialistul și jocurile din Numere și litere, în special ceasul, calendarul și scrierea pe tabletă.
 - [ ] În APK-ul 0.1.3, ascultă „Super!” și „Super! Ai terminat!”; clipurile au fost regenerate cu pronunție silabisită, dar nu au fost ascultate pe dispozitiv.
 - [ ] În APK-ul 0.1.3, verifică atingerile pe fețele din „Oglinda” și aspectul ramei pe tableta reală.
 - [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
@@ -156,7 +156,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Toate secțiunile au fost parcurse în ordine; bifa înseamnă o extindere implementată și testată sau o excepție explicată, nu dificultate infinită ori validare terapeutică. „Vorbește”, „Respiră” și „Colorăm” rămân activități libere, fără nivel obligatoriu.
 
-**21.11 — Numere și litere:** cele 29 de jocuri au trepte suplimentare, descrise individual în [evidență](docs/progres-niveluri-jocuri.md). La majoritatea jocurilor cu alegeri se extinde durata exercițiului; asta nu adaugă automat concepte noi. Urmează testarea pe dispozitiv și cu specialistul și pregătirea următorului APK. Schimbările sunt ulterioare versiunii 0.1.3.
+**21.11 — Numere și litere:** cele 29 de jocuri au trepte suplimentare, descrise individual în [evidență](docs/progres-niveluri-jocuri.md). La majoritatea jocurilor cu alegeri se extinde durata exercițiului; asta nu adaugă automat concepte noi. Urmează testarea pe dispozitiv și cu specialistul. Schimbările sunt în APK-ul 0.1.4.
 
 **21.11 — Mâini dibace:** patru jocuri au trepte suplimentare, iar Colorăm rămâne liber. În Atinge rapid, zona tactilă are minimum 64 dp, iar indicele Fitts folosește lățimea efectivă a acesteia; comparația cu valorile vechi necesită atenție. Detalii în [evidență](docs/progres-niveluri-jocuri.md). Urmează Numere și litere; schimbările sunt ulterioare APK-ului 0.1.3.
 
@@ -170,7 +170,7 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **APK 0.1.3:** [versiunea de test publicată](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.3-preview.1) include corecția Oglinda și nivelurile de până la commitul `89fb73d`; verificări și pachete în [istoricul versiunilor](docs/releases.md).
 
-**APK 0.1.4:** pachetele au fost construite și sunt pregătite pentru publicare; starea publicării se verifică în [istoricul versiunilor](docs/releases.md). Este semnat cu cheia Android de test și necesită verificare pe dispozitiv.
+**APK 0.1.4:** [versiunea de test publicată](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.4-preview.1) conține modificările din toate secțiunile; cele cinci pachete au fost verificate pe GitHub. Este semnată cu cheia Android de test și necesită verificare pe dispozitiv; detalii în [istoricul versiunilor](docs/releases.md).
 
 **18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
 
