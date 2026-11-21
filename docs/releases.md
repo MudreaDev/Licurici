@@ -3,6 +3,12 @@
 Versiunile de test sunt publicate în [GitHub Releases](https://github.com/MudreaDev/Licurici/releases).
 APK-urile și arhivele compilate sunt atașamente ale versiunii, nu fișiere adăugate în istoricul Git.
 
+## Aplicația copilului și panoul 0.1.4 (build 5) — pregătită pentru publicare
+
+Versiunea include treptele documentate pentru toate secțiunile și corecția zonei tactile din Atinge rapid. Cele trei APK-uri și panoul web au fost construite; toate APK-urile au semnătura de test Android folosită în 0.1.3. Arhiva web conține `index.html`, `main.dart.js` și `c.html`, fără audio nefolosit. Teste: 679 nucleu, 584 copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter curată și voce 2883/2883. Compilarea JavaScript a reușit; verificarea opțională Wasm semnalează incompatibilitatea cunoscută `socket_io_common`.
+
+Publicarea și verificarea pachetelor se consemnează după încărcare; testarea pe dispozitiv fizic și validarea cu specialistul rămân necesare. Pachetele sunt pentru test, nu pentru magazine.
+
 ## Aplicația copilului și panoul 0.1.3 (build 4) — 19.11.2026
 
 Publicată ca versiune de test: [v0.1.3-preview.1](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.3-preview.1), din commitul `89fb73d`. Conține corecția coordonatelor și a indicatorului la Oglinda, rama rearanjată, cele două clipuri „Super” regenerate și nivelurile suplimentare documentate în [progresul pe jocuri](progres-niveluri-jocuri.md). Pronunția și atingerea pe tabletă fizică necesită verificare.

@@ -170,6 +170,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **APK 0.1.3:** [versiunea de test publicată](https://github.com/MudreaDev/Licurici/releases/tag/v0.1.3-preview.1) include corecția Oglinda și nivelurile de până la commitul `89fb73d`; verificări și pachete în [istoricul versiunilor](docs/releases.md).
 
+**APK 0.1.4:** pachetele au fost construite și sunt pregătite pentru publicare; starea publicării se verifică în [istoricul versiunilor](docs/releases.md). Este semnat cu cheia Android de test și necesită verificare pe dispozitiv.
+
 **18.11 — grafică și plan:** inel pictat cu volum și filtru de colorare corectat; auditul imaginilor rămâne deschis: [raport](docs/audit-imagini-2026-11-18.md). Specialistul poate seta limita zilnică și 1–5 jocuri încheiate la același nivel; progresul rămâne local între porniri. Timpul în prim-plan este numărat pe zi locală, fără colțul părintelui. Implicit rămân dificultatea adaptivă și timpul nelimitat. Verifică pe tabletă sincronizarea, reluarea și închiderea la limită. „Ceasul” și „Zilele și lunile” există în „Numere și litere”.
 
 **Continuare niveluri:** Turnul ajunge până la 11, Adu-mi până la 10, Pune ursulețul până la 9 și Oglinda până la 14; după aceste puncte mecanicile lor încă au plafon. Extinderea tuturor jocurilor continuă pe mecanici și conținut real, conform evidenței pe secțiuni. Activitățile libere (colorare, respirație, comunicare) nu primesc niveluri competitive. Treptele noi din Turnul, Adu-mi și Pune ursulețul sunt ulterioare APK-ului 0.1.3.

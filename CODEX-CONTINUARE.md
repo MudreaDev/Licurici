@@ -38,6 +38,8 @@ pe pași, în ordine.
 
 ### Continuare 21.11.2026
 
+- Versiunea 0.1.4+5 este construită pentru APK și panou; pachetele și sumele sunt în `tmp/release-0.1.4/`. Testele complete au trecut, APK-urile folosesc semnătura de test Android din 0.1.3. Starea publicării este urmărită în `docs/releases.md`; nu presupune că release-ul este publicat până nu este verificat acolo.
+
 - Numere și litere: cele 29 de jocuri au fost abordate, individual în `docs/progres-niveluri-jocuri.md`. Cele 25 cu alegere au runde suplimentare la 10; exercițiile cu trei tipuri sunt echilibrate. Explorarea de istorie inversează pozițiile grupelor la 4, linia numerelor ajunge la 10 estimări, iar scrierea la 6 semne. Mai multe runde înseamnă exercițiu mai lung, nu concepte noi nelimitate. Au trecut testele dedicate și acoperirea vocală 2883/2883; rămân verificarea fizică, validarea cu specialistul și livrarea APK-ului care conține aceste modificări.
 - Verificări Numere și litere: 679 teste nucleu, 584 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
 
