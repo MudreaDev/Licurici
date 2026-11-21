@@ -38,6 +38,8 @@ pe pași, în ordine.
 
 ### Documentație universitară 21.11.2026
 
+- [x] Export suplimentar cerut de utilizator: output/pdf/PECPIT_lab2_Mudrea_Mihail_Licurici_Excel.pdf, toate cele 5 foi, 20 pagini A3 landscape, culori păstrate și antete repetate. Generat prin Microsoft Excel cu 	ools/docs/export_pecpit2_excel_pdf.ps1, verificat vizual; XLSX original nemodificat.
+
 - [x] Laboratorul 2 PECPIT după cerința atașată și toate cele 13 slide-uri Canva; exemplele Iuliei au fost utilizate numai pentru formatare. Copertă: Mudrea Mihail, TI-233, Cojocaru Svetlana.
 - [x] 48 activități, 69 pachete terminale WBS acoperite, 78 trasee complete, un drum critic cu 36 activități și 1 133,33 ore; efort total 1 536,67 ore-om. Estimările O/M/P sunt ipoteze de planificare pentru întregul proiect. Calendarul și nivelarea resurselor nu sunt confundate cu durata rețelei.
 - Livrabile: `output/pdf/PECPIT_lab2_Mudrea_Mihail_Licurici.pdf` (28 pagini), omonimele din `output/docx/` și `output/xlsx/`. Surse: `tools/docs/pecpit2_model.py`, `build_pecpit2.py`, `build_pecpit2.mjs`, `check_pecpit2.py`.

@@ -125,6 +125,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **E. Universitate**
 
+- [x] Excel-ul laboratorului 2 este exportat și în PDF: output/pdf/PECPIT_lab2_Mudrea_Mihail_Licurici_Excel.pdf, 20 pagini A3 landscape, toate cele 5 foi și antete repetate.
+
 - [x] **21.11.2026 — Laboratorul 2 PECPIT:** PERT Licurici în PDF (28 pagini), Word și Excel cu formule, în `output/`; 48 activități, toate cele 69 de pachete WBS, 78 trasee, un drum critic de 1 133,33 ore.
 - [ ] Citește laboratorul 2 și predă PDF-ul și Excel-ul conform cerinței cursului; estimările sunt ipoteze, nu pontaje. Predarea nu a fost efectuată.
 
@@ -139,6 +141,8 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 
 ### 0.1 Unde am rămas și ce urmează (citește asta întâi într-un chat nou)
+
+**Export Excel PECPIT 21.11.2026:** creat PDF-ul fidel al celor 5 foi, 20 pagini A3 landscape; verificat vizual, fără coloane tăiate. Fișierul XLSX original este neschimbat.
 
 **21.11.2026 — laboratorul 2 PECPIT:** estimare PERT completă pentru Licurici, inclusiv AI pentru adulți. 48 de activități acoperă 69 de pachete terminale, cu 1.9.2 împărțit în trei revizuiri fără dublarea lucrării. 78 de trasee; durată critică 1 133,33 ore, efort 1 536,67 ore-om. PDF/Word/Excel în `output/`, model și generatoare în `tools/docs/*pecpit2*`. Verificate formulele și recalcularea în Microsoft Excel, toate paginile PDF și foile Excel. Urmează lectura utilizatorului și predarea; calendarul necesită disponibilitate și nivelarea resurselor.
 
@@ -1300,6 +1304,8 @@ fără secrete în imagini, versiuni fixate (nu `latest`), în prod doar Traefik
 ---
 
 ## 21. Roadmap (Sem. 1 = 70%)
+
+**Export documentație 21.11.2026:** PDF suplimentar al registrului Excel PECPIT 2 finalizat; fără schimbări ale progresului aplicației.
 
 **Progres documentație 21.11.2026:** laboratorul 2 PECPIT finalizat în PDF, Word și Excel, cu 5 figuri PERT și 78 trasee enumerate integral. Nu modifică totalurile roadmap-ului și nu marchează teza sau validarea clinică drept finalizate.
 
