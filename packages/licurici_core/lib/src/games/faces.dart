@@ -37,6 +37,9 @@ class CatDeTareGame extends ChoiceGame {
   static double gapFor(int tier) => tier <= 2 ? 0.4 : 0.2;
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final emotions = [
@@ -48,7 +51,7 @@ class CatDeTareGame extends ChoiceGame {
     return Lesson(
       title: name,
       instruction: 'Uită-te bine la fețe.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, ctx.pick(emotions), gap)],
+      rounds: [for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, ctx.pick(emotions), gap)],
     );
   }
 
@@ -97,12 +100,15 @@ class CineEPrietenulGame extends ChoiceGame {
   static int minDifferencesFor(int tier) => (5 - (tier + 1) ~/ 2).clamp(1, 4);
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     return Lesson(
       title: name,
       instruction: 'Ține minte fața prietenului.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, tier)],
+      rounds: [for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, tier)],
     );
   }
 
@@ -118,7 +124,7 @@ class CineEPrietenulGame extends ChoiceGame {
     }
     final others = ([for (final o in paintedLooks) if (o != friend) o]..shuffle(ctx.random))
       ..sort((a, b) => off(a).compareTo(off(b)));
-    others.length = 4;
+    others.length = tier >= 9 ? 5 : 4;
     // Poza prietenului: calm sau bucuros; în variante, toți au aceeași altă expresie (doar fața
     // contează, nu expresia).
     final shown = ctx.pick([FaceEmotion.neutru, FaceEmotion.bucuros]);
@@ -132,6 +138,7 @@ class CineEPrietenulGame extends ChoiceGame {
       speak: ['Acesta e prietenul nostru.', question],
       visuals: [EmojiVisual(FaceSpec(friend, shown).art)],
       hint: 'Uită-te la păr și la ochi.',
+      fixedChoices: tier >= 9,
       choices: [
         Choice(art: FaceSpec(friend, asked, intensity).art, id: 'prietenul', correct: true),
         for (final (k, o) in others.indexed) Choice(art: FaceSpec(o, asked, intensity).art, id: 'altul-d${o.differences(friend)}-$k'),

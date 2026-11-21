@@ -36,6 +36,11 @@ pe pași, în ordine.
 
 ## 1. Starea de acum (actualizată 25.10.2026)
 
+### Continuare 21.11.2026
+
+- Emoții și prieteni: toate cele 10 jocuri au fost abordate, cu trepte individuale în `docs/progres-niveluri-jocuri.md`. Opt jocuri cu alegere ajung la 10 runde, iar două au și variante suplimentare; Sortăm emoțiile are 20 de fețe, iar Rândul meu are trei turnuri. Exercițiul mai lung nu înseamnă un concept emoțional nou. Generatoarele și ecranele au teste; pe dispozitiv fizic și cu specialistul rămâne de verificat. Acoperirea vocală este 2883/2883. Urmează Memorie și răbdare.
+- Verificări Emoții și prieteni: 675 teste nucleu, 505 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
+
 ### Documentație universitară 21.11.2026
 
 - [x] Export suplimentar cerut de utilizator: output/pdf/PECPIT_lab2_Mudrea_Mihail_Licurici_Excel.pdf, toate cele 5 foi, 20 pagini A3 landscape, culori păstrate și antete repetate. Generat prin Microsoft Excel cu 	ools/docs/export_pecpit2_excel_pdf.ps1, verificat vizual; XLSX original nemodificat.

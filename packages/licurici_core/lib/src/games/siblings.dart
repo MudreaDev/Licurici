@@ -36,6 +36,9 @@ class CumSeSimteGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final pool = [
@@ -47,7 +50,7 @@ class CumSeSimteGame extends ChoiceGame {
     return Lesson(
       title: name,
       instruction: 'Ascultă ce s-a întâmplat și alege fața.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, pool, intensity)],
+      rounds: [for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, pool, intensity)],
     );
   }
 

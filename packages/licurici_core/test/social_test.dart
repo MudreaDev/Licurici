@@ -14,6 +14,29 @@ String _openMoji(String emoji) => emoji.runes
     .join('-');
 
 void main() {
+  test('nivelurile avansate au zece runde și păstrează răspunsuri unice', () {
+    for (final game in [const CumSeSimteGame(), const CatDeTareGame(), const CineEPrietenulGame(), const EmotiiGame(), const CeSimteGame(), const CeMaAjutaGame(), const CineStieGame(), const SituatiiGame()]) {
+      for (var seed = 0; seed < 20; seed++) {
+        final lesson = _build(game, 10, seed);
+        expect(lesson.rounds, hasLength(10), reason: game.id);
+        for (final round in lesson.rounds) {
+          expect(round.choices.where((c) => c.correct), hasLength(1), reason: game.id);
+        }
+      }
+    }
+  });
+
+  test('cine știe: la nivel avansat se aleg patru locuri distincte', () {
+    for (var seed = 0; seed < 20; seed++) {
+      final rounds = _build(const CineStieGame(), 10, seed).rounds.where((r) => r.prompt.startsWith('Unde'));
+      expect(rounds, isNotEmpty);
+      for (final round in rounds) {
+        expect(round.choices, hasLength(4));
+        expect(round.choices.map((c) => c.label).toSet(), hasLength(4));
+      }
+    }
+  });
+
   test('toate ilustrațiile jocurilor (inclusiv reaction) au SVG OpenMoji', () {
     final missing = <String>{};
     // Fețele desenate din cod (`face:…`) nu au fișier.

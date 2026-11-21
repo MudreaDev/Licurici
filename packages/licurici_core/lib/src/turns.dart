@@ -120,7 +120,7 @@ class TurnGame {
   List<String> get steps => const ['EMO7'];
 
   TurnAxes axesFor(int level) => TurnAxes(
-    towers: level <= 2 ? 1 : 2,
+    towers: level <= 2 ? 1 : (level >= 14 ? 3 : 2),
     blocks: ramp(level, 4, 10, 10).round() ~/ 2 * 2,
     waitMs: ramp(level, 1500, 6000, 12).round(),
     childFirst: level <= 3,

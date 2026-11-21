@@ -7,6 +7,18 @@ Lesson _build(ChoiceGame g, int tier, int seed) =>
     g.build(GameContext(difficulty: Difficulty(tier), grade: Grade.clasa1, random: Random(seed)));
 
 void main() {
+  test('prietenul la nivel avansat are șase identități distincte și zece runde', () {
+    for (var seed = 0; seed < 30; seed++) {
+      final lesson = _build(const CineEPrietenulGame(), 10, seed);
+      expect(lesson.rounds, hasLength(10));
+      for (final round in lesson.rounds) {
+        expect(round.choices, hasLength(6));
+        expect(round.choices.map((c) => FaceSpec.parse(c.art!)!.look).toSet(), hasLength(6));
+        expect(round.choices.where((c) => c.correct), hasLength(1));
+      }
+    }
+  });
+
   test('Cât de tare?: corectă e fața cea mai puternică; diferența scade cu tier-ul', () {
     expect(CatDeTareGame.gapFor(1), greaterThan(CatDeTareGame.gapFor(7)));
     expect(CatDeTareGame.gapFor(7), closeTo(0.2, 1e-9));

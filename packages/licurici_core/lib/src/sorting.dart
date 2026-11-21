@@ -152,7 +152,7 @@ class SortGame {
 
   SortAxes axesFor(int level) => SortAxes(
         bins: level < 5 ? 2 : (level < 10 ? 3 : 4),
-        perBin: level < 3 ? 2 : (level < 8 ? 3 : (level >= 12 && (id == 'sortam' || id == 'la-locul-lui') ? 5 : 4)),
+        perBin: level < 3 ? 2 : (level < 8 ? 3 : (level >= 12 && (id == 'sortam' || id == 'la-locul-lui' || id == 'sortam-emotiile') ? 5 : 4)),
       );
 
   SortLevel generate(int level, {int? seed}) {

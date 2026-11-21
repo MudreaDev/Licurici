@@ -14,6 +14,8 @@ void main() {
     expect(a.passTurn, isFalse);
     expect(b.passTurn, isTrue);
     expect(b.hesitate, isTrue);
+    expect(game.axesFor(13).towers, 2);
+    expect(game.axesFor(14).towers, 3);
   });
 
   test('cuburile alternează: calde pentru copil, reci pentru Licurici', () {

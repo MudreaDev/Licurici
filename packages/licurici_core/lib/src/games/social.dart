@@ -9,6 +9,9 @@ import 'social_content.dart';
 
 String _fill(String template, Character c) => template.replaceAll('{n}', c.name);
 
+/// La treapta avansată, copilul exersează mai mult timp aceleași sarcini.
+int _socialRounds(GameContext ctx) => ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount;
+
 /// Ce simte? (EMO3) — situație → emoție. Axe: emoțiile disponibile (de bază → toate),
 /// direcția (situație → emoție, apoi de la tier 4 și emoție → cauză), nr. variante.
 class CeSimteGame extends ChoiceGame {
@@ -23,6 +26,9 @@ class CeSimteGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final pool = feltEmotions.where((e) => e.minTier <= tier).toList();
@@ -30,7 +36,7 @@ class CeSimteGame extends ChoiceGame {
       title: name,
       instruction: 'Ascultă ce s-a întâmplat și alege.',
       rounds: [
-        for (var i = 0; i < 8; i++)
+        for (var i = 0; i < _socialRounds(ctx); i++)
           tier >= 4 && i.isOdd ? _causeRound(ctx, pool) : _feelingRound(ctx, pool),
       ],
     );
@@ -90,10 +96,13 @@ class CeMaAjutaGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Alege ce îl poate ajuta pe personaj.',
-        rounds: [for (var i = 0; i < 8; i++) _round(ctx, implicit: ctx.difficulty.tier >= 4 && i.isOdd)],
+        rounds: [for (var i = 0; i < _socialRounds(ctx); i++) _round(ctx, implicit: ctx.difficulty.tier >= 4 && i.isOdd)],
       );
 
   ChoiceRound _round(GameContext ctx, {required bool implicit}) {
@@ -135,10 +144,13 @@ class CineStieGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final rounds = <ChoiceRound>[];
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < _socialRounds(ctx); i++) {
       if (tier <= 2) {
         rounds.add(_sawIt(ctx));
       } else if (tier <= 4) {
@@ -159,7 +171,7 @@ class CineStieGame extends ChoiceGame {
     return (two[0], two[1]);
   }
 
-  int _places(GameContext ctx) => ctx.difficulty.optionCount.clamp(2, 3);
+  int _places(GameContext ctx) => ctx.difficulty.optionCount.clamp(2, ctx.difficulty.tier >= 9 ? 4 : 3);
 
   ChoiceRound _sawIt(GameContext ctx) {
     final (a, b) = _pair(ctx);
@@ -250,6 +262,9 @@ class SituatiiGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxLevel = ctx.difficulty.tier <= 2 ? 1 : (ctx.difficulty.tier <= 4 ? 2 : 3);
     final pool = socialScenarios.where((s) => s.level <= maxLevel).toList();
@@ -257,7 +272,7 @@ class SituatiiGame extends ChoiceGame {
       title: name,
       instruction: 'Ascultă și alege ce e bine să faci.',
       rounds: [
-        for (final s in ctx.sample(pool, 8))
+        for (final s in ctx.sample(pool, _socialRounds(ctx)))
           ChoiceRound(
             prompt: s.question,
             visuals: [SceneVisual(s.question)],

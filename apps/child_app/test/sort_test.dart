@@ -45,7 +45,7 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(game.categories.where((b) => find.text(b.name).evaluate().isNotEmpty), isNotEmpty);
       if (game.id == 'sortam-emotiile') expect(find.byType(DrawnFace), findsWidgets);
-      if (game.id != 'sortam-emotiile') {
+      {
         final level = game.generate(12, seed: 3);
         expect(level.items, hasLength(20));
         for (final item in level.items) {

@@ -104,7 +104,7 @@ void main() {
               random: Random(seed),
             );
             final lesson = game.build(ctx);
-            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 12 ? 3 : (tier >= 10 ? 4 : 5)) : ({'intrusul', 'culori', 'forme', 'mingea-rosie', 'unde-e-ursul', 'da-nu'}.contains(game.id) && tier >= 10 || {'anotimpuri', 'habitate'}.contains(game.id) && tier >= 9 || game.id == 'pozitii' && tier >= 11 || game.id == 'ce-ai-auzit' && tier >= 12) ? 10 : ctx.difficulty.roundCount));
+            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 12 ? 3 : (tier >= 10 ? 4 : 5)) : ({'intrusul', 'culori', 'forme', 'mingea-rosie', 'unde-e-ursul', 'da-nu', 'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii'}.contains(game.id) && tier >= 10 || {'anotimpuri', 'habitate'}.contains(game.id) && tier >= 9 || game.id == 'pozitii' && tier >= 11 || game.id == 'ce-ai-auzit' && tier >= 12) ? 10 : ctx.difficulty.roundCount));
             for (final r in lesson.rounds) {
               expect(r.choices.where((c) => c.correct), hasLength(1));
               // Variantele fixe (ex. grupele din „Comparăm”, Da/Nu) nu se taie după tier.

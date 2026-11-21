@@ -3,7 +3,7 @@
 Sursa listei: `catalog` din `licurici_core`; `dart run tool/catalog_levels_inventory.dart` generează inventarul.
 O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; o excepție pentru un instrument de comunicare este indicată explicit. Nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
 
-Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim** și **Gândim** au fost parcurse; urmează Emoții și prieteni, Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
+Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim** și **Emoții și prieteni** au fost parcurse; urmează Memorie și răbdare, Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
 
 ## Atenție (ATN) — 6 jocuri
 
@@ -145,16 +145,18 @@ Verificări: generatoarele au teste, iar treptele noi au fost deschise sau parcu
 
 ## Emoții și prieteni (EMO) — 10 jocuri
 
-- [ ] Cum se simte? (`cum-se-simte`, choice)
-- [ ] Cât de tare? (`cat-de-tare`, choice)
-- [ ] Cine e prietenul? (`cine-e-prietenul`, choice)
-- [ ] Emoții (`emotii`, choice)
-- [ ] Ce simte? (`ce-simte`, choice)
-- [ ] Ce mă ajută? (`ce-ma-ajuta`, choice)
-- [ ] Cine știe? (`cine-stie`, choice)
-- [ ] Situații (`situatii`, choice)
-- [ ] Sortăm emoțiile (`sortam-emotiile`, sort)
-- [ ] Rândul meu, rândul tău (`pe-rand`, turns)
+- [x] Cum se simte? (`cum-se-simte`, choice) — 10 runde de la nivelul 10, pentru exersare susținută; telefon/tabletă simulate.
+- [x] Cât de tare? (`cat-de-tare`, choice) — 10 runde de la nivelul 10; diferența dintre intensități rămâne de minimum 20%; telefon/tabletă simulate.
+- [x] Cine e prietenul? (`cine-e-prietenul`, choice) — șase identități de la nivelul 9, 10 runde de la 10; telefon/tabletă simulate.
+- [x] Emoții (`emotii`, choice) — 10 runde de la nivelul 10, alternând tipurile de întrebare; telefon/tabletă simulate.
+- [x] Ce simte? (`ce-simte`, choice) — 10 runde de la nivelul 10, alternând situații și cauze; telefon/tabletă simulate.
+- [x] Ce mă ajută? (`ce-ma-ajuta`, choice) — 10 runde de la nivelul 10, cu emoția spusă sau dedusă; telefon/tabletă simulate.
+- [x] Cine știe? (`cine-stie`, choice) — patru locuri posibile de la nivelul 9 și 10 runde de la 10; telefon/tabletă simulate.
+- [x] Situații (`situatii`, choice) — 10 situații distincte de la nivelul 10; telefon/tabletă simulate.
+- [x] Sortăm emoțiile (`sortam-emotiile`, sort) — 20 de fețe la nivelul 12; nivel parcurs pe telefon mic simulat, ținte ≥64 dp.
+- [x] Rândul meu, rândul tău (`pe-rand`, turns) — trei turnuri la nivelul 14; nivel parcurs pe telefon și tabletă simulate.
+
+Mai multe runde sau turnuri exersează atenția și așteptarea mai mult timp; nu adaugă automat concepte emoționale mai dificile. Generatorul și ecranele au fost verificate, fără validare terapeutică sau test pe dispozitiv fizic. Scările normalizate se schimbă pentru aceste jocuri; comparațiile longitudinale necesită atenție.
 
 ## Memorie și răbdare (FEX) — 12 jocuri
 

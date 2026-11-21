@@ -67,7 +67,7 @@ void main() {
         final ids = [for (final b in g.categories) ...b.items];
         expect(ids.toSet().length, ids.length, reason: '${g.id}: un lucru în două grupe');
         final top = g.generate(20, seed: 3);
-        expect(top.items, hasLength(g.id == 'sortam-emotiile' ? 16 : 20));
+        expect(top.items, hasLength(20));
       }
     });
 
