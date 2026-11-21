@@ -56,7 +56,7 @@ void main() {
   });
 
   for (final game in orderGames) {
-    for (final (device, level) in [('telefon-mic', 9), ('tableta', 3), if (game.sentence) ('telefon-mic', 13), if (game.id == 'ce-urmeaza' || game.id == 'mare-mic') ('telefon-mic', 11)]) {
+    for (final (device, level) in [('telefon-mic', 9), ('tableta', 3), if (game.sentence) ('telefon-mic', 13), if ({'ce-urmeaza', 'mare-mic', 'pasii-rutinei', 'orarul-meu'}.contains(game.id)) ('telefon-mic', 11)]) {
       testWidgets('${game.id}: nivelul $level pe $device, cu o greșeală', (
         tester,
       ) async {

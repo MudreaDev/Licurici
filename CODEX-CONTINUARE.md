@@ -38,6 +38,9 @@ pe pași, în ordine.
 
 ### Continuare 21.11.2026
 
+- Singur: toate cele șase jocuri au trepte suplimentare, descrise individual în `docs/progres-niveluri-jocuri.md`. O zi bună are exemple noi în fiecare oprire; indexul de imagini al explorărilor include acum și exemplele de nivel 4. Testele dedicate au trecut, inclusiv verificarea vocii 2883/2883. Necesită verificare pe dispozitiv și cu specialistul. Urmează Mâini dibace.
+- Verificări Singur: 676 teste nucleu, 526 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
+
 - Memorie și răbdare: 11 jocuri extinse și activitatea liberă „Respiră” revizuită. Detalii individuale în `docs/progres-niveluri-jocuri.md`: până la 11 pași în secvențe și 12 perechi pe grilă derulabilă, printre altele. Generatoarele și nivelurile noi au fost testate pe ecrane simulate; pe dispozitiv fizic și cu specialistul rămâne de verificat. Urmează Singur.
 - Verificări Memorie și răbdare: 675 teste nucleu, 518 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
 

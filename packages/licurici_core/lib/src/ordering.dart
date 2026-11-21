@@ -440,7 +440,7 @@ class OrderGame {
 
   /// Câte povești pe nivel.
   int roundsFor(int level) => level <= 2 ? 3 :
-      ((id == 'ce-urmeaza' || id == 'mare-mic') && level >= 9 ? (level >= 11 ? 6 : 5) : 4);
+      ((id == 'ce-urmeaza' || id == 'mare-mic' || id == 'pasii-rutinei' || id == 'orarul-meu') && level >= 9 ? (level >= 11 ? 6 : 5) : 4);
 
   OrderLevel generate(int level, {int? seed}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');

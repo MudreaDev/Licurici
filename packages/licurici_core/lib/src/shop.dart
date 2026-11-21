@@ -83,6 +83,8 @@ class ShopGame {
   int listFor(int level) => min(5, 1 + (level - 1) ~/ 2);
   int shelfFor(int level) => min(15, 5 + level);
 
+  int roundsFor(int level) => level >= 14 ? 5 : (level >= 12 ? 4 : 3);
+
   /// [avoid]: imaginile pe care copilul nu trebuie să le vadă (`avoidedEmojis`) nu apar deloc.
   ShopLevel generate(int level, {int? seed, Set<String> avoid = const {}}) {
     if (level < 1) throw ArgumentError.value(level, 'level', 'începe de la 1');
@@ -90,7 +92,7 @@ class ShopGame {
     final random = Random(s);
     final k = listFor(level), n = shelfFor(level);
     final rounds = <ShopRound>[];
-    for (var r = 0; r < 3; r++) {
+    for (var r = 0; r < roundsFor(level); r++) {
       final products = [...shopProducts.where((o) => !isAvoided(o.emoji, avoid))]..shuffle(random);
       final list = products.take(k).toList();
       final rest = products.skip(k).toList();

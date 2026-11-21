@@ -66,7 +66,7 @@ const gameScales = <String, LevelScale>{
   'cucu-bau': LevelScale(18),
   'ce-s-a-schimbat': LevelScale(19),
   'diferente': LevelScale(19), // 16 obiecte la 13, 10 diferențe la 19
-  'la-magazin': LevelScale(10),
+  'la-magazin': LevelScale(14),
   // construcție, puzzle, labirint
   'construieste': LevelScale(14),
   'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
@@ -101,15 +101,15 @@ const gameScales = <String, LevelScale>{
   'scriem-cifrele': LevelScale(10),
   'scriem-literele': LevelScale(10),
   // ordonare (rutine, povești, seriere, propoziții): 5 pași la nivelul 7
-  'pasii-rutinei': LevelScale(7),
+  'pasii-rutinei': LevelScale(11),
   'ce-urmeaza': LevelScale(11),
   'mare-mic': LevelScale(11),
-  'orarul-meu': LevelScale(7),
+  'orarul-meu': LevelScale(11),
   'spune-propozitia': LevelScale(13),
   // explorările: exemple suplimentare la nivelul 3
   'explorare-stiinte': LevelScale(4),
   'explorare-istorie': LevelScale(3),
-  'explorare-viata': LevelScale(3),
+  'explorare-viata': LevelScale(4),
 };
 
 /// Jocurile fără niveluri de dificultate (nu produc încercări notate cu nivel).
@@ -118,4 +118,4 @@ const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
 LevelScale scaleFor(String gameId) => gameScales[gameId] ??
     (gameId == 'forma-ascunsa' ? const LevelScale(14) : (gameId == 'povesti' || gameId == 'ce-ai-auzit') ? const LevelScale(12) : (gameId == 'potriveste' || gameId == 'intrusul' || gameId == 'umbre' || gameId == 'culori' || gameId == 'forme' || gameId == 'arata-mi' || gameId == 'corpul' || gameId == 'ce-face' || gameId == 'mingea-rosie' || gameId == 'unde-e-ursul' || gameId == 'primul-sunet' || gameId == 'da-nu' || gameId == 'ce-se-aude' || gameId == 'continua-sirul') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(11) :
-    ({'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii'}.contains(gameId) ? const LevelScale(10) : {'anotimpuri', 'habitate', 'peste-in-mijloc'}.contains(gameId) ? const LevelScale(9) : (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale)));
+    ({'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii', 'ajuta-l-pe-licurici', 'ce-imbrac'}.contains(gameId) ? const LevelScale(10) : {'anotimpuri', 'habitate', 'peste-in-mijloc'}.contains(gameId) ? const LevelScale(9) : (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale)));

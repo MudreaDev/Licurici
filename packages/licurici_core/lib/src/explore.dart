@@ -84,6 +84,7 @@ class ExploreEpisode {
         emoji,
         for (final s in stops) ...{s.emoji, ...s.bins.map((b) => b.emoji), ...s.items.map((i) => i.$1)},
         for (final s in stops) ...?_advancedExploreItems['$id/${s.id}']?.map((item) => item.$1),
+        for (final s in stops) ...?_expertExploreItems['$id/${s.id}']?.map((item) => item.$1),
       };
 }
 
@@ -107,6 +108,9 @@ const _expertExploreItems = <String, List<(String, String)>>{
   'explorare-stiinte/anotimpuri': [('🌷', 'primavara'), ('🍦', 'vara'), ('🍇', 'toamna'), ('🎿', 'iarna')],
   'explorare-stiinte/hrana': [('🍐', 'iepure')],
   'explorare-stiinte/reciclare': [('🧻', 'hartie'), ('🍊', 'resturi')],
+  'explorare-viata/emotii': [('😊', 'bucuros')],
+  'explorare-viata/mancare': [('🍓', 'sanatos'), ('🍰', 'rar')],
+  'explorare-viata/siguranta': [('🧸', 'sigur'), ('🕯️', 'grija')],
 };
 
 const exploreEpisodes = [

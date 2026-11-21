@@ -99,16 +99,20 @@ class AjutaLicuriciGame extends ChoiceGame {
   static const question = 'Ce face Licurici acum?';
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
+    final count = tier >= 10 ? 10 : ctx.difficulty.roundCount;
     final rounds = <ChoiceRound>[];
     final stories = [...routineStories]..shuffle(ctx.random);
     for (final story in stories) {
       // Pașii de la al doilea încolo: copilul vede ce s-a făcut deja și alege următorul.
-      for (var k = 1; k < story.steps.length && rounds.length < 8; k++) {
+      for (var k = 1; k < story.steps.length && rounds.length < count; k++) {
         rounds.add(_round(ctx, story, k, sameRoutine: tier >= 4));
       }
-      if (rounds.length >= 8) break;
+      if (rounds.length >= count) break;
     }
     return Lesson(title: name, instruction: 'Ajută-l pe Licurici. Alege ce urmează.', rounds: rounds);
   }

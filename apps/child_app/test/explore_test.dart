@@ -22,7 +22,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, startLevel, repeats, episodeId) in [('telefon-mic', 1, 1, 'explorare-istorie'), ('tableta', 1, null, 'explorare-istorie'), ('telefon-mic', 3, 1, 'explorare-istorie'), ('telefon-mic', 4, 1, 'explorare-stiinte')]) {
+  for (final (device, startLevel, repeats, episodeId) in [('telefon-mic', 1, 1, 'explorare-istorie'), ('tableta', 1, null, 'explorare-istorie'), ('telefon-mic', 3, 1, 'explorare-istorie'), ('telefon-mic', 4, 1, 'explorare-stiinte'), ('telefon-mic', 4, 1, 'explorare-viata')]) {
     testWidgets('explorare: harta, opririle și finalul ($device, nivel $startLevel)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -81,7 +81,7 @@ void main() {
       final expected = episode.stops.fold<int>(0, (n, s) => n + episode.levelFor(s, level: startLevel).items.length);
       expect(trials, hasLength(expected));
       expect(container.read(settingsProvider).levels[episode.id], startLevel + 1);
-      expect(trials.every((t) => t.stepId == (episodeId == 'explorare-stiinte' ? 'COG9' : 'PAC-I4') && t.correct), isTrue);
+      expect(trials.every((t) => t.stepId == (episodeId == 'explorare-stiinte' ? 'COG9' : episodeId == 'explorare-viata' ? 'AUT6' : 'PAC-I4') && t.correct), isTrue);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await tester.pump(const Duration(seconds: 3));

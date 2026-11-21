@@ -631,11 +631,14 @@ class CeImbracGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Uită-te ce vreme e și alege ce îmbraci.',
         rounds: [
-          for (final w in _targets(ctx, _weathers, 8)) _round(ctx, w),
+          for (final w in _targets(ctx, _weathers, ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount)) _round(ctx, w),
         ],
       );
 

@@ -47,7 +47,7 @@ final Map<String, String Function(int)> axesSignature = {
     return '${a.items} ${a.lookMs} ${a.kinds.length}';
   },
   'diferente': (l) => '${const SpotDiffGame().differencesFor(l)} ${const SpotDiffGame().itemsFor(l)} ${l >= 6}',
-  'la-magazin': (l) => '${const ShopGame().listFor(l)} ${const ShopGame().shelfFor(l)} ${l >= 6}',
+  'la-magazin': (l) => '${const ShopGame().listFor(l)} ${const ShopGame().shelfFor(l)} ${const ShopGame().roundsFor(l)} ${l >= 6}',
   'construieste': (l) {
     final a = const BuildGame().axesFor(l);
     return '${a.cols} ${a.rows} ${a.distractors} ${a.hideModelMs}';

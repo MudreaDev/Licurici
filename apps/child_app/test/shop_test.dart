@@ -20,7 +20,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 10), ('tableta', 5)]) {
+  for (final (device, level) in [('telefon-mic', 10), ('tableta', 5), ('telefon-mic', 14)]) {
     testWidgets('la magazin: nivelul $level pe $device', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;
@@ -49,7 +49,7 @@ void main() {
       );
       await settle(tester, 2);
       final l = const ShopGame().generate(level, seed: 6);
-      if (shots) {
+      if (shots && level != 14) {
         await expectLater(
           find.byType(ShopScreen),
           matchesGoldenFile('shots/magazin-$device.png'),
@@ -70,7 +70,7 @@ void main() {
       await settle(tester, 3);
       expect(find.byType(RewardFinish), findsOneWidget);
       final trials = container.read(sessionProvider)!.trials;
-      expect(trials, hasLength(3));
+      expect(trials, hasLength(l.rounds.length));
       expect(trials.first.offTargetTaps, 1);
       expect(trials.skip(1).every((t) => t.correct), isTrue);
       expect(tester.takeException(), isNull);

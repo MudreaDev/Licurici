@@ -3,7 +3,7 @@
 Sursa listei: `catalog` din `licurici_core`; `dart run tool/catalog_levels_inventory.dart` generează inventarul.
 O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; o excepție pentru un instrument de comunicare este indicată explicit. Nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
 
-Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim**, **Emoții și prieteni** și **Memorie și răbdare** au fost parcurse; urmează Singur, Mâini dibace, Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
+Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim**, **Emoții și prieteni**, **Memorie și răbdare** și **Singur** au fost parcurse; urmează Mâini dibace și Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
 
 ## Atenție (ATN) — 6 jocuri
 
@@ -177,12 +177,14 @@ Unele trepte extind durata exercițiului și nu introduc o regulă nouă. Genera
 
 ## Singur (AUT) — 6 jocuri
 
-- [ ] Ajută-l pe Licurici (`ajuta-l-pe-licurici`, choice)
-- [ ] Ce îmbrac? (`ce-imbrac`, choice)
-- [ ] O zi bună (`explorare-viata`, explore)
-- [ ] La magazin (`la-magazin`, shop)
-- [ ] Pașii rutinei (`pasii-rutinei`, order)
-- [ ] Orarul meu (`orarul-meu`, order)
+- [x] Ajută-l pe Licurici (`ajuta-l-pe-licurici`, choice) — 10 pași de ales de la nivelul 10; telefon/tabletă simulate.
+- [x] Ce îmbrac? (`ce-imbrac`, choice) — 10 runde de la nivelul 10; telefon/tabletă simulate.
+- [x] O zi bună (`explorare-viata`, explore) — exemple suplimentare în toate cele trei opriri de la nivelul 4; episod parcurs pe telefon mic simulat.
+- [x] La magazin (`la-magazin`, shop) — 4 liste la nivelul 12, 5 la 14; nivel parcurs pe telefon mic simulat.
+- [x] Pașii rutinei (`pasii-rutinei`, order) — 5 runde la nivelul 9 și 6 la 11; nivel parcurs pe telefon mic simulat.
+- [x] Orarul meu (`orarul-meu`, order) — 5 runde la nivelul 9 și 6 la 11; nivel parcurs pe telefon mic simulat.
+
+Rundele suplimentare cresc durata exercițiului; exemplele noi și instrucțiunile despre siguranță trebuie revizuite cu specialistul. Testele automate nu înlocuiesc testarea pe dispozitiv fizic. Scările normalizate au fost actualizate; comparațiile longitudinale necesită atenție.
 
 ## Mâini dibace (MOT) — 5 jocuri
 
