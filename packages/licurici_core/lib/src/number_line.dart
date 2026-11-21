@@ -93,6 +93,8 @@ class NumberLineGame {
   /// Câte numere pe nivel.
   static const rounds = 6;
 
+  int roundsFor(int level) => level >= 12 ? 10 : (level >= 10 ? 8 : rounds);
+
   NumberLineAxes axesFor(int level) => switch (level) {
         1 => const NumberLineAxes(max: 10, tick: 1),
         2 => const NumberLineAxes(max: 10, tick: 5),
@@ -111,8 +113,9 @@ class NumberLineGame {
     final axes = axesFor(level);
     // Câte un număr din fiecare bucată a liniei (nu toate grămadă la început), apoi amestecate.
     final targets = <int>{};
-    final band = (axes.max - 1) / rounds;
-    for (var k = 0; k < rounds; k++) {
+    final count = roundsFor(level);
+    final band = (axes.max - 1) / count;
+    for (var k = 0; k < count; k++) {
       for (var guard = 0; guard < 50; guard++) {
         final t = 1 + (k * band + random.nextDouble() * band).floor();
         // Fără numerele de pe repere (acolo n-ar fi estimare) când reperele sunt rare.

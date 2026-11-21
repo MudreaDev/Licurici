@@ -57,7 +57,7 @@ final Map<String, String Function(int)> axesSignature = {
     return '${a.cols} ${a.rows} ${a.model}';
   },
   'labirint': (l) => '${const MazeGame().sizeFor(l)} ${const MazeGame().roundsFor(l)}',
-  'linia-numerelor': (l) => '${const NumberLineGame().axesFor(l).toJson()}',
+  'linia-numerelor': (l) => '${const NumberLineGame().axesFor(l).toJson()} ${const NumberLineGame().roundsFor(l)}',
   'acum-sau-mai-mult': (l) => '${const DelayGame().waitMsFor(l)} ${const DelayGame().laterFor(l)} ${const DelayGame().countFor(l)}',
   'adu-mi': (l) => '${const FetchGame().axesFor(l).toJson()}',
   'pune-ursul': (l) => '${const PlaceGame().axesFor(l).toJson()}',

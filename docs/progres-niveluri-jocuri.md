@@ -3,7 +3,7 @@
 Sursa listei: `catalog` din `licurici_core`; `dart run tool/catalog_levels_inventory.dart` generează inventarul.
 O bifă înseamnă că jocul a fost abordat în această trecere, are o creștere reală a dificultății și a fost testat; o excepție pentru un instrument de comunicare este indicată explicit. Nu înseamnă dificultate infinită sau validare terapeutică pe dispozitiv. O bifă nu se pune doar pentru că numărul nivelului crește.
 
-Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim**, **Emoții și prieteni**, **Memorie și răbdare**, **Singur** și **Mâini dibace** au fost parcurse; urmează Numere și litere. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
+Ordine: **Atenție**, **Fac și eu**, **Potrivim**, **Ascult și înțeleg**, **Vorbim**, **Gândim**, **Emoții și prieteni**, **Memorie și răbdare**, **Singur**, **Mâini dibace** și **Numere și litere** au fost parcurse. Trecerea la secțiunea următoare se face după verificarea tuturor jocurilor din secțiunea curentă. Unele jocuri au primit extinderi înainte de această evidență; ele sunt revizuite în secțiunea lor.
 
 ## Atenție (ATN) — 6 jocuri
 
@@ -198,32 +198,34 @@ Indicele Fitts este calculat acum cu lățimea efectivă a zonei tactile; valori
 
 ## Numere și litere (PAC) — 29 jocuri
 
-- [ ] Câte sunt? (`cate-sunt`, choice)
-- [ ] Alfabetul (`alfabetul`, choice)
-- [ ] Opuse (`opuse`, choice)
-- [ ] Scriem corect (`ortografie`, choice)
-- [ ] Silabe (`silabe`, choice)
-- [ ] Citește cuvântul (`cuvinte`, choice)
-- [ ] Unul și mai mulți (`plural`, choice)
-- [ ] Ce fel de cuvânt? (`gramatica`, choice)
-- [ ] Numărăm (`numaram`, choice)
-- [ ] Comparăm (`comparam`, choice)
-- [ ] Adunăm (`adunam`, choice)
-- [ ] Scădem (`scadem`, choice)
-- [ ] Semnele (`semne`, choice)
-- [ ] Numărul lipsă (`numarul-lipsa`, choice)
-- [ ] Zeci și unități (`zeci`, choice)
-- [ ] Înmulțim (`inmultim`, choice)
-- [ ] Împărțim (`impartim`, choice)
-- [ ] Ceasul (`ceasul`, choice)
-- [ ] Banii (`bani`, choice)
-- [ ] Zilele și lunile (`calendar`, choice)
-- [ ] Tabla înmulțirii (`tabla`, choice)
-- [ ] Probleme (`probleme`, choice)
-- [ ] Trecut și prezent (`trecut`, choice)
-- [ ] Simbolurile țării (`simboluri`, choice)
-- [ ] Personalități (`personalitati`, choice)
-- [ ] Călătorie în timp (`explorare-istorie`, explore)
-- [ ] Linia numerelor (`linia-numerelor`, numberLine)
-- [ ] Scriem cifrele (`scriem-cifrele`, write)
-- [ ] Scriem literele (`scriem-literele`, write)
+- [x] Câte sunt? (`cate-sunt`, choice) — 10 runde de la nivelul 10, cantitățile nu se repetă imediat.
+- [x] Alfabetul (`alfabetul`, choice) — 12 runde de la 10, câte patru pentru fiecare tip de exercițiu.
+- [x] Opuse (`opuse`, choice) — 10 runde de la 10.
+- [x] Scriem corect (`ortografie`, choice) — 10 runde de la 10.
+- [x] Silabe (`silabe`, choice) — 10 runde de la 10.
+- [x] Citește cuvântul (`cuvinte`, choice) — 10 runde de la 10.
+- [x] Unul și mai mulți (`plural`, choice) — 10 runde de la 10.
+- [x] Ce fel de cuvânt? (`gramatica`, choice) — 10 runde de la 10.
+- [x] Numărăm (`numaram`, choice) — 10 runde de la 10.
+- [x] Comparăm (`comparam`, choice) — 12 runde de la 10, inclusiv patru egalități.
+- [x] Adunăm (`adunam`, choice) — 10 runde de la 10; intervalul termenilor continuă să crească până la 16.
+- [x] Scădem (`scadem`, choice) — 10 runde de la 10; intervalul continuă să crească până la 16.
+- [x] Semnele (`semne`, choice) — 12 runde de la 10, inclusiv patru egalități; intervalul numeric continuă să crească.
+- [x] Numărul lipsă (`numarul-lipsa`, choice) — 10 runde de la 10.
+- [x] Zeci și unități (`zeci`, choice) — 10 runde de la 10.
+- [x] Înmulțim (`inmultim`, choice) — 10 runde de la 10.
+- [x] Împărțim (`impartim`, choice) — 10 runde de la 10.
+- [x] Ceasul (`ceasul`, choice) — 10 runde de la 10, cu variante de minute apropiate.
+- [x] Banii (`bani`, choice) — 10 runde de la 10.
+- [x] Zilele și lunile (`calendar`, choice) — 10 runde de la 10, alternând lunile și anotimpurile.
+- [x] Tabla înmulțirii (`tabla`, choice) — 10 runde de la 10.
+- [x] Probleme (`probleme`, choice) — 12 runde de la 10, câte patru din fiecare operație.
+- [x] Trecut și prezent (`trecut`, choice) — 10 runde de la 10.
+- [x] Simbolurile țării (`simboluri`, choice) — 10 runde de la 10.
+- [x] Personalități (`personalitati`, choice) — 10 runde de la 10.
+- [x] Călătorie în timp (`explorare-istorie`, explore) — pozițiile grupelor se inversează de la nivelul 4; episod parcurs pe telefon mic simulat.
+- [x] Linia numerelor (`linia-numerelor`, numberLine) — 8 estimări la 10, 10 la 12; nivel parcurs pe telefon mic simulat.
+- [x] Scriem cifrele (`scriem-cifrele`, write) — 5 semne la 12, 6 la 14, fără repetări; nivel parcurs pe telefon mic simulat.
+- [x] Scriem literele (`scriem-literele`, write) — 5 semne la 12, 6 la 14, fără repetări; nivel parcurs pe telefon mic simulat.
+
+Jocurile cu alegeri au fost deschise la nivelul 10 pe telefon și tabletă simulate, cu teste de corectitudine ale generatorului. Rundele suplimentare cresc durata exercițiilor, fără să garanteze concepte noi sau dificultate infinită. Scările și comparațiile longitudinale sunt afectate; este necesară validarea pe dispozitiv și cu specialistul.

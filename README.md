@@ -88,6 +88,7 @@ Bifează ce ai făcut; la final, „ce a mai rămas?” se citește de aici.
 - [ ] După publicarea următorului APK, verifică nivelurile noi din Memorie și răbdare, în special cele 12 perechi pe telefon și secvențele de 11 pași.
 - [ ] După publicarea următorului APK, verifică jocurile din Singur și revizuiește cu specialistul exemplele și instrucțiunile despre siguranță.
 - [ ] După publicarea următorului APK, verifică jocurile din Mâini dibace, inclusiv atingerea bulelor aproape de marginile ecranului.
+- [ ] După publicarea următorului APK, verifică împreună cu specialistul și jocurile din Numere și litere, în special ceasul, calendarul și scrierea pe tabletă.
 - [ ] În APK-ul 0.1.3, ascultă „Super!” și „Super! Ai terminat!”; clipurile au fost regenerate cu pronunție silabisită, dar nu au fost ascultate pe dispozitiv.
 - [ ] În APK-ul 0.1.3, verifică atingerile pe fețele din „Oglinda” și aspectul ramei pe tableta reală.
 - [ ] **Imaginile Codex** (cerute pe 16.10, **gata pe 17.10**): pe tabletă (APK nou), uită-te la fețele noi (8 copii pictați: „Cât de tare?”, „Cine e prietenul?”, „Cum se simte?”, „Oglinda”), obiectele pictate din toate jocurile, masa / cutia, Turnul, Floarea crește, Stop!, Atinge rapid — spune-mi ce nu se potrivește.
@@ -153,7 +154,9 @@ Din sesiunea 12, **Claude rulează Codex singur** (`codex exec`); limita de util
 
 **20.11.2026 — laborator PECPIT:** elaborat WBS-ul tezei „Dezvoltarea unui sistem informatic pentru terapia asistată a copiilor cu tulburări din spectrul autist”, după cerințele și raportul PDF furnizate. Copertă confirmată: Mudrea Mihail, TI-233, Cojocaru Svetlana. Include AI pentru adulți; clasele 5–12 și studiul clinic sunt în afara perimetrului acestui raport. 87 de elemente, 69 de pachete, 4 diagrame; PDF și Word în `output/`, generare/verificare în `tools/docs/*pecpit*`. WBS descrie lucrările întregii teze, nu afirmă că toate sunt deja validate. Urmează verificarea utilizatorului și predarea PDF-ului; sarcinile aplicației rămân cele de mai jos.
 
-**Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Se lucrează în ordinea secțiunilor din aplicație; bifa înseamnă prima extindere implementată și testată sau o excepție explicată, nu dificultate infinită. Atenție, Fac și eu, Potrivim, Ascult și înțeleg, Vorbim, Gândim, Emoții și prieteni, Memorie și răbdare, Singur și Mâini dibace au fost parcurse; urmează Numere și litere. „Vorbește” este o tablă AAC și rămâne disponibilă integral, fără nivel obligatoriu.
+**Niveluri pe secțiuni:** evidența completă, pe fiecare joc din catalog, este în [progresul nivelurilor](docs/progres-niveluri-jocuri.md). Toate secțiunile au fost parcurse în ordine; bifa înseamnă o extindere implementată și testată sau o excepție explicată, nu dificultate infinită ori validare terapeutică. „Vorbește”, „Respiră” și „Colorăm” rămân activități libere, fără nivel obligatoriu.
+
+**21.11 — Numere și litere:** cele 29 de jocuri au trepte suplimentare, descrise individual în [evidență](docs/progres-niveluri-jocuri.md). La majoritatea jocurilor cu alegeri se extinde durata exercițiului; asta nu adaugă automat concepte noi. Urmează testarea pe dispozitiv și cu specialistul și pregătirea următorului APK. Schimbările sunt ulterioare versiunii 0.1.3.
 
 **21.11 — Mâini dibace:** patru jocuri au trepte suplimentare, iar Colorăm rămâne liber. În Atinge rapid, zona tactilă are minimum 64 dp, iar indicele Fitts folosește lățimea efectivă a acesteia; comparația cu valorile vechi necesită atenție. Detalii în [evidență](docs/progres-niveluri-jocuri.md). Urmează Numere și litere; schimbările sunt ulterioare APK-ului 0.1.3.
 
@@ -1334,7 +1337,7 @@ Sprinturi de 2 săptămâni. Bifează pe măsură ce avansezi.
 
 **Niveluri suplimentare:** jocurile enumerate în §0.1 și cele trei explorări au fost extinse; celelalte mecanici adaptive necesită în continuare extinderi proprii. Progresul foii de parcurs nu se modifică până la finalizarea cererii.
 
-**Inventar pe secțiuni:** Atenție (6/6, două treceri), Fac și eu (4/4, două treceri), Potrivim (8/8, două treceri), Ascult și înțeleg (11/11, două treceri), Vorbim (6 jocuri extinse de două ori și tabla AAC revizuită), Gândim (11/11 prima trecere), Emoții și prieteni (10/10 prima trecere), Memorie și răbdare (11 jocuri extinse și o activitate liberă revizuită), Singur (6/6 prima trecere), Mâini dibace (4 jocuri extinse și o activitate liberă revizuită); restul secțiunilor sunt urmărite în [lista pe jocuri](docs/progres-niveluri-jocuri.md).
+**Inventar pe secțiuni:** Atenție (6/6, două treceri), Fac și eu (4/4, două treceri), Potrivim (8/8, două treceri), Ascult și înțeleg (11/11, două treceri), Vorbim (6 jocuri extinse de două ori și tabla AAC revizuită), Gândim (11/11), Emoții și prieteni (10/10), Memorie și răbdare (11 jocuri extinse și o activitate liberă revizuită), Singur (6/6), Mâini dibace (4 jocuri extinse și o activitate liberă revizuită), Numere și litere (29/29). Detalii și limite în [lista pe jocuri](docs/progres-niveluri-jocuri.md).
 
 **Progres 25.10.2026:** integrarea celor 6 piese pictate ale acvariului și corectarea ghidajului / particulelor în modul calm; baza pictată din „Rândul meu” și publicarea pachetelor 0.1.1 în GitHub Releases; corecția cufărului și a barei de comenzi (0.1.2); fără puncte noi în roadmap (S1: 32/38, total: 35/46).
 

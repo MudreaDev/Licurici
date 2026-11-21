@@ -46,6 +46,13 @@ const extendedChoiceGames = {
   'arata-mi', 'corpul', 'ce-face', 'mingea-rosie', 'unde-e-ursul', 'primul-sunet', 'ce-se-aude', 'da-nu', 'continua-sirul',
 };
 
+/// Lecții care se extind la zece sau mai multe runde de la nivelul 10.
+const extendedAcademicGames = {
+  'cate-sunt', 'alfabetul', 'opuse', 'ortografie', 'silabe', 'cuvinte', 'plural', 'gramatica',
+  'numaram', 'comparam', 'adunam', 'scadem', 'semne', 'numarul-lipsa', 'zeci', 'inmultim', 'impartim',
+  'ceasul', 'bani', 'calendar', 'tabla', 'probleme', 'trecut', 'simboluri', 'personalitati',
+};
+
 /// Plafonul fiecărui joc cu niveluri proprii, citit din funcția lui `axesFor` / generator
 /// (testul `level_scale_test.dart` cere ca orice joc nou din catalog să apară aici sau să fie
 /// un joc cu alegere). Jocurile fără niveluri (creație, AAC, respirație) nu produc rating.
@@ -69,7 +76,7 @@ const gameScales = <String, LevelScale>{
   'la-magazin': LevelScale(14),
   // construcție, puzzle, labirint
   'construieste': LevelScale(14),
-  'linia-numerelor': LevelScale(8), // 0–100 fără repere la 8
+  'linia-numerelor': LevelScale(12), // până la 10 estimări
   'atinge-rapid': LevelScale(13), // până la 14 ținte, fără micșorare suplimentară
   'stop': LevelScale(13), // 36 de încercări, 30% opriri
   'turnul': LevelScale(11), // 8 inele la 11, diferența minimă la 9
@@ -98,8 +105,8 @@ const gameScales = <String, LevelScale>{
   'uneste-punctele': LevelScale(14),
   'hraneste-pestii': LevelScale(16), // până la 7 runde
   'atinge-si-vezi': LevelScale(10),
-  'scriem-cifrele': LevelScale(10),
-  'scriem-literele': LevelScale(10),
+  'scriem-cifrele': LevelScale(14),
+  'scriem-literele': LevelScale(14),
   // ordonare (rutine, povești, seriere, propoziții): 5 pași la nivelul 7
   'pasii-rutinei': LevelScale(11),
   'ce-urmeaza': LevelScale(11),
@@ -108,7 +115,7 @@ const gameScales = <String, LevelScale>{
   'spune-propozitia': LevelScale(13),
   // explorările: exemple suplimentare la nivelul 3
   'explorare-stiinte': LevelScale(4),
-  'explorare-istorie': LevelScale(3),
+  'explorare-istorie': LevelScale(4),
   'explorare-viata': LevelScale(4),
 };
 
@@ -117,5 +124,6 @@ const unleveledGames = {'respira', 'colorare', 'vorbeste'};
 
 /// Scara jocului [gameId]; jocurile cu alegere (și orice joc nedeclarat) folosesc [choiceScale].
 LevelScale scaleFor(String gameId) => gameScales[gameId] ??
+    ({'adunam', 'scadem'}.contains(gameId) ? const LevelScale(16) : gameId == 'semne' ? const LevelScale(83) : gameId == 'probleme' ? const LevelScale(12) : null) ??
     (gameId == 'forma-ascunsa' ? const LevelScale(14) : (gameId == 'povesti' || gameId == 'ce-ai-auzit') ? const LevelScale(12) : (gameId == 'potriveste' || gameId == 'intrusul' || gameId == 'umbre' || gameId == 'culori' || gameId == 'forme' || gameId == 'arata-mi' || gameId == 'corpul' || gameId == 'ce-face' || gameId == 'mingea-rosie' || gameId == 'unde-e-ursul' || gameId == 'primul-sunet' || gameId == 'da-nu' || gameId == 'ce-se-aude' || gameId == 'continua-sirul') ? const LevelScale(10) : gameId == 'pozitii' ? const LevelScale(11) :
-    ({'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii', 'ajuta-l-pe-licurici', 'ce-imbrac'}.contains(gameId) ? const LevelScale(10) : {'anotimpuri', 'habitate', 'peste-in-mijloc'}.contains(gameId) ? const LevelScale(9) : (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale)));
+    (extendedAcademicGames.contains(gameId) || {'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii', 'ajuta-l-pe-licurici', 'ce-imbrac'}.contains(gameId) ? const LevelScale(10) : {'anotimpuri', 'habitate', 'peste-in-mijloc'}.contains(gameId) ? const LevelScale(9) : (extendedChoiceGames.contains(gameId) ? const LevelScale(8) : choiceScale)));

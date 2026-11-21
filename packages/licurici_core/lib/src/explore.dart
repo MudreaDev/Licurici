@@ -69,12 +69,15 @@ class ExploreEpisode {
     final extra = _advancedExploreItems['$id/${stop.id}'] ?? const <(String, String)>[];
     final expert = _expertExploreItems['$id/${stop.id}'] ?? const <(String, String)>[];
     final items = [...stop.items, if (level >= 3) ...extra, if (level >= 4) ...expert]..shuffle(Random(s));
+    // În istorie, treapta nouă schimbă pozițiile grupelor; răspunsul depinde de
+    // etichetă, nu de locul învățat. Folosim aceleași exemple deja cunoscute.
+    final bins = id == 'explorare-istorie' && level >= 4 ? stop.bins.reversed.toList() : stop.bins;
     return SortLevel(
       gameId: id,
       level: level,
       seed: s,
       axes: SortAxes(bins: stop.bins.length, perBin: (items.length / stop.bins.length).ceil()),
-      bins: stop.bins,
+      bins: bins,
       items: [for (final (i, (emoji, bin)) in items.indexed) SortItem(i, emoji, bin)],
       instruction: stop.instruction,
     );

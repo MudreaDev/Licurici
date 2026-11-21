@@ -57,7 +57,7 @@ void main() {
       expect(b.width, lessThan(a.width));
       expect(a.guide, TraceGuide.dots);
       expect(b.guide, TraceGuide.none);
-      for (final level in [1, 2, 3, 5, 8, 12]) {
+      for (final level in [1, 2, 3, 5, 8, 12, 14]) {
         final l = game.generate(level, seed: level);
         expect(l.glyphs.length, l.axes.glyphs);
         expect(l.glyphs.map((g) => g.char).toSet().length, l.glyphs.length);

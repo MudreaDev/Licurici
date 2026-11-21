@@ -281,7 +281,7 @@ class WritingGame {
       pool: pool,
       width: 0.17 - 0.07 * t,
       guide: level <= 3 ? TraceGuide.dots : (level <= 7 ? TraceGuide.arrow : TraceGuide.none),
-      glyphs: level <= 2 ? 3 : 4,
+      glyphs: level <= 2 ? 3 : (level >= 14 ? 6 : (level >= 12 ? 5 : 4)),
     );
   }
 

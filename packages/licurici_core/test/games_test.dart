@@ -5,6 +5,33 @@ import 'package:licurici_core/src/games/content.dart' show ortograme, stories;
 import 'package:test/test.dart';
 
 void main() {
+  test('lecțiile școlare avansate au runde suplimentare cu un singur răspuns corect', () {
+    for (final game in allGames.where((g) => extendedAcademicGames.contains(g.id))) {
+      for (var seed = 0; seed < 30; seed++) {
+        final ctx = GameContext(difficulty: const Difficulty(10), grade: game.grades.first, random: Random(seed));
+        final lesson = game.build(ctx);
+        expect(lesson.rounds, hasLength({'alfabetul', 'comparam', 'semne', 'probleme'}.contains(game.id) ? 12 : 10), reason: game.id);
+        for (final r in lesson.rounds) {
+          expect(r.choices.where((c) => c.correct), hasLength(1), reason: game.id);
+        }
+      }
+    }
+  });
+
+  test('lectiile avansate pastreaza tipurile de exercitii echilibrate', () {
+    for (var seed = 0; seed < 30; seed++) {
+      GameContext ctx() => GameContext(difficulty: const Difficulty(10), grade: Grade.clasa2, random: Random(seed));
+      final signs = const SemneGame().build(ctx()).rounds;
+      expect(signs.where((r) => r.stimulusId == 'egal'), hasLength(4));
+      final comparisons = const ComparamGame().build(ctx()).rounds;
+      expect(comparisons.where((r) => r.choices.singleWhere((c) => c.correct).label == 'La fel'), hasLength(4));
+      final problems = const ProblemeGame().build(ctx()).rounds;
+      for (final kind in ['plus', 'minus', 'ori']) {
+        expect(problems.where((r) => r.stimulusId == kind), hasLength(4));
+      }
+    }
+  });
+
   test('sunetele avansate includ un sunet inițial apropiat', () {
     const near = {'M': 'N', 'N': 'M', 'B': 'P', 'P': 'B', 'D': 'T', 'T': 'D', 'F': 'V', 'V': 'F', 'S': 'Ș', 'Ș': 'S', 'C': 'G', 'G': 'C'};
     for (var seed = 0; seed < 30; seed++) {
@@ -104,7 +131,7 @@ void main() {
               random: Random(seed),
             );
             final lesson = game.build(ctx);
-            expect(lesson.rounds, hasLength(game.id == 'povesti' && tier >= 8 ? (tier >= 12 ? 3 : (tier >= 10 ? 4 : 5)) : ({'intrusul', 'culori', 'forme', 'mingea-rosie', 'unde-e-ursul', 'da-nu', 'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii', 'ajuta-l-pe-licurici', 'ce-imbrac'}.contains(game.id) && tier >= 10 || {'anotimpuri', 'habitate', 'peste-in-mijloc'}.contains(game.id) && tier >= 9 || game.id == 'pozitii' && tier >= 11 || game.id == 'ce-ai-auzit' && tier >= 12) ? 10 : ctx.difficulty.roundCount));
+            expect(lesson.rounds, hasLength({'alfabetul', 'comparam', 'semne', 'probleme'}.contains(game.id) && tier >= 10 ? 12 : game.id == 'povesti' && tier >= 8 ? (tier >= 12 ? 3 : (tier >= 10 ? 4 : 5)) : ((extendedAcademicGames.contains(game.id) || {'intrusul', 'culori', 'forme', 'mingea-rosie', 'unde-e-ursul', 'da-nu', 'cum-se-simte', 'cat-de-tare', 'cine-e-prietenul', 'emotii', 'ce-simte', 'ce-ma-ajuta', 'cine-stie', 'situatii', 'ajuta-l-pe-licurici', 'ce-imbrac'}.contains(game.id)) && tier >= 10 || {'anotimpuri', 'habitate', 'peste-in-mijloc'}.contains(game.id) && tier >= 9 || game.id == 'pozitii' && tier >= 11 || game.id == 'ce-ai-auzit' && tier >= 12) ? 10 : ctx.difficulty.roundCount));
             for (final r in lesson.rounds) {
               expect(r.choices.where((c) => c.correct), hasLength(1));
               // Variantele fixe (ex. grupele din „Comparăm”, Da/Nu) nu se taie după tier.

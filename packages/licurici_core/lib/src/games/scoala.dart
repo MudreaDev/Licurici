@@ -194,11 +194,14 @@ class SilabeGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Bate din palme pentru fiecare silabă.',
         rounds: [
-          for (var i = 0; i < 8; i++) _round(ctx),
+          for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx),
         ],
       );
 
@@ -231,11 +234,14 @@ class CuvinteGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Citește cuvântul și alege imaginea.',
         rounds: [
-          for (var i = 0; i < 8; i++) _round(ctx),
+          for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx),
         ],
       );
 
@@ -268,11 +274,14 @@ class PluralGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Cum spui când sunt mai multe?',
         rounds: [
-          for (var i = 0; i < 8; i++) _round(ctx),
+          for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx),
         ],
       );
 
@@ -308,12 +317,15 @@ class ZeciGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxT = min(max(2, ctx.difficulty.tier), 9);
     return Lesson(
       title: name,
       instruction: 'Numără zecile și unitățile.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxT)],
+      rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, maxT)],
     );
   }
 
@@ -355,12 +367,15 @@ class InmultimGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxF = min(3 + ctx.difficulty.tier, 10);
     return Lesson(
       title: name,
       instruction: 'Câte sunt în total?',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxF)],
+      rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, maxF)],
     );
   }
 
@@ -415,13 +430,16 @@ class CeasulGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final minutes = tier <= 2 ? const [0] : (tier <= 4 ? const [0, 30] : const [0, 15, 30, 45]);
     return Lesson(
       title: name,
       instruction: 'Acul mic arată ora.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, minutes)],
+      rounds: [for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, minutes)],
     );
   }
 
@@ -463,12 +481,15 @@ class ImpartimGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxQ = min(2 + ctx.difficulty.tier, 10);
     return Lesson(
       title: name,
       instruction: 'Împarte frățește.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxQ)],
+      rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, maxQ)],
     );
   }
 

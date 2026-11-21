@@ -34,6 +34,9 @@ class BaniGame extends ChoiceGame {
           : const [1, 5, 10, 20, 50];
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final notes = notesFor(tier);
@@ -41,7 +44,7 @@ class BaniGame extends ChoiceGame {
     return Lesson(
       title: name,
       instruction: 'Câți lei sunt în total?',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, notes, most)],
+      rounds: [for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, notes, most)],
     );
   }
 
@@ -76,12 +79,15 @@ class TablaGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxF = min(2 + ctx.difficulty.tier, 10);
     return Lesson(
       title: name,
       instruction: 'Cât fac?',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxF)],
+      rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, maxF)],
     );
   }
 
@@ -132,6 +138,9 @@ class ProblemeGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final cap = min(10 + tier * 8, 100);
@@ -139,7 +148,7 @@ class ProblemeGame extends ChoiceGame {
     return Lesson(
       title: name,
       instruction: 'Citește problema și alege răspunsul.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, kinds[i % kinds.length], cap, tier)],
+      rounds: [for (var i = 0; i < (tier >= 10 ? 12 : ctx.difficulty.roundCount); i++) _round(ctx, kinds[i % kinds.length], cap, tier)],
     );
   }
 
@@ -217,10 +226,13 @@ class GramaticaGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Substantiv, verb sau adjectiv?',
-        rounds: [for (var i = 0; i < 8; i++) _round(ctx)],
+        rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx)],
       );
 
   ChoiceRound _round(GameContext ctx) {
@@ -262,10 +274,13 @@ class SimboluriGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Ce este?',
-        rounds: [for (var i = 0; i < 8; i++) _round(ctx)],
+        rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx)],
       );
 
   ChoiceRound _round(GameContext ctx) {
@@ -308,10 +323,13 @@ class TrecutGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Care e de demult?',
-        rounds: [for (var i = 0; i < 8; i++) _round(ctx)],
+        rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx)],
       );
 
   ChoiceRound _round(GameContext ctx) {
@@ -353,10 +371,13 @@ class PersonalitatiGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Cine a fost?',
-        rounds: [for (var i = 0; i < 8; i++) _round(ctx)],
+        rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx)],
       );
 
   ChoiceRound _round(GameContext ctx) {

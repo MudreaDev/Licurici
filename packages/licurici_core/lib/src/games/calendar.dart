@@ -37,13 +37,16 @@ class CalendarGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     return Lesson(
       title: name,
       instruction: 'Ascultă și alege.',
       rounds: [
-        for (var i = 0; i < 8; i++)
+        for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++)
           switch (tier) {
             <= 2 => _nextDay(ctx),
             <= 4 => i.isEven ? _missingDay(ctx) : _nextDay(ctx),

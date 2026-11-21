@@ -22,7 +22,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, startLevel, repeats, episodeId) in [('telefon-mic', 1, 1, 'explorare-istorie'), ('tableta', 1, null, 'explorare-istorie'), ('telefon-mic', 3, 1, 'explorare-istorie'), ('telefon-mic', 4, 1, 'explorare-stiinte'), ('telefon-mic', 4, 1, 'explorare-viata')]) {
+  for (final (device, startLevel, repeats, episodeId) in [('telefon-mic', 1, 1, 'explorare-istorie'), ('tableta', 1, null, 'explorare-istorie'), ('telefon-mic', 3, 1, 'explorare-istorie'), ('telefon-mic', 4, 1, 'explorare-stiinte'), ('telefon-mic', 4, 1, 'explorare-viata'), ('telefon-mic', 4, 1, 'explorare-istorie')]) {
     testWidgets('explorare: harta, opririle și finalul ($device, nivel $startLevel)', (tester) async {
       tester.view.physicalSize = devices[device]!;
       tester.view.devicePixelRatio = 1;

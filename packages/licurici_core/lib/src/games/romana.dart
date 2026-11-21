@@ -21,10 +21,13 @@ class AlfabetulGame extends ChoiceGame {
   static final List<String> _letters = content.alphabet.map((a) => a.letter).toSet().toList();
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Alege litera potrivită.',
-        rounds: [for (var i = 0; i < 9; i++) _round(ctx, i % 3)],
+        rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 12 : ctx.difficulty.roundCount); i++) _round(ctx, i % 3)],
       );
 
   ChoiceRound _round(GameContext ctx, int kind) {
@@ -86,10 +89,13 @@ class OpuseGame extends ChoiceGame {
   ];
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
         title: name,
         instruction: 'Alege cuvântul cu sens opus.',
-        rounds: [for (var i = 0; i < 8; i++) _round(ctx)],
+        rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx)],
       );
 
   ChoiceRound _round(GameContext ctx) {
@@ -126,10 +132,13 @@ class OrtografieGame extends ChoiceGame {
       );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) => Lesson(
     title: name,
     instruction: 'Alege cum se scrie cuvântul lipsă.',
-    rounds: [for (var i = 0; i < 8; i++) _round(ctx)],
+    rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx)],
   );
 
   ChoiceRound _round(GameContext ctx) {

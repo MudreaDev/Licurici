@@ -46,7 +46,7 @@ void main() {
     svg.cache.clear();
   });
 
-  for (final (device, level) in [('telefon-mic', 7), ('tableta', 2)]) {
+  for (final (device, level) in [('telefon-mic', 7), ('tableta', 2), ('telefon-mic', 12)]) {
     testWidgets('linia numerelor: nivelul $level pe $device, jucat până la final', (tester) async {
       final c2 = await _pump(
         tester,
@@ -55,7 +55,7 @@ void main() {
         (c) => c.read(numberLineLevelProvider.notifier).setLevel(level),
       );
       final lineMax = const NumberLineGame().axesFor(level).max;
-      if (shots) await expectLater(find.byType(NumberLineScreen), matchesGoldenFile('shots/linia-numerelor-$device.png'));
+      if (shots && level != 12) await expectLater(find.byType(NumberLineScreen), matchesGoldenFile('shots/linia-numerelor-$device.png'));
       final line = find.byKey(const ValueKey('nl-line'));
       for (var i = 0; i < 12 && find.text('Încă o dată').evaluate().isEmpty; i++) {
         // Atinge exact locul numărului afișat (după poziția lui pe linie).

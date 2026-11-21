@@ -21,14 +21,14 @@ void main() {
   });
 
   for (final game in writingGames) {
-    for (final device in ['telefon-mic', 'tableta']) {
-      testWidgets('${game.id}: scrie semnele trăsătură cu trăsătură, apoi finalul ($device)', (tester) async {
+    for (final (device, difficulty) in [('telefon-mic', 5), ('tableta', 5), ('telefon-mic', 14)]) {
+      testWidgets('${game.id}: scrie semnele trăsătură cu trăsătură, apoi finalul ($device, nivel $difficulty)', (tester) async {
         tester.view.physicalSize = devices[device]!;
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.reset);
         final container = ProviderContainer(overrides: [voiceProvider.overrideWithValue(const SilentSpeaker())]);
         addTearDown(container.dispose);
-        container.read(writeLevelProvider(game.id).notifier).setLevel(5);
+        container.read(writeLevelProvider(game.id).notifier).setLevel(difficulty);
         final router = GoRouter(
           initialLocation: '/s',
           routes: [
@@ -44,7 +44,7 @@ void main() {
           ),
         );
         await settle(tester, 2);
-        final level = game.generate(5, seed: 3);
+        final level = game.generate(difficulty, seed: 3);
         final field = find.byKey(const ValueKey('write-field'));
         expect(field, findsOneWidget);
         // Fără nicio atingere 6 s: steluța arată singură trăsătura (modelul).
@@ -65,7 +65,7 @@ void main() {
             await gesture.moveTo(at(p.points.length - 1));
             await gesture.up();
             await tester.pump(const Duration(milliseconds: 50));
-            if (i == 0 && k == 0 && shots) {
+            if (i == 0 && k == 0 && shots && difficulty == 5) {
               await expectLater(find.byType(WriteScreen), matchesGoldenFile('shots/${game.id}-$device.png'));
             }
           }

@@ -11,12 +11,13 @@ void main() {
       expect(g.axesFor(1).toJson(), {'max': 10, 'tick': 1});
       expect(g.axesFor(5).max, 20);
       expect(g.axesFor(8).toJson(), {'max': 100, 'tick': 0});
-      for (var level = 1; level <= 9; level++) {
+      for (var level = 1; level <= 12; level++) {
         for (var seed = 0; seed < 40; seed++) {
           final l = g.generate(level, seed: seed);
           final ts = [for (final r in l.rounds) r.target];
           expect(ts.toSet(), hasLength(ts.length));
           expect(ts.length, greaterThanOrEqualTo(5));
+          if (level >= 10) expect(ts, hasLength(g.roundsFor(level)));
           for (final t in ts) {
             expect(t, inExclusiveRange(0, l.axes.max));
             if (l.axes.tick > 1) expect(t % l.axes.tick, isNot(0));

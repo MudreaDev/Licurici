@@ -66,4 +66,15 @@ void main() {
     }
   });
   }
+
+  test('călătoria în timp schimbă poziția grupelor la nivelul 4', () {
+    final episode = exploreEpisodeById('explorare-istorie')!;
+    for (final stop in episode.stops) {
+      final old = episode.levelFor(stop, seed: 1, level: 3);
+      final advanced = episode.levelFor(stop, seed: 1, level: 4);
+      expect(advanced.bins.map((bin) => bin.id), old.bins.map((bin) => bin.id).toList().reversed);
+      expect(advanced.items.map((item) => item.emoji).toSet(), old.items.map((item) => item.emoji).toSet());
+      expect(advanced.items.every((item) => advanced.bins.any((bin) => bin.id == item.binId)), isTrue);
+    }
+  });
 }

@@ -38,6 +38,9 @@ pe pași, în ordine.
 
 ### Continuare 21.11.2026
 
+- Numere și litere: cele 29 de jocuri au fost abordate, individual în `docs/progres-niveluri-jocuri.md`. Cele 25 cu alegere au runde suplimentare la 10; exercițiile cu trei tipuri sunt echilibrate. Explorarea de istorie inversează pozițiile grupelor la 4, linia numerelor ajunge la 10 estimări, iar scrierea la 6 semne. Mai multe runde înseamnă exercițiu mai lung, nu concepte noi nelimitate. Au trecut testele dedicate și acoperirea vocală 2883/2883; rămân verificarea fizică, validarea cu specialistul și livrarea APK-ului care conține aceste modificări.
+- Verificări Numere și litere: 679 teste nucleu, 584 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
+
 - Mâini dibace: patru jocuri extinse și Colorăm revizuită ca activitate liberă; detalii în `docs/progres-niveluri-jocuri.md`. Atinge rapid are zonă tactilă ≥64 dp inclusiv lângă margini; indicele Fitts folosește lățimea efectivă a zonei tactile, deci valorile noi nu se compară direct cu cele istorice. Testele dedicate au trecut; este necesară verificarea fizică. Urmează Numere și litere.
 - Verificări Mâini dibace: 676 teste nucleu, 530 aplicație copil (15 capturi opționale sărite), 37 panou, 90 backend, 7 Vercel; analiză Flutter fără probleme.
 

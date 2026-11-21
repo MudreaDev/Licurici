@@ -37,13 +37,16 @@ class CateSuntGame extends ChoiceGame {
   static int showMsFor(int tier) => max(500, 2200 - 250 * tier);
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final tier = ctx.difficulty.tier;
     final (lo, hi) = rangeFor(tier);
     final ms = showMsFor(tier);
     var last = -1;
     final rounds = <ChoiceRound>[];
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < (tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) {
       var n = ctx.intBetween(lo, hi);
       // Nu de două ori la rând aceeași cantitate.
       if (n == last) n = n == hi ? lo : n + 1;

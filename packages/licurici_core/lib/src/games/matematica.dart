@@ -21,12 +21,15 @@ class NumaramGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxN = min(3 + ctx.difficulty.tier * 2, 20);
     return Lesson(
       title: name,
       instruction: 'Numără obiectele și alege numărul.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxN)],
+      rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, maxN)],
     );
   }
 
@@ -58,6 +61,9 @@ class AdunamGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final t = ctx.difficulty.tier;
     final maxTerm = min(3 + t * 3, 50);
@@ -65,7 +71,7 @@ class AdunamGame extends ChoiceGame {
     return Lesson(
       title: name,
       instruction: 'Câte sunt în total?',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxTerm, maxSum)],
+      rounds: [for (var i = 0; i < (t >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, maxTerm, maxSum)],
     );
   }
 
@@ -103,12 +109,15 @@ class ScademGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxA = min(6 + ctx.difficulty.tier * 6, 100);
     return Lesson(
       title: name,
       instruction: 'Câte rămân?',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxA)],
+      rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, maxA)],
     );
   }
 
@@ -146,12 +155,15 @@ class ComparamGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxN = min(3 + ctx.difficulty.tier * 2, 20);
     return Lesson(
       title: name,
       instruction: 'Alege unde sunt mai multe.',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxN, equal: i % 3 == 2)],
+      rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 12 : ctx.difficulty.roundCount); i++) _round(ctx, maxN, equal: i % 3 == 2)],
     );
   }
 
@@ -192,9 +204,12 @@ class SemneGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxN = min(5 + ctx.difficulty.tier * 12, 1000);
-    final n = ctx.difficulty.roundCount;
+    final n = ctx.difficulty.tier >= 10 ? 12 : ctx.difficulty.roundCount;
     return Lesson(
       title: name,
       instruction: 'Alege semnul potrivit.',
@@ -241,12 +256,15 @@ class LipsaGame extends ChoiceGame {
         );
 
   @override
+  bool get fixedRounds => true;
+
+  @override
   Lesson generate(GameContext ctx) {
     final maxSum = min(6 + ctx.difficulty.tier * 6, 50);
     return Lesson(
       title: name,
       instruction: 'Ce număr lipsește?',
-      rounds: [for (var i = 0; i < 8; i++) _round(ctx, maxSum)],
+      rounds: [for (var i = 0; i < (ctx.difficulty.tier >= 10 ? 10 : ctx.difficulty.roundCount); i++) _round(ctx, maxSum)],
     );
   }
 
